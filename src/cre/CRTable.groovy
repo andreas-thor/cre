@@ -1,11 +1,10 @@
 package cre 
 
 import groovy.beans.Bindable
-import groovy.transform.CompileStatic;
+import groovy.transform.CompileStatic
 
 import java.util.regex.Matcher
 
-import javax.swing.JPanel
 import javax.swing.SwingWorker
 
 import org.jfree.data.xy.DefaultXYDataset
@@ -37,59 +36,25 @@ class CRTable {
 		
 	}
 	
-	@CompileStatic
-	public class Cluster implements Serializable, Comparable<Cluster>  {
+	public class AbortedException extends Exception { }
 		
-		public int c1
-		public int c2
-		
-		public Cluster (int c1, int c2) {
-			this.c1 = c1
-			this.c2 = c2
-		}
-		
-		@Override 
-		public String toString() {
-			return "${c1}/${c2}"
-		}
-		
-		@Override 
-		public int compareTo(Cluster o) {
-			if (this.c1<o.c1) return -1
-			if (this.c1>o.c1) return +1
-			if (this.c2<o.c2) return -1
-			if (this.c2>o.c2) return +1
-			return 0;
-		}
-		
-		@Override 
-		public boolean equals(Object obj) {
-			Cluster o = (Cluster)obj
-			return ((this.c1==o.c1) && (this.c2=o.c2));
-		}
-		
-		@Override 
-		public int hashCode() {
-			return c1*10111+c2
-		}
-		
-	}
 	
-	
-	@CompileStatic
-	class Task extends SwingWorker<Void, Void> {
 
-		Task () {
-			
-		}
-		
-		@Override 
-		protected Void doInBackground() throws Exception {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-	}
+	
+//	@CompileStatic
+//	class Task extends SwingWorker<Void, Void> {
+//
+//		Task () {
+//			
+//		}
+//		
+//		@Override 
+//		protected Void doInBackground() throws Exception {
+//			// TODO Auto-generated method stub
+//			return null;
+//		}
+//		
+//	}
 	
 		
 
@@ -101,17 +66,20 @@ class CRTable {
 	
 	@Bindable DefaultXYDataset ds  = new DefaultXYDataset()
 	@Bindable List<CRType> crData = []	// all CR data
+	
 	boolean duringUpdate = false
-
+	boolean abort = false
 	
 	private long noOfPubs = 0
 	private Map<Integer, Integer> sumPerYear = [:]	// year -> sum of CRs
 	
 	private CRMatch crMatch = new CRMatch()
 	private Map<Integer, Integer> crId2Index = [:]			// object Id -> index in crData list
-	private Map<Cluster, List<Integer>> clusterId2Objects = [:]		// clusterId->[object ids]
+	private Map<CRCluster, List<Integer>> clusterId2Objects = [:]		// clusterId->[object ids]
 
 	private UIStatusBar stat	// status bar to indicate current information / progress
+	
+	
 	
 	
 	/**
@@ -122,14 +90,25 @@ class CRTable {
 	}
 	
 	
+	/**
+	 * Initialize empty CRTable
+	 */
+	
+	private void init() {
+		noOfPubs = 0
+		crData.clear ()
+		crMatch.clear(false)
+		crMatch.clear(true)
+		clusterId2Objects.clear()
+	}
 	
 	/**
 	 * Update computation of percentiles for all CRs
-	 * Called after loading, deleting or merging of CRs 
+	 * Called after loading, deleting or merging of CRs
+	 * @param removed Data has been removed --> adjust clustering data structures
 	 */
 	
-	
-	private void updateData (boolean remove) {
+	private void updateData (boolean removed) {
 
 		duringUpdate = true		// mutex to avoid chart updates during computation
 		
@@ -137,7 +116,7 @@ class CRTable {
 		crId2Index.clear()
 		crData.eachWithIndex { CRType cr, Integer index -> crId2Index[cr.ID] = index }
 		
-		if (remove) {
+		if (removed) {
 			List id = crId2Index.keySet() as List
 			crMatch.restrict(id)
 			List delCluster = []	// list of empty clusters after deletion
@@ -259,7 +238,7 @@ class CRTable {
 		// useClustering = true => re-use first cluster component
 		clusterId2Objects = [:]
 		crData.eachWithIndex { CRType it, Integer idx -> 
-			crData[idx].CID2 = useClustering ? new Cluster (it.CID2.c1, it.ID) : new Cluster (it.ID, 1)
+			crData[idx].CID2 = useClustering ? new CRCluster (it.CID2.c1, it.ID) : new CRCluster (it.ID, 1)
 			crData[idx].CID_S = 1
 			clusterId2Objects[crData[idx].CID2] = [it.ID]
 		}
@@ -300,8 +279,8 @@ class CRTable {
 				CRType cr1 = crData[crId2Index[id1]]
 				CRType cr2 = crData[crId2Index[id2]]
 				
-				Cluster minId = (cr1.CID2.compareTo(cr2.CID2)<0) ? cr1.CID2 : cr2.CID2
-				Cluster maxId = (cr1.CID2.compareTo(cr2.CID2)>0) ? cr1.CID2 : cr2.CID2
+				CRCluster minId = (cr1.CID2.compareTo(cr2.CID2)<0) ? cr1.CID2 : cr2.CID2
+				CRCluster maxId = (cr1.CID2.compareTo(cr2.CID2)>0) ? cr1.CID2 : cr2.CID2
 				
 				boolean vol = (!useVol) || (cr1.VOL.equals (cr2.VOL)) // || (cr1.VOL.equals("")) || (cr2.VOL.equals(""))
 				boolean pag = (!usePag) || (cr1.PAG.equals (cr2.PAG)) // || (cr1.PAG.equals("")) || (cr2.PAG.equals(""))
@@ -383,11 +362,11 @@ class CRTable {
 	 * @param clusterIds
 	 * @return list of object ids
 	 */
-	private List<Integer> reInitObjects (Collection<Cluster> clusterIds) {
+	private List<Integer> reInitObjects (Collection<CRCluster> clusterIds) {
 		
 //		println "Clusterids ${clusterIds}"
 		List<Integer> objects = []
-		clusterIds.each { Cluster clid -> clusterId2Objects[clid].each { Integer it -> objects << it } }
+		clusterIds.each { CRCluster clid -> clusterId2Objects[clid].each { Integer it -> objects << it } }
 		objects.unique()
 //		println "Objects ${objects}"
 		
@@ -396,7 +375,7 @@ class CRTable {
 			int index = crId2Index[it]
 //				println "crId = ${it}, index = ${index}, cluster = ${crData[index].CID2}"
 			
-			crData[index].CID2 = new Cluster (crData[index].CID2.c1, it)
+			crData[index].CID2 = new CRCluster (crData[index].CID2.c1, it)
 			crData[index].CID_S = 1
 			clusterId2Objects[crData[index].CID2] = [it]
 //				println crData[index]
@@ -419,7 +398,7 @@ class CRTable {
 		undoPairs.each { Pair p -> crMatch.setMapping(p.id1, p.id2, p.s, true, false)}
 		
 		// get relevant cluster ids and remove 
-		Collection<Cluster> clusterIds = undoPairs.collect { Pair p -> crData[crId2Index[p.id1]].CID2 }
+		Collection<CRCluster> clusterIds = undoPairs.collect { Pair p -> crData[crId2Index[p.id1]].CID2 }
 		clusterIds.addAll(undoPairs.collect { Pair p -> crData[crId2Index[p.id2]].CID2 })
 
 		// remove last undo/able operation and re/cluster		
@@ -605,17 +584,14 @@ class CRTable {
 	 * Load CR table from CSV file
 	 * @param file
 	 */
-	public void loadCSV (File file) {
+	public void loadCSV (File file) throws AbortedException {
+		
+		this.abort = false	// can be changed by "wait dialog"
 		
 		String d = "${new Date()}: "
 		stat.setValue(d + "Loading CSV file ...", 0)
 
-		crData.clear ()
-		int noOfPubs = 0
-		
-		crMatch.clear(false)
-		crMatch.clear(true)
-		clusterId2Objects.clear()
+		init()
 		
 		Map<String, Integer> attrPos = [:]
 
@@ -632,6 +608,15 @@ class CRTable {
 //			println attrPos
 			while ((line = csv.readNext()) != null) {
 
+				if (this.abort) {
+					init()
+					this.updateData(false);
+					stat.setValue("${new Date()}: Loading CSV file aborted", 0)
+					this.abort = false
+					throw new AbortedException()
+				}
+				
+				
 				line.each { String it -> fileSizeRead += it.length()+3 }
 				stat.setValue ("Loading CSV file ...", (fileSizeRead*100.0/fileSize).intValue())
 				
@@ -645,7 +630,7 @@ class CRTable {
 				} 
 				cr.VI = 1	// visible
 				cr.CO = 0	// default color
-				cr.CID2 = new Cluster(cr.ID, 1)
+				cr.CID2 = new CRCluster(cr.ID, new Integer(1))
 				cr.CID_S = 1
 
 				["_SAMEAS":2, "_DIFFERENTTO":-2].each { String k, int v ->
@@ -661,7 +646,6 @@ class CRTable {
 			}
 		}
 		
-//		noOfCRClusters = crData.size()
 		this.updateData(false);
 		stat.setValue("${new Date()}: Loading CSV file done", 0)
 		
@@ -672,14 +656,16 @@ class CRTable {
 	 * Load data files from Web Of Science (WOS)
 	 * @param files array of files
 	 */
-	public void loadDataFiles (File[] files) throws FileTooLargeException {
+	public void loadDataFiles (File[] files, int maxCR) throws FileTooLargeException, AbortedException {
+		
+		this.abort = false	// can be changed by "wait dialog"
 		
 		String d = "${new Date()}: "
 		stat.setValue(d + "Loading WOS files ...", 0)
 		
 		boolean crBlock = false
-		this.noOfPubs = 0
-		crData.clear ()
+
+		init()
 		
 		int indexCount = 0
 		Map<Integer,  Map<String,Integer>> crDup = [:]	// year -> (crString -> id )
@@ -694,6 +680,16 @@ class CRTable {
 			long fileSizeRead = 0
 			
 			f.eachLine { String line ->
+				
+				
+				if (this.abort) {
+					this.init()
+					this.updateData(false);
+					stat.setValue("${new Date()}: Loading WOS files aborted", 0)
+					this.abort = false
+					throw new AbortedException()
+				}
+				
 				
 				fileSizeRead += line.length()+1
 				stat.setValue (d + "Loading WOS file ${idx+1} of ${files.length}", (fileSizeRead*100.0/fileSize).intValue())
@@ -770,13 +766,13 @@ class CRTable {
 						} else {
 							crDup[year][cr] = indexCount
 							
-							if (indexCount==100000) {
+							if ((maxCR>0) && (indexCount==maxCR)) {
 								this.updateData(false);
 								stat.setValue("${new Date()}: Loading WOS files aborted", 0)
 								throw new FileTooLargeException (indexCount);
 							}
 							
-							Cluster c = new Cluster (indexCount+1, 1)
+							CRCluster c = new CRCluster (indexCount+1, 1)
 							
 							crData << new CRType (
 								indexCount+1,
@@ -798,27 +794,6 @@ class CRTable {
 								0		// default color
 							)
 
-							
-//							crData << [
-//								ID:indexCount+1,
-//								CR:cr,
-//								AU:author,
-//								AU_F:firstname,
-//								AU_L:lastname,
-//								J:journal,
-//								J_N:journal_name,
-//								J_S:journal_short,
-//								N_CR:1,
-//								RPY:year,
-//								PAG:pagVol["P"],
-//								VOL:pagVol["V"],
-//								DOI:doi,
-//								CID2:c,	// each CR forms its own cluster 
-//								CID_S: 1,	// cluster size is 1 (by default)
-//								VI:1,		// is visible by default
-//								CO:0		// default color
-//								]
-							
 							clusterId2Objects[c] = [indexCount+1]
 							indexCount++
 						}

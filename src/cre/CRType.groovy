@@ -1,9 +1,6 @@
 package cre 
 
-import java.util.Map
-
-import groovy.transform.CompileStatic;
-import cre.CRTable.Cluster
+import groovy.transform.CompileStatic
 
 @CompileStatic
 public class CRType {
@@ -21,7 +18,7 @@ public class CRType {
 	String PAG
 	String VOL
 	String DOI
-	Cluster CID2
+	CRCluster CID2
 	int CID_S
 	int VI
 	int CO
@@ -59,7 +56,7 @@ public class CRType {
 
 	public CRType(Integer iD, String cR, String aU, String aU_F, String aU_L,
 			String j, String j_N, String j_S, int n_CR, Integer rPY,
-			String pAG, String vOL, String dOI, Cluster cID2, int cID_S,
+			String pAG, String vOL, String dOI, CRCluster cID2, int cID_S,
 			int vI, int cO) {
 			
 		super()

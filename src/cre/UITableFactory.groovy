@@ -1,22 +1,19 @@
 package cre 
 
 import groovy.swing.SwingBuilder
-import groovy.swing.factory.PropertyColumnFactory;
-import groovy.transform.CompileStatic;
+import groovy.transform.CompileStatic
 
 import java.awt.Color
 import java.awt.Component
 
 import javax.swing.*
-import javax.swing.RowFilter.ComparisonType;
+import javax.swing.RowFilter.ComparisonType
 import javax.swing.event.RowSorterEvent
 import javax.swing.event.RowSorterListener
 import javax.swing.table.DefaultTableCellRenderer
-import javax.swing.table.DefaultTableModel
 import javax.swing.table.TableModel
 import javax.swing.table.TableRowSorter
 
-import cre.CRTable.Cluster
 
 
 class UITableFactory {
@@ -48,7 +45,7 @@ class UITableFactory {
 				propertyColumn(header:CRType.attr.VOL, 			propertyName:'VOL', 		type: String, 	editable: false)
 				propertyColumn(header:CRType.attr.PAG, 			propertyName:'PAG', 		type: String, 	editable: false)
 				propertyColumn(header:CRType.attr.DOI, 			propertyName:'DOI', 		type: String, 	editable: false)
-				propertyColumn(header:CRType.attr.CID2, 		propertyName:'CID2', 		type: Cluster, 	editable: false)
+				propertyColumn(header:CRType.attr.CID2, 		propertyName:'CID2', 		type: CRCluster, 	editable: false)
 				propertyColumn(header:CRType.attr.CID_S, 		propertyName:'CID_S', 		type: Integer, 	editable: false)
 				
 			}
@@ -111,7 +108,7 @@ class UITableFactory {
 		tab.setDefaultRenderer(Integer.class, groupRowRenderer)
 		tab.setDefaultRenderer(Double.class, groupRowRenderer)
 		tab.setDefaultRenderer(Long.class, groupRowRenderer)
-		tab.setDefaultRenderer(Cluster.class, groupRowRenderer)
+		tab.setDefaultRenderer(CRCluster.class, groupRowRenderer)
 //		tab.getRowSorter().setSortKeys([new RowSorter.SortKey (0, SortOrder.ASCENDING)])
 	
 		return tab	

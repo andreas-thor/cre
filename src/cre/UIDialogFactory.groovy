@@ -1,47 +1,63 @@
-package cre 
+package cre
+
+import java.text.NumberFormat;
 
 import groovy.swing.SwingBuilder
-import cre.UIBind.UICol;
-import cre.UIBind.UIRange;
+import groovy.swing.factory.WidgetFactory;
 
 import javax.swing.*
 
+import cre.UIBind.UIRange
+
 class UIDialogFactory {
 
-	
-	
-	
-	static JDialog createWaitDlg (JFrame f) {
-	
+
+
+	/**
+	 * Wait dialog
+	 * @param f parent main frame
+	 * @param action Triggered action (defined as closure) when cancel button is clicked
+	 * @return
+	 */
+	static JDialog createWaitDlg (JFrame f, Closure action) {
+
 		SwingBuilder sb = new SwingBuilder()
 		JDialog waitDlg = sb.dialog(modal:true, title: "Waiting", defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE )
 		waitDlg.getContentPane().add (
-			sb.panel(border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
-				label(text:"Please Wait")
-			}
-		)
+				sb.panel(border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
+					tableLayout(cellpadding:10) {
+						tr { td (align:'center') { label(text:"Please Wait") } }
+						tr { td (align:'center') { button(preferredSize:[100, 25], text:'Cancel', actionPerformed: { action() }) } }
+					}
+				}
+				)
 		waitDlg.pack()
 		waitDlg.setLocationRelativeTo(f)
 		return waitDlg
 	}
-	
-	
 
-	static JDialog createInfoDlg (JFrame f, CRTable crTable) {
-		
-			SwingBuilder sb = new SwingBuilder()
-			JButton defBtn
-			JDialog infoDlg = sb.dialog(modal:true, title: "Info")
-			infoDlg.getContentPane().add (
+
+
+	/**
+	 * @param f parant main frame
+	 * @param info Information to show (list of [info label, info value] pairs) 
+	 * @return
+	 */
+	static JDialog createInfoDlg (JFrame f, Map<String, Integer> info) {
+
+		SwingBuilder sb = new SwingBuilder()
+		JButton defBtn
+		JDialog infoDlg = sb.dialog(modal:true, title: "Info")
+		infoDlg.getContentPane().add (
 				sb.panel(border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
-					
+
 					tableLayout(cellpadding:10) {
-						
+
 						tr {
 							td (align:'center') {
 								panel(border:BorderFactory.createTitledBorder("Cited References Dataset")) {
 									tableLayout (cellpadding: 3 ){
-										crTable.getInfo().each { l, value ->
+										info.each { l, value ->
 											tr {
 												td (align:'right') { label(text:"${l}:  ") }
 												td (colfill:true) { textField(columns: 10, text: value, editable: false ) }
@@ -49,7 +65,7 @@ class UIDialogFactory {
 										}
 									}
 								}
-							 }
+							}
 						}
 						tr {
 							td (align:'center') {
@@ -58,139 +74,160 @@ class UIDialogFactory {
 						}
 					}
 				}
-			)
-			infoDlg.getRootPane().setDefaultButton(defBtn)
-			infoDlg.pack()
-			infoDlg.setLocationRelativeTo(f)
-			return infoDlg
-		}
+				)
+		infoDlg.getRootPane().setDefaultButton(defBtn)
+		infoDlg.pack()
+		infoDlg.setLocationRelativeTo(f)
+		return infoDlg
+	}
+
 	
 	
-	
-	static JDialog createShowColDlg (JFrame f, UICol showCol, String title, Map items, Closure action) {
-		
+
+	static JDialog createSettingsDlg (JFrame f, Map<String, String> colAttr, byte[] colVal, Map<String, String> chartLine, byte[] lineVal, int maxCR, Closure action) {
+
 		SwingBuilder sb = new SwingBuilder()
 		JButton defBtn
-		JDialog colDialog = sb.dialog(modal:true, title: title)
-		colDialog.getContentPane().add (
+		JFormattedTextField tfMaxCR = new JFormattedTextField(NumberFormat.getNumberInstance())
+		tfMaxCR.setColumns(10)
+		tfMaxCR.setValue(maxCR)
+		
+		JDialog setDlg = sb.dialog(modal:true, title: "Settings")
+		setDlg.getContentPane().add (
 			sb.panel(border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
-				
-				tableLayout(id:'m', cellpadding:10) {
+			
+				tableLayout(id:'m', cellpadding:10) { 
 					
-					tr {
-						td (align:'center', colspan:2) {
-							panel(border:BorderFactory.createTitledBorder("Visibility")) {
-								tableLayout (cellpadding: 3 ){
-									items.eachWithIndex { name, label, idx ->
-										tr {
-											td { checkBox(id: name, text: label, selected: bind (name, source:showCol, mutual:true)) }
-										}
+					tr { td (align:'center', colspan:2) { 
+						tabbedPane(id: 'tabs', tabLayoutPolicy:JTabbedPane.SCROLL_TAB_LAYOUT) {
+							sb.panel(name: 'Columns', border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
+								tableLayout (id: 'columns', cellpadding: 0 ){
+									colAttr.eachWithIndex { name, label, idx -> tr { td { checkBox(id: name, text: label, selected: colVal[idx]==1) } } }
+								}
+							}
+							sb.panel(name: 'Lines', border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
+								tableLayout (id: 'lines', cellpadding: 0 ) {
+									chartLine.eachWithIndex { name, label, idx -> tr { td { checkBox(id: name, text: label, selected: lineVal[idx]==1) } } }
+								}
+							}
+							sb.panel(name: 'Miscellaneous', border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
+								tableLayout (id: 'misc', cellpadding: 0 ) {
+									tr {
+										td (align:'right') { label(text:"Maximum number of CRs:") }
+										td (align:'left') {  widget (tfMaxCR)  }
 									}
 								}
 							}
-						 }
-					}
+	
+						}
+					} }
+					
 					tr {
 						td (align:'right') {
 							defBtn = button(preferredSize:[100, 25], text:'Ok', actionPerformed: {
-								
-	//							JTable tab = (JTable)sb.tab
-								action()
-								colDialog.dispose()
+	
+								action (
+									((JPanel) sb.columns).getComponents().collect { JCheckBox cb ->  cb.isSelected()?1:0} as byte[],
+									((JPanel) sb.lines).getComponents().collect { JCheckBox cb ->  cb.isSelected()?1:0} as byte[],
+									(Integer) (tfMaxCR.getValue())
+									
+								)
+								setDlg.dispose()
 							})
 						}
 						td (align:'left') {
-							button(preferredSize:[100, 25], text:'Cancel', actionPerformed: { colDialog.dispose() })
+							button(preferredSize:[100, 25], text:'Cancel', actionPerformed: { setDlg.dispose() })
 						}
 					}
-				}
-	
+				
+				} 
 			}
 		)
-			
-		colDialog.getRootPane().setDefaultButton(defBtn)
-		colDialog.pack()
-		colDialog.setLocationRelativeTo(f)
-		return colDialog
-			
+		setDlg.getRootPane().setDefaultButton(defBtn)
+		setDlg.pack()
+		setDlg.setLocationRelativeTo(f)
+		return setDlg
+
 	}
 	
 	
 	
+	
+
+
+
 	static JDialog createIntRangeDlg (JFrame f, UIRange range, String title, String value, ArrayList maxRange, Closure dlgAction) {
-		
+
 		SwingBuilder sb = new SwingBuilder()
 		JButton defBtn
 		JDialog rangeDialog = sb.dialog(modal:true, title: title)
 		rangeDialog.getContentPane().add (
-			sb.panel(border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
-				
-				tableLayout(id:'m', cellpadding:10) {
-					
-					tr {
-						td (align:'center', colspan:2) {
-							panel(border:BorderFactory.createTitledBorder(value), preferredSize:[225, 95]) {
-								tableLayout (cellpadding: 3 ){
-									tr {
-										td (align:'right') { label(text:"From:") }
-										td (align:'left') { textField(id:'tfFrom', columns: 10, text: bind('from', source: range, mutual:true) ) }
-										td (colfill:true) { checkBox(text:'Minimum', actionPerformed: { e -> sb.tfFrom.enabled = !e.source.selected; if (e.source.selected) sb.tfFrom.text = maxRange[0] } ) }
-									}
-									tr {
-										td (align:'right') { label(text:"To:") }
-										td (align:'left') { textField(id:'tfTo', columns: 10, text: bind('to', source: range, mutual:true) ) }
-										td (colfill:true) { checkBox(text:'Maximum', actionPerformed: { e -> sb.tfTo.enabled = !e.source.selected; if (e.source.selected) sb.tfTo.text = maxRange[1] } ) }
+				sb.panel(border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
+
+					tableLayout(id:'m', cellpadding:10) {
+
+						tr {
+							td (align:'center', colspan:2) {
+								panel(border:BorderFactory.createTitledBorder(value), preferredSize:[225, 95]) {
+									tableLayout (cellpadding: 3 ){
+										tr {
+											td (align:'right') { label(text:"From:") }
+											td (align:'left') { textField(id:'tfFrom', columns: 10, text: bind('from', source: range, mutual:true) ) }
+											td (colfill:true) { checkBox(text:'Minimum', actionPerformed: { e -> sb.tfFrom.enabled = !e.source.selected; if (e.source.selected) sb.tfFrom.text = maxRange[0] } ) }
+										}
+										tr {
+											td (align:'right') { label(text:"To:") }
+											td (align:'left') { textField(id:'tfTo', columns: 10, text: bind('to', source: range, mutual:true) ) }
+											td (colfill:true) { checkBox(text:'Maximum', actionPerformed: { e -> sb.tfTo.enabled = !e.source.selected; if (e.source.selected) sb.tfTo.text = maxRange[1] } ) }
+										}
 									}
 								}
 							}
-						 }
-					}
-					tr {
-						td (align:'right') {
-							defBtn = button(preferredSize:[100, 25], text:'Ok', actionPerformed: {
-								range.with {
-									if (from.isInteger() && to.isInteger()) {
-										int min = from.toInteger()
-										int max = to.toInteger()
-										if (min<=max) {
-											rangeDialog.dispose()
-											dlgAction (min, max)
-										} else {
-											optionPane().showMessageDialog(null, "No valid range (${max} is smaller than ${min})!")
-										}
-									} else {
-										optionPane().showMessageDialog(null, "No valid values (${from},${to})")
-									}
-									
-								}
-							})
 						}
-						td (align:'left') {
-							button(preferredSize:[100, 25], text:'Cancel', actionPerformed: { rangeDialog.dispose() })
+						tr {
+							td (align:'right') {
+								defBtn = button(preferredSize:[100, 25], text:'Ok', actionPerformed: {
+									range.with {
+										if (from.isInteger() && to.isInteger()) {
+											int min = from.toInteger()
+											int max = to.toInteger()
+											if (min<=max) {
+												rangeDialog.dispose()
+												dlgAction (min, max)
+											} else {
+												optionPane().showMessageDialog(null, "No valid range (${max} is smaller than ${min})!")
+											}
+										} else {
+											optionPane().showMessageDialog(null, "No valid values (${from},${to})")
+										}
+									}
+								})
+							}
+							td (align:'left') {
+								button(preferredSize:[100, 25], text:'Cancel', actionPerformed: { rangeDialog.dispose() })
+							}
 						}
 					}
 				}
-			}
-		)
-		
+				)
+
 		rangeDialog.getRootPane().setDefaultButton(defBtn)
 		rangeDialog.pack()
 		rangeDialog.setLocationRelativeTo(f)
 		return rangeDialog
 	}
-	
 }
 
 
 
 //
 //	static JDialog createMatcherDlg (UIBind uibind, Closure dlgAction) {
-//		
+//
 //		/* Matcher configuration is currently NOT USED */
-//		
+//
 //		SwingBuilder sb = new SwingBuilder()
 //		JButton defBtn
-//		
+//
 //		def matcherDlg =  { n ->
 //			sb.panel(border:BorderFactory.createTitledBorder("Matcher #${n+1}")) {
 //				tableLayout (cellpadding: 3 ){
@@ -209,9 +246,9 @@ class UIDialogFactory {
 //				}
 //			}
 //		}
-//		
+//
 //		def getMatcher = { n -> // matcherDlg panel
-//	
+//
 //			uibind.uiMatchers[n].with {
 //				if (attribute == 'None') return []
 //				if ((threshold.isDouble()) && (threshold.toDouble()>=0) && (threshold.toDouble()<=1)) {
@@ -221,19 +258,19 @@ class UIDialogFactory {
 //					return null
 //				}
 //			}
-//			
-//		}
-//	
 //
-//		
+//		}
+//
+//
+//
 //		JDialog matchDialog = sb.dialog(modal:true, title: "Choose matcher configuration")
 //		matchDialog.metaClass.clickOK = { defBtn.doClick() }
 //
 //		matchDialog.getContentPane().add (
 //			sb.panel(border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
-//				
+//
 //				tableLayout(id:'m', cellpadding:10) {
-//					
+//
 //					tr {
 //						td (colspan:2) { matcherDlg(0) }
 //						td { /* matcherDlg(1)*/  }
@@ -259,13 +296,13 @@ class UIDialogFactory {
 //					tr {
 //						td (align:'right') {
 //							defBtn = button(preferredSize:[100, 25], text:'Ok', actionPerformed: {
-//								
+//
 //								uibind.uiMatcherOverall.with {
 //									if (!((globalThreshold.isDouble()) && (globalThreshold.toDouble()>=0) && (globalThreshold.toDouble()<=1))) {
 //										sb.optionPane().showMessageDialog(null, "No valid overall threshold ${globalThreshold} (must be a number between 0 and 1)!")
 //									}
 //								}
-//								
+//
 //								def matchers = (0..1).collect { getMatcher(it) }.findAll { it != [] }
 //								if (matchers.size()==0) {
 //									sb.optionPane().showMessageDialog(null, "No matcher specified!")
@@ -287,10 +324,57 @@ class UIDialogFactory {
 //					}
 //				}
 //			})
-//			
+//
 //			matchDialog.getRootPane().setDefaultButton(defBtn)
 //			matchDialog.pack()
 //			return matchDialog
-//		
+//
 //	}
-//	
+//
+
+//	static JDialog createShowColDlg (JFrame f, UICol showCol, String title, Map items, Closure action) {
+//
+//		SwingBuilder sb = new SwingBuilder()
+//		JButton defBtn
+//		JDialog colDialog = sb.dialog(modal:true, title: title)
+//		colDialog.getContentPane().add (
+//				sb.panel(border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
+//
+//					tableLayout(id:'m', cellpadding:10) {
+//
+//						tr {
+//							td (align:'center', colspan:2) {
+//								panel(border:BorderFactory.createTitledBorder("Visibility")) {
+//									tableLayout (cellpadding: 0 ){
+//										items.eachWithIndex { name, label, idx ->
+//											tr {
+//												td { checkBox(id: name, text: label, selected: bind (name, source:showCol, mutual:true)) }
+//											}
+//										}
+//									}
+//								}
+//							}
+//						}
+//						tr {
+//							td (align:'right') {
+//								defBtn = button(preferredSize:[100, 25], text:'Ok', actionPerformed: {
+//
+//									//							JTable tab = (JTable)sb.tab
+//									action()
+//									colDialog.dispose()
+//								})
+//							}
+//							td (align:'left') {
+//								button(preferredSize:[100, 25], text:'Cancel', actionPerformed: { colDialog.dispose() })
+//							}
+//						}
+//					}
+//				}
+//				)
+//
+//		colDialog.getRootPane().setDefaultButton(defBtn)
+//		colDialog.pack()
+//		colDialog.setLocationRelativeTo(f)
+//		return colDialog
+//	}
+
