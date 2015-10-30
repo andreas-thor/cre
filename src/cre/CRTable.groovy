@@ -1,18 +1,16 @@
 package cre 
 
-import groovy.beans.Bindable
+import au.com.bytecode.opencsv.CSVReader
+import au.com.bytecode.opencsv.CSVWriter
+import cre.CRMatch.Pair
 import groovy.transform.CompileStatic
+import groovy.beans.Bindable
 
 import java.util.regex.Matcher
-
-import javax.swing.SwingWorker
 
 import org.jfree.data.xy.DefaultXYDataset
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein
-import au.com.bytecode.opencsv.CSVReader
-import au.com.bytecode.opencsv.CSVWriter
-import cre.CRMatch.Pair
 
 
 /**
@@ -59,7 +57,7 @@ class CRTable {
 		
 
 
-	static Map<String, String> line = [
+	public static Map<String, String> line = [
 		'NCR_PER_YEAR' : 'Number of Cited References',
 		'DEV_FROM_MED' : 'Deviation from the Median'
 	]
@@ -94,7 +92,7 @@ class CRTable {
 	 * Initialize empty CRTable
 	 */
 	
-	private void init() {
+	public void init() {
 		noOfPubs = 0
 		crData.clear ()
 		crMatch.clear(false)
@@ -108,7 +106,7 @@ class CRTable {
 	 * @param removed Data has been removed --> adjust clustering data structures
 	 */
 	
-	private void updateData (boolean removed) {
+	private void updateData (boolean removed) throws OutOfMemoryError {
 
 		duringUpdate = true		// mutex to avoid chart updates during computation
 		
@@ -656,7 +654,7 @@ class CRTable {
 	 * Load data files from Web Of Science (WOS)
 	 * @param files array of files
 	 */
-	public void loadDataFiles (File[] files, int maxCR) throws FileTooLargeException, AbortedException {
+	public void loadDataFiles (File[] files, int maxCR) throws FileTooLargeException, AbortedException, OutOfMemoryError {
 		
 		this.abort = false	// can be changed by "wait dialog"
 		

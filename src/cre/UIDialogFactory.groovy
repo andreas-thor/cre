@@ -84,7 +84,7 @@ class UIDialogFactory {
 	
 	
 
-	static JDialog createSettingsDlg (JFrame f, Map<String, String> colAttr, byte[] colVal, Map<String, String> chartLine, byte[] lineVal, int maxCR, Closure action) {
+	static JDialog createSettingsDlg (JFrame f, byte[] colVal, byte[] lineVal, int maxCR, Closure action) {
 
 		SwingBuilder sb = new SwingBuilder()
 		JButton defBtn
@@ -102,12 +102,12 @@ class UIDialogFactory {
 						tabbedPane(id: 'tabs', tabLayoutPolicy:JTabbedPane.SCROLL_TAB_LAYOUT) {
 							sb.panel(name: 'Columns', border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
 								tableLayout (id: 'columns', cellpadding: 0 ){
-									colAttr.eachWithIndex { name, label, idx -> tr { td { checkBox(id: name, text: label, selected: colVal[idx]==1) } } }
+									CRType.attr.eachWithIndex { name, label, idx -> tr { td { checkBox(id: name, text: label, selected: colVal[idx]==1) } } }
 								}
 							}
 							sb.panel(name: 'Lines', border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
 								tableLayout (id: 'lines', cellpadding: 0 ) {
-									chartLine.eachWithIndex { name, label, idx -> tr { td { checkBox(id: name, text: label, selected: lineVal[idx]==1) } } }
+									CRTable.line.eachWithIndex { name, label, idx -> tr { td { checkBox(id: name, text: label, selected: lineVal[idx]==1) } } }
 								}
 							}
 							sb.panel(name: 'Miscellaneous', border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {

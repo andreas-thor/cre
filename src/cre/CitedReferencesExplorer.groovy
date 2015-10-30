@@ -50,12 +50,12 @@ SwingBuilder sb = new groovy.swing.SwingBuilder()
 UIStatusBar stat = new UIStatusBar()
 CRTable crTable = new CRTable(stat)
 JTable tab = UITableFactory.create(crTable)
-UIBind uibind = new UIBind(tab)
 ChartPanel chpan = UIChartPanelFactory.create(crTable, tab)
+UISettings uisetting
+UIBind uibind = new UIBind()
 
 JPanel matchpan = UIMatchPanelFactory.create(uibind.uiMatchConfig, crTable, tab, stat)
 JFrame mainFrame
-Preferences userPrefs = Preferences.userNodeForPackage( CitedReferencesExplorer.getClass() );
 
 
 
@@ -77,7 +77,7 @@ mainFrame = sb.frame(
 				}
 
 				JFileChooser dlg = new JFileChooser(dialogTitle: "Import WoS files", multiSelectionEnabled: true, fileSelectionMode: JFileChooser.FILES_ONLY)
-				dlg.setCurrentDirectory(uibind.getLastDirectory())
+				dlg.setCurrentDirectory(uisetting.getLastDirectory())
 				
 				if (dlg.showOpenDialog()==JFileChooser.APPROVE_OPTION) {
 					
@@ -87,13 +87,17 @@ mainFrame = sb.frame(
 							matchpan.visible = false
 							
 							try {
-								crTable.loadDataFiles (dlg.getSelectedFiles(), userPrefs.getInt("maxCR", 100000))
+								crTable.loadDataFiles (dlg.getSelectedFiles(), uisetting.getMaxCR())
 								wait.dispose()
 							} catch (FileTooLargeException e1) {
 								wait.dispose()
-								JOptionPane.showMessageDialog(null, "WoS file is too large; imported ${e1.numberOfCRs} CRs only." );
+								JOptionPane.showMessageDialog(null, "WoS file is too large; imported ${e1.numberOfCRs} CRs only.\nYou can change the maximum number of CRs for import in the File > Settings menu." );
 							} catch (AbortedException e2) {
 								wait.dispose()
+							} catch (OutOfMemoryError mem) {
+								wait.dispose()
+								crTable.init()
+								JOptionPane.showMessageDialog(null, "Out Of Memory Errror" );
 							} catch (Exception e3) {
 								wait.dispose()
 								JOptionPane.showMessageDialog(null, "Error while loading WoS file.\n(${e3.toString()})" );
@@ -101,9 +105,7 @@ mainFrame = sb.frame(
 							
 							UIDialogFactory.createInfoDlg(mainFrame, crTable.getInfo()).visible = true
 							(tab.getModel() as AbstractTableModel).fireTableDataChanged()
-							
-							uibind.setLastDirectory(dlg.getSelectedFiles()[0].getParentFile())
-							chpan.setDefaultDirectoryForSaveAs(uibind.getLastDirectory())
+							uisetting.setLastDirectory(dlg.getSelectedFiles()[0].getParentFile())
 						 }
 					}
 					
@@ -124,7 +126,7 @@ mainFrame = sb.frame(
 				
 				JFileChooser dlg = new JFileChooser(dialogTitle: "Open CSV files", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
 				dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
-				dlg.setCurrentDirectory(uibind.getLastDirectory())
+				dlg.setCurrentDirectory(uisetting.getLastDirectory())
 				
 				if (dlg.showOpenDialog()==JFileChooser.APPROVE_OPTION) {
 
@@ -141,9 +143,7 @@ mainFrame = sb.frame(
 							}
 							UIDialogFactory.createInfoDlg(mainFrame, crTable.getInfo()).visible = true
 							(tab.getModel() as AbstractTableModel).fireTableDataChanged()
-
-							uibind.setLastDirectory(dlg.getSelectedFile().getParentFile())
-							chpan.setDefaultDirectoryForSaveAs(uibind.getLastDirectory())
+							uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
 						}
 					}
 					Thread t = new Thread(runnable)
@@ -156,15 +156,14 @@ mainFrame = sb.frame(
 			menuItem(id: "menuSave", text: "Save as CSV file...", mnemonic: 'S', accelerator: KeyStroke.getKeyStroke("ctrl S"), actionPerformed: {
 				JFileChooser dlg = new JFileChooser(dialogTitle: "Save as CSV file", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
 				dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
-				dlg.setCurrentDirectory(uibind.getLastDirectory())
+				dlg.setCurrentDirectory(uisetting.getLastDirectory())
 
 				if (dlg.showSaveDialog() ==JFileChooser.APPROVE_OPTION) {
 					
 					Runnable runnable = new Runnable() {
 						public void run() {
 							crTable.save2CSV (dlg.getSelectedFile())
-							uibind.setLastDirectory(dlg.getSelectedFile().getParentFile())
-							chpan.setDefaultDirectoryForSaveAs(uibind.getLastDirectory())
+							uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
 						}
 					}
 					Thread t = new Thread(runnable)
@@ -177,40 +176,14 @@ mainFrame = sb.frame(
 			separator()
 			
 			menuItem(id:'settingsDlg', text: "Settings...", mnemonic: 'T', actionPerformed: {
-				
-				
-				
-				
 				UIDialogFactory.createSettingsDlg(mainFrame, 
-					CRType.attr, uibind.getAttributes(), 
-					crTable.line, userPrefs.getByteArray("lines", crTable.line.collect {k, v -> 1} as byte[]),
-					userPrefs.getInt("maxCR", 100000), 
+					uisetting.getAttributes(), uisetting.getLines(), uisetting.getMaxCR(), 
 					{ byte[] attributes, byte[] lines, int maxCR -> 
-				
-						// store and adjust visibile attribute columns
-//						userPrefs.putByteArray ("attributes", attributes) 
-//						int prefSize = tab.getWidth()/(attributes.inject (0) { int res, byte v -> res += v })
-//						attributes.eachWithIndex { byte v, int idx ->
-//							tab.getTableHeader().getColumnModel().getColumn(idx+2).with { // 2 = offset to ignore first two columns (VI, CO)
-//								setMaxWidth((v==1) ? 800 : 0)
-//								setMinWidth((v==1) ?  30 : 0)
-//								setPreferredWidth((v==1) ? prefSize : 0)
-//								setResizable(v==1)
-//							}
-//						}
-						uibind.setAttributes (attributes)
-						
-						// store and adjust visibile graph lines
-						userPrefs.putByteArray ("lines", lines)
-						chpan.getChart().getXYPlot().getRenderer().with {
-							lines.eachWithIndex { byte v, int idx -> setSeriesVisible (idx, new Boolean (v==1))
-							}
-						}
-						
-						userPrefs.putInt ("maxCR", maxCR)
+						uisetting.setAttributes (attributes)
+						uisetting.setLines (lines)
+						uisetting.setMaxCR (maxCR)
 					}
 				).visible = true
-					
 			})
 			
 			separator()
@@ -232,7 +205,7 @@ mainFrame = sb.frame(
 
 			
 			menuItem(text: "Filter by Cited Reference Year ...", mnemonic: 'Y', actionPerformed: {
-				UIDialogFactory.createIntRangeDlg(mainFrame, uibind.uiRanges[2], "Filter by Cited Reference Year", "Cited Reference Years", crTable.getMaxRangeYear(), { min, max -> chpan.getChart().getXYPlot()?.getDomainAxis()?.setRange(min-0.5, max+0.5) }).visible = true
+				UIDialogFactory.createIntRangeDlg(mainFrame, uisetting.uibind[2], "Filter by Cited Reference Year", "Cited Reference Years", crTable.getMaxRangeYear(), { min, max -> chpan.getChart().getXYPlot()?.getDomainAxis()?.setRange(min-0.5, max+0.5) }).visible = true
 			})
 
 			separator()
@@ -393,6 +366,7 @@ mainFrame = sb.frame(
 mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage("CRE32.png"));
 mainFrame.pack()
 mainFrame.setLocationRelativeTo(null)
+uisetting = new UISettings(tab, chpan)
 mainFrame.visible = true
 
 
