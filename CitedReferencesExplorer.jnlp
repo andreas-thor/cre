@@ -7,8 +7,7 @@
     <icon href="CRE64.png" width="64" height="64"/>
 	<icon kind="shortcut" href="CRE32.png" width="32" height="32"/>
 	<icon kind="shortcut" href="CRE64.png" width="64" height="64"/>
-	<offline-allowed/>
-    <shortcut online="false">
+    <shortcut online="true">
       <desktop/>
       <menu submenu="Cited References Explorer" />
     </shortcut>
