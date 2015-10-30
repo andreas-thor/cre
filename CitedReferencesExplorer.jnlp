@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="http://www1.hft-leipzig.de/thor/citationtest/"
+  href="CitedReferencesExplorer.jnlp">
+  <information>
+    <title>Cited References Explorer</title>
+    <vendor>Andreas Thor</vendor>
+    <icon href="CRE64.png" width="64" height="64"/>
+	<icon kind="shortcut" href="CRE32.png" width="32" height="32"/>
+	<icon kind="shortcut" href="CRE64.png" width="64" height="64"/>
+	<offline-allowed/>
+    <shortcut online="false">
+      <desktop/>
+      <menu submenu="Cited References Explorer" />
+    </shortcut>
+  </information>
+  <security>
+      <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.7+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="CitedReferencesExplorer.jar" main="true"/>
+  	<property name="swing.defaultlaf" value="com.sun.java.swing.plaf.windows.WindowsLookAndFeel"/>
+  
+  	<jar href="lib/bsf-2.4.0.jar"/>
+	<jar href="lib/groovy-all-2.3.7.jar"/>
+	<jar href="lib/ivy-2.3.0.jar"/>
+	<jar href="lib/ivy-2.3.0-sources.jar"/>
+	<jar href="lib/servlet-api-2.4.jar"/>
+	<jar href="lib/opencsv-2.3.jar"/>
+	<jar href="lib/simmetrics_jar_v1_6_2_d07_02_07.jar"/>
+	<jar href="lib/jchart/hamcrest-core-1.3.jar"/>
+	<jar href="lib/jchart/jcommon-1.0.23.jar"/>
+	<jar href="lib/jchart/jfreechart-1.0.19-experimental.jar"/>
+	<jar href="lib/jchart/jfreechart-1.0.19-swt.jar"/>
+	<jar href="lib/jchart/jfreechart-1.0.19.jar"/>
+	<jar href="lib/jchart/jfreesvg-2.0.jar"/>
+	<jar href="lib/jchart/junit-4.11.jar"/>
+	<jar href="lib/jchart/orsoncharts-1.4-eval-nofx.jar"/>
+	<jar href="lib/jchart/orsonpdf-1.6-eval.jar"/>
+	<jar href="lib/jchart/servlet.jar"/>
+	<jar href="lib/jchart/swtgraphics2d.jar"/>    
+  </resources>
+
+  <application-desc main-class="cre.CitedReferencesExplorer"/>
+</jnlp> 
