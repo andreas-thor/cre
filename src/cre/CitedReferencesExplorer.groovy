@@ -35,7 +35,7 @@ JFrame mainFrame
 
 
 mainFrame = sb.frame(
-	title:"CitedReferencesExplorer (Version 2015/10/30)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2015/11/07)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -44,7 +44,7 @@ mainFrame = sb.frame(
 	menuBar{ 
 		menu(text: "File", mnemonic: 'F') {
 			
-			menuItem(text: "Import WoS files...", mnemonic: 'I', accelerator: KeyStroke.getKeyStroke("ctrl I"), actionPerformed: {
+			menuItem(text: "Import WoS Files...", mnemonic: 'I', accelerator: KeyStroke.getKeyStroke("ctrl I"), actionPerformed: {
 				
 				if (crTable.crData.size()>0) {
 					int answer = JOptionPane.showConfirmDialog (null, "Save changes before opening WoS files?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
@@ -57,6 +57,7 @@ mainFrame = sb.frame(
 				if (dlg.showOpenDialog()==JFileChooser.APPROVE_OPTION) {
 					
 					JDialog wait = UIDialogFactory.createWaitDlg(mainFrame, { crTable.abort = true })
+					
 					Runnable runnable = new Runnable() { 
 						public void run() {
 							matchpan.visible = false
@@ -66,13 +67,13 @@ mainFrame = sb.frame(
 								wait.dispose()
 							} catch (FileTooLargeException e1) {
 								wait.dispose()
-								JOptionPane.showMessageDialog(null, "WoS file is too large; imported ${e1.numberOfCRs} CRs only.\nYou can change the maximum number of CRs for import in the File > Settings menu." );
+								JOptionPane.showMessageDialog(null, "You try to import too man cited references.\nImport was aborted after loading ${e1.numberOfCRs} Cited References.\nYou can change the maximum number in the File > Settings > Miscellaneous menu. " );
 							} catch (AbortedException e2) {
 								wait.dispose()
 							} catch (OutOfMemoryError mem) {
 								wait.dispose()
 								crTable.init()
-								JOptionPane.showMessageDialog(null, "Out Of Memory Errror" );
+								JOptionPane.showMessageDialog(null, "Out Of Memory Error" );
 							} catch (Exception e3) {
 								wait.dispose()
 								JOptionPane.showMessageDialog(null, "Error while loading WoS file.\n(${e3.toString()})" );
@@ -89,10 +90,53 @@ mainFrame = sb.frame(
 					wait.visible = true
 					
 					
+					
+					
+
+//					JDialog wait = UIDialogFactory.createWaitDlg(mainFrame, { crTable.abort = true })
+//					
+//					Runnable runnable = new Runnable() {
+//						public void run() {
+//							wait.visible = true
+//						 }
+//					}
+//					
+//					Thread t = new Thread(runnable)
+//					t.start()
+//					
+//					
+//					
+//					matchpan.visible = false
+//					
+//					try {
+//						crTable.loadDataFiles (dlg.getSelectedFiles(), uisetting.getMaxCR())
+//						wait.dispose()
+//					} catch (FileTooLargeException e1) {
+//						wait.dispose()
+//						JOptionPane.showMessageDialog(null, "WoS file is too large; imported ${e1.numberOfCRs} CRs only.\nYou can change the maximum number of CRs for import in the File > Settings menu." );
+//					} catch (AbortedException e2) {
+//						wait.dispose()
+//					} catch (OutOfMemoryError mem) {
+//						wait.dispose()
+//						crTable.init()
+//						JOptionPane.showMessageDialog(null, "Out Of Memory Error" );
+//					} catch (Exception e3) {
+//						wait.dispose()
+//						JOptionPane.showMessageDialog(null, "Error while loading WoS file.\n(${e3.toString()})" );
+//					}
+//					
+//					UIDialogFactory.createInfoDlg(mainFrame, crTable.getInfo()).visible = true
+//					(tab.getModel() as AbstractTableModel).fireTableDataChanged()
+//					uisetting.setLastDirectory(dlg.getSelectedFiles()[0].getParentFile())
+					
+
+					
+					
+					
 				}
 			})
 			
-			menuItem(text: "Open  CSV file...", mnemonic: 'O', accelerator: KeyStroke.getKeyStroke("ctrl O"), actionPerformed: {
+			menuItem(text: "Open CSV File...", mnemonic: 'O', accelerator: KeyStroke.getKeyStroke("ctrl O"), actionPerformed: {
 				
 				if (crTable.crData.size()>0) {
 					int answer = JOptionPane.showConfirmDialog (null, "Save changes before opening another CSV file?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
@@ -128,7 +172,7 @@ mainFrame = sb.frame(
 				}
 			})
 			
-			menuItem(id: "menuSave", text: "Save as CSV file...", mnemonic: 'S', accelerator: KeyStroke.getKeyStroke("ctrl S"), actionPerformed: {
+			menuItem(id: "menuSave", text: "Save as CSV File...", mnemonic: 'S', accelerator: KeyStroke.getKeyStroke("ctrl S"), actionPerformed: {
 				JFileChooser dlg = new JFileChooser(dialogTitle: "Save as CSV file", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
 				dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
 				dlg.setCurrentDirectory(uisetting.getLastDirectory())
@@ -152,10 +196,11 @@ mainFrame = sb.frame(
 			
 			menuItem(id:'settingsDlg', text: "Settings...", mnemonic: 'T', actionPerformed: {
 				UIDialogFactory.createSettingsDlg(mainFrame, 
-					uisetting.getAttributes(), uisetting.getLines(), uisetting.getMaxCR(), 
-					{ byte[] attributes, byte[] lines, int maxCR -> 
+					uisetting.getAttributes(), uisetting.getLines(), uisetting.getSeriesSizes(), uisetting.getMaxCR(), 
+					{ byte[] attributes, byte[] lines, byte[] seriesSizes, int maxCR -> 
 						uisetting.setAttributes (attributes)
 						uisetting.setLines (lines)
+						uisetting.setSeriesSizes (seriesSizes)
 						uisetting.setMaxCR (maxCR)
 					}
 				).visible = true
@@ -186,7 +231,7 @@ mainFrame = sb.frame(
 			separator()
 			
 			
-			menuItem(text: "Remove selected Cited References...", mnemonic: 'S', actionPerformed: {
+			menuItem(text: "Remove Selected Cited References...", mnemonic: 'S', actionPerformed: {
 
 				if (tab.getSelectedRowCount() == 0) {
 					JOptionPane.showMessageDialog(null, "No Cited References selected");
@@ -203,7 +248,7 @@ mainFrame = sb.frame(
 				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
 			})
 			
-			menuItem(text: "Remove by Number of cited references...", mnemonic: 'N', actionPerformed: {
+			menuItem(text: "Remove by Number of Cited References...", mnemonic: 'N', actionPerformed: {
 				UIDialogFactory.createIntRangeDlg(mainFrame, uibind.uiRanges[1], "Remove by Number of cited references", "Number of Cited References", crTable.getMaxRangeNCR(), { min, max -> crTable.removeByNCR(min, max) }).visible = true
 				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
 			})
@@ -212,7 +257,7 @@ mainFrame = sb.frame(
 		
 		menu(text: "Standardization", mnemonic: 'S') {
 			
-			menuItem(text: "Cluster equivalent Cited References...", mnemonic: 'C', actionPerformed: {
+			menuItem(text: "Cluster Equivalent Cited References...", mnemonic: 'C', actionPerformed: {
 					
 				Runnable runnable = new Runnable() {
 					public void run() {
@@ -226,7 +271,7 @@ mainFrame = sb.frame(
 					
 			})
 			
-			menuItem(text: "Merge Cited References of the same cluster...", mnemonic: 'M', actionPerformed: {
+			menuItem(text: "Merge Clustered Cited References...", mnemonic: 'M', actionPerformed: {
 				
 				long toDelete = crTable.crData.size()-crTable.clusterId2Objects.keySet().size()
 				if (toDelete == 0) {

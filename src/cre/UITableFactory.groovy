@@ -5,6 +5,7 @@ import groovy.transform.CompileStatic
 
 import java.awt.Color
 import java.awt.Component
+import java.text.DecimalFormat
 
 import javax.swing.*
 import javax.swing.RowFilter.ComparisonType
@@ -20,7 +21,7 @@ class UITableFactory {
 
 	
 	public static final Map<String, Integer> columns = ['VI':0, 'CO':1, 'RPY':4, 'N_CR':5]
-
+	private static final DecimalFormat formatter = new DecimalFormat( "###.00%" );
 	
 	private static JTable init(CRTable crTable) {
 		JTable tab = new SwingBuilder().table (id:'tab') {
@@ -66,6 +67,7 @@ class UITableFactory {
 		tab.setRowSorter(tsort);
 
 		
+		
 		/*
 		 * Recompute background color for all visible rows after re-sorting
 		 * Alternating background color based on groups of equivalent values
@@ -95,10 +97,15 @@ class UITableFactory {
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
 			{
+				
+				if ((column==6) && (value instanceof Double)) value = formatter.format((Number)value);
+				
 				Color gColor = ((TableModel)table.getModel()).getValueAt(table.convertRowIndexToModel(row), columns['CO']) == 0 ? UIManager.getColor("Table.background") : Color.LIGHT_GRAY
 				final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 				c.setBackground(isSelected ? UIManager.getColor("Table.selectionBackground") : gColor);
 //				c.setForeground(isSelected ? UIManager.getColor("Table.selectionForeground") : UIManager.getColor("Table.foreground"))
+				
+				
 				return c;
 			}
 		}
@@ -111,7 +118,28 @@ class UITableFactory {
 		tab.setDefaultRenderer(CRCluster.class, groupRowRenderer)
 //		tab.getRowSorter().setSortKeys([new RowSorter.SortKey (0, SortOrder.ASCENDING)])
 	
+//		tab.getColumnModel().getColumn(6).setCellRenderer(new PercentFormatRenderer());
+		
+		
 		return tab	
 	}
+	
+//	static class PercentFormatRenderer extends DefaultTableCellRenderer {
+//		
+//   
+//		public Component getTableCellRendererComponent(
+//		   JTable table, Object value, boolean isSelected,
+//		   boolean hasFocus, int row, int column) {
+//   
+//		   // First format the cell value as required
+//   
+//		   value = formatter.format((Number)value);
+//   
+//			  // And pass it on to parent class
+//   
+//		   return super.getTableCellRendererComponent(
+//			  table, value, isSelected, hasFocus, row, column );
+//		}
+//	 }
 	
 }

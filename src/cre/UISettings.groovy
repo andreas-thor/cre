@@ -1,8 +1,10 @@
 package cre 
 
-import groovy.beans.Bindable
 import groovy.transform.CompileStatic
 
+import java.awt.BasicStroke
+import java.awt.geom.Ellipse2D
+import java.awt.geom.Rectangle2D
 import java.util.prefs.Preferences
 
 import javax.swing.JTable
@@ -23,6 +25,7 @@ class UISettings {
 	private ChartPanel chpan
 	private byte[] attributes
 	private byte[] lines
+	private byte[] seriesSizes
 	private File lastFileDir
 	private int maxCR
 	
@@ -33,10 +36,13 @@ class UISettings {
 		userPrefs = Preferences.userNodeForPackage( CitedReferencesExplorer.getClass() )
 		setAttributes(userPrefs.getByteArray("attributes", CRType.attr.collect {k, v -> 1} as byte[]))
 		setLines(userPrefs.getByteArray("lines", CRTable.line.collect {k, v -> 1} as byte[]))
+		setSeriesSizes(userPrefs.getByteArray("seriesSizes", ([6,3] as byte[])))
 		setLastDirectory(new File (userPrefs.get("lastFileDir", "")))
 		setMaxCR(userPrefs.getInt("maxCR", 100000))
 	}
 	
+	
+
 	
 	public byte[] getAttributes () {
 		return attributes
@@ -70,6 +76,25 @@ class UISettings {
 		chpan.getChart().getXYPlot().getRenderer().with {
 			lines.eachWithIndex { byte v, int idx -> setSeriesVisible (idx, new Boolean (v==1)) }
 		}
+	}
+	
+	
+	public byte[] getSeriesSizes () {
+		return seriesSizes
+	}
+	
+	public void setSeriesSizes (byte[] seriesSizes) {
+		this.seriesSizes = seriesSizes
+		userPrefs.putByteArray ("seriesSizes", seriesSizes)
+		
+		// adjust line sizes in the chart
+		chpan.getChart().getXYPlot().getRenderer().with {
+				setSeriesShape(0, new Rectangle2D.Double(-seriesSizes[1]/2,-seriesSizes[1]/2,seriesSizes[1],seriesSizes[1]))
+				setSeriesStroke(0, new BasicStroke(seriesSizes[0]))
+				setSeriesShape(1, new Ellipse2D.Double(-seriesSizes[1]/2,-seriesSizes[1]/2,seriesSizes[1],seriesSizes[1]))
+				setSeriesStroke(1, new BasicStroke(seriesSizes[0]))
+		}
+		
 	}
 	
 	

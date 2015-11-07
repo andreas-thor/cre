@@ -6,7 +6,13 @@ import cre.CRMatch.Pair
 import groovy.transform.CompileStatic
 import groovy.beans.Bindable
 
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.PreparedStatement
+import java.sql.ResultSet
 import java.util.regex.Matcher
+
+import javax.swing.JLabel
 
 import org.jfree.data.xy.DefaultXYDataset
 
@@ -37,22 +43,6 @@ class CRTable {
 	public class AbortedException extends Exception { }
 		
 	
-
-	
-//	@CompileStatic
-//	class Task extends SwingWorker<Void, Void> {
-//
-//		Task () {
-//			
-//		}
-//		
-//		@Override 
-//		protected Void doInBackground() throws Exception {
-//			// TODO Auto-generated method stub
-//			return null;
-//		}
-//		
-//	}
 	
 		
 
@@ -63,13 +53,14 @@ class CRTable {
 	]
 	
 	@Bindable DefaultXYDataset ds  = new DefaultXYDataset()
-	@Bindable List<CRType> crData = []	// all CR data
+	@Bindable List<CRType> crData = new ArrayList<CRType>()	// all CR data
 	
 	boolean duringUpdate = false
 	boolean abort = false
 	
 	private long noOfPubs = 0
-	private Map<Integer, Integer> sumPerYear = [:]	// year -> sum of CRs
+	private Map<Integer, Integer> sumPerYear = [:]	// year -> sum of CRs (also for years without any CR)
+	private Map<Integer, Integer> crPerYear = [:]	// year -> number of CRs (<0, i.e., only years with >=1 CR are in the map)
 	
 	private CRMatch crMatch = new CRMatch()
 	private Map<Integer, Integer> crId2Index = [:]			// object Id -> index in crData list
@@ -128,13 +119,24 @@ class CRTable {
 		}
 		
 		
-		// compute PERC_YR and PERC_ALL
+		// Determine number of CRs and sum of citations per year
+		crPerYear = [:]
 		sumPerYear = [:]
-		crData.each { CRType it -> sumPerYear[it.RPY] = (sumPerYear[it.RPY]?:0) + it.N_CR }
+		crData.each { CRType it ->
+			crPerYear[it.RPY] = (crPerYear[it.RPY]?:0) + 1
+			sumPerYear[it.RPY] = (sumPerYear[it.RPY]?:0) + it.N_CR 
+		}
+		// "fill" sumPerYear with zeros for missing years for "smoother" chart lines
+		(crPerYear.keySet().min()..crPerYear.keySet().max()).each { sumPerYear[it] = sumPerYear[it]?:0 }	 
+		
+		
+		// compute PERC_YR and PERC_ALL
 		Integer sum = (Integer) sumPerYear.inject (0) { Integer r, Integer k, Integer v -> r+v }
 		crData.each { CRType it ->
-			it.PERC_YR  = Math.round (10000*(it.N_CR as float)/sumPerYear[it.RPY])/100f
-			it.PERC_ALL = Math.round (10000*(it.N_CR as float)/sum)/100f
+			it.PERC_YR  = ((it.N_CR as float)/sumPerYear[it.RPY])
+			it.PERC_ALL = ((it.N_CR as float)/sum)
+//			it.PERC_YR  = Math.round (10000*(it.N_CR as float)/sumPerYear[it.RPY])/100f
+//			it.PERC_ALL = Math.round (10000*(it.N_CR as float)/sum)/100f
 		}
 
 		// generate data rows for chart
@@ -456,7 +458,7 @@ class CRTable {
 			"Number of Cited References": crData.size(), 
 			"Number of Cited References (shown)": crData.findAll { CRType it -> it.VI==1}.size() , 
 			"Number of Cited References Clusters": clusterId2Objects.keySet().size(), 
-			"Number of different Years": sumPerYear.size(), 
+			"Number of different Cited References Years": crPerYear.size(), 
 			"Minimal Cited References Year": years[0], 
 			"Maximal Cited References Year": years[1],
 			"Number of Citing Publications": noOfPubs
@@ -480,9 +482,24 @@ class CRTable {
 	 * @param id
 	 */
 	public void remove (List<Integer> idx) {
-		def crIdsToDelete = idx.collect { Integer it -> crData[it].ID }
-		crData.removeAll { (crIdsToDelete.contains(it.ID)) }
+
+//		println System.currentTimeMillis()
+//		def crIdsToDelete = idx.collect { Integer it -> crData[it].ID }
+//		println System.currentTimeMillis()
+//		crData.removeAll { (crIdsToDelete.contains(it.ID)) }
+//		println System.currentTimeMillis()
+//		updateData(true)
+//		println System.currentTimeMillis()
+		
+		
+		println System.currentTimeMillis()
+		List<CRType> todel = idx.collect { crData[it] }
+		println System.currentTimeMillis()
+		crData.removeAll ( todel )
+		println System.currentTimeMillis()
 		updateData(true)
+		println System.currentTimeMillis()
+
 	}
 	
 
@@ -672,14 +689,22 @@ class CRTable {
 		Matcher matchPageVolumes = "" =~ "([PV])([0-9]+)"
 		Matcher matchDOI = "" =~ ".*DOI (10\\.[^/]+/ *[^ ,]+).*"
 		
+		
+//		long[] timeMarks = [0,0,0,0,0,0]
+//		long[] timeDiffs = [0,0,0,0,0]
+//		long timeStart = System.currentTimeMillis()
+		int stepCount = 0
+		int stepSize = 5
+		
 		files.eachWithIndex { File f, int idx ->
 
-			long fileSize = f.length()
+			int fileSizeStep = (int) (f.length()*stepSize/100)
 			long fileSizeRead = 0
 			
-			f.eachLine { String line ->
-				
-				
+			BufferedReader br = new BufferedReader(new FileReader(f)) 
+			String line;
+			while ((line = br.readLine()) != null) {
+			
 				if (this.abort) {
 					this.init()
 					this.updateData(false);
@@ -690,9 +715,11 @@ class CRTable {
 				
 				
 				fileSizeRead += line.length()+1
-				stat.setValue (d + "Loading WOS file ${idx+1} of ${files.length}", (fileSizeRead*100.0/fileSize).intValue())
+				if (stepCount*fileSizeStep < fileSizeRead) {
+					stat.setValue (d + "Loading WOS file ${idx+1} of ${files.length}", stepCount*stepSize)
+					stepCount++
+				}
 				
-//				if (((counter++)%1000) == 0) println "import ${counter}"
 				
 				if (!line.startsWith("   ")) crBlock = false
 				
@@ -700,11 +727,18 @@ class CRTable {
 				
 				if (line.startsWith("CR ") || (line.startsWith("   ") && crBlock)) {
 					crBlock = true
+					
+					
 					String cr = line[3..-1]
 					String[] crsplit = cr.split (",", 3)
 					
 					String yearS = crsplit.length > 1 ? crsplit[1].trim() : ""
 					if (yearS.isNumber()) {
+						
+//						for (int i=1; i<timeMarks.length; i++) {
+//							timeDiffs[i-1] += timeMarks[i]-timeMarks[i-1]
+//						}
+//						timeMarks[0] = System.currentTimeMillis()
 						
 						Integer year = yearS.toInteger()
 						String author = crsplit[0].trim()
@@ -724,6 +758,8 @@ class CRTable {
 							}
 						}
 						
+//						timeMarks[1] = System.currentTimeMillis()
+						
 						// process all other authors
 						if (lastname == null) {
 							matchAuthor.reset(author)
@@ -734,11 +770,15 @@ class CRTable {
 							}
 						}
 							
+//						timeMarks[2] = System.currentTimeMillis()
+						
 						// process all journals
 						String journal = crsplit.length > 2 ? crsplit[2].trim() : ""
 						String journal_name = journal.split(",")[0]
 						def String[] split = journal_name.split(" ")
 						String journal_short = (split.size()==1) ? split[0] : split.inject("") { x, y -> x + ((y.length()>0) ? y[0] : "") }
+						
+//						timeMarks[3] = System.currentTimeMillis()
 						
 						// find Volume and Pages and DOI
 						Map pagVol = ["P":"","V":""]
@@ -755,6 +795,9 @@ class CRTable {
 								doi = m[1].replaceAll("  ","").toUpperCase()
 							}
 						} 
+						
+//						timeMarks[4] = System.currentTimeMillis()
+
 						
 						// if CR already in database: increase N_CR by 1; else add new record						
 						if (crDup[year] == null) crDup[year] = [:]
@@ -795,11 +838,24 @@ class CRTable {
 							clusterId2Objects[c] = [indexCount+1]
 							indexCount++
 						}
+						
+//						timeMarks[5] = System.currentTimeMillis()
 					}
 				}
 			}
 		}
 
+		
+//		long timeEnd = System.currentTimeMillis()
+//		long overall = timeEnd-timeStart
+//		println "Overall: ${overall}"
+//		for (int i=0; i<timeDiffs.length; i++) {
+//			long percent = (long) (timeDiffs[i]*100 / overall)
+//			println "${i} : ${percent}%"
+//		}
+//		
+//		println indexCount
+		
 		this.updateData(false);
 		stat.setValue("${new Date()}: Loading WOS files done", 0)
 	}

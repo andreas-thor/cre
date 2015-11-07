@@ -14,7 +14,7 @@
 	<property name="lib.dir" value="./lib/"/>
 	<property name="deploy.dir" value="H:/www1_thor/citationtest"/>
 
-
+	<!-- clean,create_jws_jar,create_fat_jar,sign,deploy -->
 	<target name="all" depends="clean,create_jws_jar,create_fat_jar,sign,deploy"></target>
 
 	<target name="clean">

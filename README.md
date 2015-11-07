@@ -4,18 +4,21 @@
 * discuss start process (java web start vs. jar vs. bat vs. exe vs. ...)
 
 
-##UPDATE 10/30/2015
+##UPDATE 2015/11/07
+
+
+##UPDATE 2015/10/30
 * revision of program settings (re-arranged in settings dialog, stored for next program start)
 * maximum number of CRs for import can be set (0=infinite)
 * "please wait" dialog has "cancel" button 
 
-##UPDATES 10/20/2015
+##UPDATES 2015/10/20
 * Some classes are annotated as @CompileStatic for performance improvements
 * Generated ant file and jnlp file for web starter deployment
 * Removed matcher dialog
 * Dialog windows centered relative to main window 
 
-##UPDATES 10/15/2015
+##UPDATES 2015/10/15
 * Window position after start: center
 * Name changed to CitedReferencesExplorer
 * Dialog to save data before opening WoS / CSV file
@@ -33,4 +36,3 @@ In other words: The first component x reflects the result of a coarse-grained cl
 When sorting by clusterId, CRs with different clusterIds sharing the same first component are close together which is helpful for manual inspection.
  
  
-

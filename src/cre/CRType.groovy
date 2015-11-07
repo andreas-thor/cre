@@ -1,9 +1,11 @@
 package cre 
 
+import java.io.Serializable;
+
 import groovy.transform.CompileStatic
 
 @CompileStatic
-public class CRType {
+public class CRType /* implements Comparable<CRType>*/ {
 
 	Integer ID
 	String CR
@@ -37,11 +39,11 @@ public class CRType {
 		'PERC_YR': 'Percent in Year',
 		'PERC_ALL': 'Percent over all Years',
 		'AU': 'Author',
-		'AU_L': 'Last name',
-		'AU_F': 'First name initial',
+		'AU_L': 'Last Name',
+		'AU_F': 'First Name Initial',
 		'J': 'Source',
 		'J_N': 'Source Title',
-		'J_S': 'Title short',
+		'J_S': 'Title Short',
 		'VOL' : 'Volume',
 		'PAG' : 'Page',
 		'DOI' : 'DOI',
@@ -76,9 +78,25 @@ public class CRType {
 		CID2 = cID2
 		CID_S = cID_S
 		VI = vI
-		CO = cO
+		CO = cO 
 	}
 	
 	
+//		@Override
+//		public int compareTo(CRType o) {
+//			return ID-o.ID
+//		}
+//		
+//		@Override
+//		public boolean equals(Object obj) {
+//			return ID.equals(((CRType)obj).ID)
+//		}
+//		
+//		@Override
+//		public int hashCode() {
+//			return ID
+//		}
+		
+		
 
 }

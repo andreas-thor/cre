@@ -1,9 +1,9 @@
 package cre
 
-import java.text.NumberFormat;
-
 import groovy.swing.SwingBuilder
-import groovy.swing.factory.WidgetFactory;
+
+import java.awt.Component
+import java.text.NumberFormat
 
 import javax.swing.*
 
@@ -82,39 +82,65 @@ class UIDialogFactory {
 	}
 
 	
+	private static JFormattedTextField createTF (int value) {
+		JFormattedTextField result = new JFormattedTextField(NumberFormat.getNumberInstance())
+		result.setColumns(10)
+		result.setValue(value)
+		result
+	}
 	
 
-	static JDialog createSettingsDlg (JFrame f, byte[] colVal, byte[] lineVal, int maxCR, Closure action) {
+	static JDialog createSettingsDlg (JFrame f, byte[] colVal, byte[] lineVal, byte[] seriesSize, int maxCR, Closure action) {
 
 		SwingBuilder sb = new SwingBuilder()
 		JButton defBtn
-		JFormattedTextField tfMaxCR = new JFormattedTextField(NumberFormat.getNumberInstance())
-		tfMaxCR.setColumns(10)
-		tfMaxCR.setValue(maxCR)
-		
 		JDialog setDlg = sb.dialog(modal:true, title: "Settings")
 		setDlg.getContentPane().add (
-			sb.panel(border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
+			sb.panel(border: BorderFactory.createEmptyBorder(3, 3, 3, 3)) {
 			
 				tableLayout(id:'m', cellpadding:10) { 
-					
 					tr { td (align:'center', colspan:2) { 
+
 						tabbedPane(id: 'tabs', tabLayoutPolicy:JTabbedPane.SCROLL_TAB_LAYOUT) {
-							sb.panel(name: 'Columns', border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
-								tableLayout (id: 'columns', cellpadding: 0 ){
-									CRType.attr.eachWithIndex { name, label, idx -> tr { td { checkBox(id: name, text: label, selected: colVal[idx]==1) } } }
+							sb.panel(name: 'Table', border: BorderFactory.createEmptyBorder(3, 3, 3, 3)) {
+								sb.panel (border: BorderFactory.createTitledBorder("Show Columns in Table")) {
+									tableLayout (id: 'columns', cellpadding: 0 ){
+										CRType.attr.eachWithIndex { name, label, idx -> tr { td { checkBox(id: name, text: label, selected: colVal[idx]==1) } } }
+									}
 								}
 							}
-							sb.panel(name: 'Lines', border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
-								tableLayout (id: 'lines', cellpadding: 0 ) {
-									CRTable.line.eachWithIndex { name, label, idx -> tr { td { checkBox(id: name, text: label, selected: lineVal[idx]==1) } } }
+						
+							sb.panel(name: 'Chart', border: BorderFactory.createEmptyBorder(3, 3, 3, 3)) {
+								
+								tableLayout(cellpadding:0) {
+									tr { td (align:'left') { sb.panel (border: BorderFactory.createTitledBorder("Show Lines in Chart")) {
+										tableLayout (id: 'lines', cellpadding: 0 ) { 
+											CRTable.line.eachWithIndex { name, label, idx -> tr { td { checkBox(id: name, text: label, selected: lineVal[idx]==1) } } }
+										}
+									} } }
+									
+									
+								
+									tr { td (align:'left') { sb.panel (border: BorderFactory.createTitledBorder("Size of Chart Lines")) {
+										tableLayout (id: 'seriesSizes', cellpadding: 0 ) {
+											tr {
+												td (align:'right') { label(text:"Stroke Size:  ") }
+												td (align:'left') {  widget (createTF(seriesSize[0]))  }
+											}
+											tr {
+												td (align:'right') { label(text:"Shape Size:  ") }
+												td (align:'left') {  widget (createTF(seriesSize[1]))  }
+											}
+										}
+									}}}
 								}
 							}
+							
 							sb.panel(name: 'Miscellaneous', border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
-								tableLayout (id: 'misc', cellpadding: 0 ) {
+								tableLayout (id: 'maxcr', cellpadding: 0 ) {
 									tr {
-										td (align:'right') { label(text:"Maximum number of CRs:") }
-										td (align:'left') {  widget (tfMaxCR)  }
+										td (align:'right') { label(text:"Maximum Number of Cited References to be Imported:  ") }
+										td (align:'left') {  widget (createTF(maxCR))  }
 									}
 								}
 							}
@@ -125,12 +151,11 @@ class UIDialogFactory {
 					tr {
 						td (align:'right') {
 							defBtn = button(preferredSize:[100, 25], text:'Ok', actionPerformed: {
-	
 								action (
 									((JPanel) sb.columns).getComponents().collect { JCheckBox cb ->  cb.isSelected()?1:0} as byte[],
 									((JPanel) sb.lines).getComponents().collect { JCheckBox cb ->  cb.isSelected()?1:0} as byte[],
-									(Integer) (tfMaxCR.getValue())
-									
+									(0..1).collect { (Integer) ((JPanel) sb.seriesSizes).getComponents()[2*it+1].getValue() } as byte[], 
+									(Integer) (((JPanel) sb.maxcr).getComponents())[1].getValue()
 								)
 								setDlg.dispose()
 							})

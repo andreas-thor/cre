@@ -39,6 +39,7 @@ class UIChartPanelFactory {
 
 		JFreeChart chart = ChartFactory.createXYLineChart("", "Cited Reference Year", "Cited References", crTable.ds )
 		
+		
 		chart.getLegend().setFrame(BlockBorder.NONE)
 		chart.getXYPlot().with {
 		
@@ -62,8 +63,8 @@ class UIChartPanelFactory {
 		
 			// layout for data rows
 			getRenderer().with {
-				double shapeSize = 6
-				float strokeSize = 3;
+				double shapeSize = 0	// 6
+				float strokeSize = 1	// 3
 				setSeriesShape(0, new Rectangle2D.Double(-shapeSize/2,-shapeSize/2,shapeSize,shapeSize))
 				setSeriesStroke(0, new BasicStroke(strokeSize))
 				setSeriesShape(1, new Ellipse2D.Double(-shapeSize/2,-shapeSize/2,shapeSize,shapeSize))
