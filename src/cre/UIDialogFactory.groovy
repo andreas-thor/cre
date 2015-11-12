@@ -3,6 +3,7 @@ package cre
 import groovy.swing.SwingBuilder
 
 import java.awt.Component
+import java.text.Format
 import java.text.NumberFormat
 
 import javax.swing.*
@@ -176,6 +177,55 @@ class UIDialogFactory {
 	}
 	
 	
+	
+	static JDialog createThresholdDlg (JFrame f, UIRange range, String title, String value, ArrayList maxRange, Closure dlgAction) {
+		
+		NumberFormat percentFormat = NumberFormat.getNumberInstance()
+		percentFormat.setMinimumFractionDigits(1)
+		JFormattedTextField tval = new JFormattedTextField(percentFormat)
+		tval.setColumns(10)
+		tval.setValue(0)
+		
+		
+				SwingBuilder sb = new SwingBuilder()
+				JButton defBtn
+				JDialog threshDialog = sb.dialog(modal:true, title: title)
+				threshDialog.getContentPane().add (
+						sb.panel(border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
+		
+							tableLayout(id:'m', cellpadding:10) {
+		
+								tr {
+									td (align:'center', colspan:2) {
+										panel(border:BorderFactory.createTitledBorder(value), preferredSize:[225, 95]) {
+											tableLayout (cellpadding: 3 ){
+												tr {
+													td (align:'right') { comboBox(items:['<', '<=', '=', '>=', '>']) }
+													td (align:'left') { widget (tval) }
+												}
+											}
+										}
+									}
+								}
+								tr {
+									td (align:'right') {
+										defBtn = button(preferredSize:[100, 25], text:'Ok', actionPerformed: {
+											
+										})
+									}
+									td (align:'left') {
+										button(preferredSize:[100, 25], text:'Cancel', actionPerformed: { threshDialog.dispose() })
+									}
+								}
+							}
+						}
+						)
+		
+				threshDialog.getRootPane().setDefaultButton(defBtn)
+				threshDialog.pack()
+				threshDialog.setLocationRelativeTo(f)
+				return threshDialog
+			}
 	
 	
 

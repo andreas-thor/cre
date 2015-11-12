@@ -1,34 +1,35 @@
-package cre 
 
-import java.io.Serializable;
+
+
+package cre 
 
 import groovy.transform.CompileStatic
 
 @CompileStatic
 public class CRType /* implements Comparable<CRType>*/ {
 
-	Integer ID
-	String CR
-	String AU
-	String AU_F
-	String AU_L
-	String J
-	String J_N
-	String J_S
-	int N_CR
-	Integer RPY
-	String PAG
-	String VOL
-	String DOI
-	CRCluster CID2
-	int CID_S
-	int VI
-	int CO
+	int ID;
+	String CR;
+	String AU;
+	String AU_F;
+	String AU_L;
+	String J;
+	String J_N;
+	String J_S;
+	int N_CR;
+	int RPY;
+	String PAG;
+	String VOL;
+	String DOI;
+	CRCluster CID2;
+	int CID_S;
+	int VI;
+	int CO;
 	
-	Double PERC_YR
-	Double PERC_ALL
+	double PERC_YR;
+	double PERC_ALL;
 
-	String blockkey
+	String blockkey;
 
 	// Mapping of internal attribute names to labels
 	static Map<String, String> attr = [
@@ -56,8 +57,8 @@ public class CRType /* implements Comparable<CRType>*/ {
 	}
 
 
-	public CRType(Integer iD, String cR, String aU, String aU_F, String aU_L,
-			String j, String j_N, String j_S, int n_CR, Integer rPY,
+	public CRType(int iD, String cR, String aU, String aU_F, String aU_L,
+			String j, String j_N, String j_S, int n_CR, int rPY,
 			String pAG, String vOL, String dOI, CRCluster cID2, int cID_S,
 			int vI, int cO) {
 			
@@ -81,22 +82,5 @@ public class CRType /* implements Comparable<CRType>*/ {
 		CO = cO 
 	}
 	
-	
-//		@Override
-//		public int compareTo(CRType o) {
-//			return ID-o.ID
-//		}
-//		
-//		@Override
-//		public boolean equals(Object obj) {
-//			return ID.equals(((CRType)obj).ID)
-//		}
-//		
-//		@Override
-//		public int hashCode() {
-//			return ID
-//		}
-		
-		
 
 }

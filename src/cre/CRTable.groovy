@@ -63,7 +63,7 @@ class CRTable {
 	private Map<Integer, Integer> crPerYear = [:]	// year -> number of CRs (<0, i.e., only years with >=1 CR are in the map)
 	
 	private CRMatch crMatch = new CRMatch()
-	private Map<Integer, Integer> crId2Index = [:]			// object Id -> index in crData list
+	private Map<Integer, Integer> crId2Index = [:]						// object Id -> index in crData list
 	private Map<CRCluster, List<Integer>> clusterId2Objects = [:]		// clusterId->[object ids]
 
 	private UIStatusBar stat	// status bar to indicate current information / progress
@@ -99,23 +99,50 @@ class CRTable {
 	
 	private void updateData (boolean removed) throws OutOfMemoryError {
 
+		println "update Data"
+		println System.currentTimeMillis()
+		
 		duringUpdate = true		// mutex to avoid chart updates during computation
 		
 		// refresh mapping crId -> index
 		crId2Index.clear()
-		crData.eachWithIndex { CRType cr, Integer index -> crId2Index[cr.ID] = index }
+		crData.eachWithIndex { CRType cr, int index -> crId2Index[cr.ID] = index }
 		
+		println System.currentTimeMillis()
 		if (removed) {
+			println "removed"
+			println System.currentTimeMillis()
 			List id = crId2Index.keySet() as List
 			crMatch.restrict(id)
-			List delCluster = []	// list of empty clusters after deletion
-			clusterId2Objects.each { cid, objects ->
-				clusterId2Objects[cid].removeAll { !id.contains(it) }	// remove deleted CRs from cluster
-				if (clusterId2Objects[cid].size() == 0) {
-					delCluster << cid
+
+			println System.currentTimeMillis()
+			
+//			List delCluster = []	// list of empty clusters after deletion
+//			
+//			clusterId2Objects.each { cid, objects ->
+//				clusterId2Objects[cid].removeAll { !id.contains(it) }	// remove deleted CRs from cluster
+//				if (clusterId2Objects[cid].size() == 0) {
+//					delCluster << cid
+//				}
+//			}
+//			println System.currentTimeMillis()
+//			clusterId2Objects.keySet().removeAll { delCluster.contains(it) }	// remove empty clusters from index 
+			
+			
+			clusterId2Objects.clear()
+			crData.each { CRType cr ->
+				if (clusterId2Objects[cr.CID2] == null) { 
+					clusterId2Objects[cr.CID2] = []
 				}
+				clusterId2Objects[cr.CID2] << cr.ID
 			}
-			clusterId2Objects.keySet().removeAll { delCluster.contains(it) }	// remove empty clusters from index 
+			
+			crData.each { CRType cr ->
+				cr.CID_S = clusterId2Objects[cr.CID2].size()
+			}
+			
+			println System.currentTimeMillis()
+			println "removed done"
 		}
 		
 		
@@ -126,22 +153,32 @@ class CRTable {
 			crPerYear[it.RPY] = (crPerYear[it.RPY]?:0) + 1
 			sumPerYear[it.RPY] = (sumPerYear[it.RPY]?:0) + it.N_CR 
 		}
-		// "fill" sumPerYear with zeros for missing years for "smoother" chart lines
-		(crPerYear.keySet().min()..crPerYear.keySet().max()).each { sumPerYear[it] = sumPerYear[it]?:0 }	 
+
+		println System.currentTimeMillis()
 		
+		// "fill" sumPerYear with zeros for missing years for "smoother" chart lines
+		if (crPerYear.size() > 0) {
+			(crPerYear.keySet().min()..crPerYear.keySet().max()).each { sumPerYear[it] = sumPerYear[it]?:0 }
+		}	 
+		
+		println System.currentTimeMillis()
 		
 		// compute PERC_YR and PERC_ALL
-		Integer sum = (Integer) sumPerYear.inject (0) { Integer r, Integer k, Integer v -> r+v }
+		int sum = sumPerYear.inject (0) { int r, int k, int v -> r+v } as Integer
 		crData.each { CRType it ->
-			it.PERC_YR  = ((it.N_CR as float)/sumPerYear[it.RPY])
-			it.PERC_ALL = ((it.N_CR as float)/sum)
+			it.PERC_YR  = ((it.N_CR as double)/sumPerYear[it.RPY])
+			it.PERC_ALL = ((it.N_CR as double)/sum)
 //			it.PERC_YR  = Math.round (10000*(it.N_CR as float)/sumPerYear[it.RPY])/100f
 //			it.PERC_ALL = Math.round (10000*(it.N_CR as float)/sum)/100f
 		}
 
+		println System.currentTimeMillis()
+		
 		// generate data rows for chart
 		Map<Integer, Integer> NCRperYearMedian = [:]
 		sumPerYear.each { y, crs -> NCRperYearMedian[y] = crs - ((-2..+2).collect { sumPerYear[y+it]?:0 }.sort {it}[2]) }
+		
+		println System.currentTimeMillis()
 		
 		// generate chart lines
 		sumPerYear = sumPerYear.sort { it.key }
@@ -150,6 +187,9 @@ class CRTable {
 		ds.addSeries(line['DEV_FROM_MED'], [NCRperYearMedian.collect  { it.key }, NCRperYearMedian.collect  { it.value }] as double[][])
 		
 		duringUpdate = false
+		
+		println System.currentTimeMillis()
+		
 	}
 	
 	
@@ -478,28 +518,24 @@ class CRTable {
 	
 	
 	/**
-	 * Remove publications based on list of ids (e.g., selected by user in the table)
-	 * @param id
+	 * Remove publications based on list of indexes (e.g., selected by user in the table)
+	 * @param idx list of CR indexes
 	 */
 	public void remove (List<Integer> idx) {
 
-//		println System.currentTimeMillis()
-//		def crIdsToDelete = idx.collect { Integer it -> crData[it].ID }
-//		println System.currentTimeMillis()
-//		crData.removeAll { (crIdsToDelete.contains(it.ID)) }
-//		println System.currentTimeMillis()
-//		updateData(true)
-//		println System.currentTimeMillis()
+		println "remove"
+		println System.currentTimeMillis()
 		
-		
-		println System.currentTimeMillis()
-		List<CRType> todel = idx.collect { crData[it] }
-		println System.currentTimeMillis()
-		crData.removeAll ( todel )
-		println System.currentTimeMillis()
-		updateData(true)
-		println System.currentTimeMillis()
+		idx.sort()
+		Iterator crIt = crData.iterator()
+		int lastIdx = 0
+		idx.each { 
+			(lastIdx..it).each { crIt.next() }
+			crIt.remove()
+			lastIdx = it+1
+		}
 
+		updateData(true)
 	}
 	
 
@@ -509,6 +545,8 @@ class CRTable {
 	 * @param to
 	 */
 	public void removeByYear (int from, int to) {
+		println "removeByYear"
+		println System.currentTimeMillis()
 		crData.removeAll { CRType it -> (from <= it.RPY) && (it.RPY <= to) }
 		updateData(true)
 	}

@@ -76,6 +76,7 @@ mainFrame = sb.frame(
 								JOptionPane.showMessageDialog(null, "Out Of Memory Error" );
 							} catch (Exception e3) {
 								wait.dispose()
+								e3.printStackTrace()
 								JOptionPane.showMessageDialog(null, "Error while loading WoS file.\n(${e3.toString()})" );
 							}
 							
@@ -250,6 +251,11 @@ mainFrame = sb.frame(
 			
 			menuItem(text: "Remove by Number of Cited References...", mnemonic: 'N', actionPerformed: {
 				UIDialogFactory.createIntRangeDlg(mainFrame, uibind.uiRanges[1], "Remove by Number of cited references", "Number of Cited References", crTable.getMaxRangeNCR(), { min, max -> crTable.removeByNCR(min, max) }).visible = true
+				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
+			})
+
+			menuItem(text: "Remove by Percent in Year...", mnemonic: 'P', actionPerformed: {
+				UIDialogFactory.createThresholdDlg(mainFrame, uibind.uiRanges[1], "Remove by Number of cited references", "Number of Cited References", crTable.getMaxRangeNCR(), { min, max -> crTable.removeByNCR(min, max) }).visible = true
 				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
 			})
 

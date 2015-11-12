@@ -3,6 +3,11 @@
 ##ToDo
 * discuss start process (java web start vs. jar vs. bat vs. exe vs. ...)
 
+* remove by PERCENT YEAR threshold
+* adjust labels (done?)
+* remove CRs after clustering takes too long (restrict match ... rewrite Match/Pair as list of each CR???)
+* make filtering / removing more generic: right click on table header --> filter/remove --> dialog of type range (int value) or threshold(double value)
+
 
 ##UPDATE 2015/11/07
 
