@@ -63,7 +63,7 @@ mainFrame = sb.frame(
 							matchpan.visible = false
 							
 							try {
-								crTable.loadDataFiles (dlg.getSelectedFiles(), uisetting.getMaxCR())
+								crTable.loadDataFiles (dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange())
 								wait.dispose()
 							} catch (FileTooLargeException e1) {
 								wait.dispose()
@@ -197,12 +197,13 @@ mainFrame = sb.frame(
 			
 			menuItem(id:'settingsDlg', text: "Settings...", mnemonic: 'T', actionPerformed: {
 				UIDialogFactory.createSettingsDlg(mainFrame, 
-					uisetting.getAttributes(), uisetting.getLines(), uisetting.getSeriesSizes(), uisetting.getMaxCR(), 
-					{ byte[] attributes, byte[] lines, byte[] seriesSizes, int maxCR -> 
+					uisetting.getAttributes(), uisetting.getLines(), uisetting.getSeriesSizes(), uisetting.getMaxCR(), uisetting.getYearRange(), 
+					{ byte[] attributes, byte[] lines, byte[] seriesSizes, int maxCR, int[] yearRange -> 
 						uisetting.setAttributes (attributes)
 						uisetting.setLines (lines)
 						uisetting.setSeriesSizes (seriesSizes)
 						uisetting.setMaxCR (maxCR)
+						uisetting.setYearRange (yearRange)
 					}
 				).visible = true
 			})
@@ -255,7 +256,7 @@ mainFrame = sb.frame(
 			})
 
 			menuItem(text: "Remove by Percent in Year...", mnemonic: 'P', actionPerformed: {
-				UIDialogFactory.createThresholdDlg(mainFrame, uibind.uiRanges[1], "Remove by Number of cited references", "Number of Cited References", crTable.getMaxRangeNCR(), { min, max -> crTable.removeByNCR(min, max) }).visible = true
+				UIDialogFactory.createThresholdDlg(mainFrame, "Remove by Percent in Year", "Percent in Year", { comp, threshold -> crTable.removeByPercentYear (comp, threshold) }).visible = true
 				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
 			})
 

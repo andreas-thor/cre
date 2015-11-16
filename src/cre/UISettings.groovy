@@ -1,13 +1,17 @@
 package cre 
 
+import groovy.lang.Closure
+import groovy.swing.SwingBuilder
 import groovy.transform.CompileStatic
 
 import java.awt.BasicStroke
 import java.awt.geom.Ellipse2D
 import java.awt.geom.Rectangle2D
+import java.io.File
+import java.text.NumberFormat
 import java.util.prefs.Preferences
 
-import javax.swing.JTable
+import javax.swing.*
 
 import org.jfree.chart.ChartPanel
 
@@ -28,6 +32,8 @@ class UISettings {
 	private byte[] seriesSizes
 	private File lastFileDir
 	private int maxCR
+	private int[] yearRange
+	
 	
 	public UISettings(JTable tab, ChartPanel chpan) {
 		this.tab = tab
@@ -39,6 +45,7 @@ class UISettings {
 		setSeriesSizes(userPrefs.getByteArray("seriesSizes", ([6,3] as byte[])))
 		setLastDirectory(new File (userPrefs.get("lastFileDir", "")))
 		setMaxCR(userPrefs.getInt("maxCR", 100000))
+		setYearRange([userPrefs.getInt("minYear", 0), userPrefs.getInt("maxYear", 0)] as int[])
 	}
 	
 	
@@ -118,6 +125,18 @@ class UISettings {
 		this.maxCR = maxCR
 		userPrefs.putInt("maxCR", maxCR)
 	}
+	
+	
+	public int[] getYearRange () {
+		return yearRange
+	}
+	
+	public void setYearRange (int[] yearRange) {
+		this.yearRange = yearRange
+		userPrefs.putInt("minYear", yearRange[0])
+		userPrefs.putInt("maxYear", yearRange[1])
+	}
+	
 	
 	
 }

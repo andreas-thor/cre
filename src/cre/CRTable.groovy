@@ -561,6 +561,25 @@ class CRTable {
 		updateData(true)
 	}
 	
+	public void removeByPercentYear (String comp, double threshold) {
+		if (comp.equals("<")) {
+			crData.removeAll { CRType it -> it.PERC_YR < threshold }
+		}
+		if (comp.equals("<=")) {
+			crData.removeAll { CRType it -> it.PERC_YR <= threshold }
+		}
+		if (comp.equals("=")) {
+			crData.removeAll { CRType it -> it.PERC_YR == threshold }
+		}
+		if (comp.equals(">=")) {
+			crData.removeAll { CRType it -> it.PERC_YR >= threshold }
+		}
+		if (comp.equals(">")) {
+			crData.removeAll { CRType it -> it.PERC_YR > threshold }
+		}
+		updateData(true)
+	}
+	
 	
 	/**
 	 * Filter publications by year range
@@ -709,7 +728,7 @@ class CRTable {
 	 * Load data files from Web Of Science (WOS)
 	 * @param files array of files
 	 */
-	public void loadDataFiles (File[] files, int maxCR) throws FileTooLargeException, AbortedException, OutOfMemoryError {
+	public void loadDataFiles (File[] files, int maxCR, int[] yearRange) throws FileTooLargeException, AbortedException, OutOfMemoryError {
 		
 		this.abort = false	// can be changed by "wait dialog"
 		
@@ -779,105 +798,108 @@ class CRTable {
 //						timeMarks[0] = System.currentTimeMillis()
 						
 						Integer year = yearS.toInteger()
-						String author = crsplit[0].trim()
-						String lastname = null
-						String firstname = null
-						String doi = ""
+						if (((year >= yearRange[0]) || (yearRange[0]==0)) && ((year <= yearRange[1]) || (yearRange[1]==0))) {
 						
-						// process "difficult" last names starting with "von" etc.
-						if ((author.length()>0) && (author[0]=='v')) {
-							matchAuthorVon.each { Matcher matchVon ->
-								matchVon.reset(author)
-								if (matchVon.matches()) {
-									String[] m = (String[]) matchVon[0]
-									lastname = (m[1] + (m[2]?:"") + m[ ((m[3] == "") ? 5 : 3) ]).replaceAll(" ","").replaceAll("\\-","")
-									firstname = ((((m[3] == "") ? "" : m[5]) + m[6]).trim() as List)[0]?:""	// cast as List to avoid Index out of Bounds exception
+							String author = crsplit[0].trim()
+							String lastname = null
+							String firstname = null
+							String doi = ""
+							
+							// process "difficult" last names starting with "von" etc.
+							if ((author.length()>0) && (author[0]=='v')) {
+								matchAuthorVon.each { Matcher matchVon ->
+									matchVon.reset(author)
+									if (matchVon.matches()) {
+										String[] m = (String[]) matchVon[0]
+										lastname = (m[1] + (m[2]?:"") + m[ ((m[3] == "") ? 5 : 3) ]).replaceAll(" ","").replaceAll("\\-","")
+										firstname = ((((m[3] == "") ? "" : m[5]) + m[6]).trim() as List)[0]?:""	// cast as List to avoid Index out of Bounds exception
+									}
 								}
 							}
+							
+	//						timeMarks[1] = System.currentTimeMillis()
+							
+							// process all other authors
+							if (lastname == null) {
+								matchAuthor.reset(author)
+								if (matchAuthor.matches()) {
+									String[] m = (String[]) matchAuthor[0]
+									lastname = m[1].replaceAll("\\-","")
+									firstname = (m[3]?:" ")[0]
+								}
+							}
+								
+	//						timeMarks[2] = System.currentTimeMillis()
+							
+							// process all journals
+							String journal = crsplit.length > 2 ? crsplit[2].trim() : ""
+							String journal_name = journal.split(",")[0]
+							def String[] split = journal_name.split(" ")
+							String journal_short = (split.size()==1) ? split[0] : split.inject("") { x, y -> x + ((y.length()>0) ? y[0] : "") }
+							
+	//						timeMarks[3] = System.currentTimeMillis()
+							
+							// find Volume and Pages and DOI
+							Map pagVol = ["P":"","V":""]
+							journal.split(",").each { String it ->
+								matchPageVolumes.reset(it.trim())
+								if (matchPageVolumes.matches()) {
+									String[] m = (String[]) matchPageVolumes[0]
+									pagVol[m[1]]=m[2]
+								}
+								
+								matchDOI.reset(it.trim())
+								if (matchDOI.matches()) {
+									String[] m = (String[]) matchDOI[0]
+									doi = m[1].replaceAll("  ","").toUpperCase()
+								}
+							} 
+							
+	//						timeMarks[4] = System.currentTimeMillis()
+	
+							
+							// if CR already in database: increase N_CR by 1; else add new record						
+							if (crDup[year] == null) crDup[year] = [:]
+							Integer id = crDup[year][cr]
+							if (id != null) {	
+								crData[id].N_CR++
+							} else {
+								crDup[year][cr] = indexCount
+								
+								if ((maxCR>0) && (indexCount==maxCR)) {
+									this.updateData(false);
+									stat.setValue("${new Date()}: Loading WOS files aborted", 0)
+									throw new FileTooLargeException (indexCount);
+								}
+								
+								CRCluster c = new CRCluster (indexCount+1, 1)
+								
+								crData << new CRType (
+									indexCount+1,
+									cr,
+									author,
+									firstname,
+									lastname,
+									journal,
+									journal_name,
+									journal_short,
+									1,
+									year,
+									pagVol["P"],
+									pagVol["V"],
+									doi,
+									c,		// each CR forms its own cluster
+									1,		// cluster size is 1 (by default)
+									1,		// is visible by default
+									0		// default color
+								)
+	
+								clusterId2Objects[c] = [indexCount+1]
+								indexCount++
+							}
+							
+	//						timeMarks[5] = System.currentTimeMillis()
 						}
-						
-//						timeMarks[1] = System.currentTimeMillis()
-						
-						// process all other authors
-						if (lastname == null) {
-							matchAuthor.reset(author)
-							if (matchAuthor.matches()) {
-								String[] m = (String[]) matchAuthor[0]
-								lastname = m[1].replaceAll("\\-","")
-								firstname = (m[3]?:" ")[0]
-							}
-						}
-							
-//						timeMarks[2] = System.currentTimeMillis()
-						
-						// process all journals
-						String journal = crsplit.length > 2 ? crsplit[2].trim() : ""
-						String journal_name = journal.split(",")[0]
-						def String[] split = journal_name.split(" ")
-						String journal_short = (split.size()==1) ? split[0] : split.inject("") { x, y -> x + ((y.length()>0) ? y[0] : "") }
-						
-//						timeMarks[3] = System.currentTimeMillis()
-						
-						// find Volume and Pages and DOI
-						Map pagVol = ["P":"","V":""]
-						journal.split(",").each { String it ->
-							matchPageVolumes.reset(it.trim())
-							if (matchPageVolumes.matches()) {
-								String[] m = (String[]) matchPageVolumes[0]
-								pagVol[m[1]]=m[2]
-							}
-							
-							matchDOI.reset(it.trim())
-							if (matchDOI.matches()) {
-								String[] m = (String[]) matchDOI[0]
-								doi = m[1].replaceAll("  ","").toUpperCase()
-							}
-						} 
-						
-//						timeMarks[4] = System.currentTimeMillis()
-
-						
-						// if CR already in database: increase N_CR by 1; else add new record						
-						if (crDup[year] == null) crDup[year] = [:]
-						Integer id = crDup[year][cr]
-						if (id != null) {	
-							crData[id].N_CR++
-						} else {
-							crDup[year][cr] = indexCount
-							
-							if ((maxCR>0) && (indexCount==maxCR)) {
-								this.updateData(false);
-								stat.setValue("${new Date()}: Loading WOS files aborted", 0)
-								throw new FileTooLargeException (indexCount);
-							}
-							
-							CRCluster c = new CRCluster (indexCount+1, 1)
-							
-							crData << new CRType (
-								indexCount+1,
-								cr,
-								author,
-								firstname,
-								lastname,
-								journal,
-								journal_name,
-								journal_short,
-								1,
-								year,
-								pagVol["P"],
-								pagVol["V"],
-								doi,
-								c,		// each CR forms its own cluster
-								1,		// cluster size is 1 (by default)
-								1,		// is visible by default
-								0		// default color
-							)
-
-							clusterId2Objects[c] = [indexCount+1]
-							indexCount++
-						}
-						
-//						timeMarks[5] = System.currentTimeMillis()
 					}
 				}
 			}
