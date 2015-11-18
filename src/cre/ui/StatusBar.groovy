@@ -1,7 +1,7 @@
-package cre 
+package cre.ui 
 
 import groovy.swing.SwingBuilder
-import groovy.transform.CompileStatic;
+import groovy.transform.CompileStatic
 
 import javax.swing.*
 import javax.swing.border.BevelBorder
@@ -13,7 +13,7 @@ import javax.swing.border.BevelBorder
  *
  */
 
-class UIStatusBar {
+class StatusBar {
 
 	
 		
@@ -21,8 +21,8 @@ class UIStatusBar {
 	private JLabel sblabel
 	private JProgressBar sbpb
 	
-	
-	public UIStatusBar() {
+
+	public StatusBar() {
 		
 		SwingBuilder sb = new SwingBuilder()
 		

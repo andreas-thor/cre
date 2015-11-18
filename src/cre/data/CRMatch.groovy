@@ -1,7 +1,6 @@
-package cre 
+package cre.data 
 
-import groovy.transform.CompileStatic;
-import groovy.transform.stc.ClosureParams;
+import groovy.transform.CompileStatic
 
 @CompileStatic
 class CRMatch {

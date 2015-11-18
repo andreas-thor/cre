@@ -1,13 +1,14 @@
-package cre
+package cre.ui
 
 import groovy.swing.SwingBuilder
-import groovy.swing.binding.JComboBoxElementsBinding;
 
 import java.text.NumberFormat
 
 import javax.swing.*
 
-import cre.UIBind.UIRange
+import cre.data.CRTable
+import cre.data.CRType
+import cre.ui.UIBind.UIRange
 
 class UIDialogFactory {
 
@@ -204,114 +205,6 @@ class UIDialogFactory {
 
 	
 	
-	
-	private static JFormattedTextField createTF (int value) {
-		JFormattedTextField result = new JFormattedTextField(NumberFormat.getNumberInstance())
-		result.setColumns(10)
-		result.setValue(value)
-		result
-	}
-	
-
-	static JDialog createSettingsDlg (JFrame f, byte[] colVal, byte[] lineVal, byte[] seriesSize, int maxCR, int[] yearRange, Closure action) {
-
-		SwingBuilder sb = new SwingBuilder()
-		JButton defBtn
-		JDialog setDlg = sb.dialog(modal:true, title: "Settings")
-		setDlg.getContentPane().add (
-			sb.panel(border: BorderFactory.createEmptyBorder(3, 3, 3, 3)) {
-			
-				tableLayout(id:'m', cellpadding:10) {
-					tr { td (align:'center', colspan:2) {
-
-						tabbedPane(id: 'tabs', tabLayoutPolicy:JTabbedPane.SCROLL_TAB_LAYOUT) {
-							sb.panel(name: 'Table', border: BorderFactory.createEmptyBorder(3, 3, 3, 3)) {
-								sb.panel (border: BorderFactory.createTitledBorder("Show Columns in Table")) {
-									tableLayout (id: 'columns', cellpadding: 0 ){
-										CRType.attr.eachWithIndex { name, label, idx -> tr { td { checkBox(id: name, text: label, selected: colVal[idx]==1) } } }
-									}
-								}
-							}
-						
-							sb.panel(name: 'Chart', border: BorderFactory.createEmptyBorder(3, 3, 3, 3)) {
-								
-								tableLayout(cellpadding:0) {
-									tr { td (align:'left') { sb.panel (border: BorderFactory.createTitledBorder("Show Lines in Chart")) {
-										tableLayout (id: 'lines', cellpadding: 0 ) {
-											CRTable.line.eachWithIndex { name, label, idx -> tr { td { checkBox(id: name, text: label, selected: lineVal[idx]==1) } } }
-										}
-									} } }
-									
-									
-								
-									tr { td (align:'left') { sb.panel (border: BorderFactory.createTitledBorder("Size of Chart Lines")) {
-										tableLayout (id: 'seriesSizes', cellpadding: 0 ) {
-											tr {
-												td (align:'right') { label(text:"Stroke Size:  ") }
-												td (align:'left') {  widget (createTF(seriesSize[0]))  }
-											}
-											tr {
-												td (align:'right') { label(text:"Shape Size:  ") }
-												td (align:'left') {  widget (createTF(seriesSize[1]))  }
-											}
-										}
-									}}}
-								}
-							}
-							
-							sb.panel(name: 'Import', border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
-								
-								tableLayout(cellpadding:0) {
-									
-									tr { td (align:'left') { sb.panel (border: BorderFactory.createTitledBorder("Restrict WoS Import of Cited References")) {
-										tableLayout (id: 'maxcr', cellpadding: 0 ) {
-											tr {
-												td (align:'right') { label(text:"Maximum Number of Cited References:  ") }
-												td (align:'left') {  widget (createTF(maxCR))  }
-											}
-											tr {
-												td (align:'right') { label(text:"Minimum Publication Year of Cited References:  ") }
-												td (align:'left') {  widget (createTF(yearRange[0]))  }
-											}
-											tr {
-												td (align:'right') { label(text:"Maximum Publication Year of Cited References:  ") }
-												td (align:'left') {  widget (createTF(yearRange[1]))  }
-											}
-										}
-									}}}
-								}
-							}
-	
-						}
-					} }
-					
-					tr {
-						td (align:'right') {
-							defBtn = button(preferredSize:[100, 25], text:'Ok', actionPerformed: {
-								action (
-									((JPanel) sb.columns).getComponents().collect { JCheckBox cb ->  cb.isSelected()?1:0} as byte[],
-									((JPanel) sb.lines).getComponents().collect { JCheckBox cb ->  cb.isSelected()?1:0} as byte[],
-									(0..1).collect { (Integer) ((JPanel) sb.seriesSizes).getComponents()[2*it+1].getValue() } as byte[],
-									(Integer) (((JPanel) sb.maxcr).getComponents())[1].getValue(),
-									(1..2).collect { (Integer) ((JPanel) sb.maxcr).getComponents()[2*it+1].getValue() } as int[]
-								)
-								setDlg.dispose()
-							})
-						}
-						td (align:'left') {
-							button(preferredSize:[100, 25], text:'Cancel', actionPerformed: { setDlg.dispose() })
-						}
-					}
-				
-				}
-			}
-		)
-		setDlg.getRootPane().setDefaultButton(defBtn)
-		setDlg.pack()
-		setDlg.setLocationRelativeTo(f)
-		return setDlg
-
-	}
 
 	
 	

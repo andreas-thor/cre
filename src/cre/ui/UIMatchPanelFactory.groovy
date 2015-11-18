@@ -1,22 +1,22 @@
-package cre 
+package cre.ui 
 
 import groovy.swing.SwingBuilder
-import cre.UIBind.UIMatchConfig;
 
 import java.awt.event.ItemEvent
 import java.awt.event.ItemListener
-import javax.swing.BorderFactory;
-import javax.swing.JCheckBox
-import javax.swing.JOptionPane;
+
+import javax.swing.BorderFactory
+import javax.swing.JOptionPane
 import javax.swing.JPanel
 import javax.swing.JSlider
-import javax.swing.JTable;
-import javax.swing.RowSorter
-import javax.swing.SortOrder;
-import javax.swing.SwingConstants;
+import javax.swing.JTable
+import javax.swing.SwingConstants
 import javax.swing.event.ChangeEvent
 import javax.swing.event.ChangeListener
 import javax.swing.table.AbstractTableModel
+
+import cre.data.CRTable
+import cre.ui.UIBind.UIMatchConfig
 
 
 /**
@@ -34,7 +34,7 @@ class UIMatchPanelFactory {
 	
 	
 	
-	public static JPanel create (UIMatchConfig uiMC, CRTable crTable, JTable tab, UIStatusBar stat ) {
+	public static JPanel create (UIMatchConfig uiMC, CRTable crTable, JTable tab, StatusBar stat ) {
 		
 		JSlider framesPerSecond
 		List useBoxes = [null, null, null]

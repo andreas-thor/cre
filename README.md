@@ -1,15 +1,22 @@
 # CRE: Cited References Explorer
 
 ##ToDo
-* discuss start process (java web start vs. jar vs. bat vs. exe vs. ...)
+* performance improvements; handling of large data files
+** remove CRs after clustering takes too long (restrict match ... rewrite Match/Pair as list of each CR???)
 
-* remove by PERCENT YEAR threshold
-* adjust labels (done?)
-* remove CRs after clustering takes too long (restrict match ... rewrite Match/Pair as list of each CR???)
-* make filtering / removing more generic: right click on table header --> filter/remove --> dialog of type range (int value) or threshold(double value)
+* documentation
 
 
-##UPDATE 2015/11/07
+##UPDATE 2015/11/18
+* changed settings dialog (list of attributes is in three columns; year range values with separator)
+* last window position is stored (before exit) and loaded (on startup)
+* re-arranged Java/Groovy classes into packages "data" and "ui", respectively
+
+
+##UPDATE 2015/11/16
+* import by year range only (changed settings tab "miscellaneous" to "import") 
+* label adjustes (to check!)
+* remove by PERCENT YEAR threshold (new menu entry)
 
 
 ##UPDATE 2015/10/30

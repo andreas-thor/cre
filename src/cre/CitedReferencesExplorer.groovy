@@ -5,7 +5,6 @@ package cre
 import groovy.swing.SwingBuilder
 
 import java.awt.*
-import java.util.prefs.Preferences
 
 import javax.swing.*
 import javax.swing.filechooser.FileFilter
@@ -13,8 +12,15 @@ import javax.swing.table.AbstractTableModel
 
 import org.jfree.chart.ChartPanel
 
-import cre.CRTable.AbortedException
-import cre.CRTable.FileTooLargeException
+import cre.data.CRTable
+import cre.data.CRTable.*
+import cre.ui.UIBind
+import cre.ui.UIChartPanelFactory
+import cre.ui.UIDialogFactory
+import cre.ui.UIMatchPanelFactory
+import cre.ui.UISettings
+import cre.ui.StatusBar
+import cre.ui.TableFactory
 
 
 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
@@ -22,9 +28,9 @@ Locale.setDefault(new Locale("en"))
 
 
 SwingBuilder sb = new groovy.swing.SwingBuilder()
-UIStatusBar stat = new UIStatusBar()
+StatusBar stat = new StatusBar()
 CRTable crTable = new CRTable(stat)
-JTable tab = UITableFactory.create(crTable)
+JTable tab = TableFactory.create(crTable)
 ChartPanel chpan = UIChartPanelFactory.create(crTable, tab)
 UISettings uisetting
 UIBind uibind = new UIBind()
@@ -35,7 +41,7 @@ JFrame mainFrame
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2015/11/07)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2015/11/18)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -196,16 +202,7 @@ mainFrame = sb.frame(
 			separator()
 			
 			menuItem(id:'settingsDlg', text: "Settings...", mnemonic: 'T', actionPerformed: {
-				UIDialogFactory.createSettingsDlg(mainFrame, 
-					uisetting.getAttributes(), uisetting.getLines(), uisetting.getSeriesSizes(), uisetting.getMaxCR(), uisetting.getYearRange(), 
-					{ byte[] attributes, byte[] lines, byte[] seriesSizes, int maxCR, int[] yearRange -> 
-						uisetting.setAttributes (attributes)
-						uisetting.setLines (lines)
-						uisetting.setSeriesSizes (seriesSizes)
-						uisetting.setMaxCR (maxCR)
-						uisetting.setYearRange (yearRange)
-					}
-				).visible = true
+				uisetting.createSettingsDlg(mainFrame).visible = true 
 			})
 			
 			separator()
@@ -214,7 +211,7 @@ mainFrame = sb.frame(
 				int answer = JOptionPane.showConfirmDialog (null, "Save changes before exit?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION) 
 				switch (answer) {
 					case JOptionPane.YES_OPTION: sb.menuSave.doClick(); 
-					case JOptionPane.NO_OPTION: System.exit(0); 
+					case JOptionPane.NO_OPTION: uisetting.setWindowPos (); System.exit(0); 
 				}
 			})
 		}
@@ -227,7 +224,7 @@ mainFrame = sb.frame(
 
 			
 			menuItem(text: "Filter by Cited Reference Year ...", mnemonic: 'Y', actionPerformed: {
-				UIDialogFactory.createIntRangeDlg(mainFrame, uisetting.uibind[2], "Filter by Cited Reference Year", "Cited Reference Years", crTable.getMaxRangeYear(), { min, max -> chpan.getChart().getXYPlot()?.getDomainAxis()?.setRange(min-0.5, max+0.5) }).visible = true
+				UIDialogFactory.createIntRangeDlg(mainFrame, uibind.uiRanges[2], "Filter by Cited Reference Year", "Cited Reference Years", crTable.getMaxRangeYear(), { min, max -> chpan.getChart().getXYPlot()?.getDomainAxis()?.setRange(min-0.5, max+0.5) }).visible = true
 			})
 
 			separator()
@@ -395,7 +392,7 @@ mainFrame = sb.frame(
 mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage("CRE32.png"));
 mainFrame.pack()
 mainFrame.setLocationRelativeTo(null)
-uisetting = new UISettings(tab, chpan)
+uisetting = new UISettings(tab, chpan, mainFrame)
 mainFrame.visible = true
 
 

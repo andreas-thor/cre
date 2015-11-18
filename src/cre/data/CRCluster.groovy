@@ -1,4 +1,5 @@
-package cre
+package cre.data
+
 import groovy.transform.CompileStatic
 
 

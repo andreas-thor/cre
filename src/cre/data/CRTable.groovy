@@ -1,22 +1,18 @@
-package cre 
+package cre.data 
 
-import au.com.bytecode.opencsv.CSVReader
-import au.com.bytecode.opencsv.CSVWriter
-import cre.CRMatch.Pair
-import groovy.transform.CompileStatic
 import groovy.beans.Bindable
+import groovy.transform.CompileStatic
 
-import java.sql.Connection
-import java.sql.DriverManager
-import java.sql.PreparedStatement
-import java.sql.ResultSet
 import java.util.regex.Matcher
-
-import javax.swing.JLabel
 
 import org.jfree.data.xy.DefaultXYDataset
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein
+import au.com.bytecode.opencsv.CSVReader
+import au.com.bytecode.opencsv.CSVWriter
+import cre.data.CRMatch.Pair
+import cre.ui.UIMatchPanelFactory
+import cre.ui.StatusBar
 
 
 /**
@@ -66,7 +62,7 @@ class CRTable {
 	private Map<Integer, Integer> crId2Index = [:]						// object Id -> index in crData list
 	private Map<CRCluster, List<Integer>> clusterId2Objects = [:]		// clusterId->[object ids]
 
-	private UIStatusBar stat	// status bar to indicate current information / progress
+	private StatusBar stat	// status bar to indicate current information / progress
 	
 	
 	
@@ -74,7 +70,7 @@ class CRTable {
 	/**
 	 * @param stat status panel
 	 */
-	public CRTable (UIStatusBar stat) {
+	public CRTable (StatusBar stat) {
 		this.stat = stat
 	}
 	
@@ -545,8 +541,6 @@ class CRTable {
 	 * @param to
 	 */
 	public void removeByYear (int from, int to) {
-		println "removeByYear"
-		println System.currentTimeMillis()
 		crData.removeAll { CRType it -> (from <= it.RPY) && (it.RPY <= to) }
 		updateData(true)
 	}
@@ -893,7 +887,7 @@ class CRTable {
 									1,		// is visible by default
 									0		// default color
 								)
-	
+								
 								clusterId2Objects[c] = [indexCount+1]
 								indexCount++
 							}

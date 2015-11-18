@@ -1,4 +1,4 @@
-package cre
+package cre.ui
 
 import groovy.beans.Bindable
 import groovy.transform.CompileStatic

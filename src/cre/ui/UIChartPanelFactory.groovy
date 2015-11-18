@@ -1,6 +1,6 @@
-package cre 
+package cre.ui 
 
-import groovy.transform.CompileStatic;
+import groovy.transform.CompileStatic
 
 import java.awt.BasicStroke
 import java.awt.Color
@@ -22,9 +22,11 @@ import org.jfree.chart.entity.XYItemEntity
 import org.jfree.chart.event.PlotChangeEvent
 import org.jfree.chart.event.PlotChangeListener
 import org.jfree.chart.labels.XYToolTipGenerator
-import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.plot.XYPlot
 import org.jfree.chart.renderer.xy.XYSplineRenderer
 import org.jfree.data.xy.XYDataset
+
+import cre.data.CRTable
 
 /**
  * Factory class to create panel with chart 
@@ -38,7 +40,6 @@ class UIChartPanelFactory {
 	static ChartPanel create(CRTable crTable, JTable tab) {
 
 		JFreeChart chart = ChartFactory.createXYLineChart("", "Cited Reference Year", "Cited References", crTable.ds )
-		
 		
 		chart.getLegend().setFrame(BlockBorder.NONE)
 		chart.getXYPlot().with {
@@ -95,22 +96,21 @@ class UIChartPanelFactory {
 		// vertical blue line at mouse position
 //		chpan.setHorizontalAxisTrace(true)
 		
-		// on click event: get CR year, sort and jump to first row of the year
+		/* on click event: get CR year, sort and jump to first row of the year */
 		chpan.addChartMouseListener([
 			chartMouseClicked: { ChartMouseEvent cmevent ->
 				if (cmevent.getEntity() instanceof XYItemEntity) {
 		
-					// get year (domain value) of clicked data item
+					/* get year (domain value) of clicked data item */
 					XYItemEntity a = (XYItemEntity) cmevent.getEntity()
 					int year = a.getDataset().getX(a.getSeriesIndex(), a.getItem()).intValue()
 					
-					// sort by year ASC, n_cr desc
-//					JTable tab = (JTable)sb.tab
-					tab.getRowSorter().setSortKeys([new RowSorter.SortKey (UITableFactory.columns['RPY'], SortOrder.ASCENDING), new RowSorter.SortKey (UITableFactory.columns['N_CR'], SortOrder.DESCENDING)])
+					/* sort by year ASC, n_cr desc */
+					tab.getRowSorter().setSortKeys([new RowSorter.SortKey (TableFactory.columns['RPY'], SortOrder.ASCENDING), new RowSorter.SortKey (TableFactory.columns['N_CR'], SortOrder.DESCENDING)])
 					
-					// find first row of the selected year; select and scroll to make it visible
+					/* find first row of the selected year; select and scroll to make it visible */
 					int firstRow=0;
-					while (tab.getValueAt(firstRow, UITableFactory.columns['RPY']) != year) { firstRow++ }
+					while (tab.getValueAt(firstRow, TableFactory.columns['RPY']) != year) { firstRow++ }
 					tab.setRowSelectionInterval(firstRow, firstRow);
 					tab.scrollRectToVisible(tab.getCellRect(firstRow,0, true));
 					
@@ -120,7 +120,7 @@ class UIChartPanelFactory {
 			}] as ChartMouseListener)
 		
 		
-		// hide "save as -> pdf" menu item because it prints "Evaluation version of OrsonPDF" on the pdf
+		/* hide "save as -> pdf" menu item because it prints "Evaluation version of OrsonPDF" on the pdf */
 		((JMenuItem)chpan.getPopupMenu().getSubElements()[2].getSubElements()[0].getSubElements()[2]).setVisible(false)
 		
 		

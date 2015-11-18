@@ -1,7 +1,4 @@
-
-
-
-package cre 
+package cre.data 
 
 import groovy.transform.CompileStatic
 
@@ -79,7 +76,7 @@ public class CRType /* implements Comparable<CRType>*/ {
 		CID2 = cID2
 		CID_S = cID_S
 		VI = vI
-		CO = cO 
+		CO = cO  
 	}
 	
 
