@@ -7,14 +7,14 @@
 
 
 ##UPDATE 2015/11/19
-* settings dialog 
+1 settings dialog 
 ..* list of attributes is in three columns
 ..* year range values without separator (,)
 ..* digits for percent values
 ..* at least one chart line must be visible
-* last window position is stored (before exit) and loaded (on startup)
-* re-arranged Java/Groovy classes into packages "data" and "ui", respectively
-* "save as CSV" warning if file exists
+1 last window position is stored (before exit) and loaded (on startup)
+1 re-arranged Java/Groovy classes into packages "data" and "ui", respectively
+1 "save as CSV" warning if file exists
 
 ##UPDATE 2015/11/16
 * import by year range only (changed settings tab "miscellaneous" to "import") 
