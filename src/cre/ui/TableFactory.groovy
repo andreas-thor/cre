@@ -35,7 +35,7 @@ class TableFactory {
 	private static String clickedCol 
 	
 	public static final Map<String, Integer> columns = ['VI':0, 'CO':1, 'RPY':4, 'N_CR':5, 'PERC_YR':6, 'PERC_ALL':7]
-	private static final DecimalFormat formatter = new DecimalFormat( "##0.0000%" );
+	private static DecimalFormat formatter = new DecimalFormat( "##0.0000%" );
 	
 	private static JTable init(CRTable crTable) {
 		JTable tab = new SwingBuilder().table (id:'tab') {

@@ -41,7 +41,7 @@ JFrame mainFrame
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2015/11/18)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2015/11/19)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -95,51 +95,6 @@ mainFrame = sb.frame(
 					Thread t = new Thread(runnable)
 					t.start()
 					wait.visible = true
-					
-					
-					
-					
-
-//					JDialog wait = UIDialogFactory.createWaitDlg(mainFrame, { crTable.abort = true })
-//					
-//					Runnable runnable = new Runnable() {
-//						public void run() {
-//							wait.visible = true
-//						 }
-//					}
-//					
-//					Thread t = new Thread(runnable)
-//					t.start()
-//					
-//					
-//					
-//					matchpan.visible = false
-//					
-//					try {
-//						crTable.loadDataFiles (dlg.getSelectedFiles(), uisetting.getMaxCR())
-//						wait.dispose()
-//					} catch (FileTooLargeException e1) {
-//						wait.dispose()
-//						JOptionPane.showMessageDialog(null, "WoS file is too large; imported ${e1.numberOfCRs} CRs only.\nYou can change the maximum number of CRs for import in the File > Settings menu." );
-//					} catch (AbortedException e2) {
-//						wait.dispose()
-//					} catch (OutOfMemoryError mem) {
-//						wait.dispose()
-//						crTable.init()
-//						JOptionPane.showMessageDialog(null, "Out Of Memory Error" );
-//					} catch (Exception e3) {
-//						wait.dispose()
-//						JOptionPane.showMessageDialog(null, "Error while loading WoS file.\n(${e3.toString()})" );
-//					}
-//					
-//					UIDialogFactory.createInfoDlg(mainFrame, crTable.getInfo()).visible = true
-//					(tab.getModel() as AbstractTableModel).fireTableDataChanged()
-//					uisetting.setLastDirectory(dlg.getSelectedFiles()[0].getParentFile())
-					
-
-					
-					
-					
 				}
 			})
 			
@@ -184,18 +139,28 @@ mainFrame = sb.frame(
 				dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
 				dlg.setCurrentDirectory(uisetting.getLastDirectory())
 
-				if (dlg.showSaveDialog() ==JFileChooser.APPROVE_OPTION) {
+				int answer = JOptionPane.NO_OPTION
+				while (answer == JOptionPane.NO_OPTION) {
 					
-					Runnable runnable = new Runnable() {
-						public void run() {
-							crTable.save2CSV (dlg.getSelectedFile())
-							uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
+					if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
+						
+						answer = JOptionPane.YES_OPTION
+						if (dlg.getSelectedFile().exists()) {
+							answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
 						}
-					}
-					Thread t = new Thread(runnable)
-					t.start()
-
-					
+						if (answer == JOptionPane.YES_OPTION) {
+							Runnable runnable = new Runnable() {
+								public void run() {
+									crTable.save2CSV (dlg.getSelectedFile())
+									uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
+								}
+							}
+							Thread t = new Thread(runnable)
+							t.start()
+						}
+					} else {
+						break
+					} 
 				}
 			})
 
@@ -297,62 +262,8 @@ mainFrame = sb.frame(
 			})
 
 		}
-//		menu(text: "View", mnemonic: 'V') {
-//			
-//			menuItem(text: "Filter by Cited Reference Year ...", mnemonic: 'Y', actionPerformed: {
-//				UIDialogFactory.createIntRangeDlg(mainFrame, uibind.uiRanges[2], "Filter by Cited Reference Year", "Cited Reference Years", crTable.getMaxRangeYear(), { min, max -> chpan.getChart().getXYPlot()?.getDomainAxis()?.setRange(min-0.5, max+0.5) }).visible = true
-//			})
-//
-//			separator()
-//			
-//			menuItem(id:'infoDlg', text: "Info", mnemonic: 'I', actionPerformed: {
-//					UIDialogFactory.createInfoDlg(mainFrame, crTable.getInfo()).visible = true
-//			})
-//
-//			menuItem(text: "Show columns...", mnemonic: 'C', actionPerformed: {
-//				
-//				UIDialogFactory.createShowColDlg(mainFrame, uibind.showCol, "Show columns", CRType.attr, { 
-//					
-//					int prefSize = tab.getWidth()/(CRType.attr.inject (0) { res, name, label -> res += uibind.showCol."$name" ? 1 : 0 })
-//					
-//					(2..tab.getTableHeader().getColumnModel().getColumnCount()-1).each {  // 2 = offset to ignore first two columns (VI, CO)
-//						tab.getTableHeader().getColumnModel().getColumn(it).with {
-//							if (uibind.showCol."${getIdentifier()}") {
-//								setMaxWidth(800)
-//								setMinWidth(30)
-//								setPreferredWidth(prefSize)
-//								setResizable(true)
-//							} else {
-//								setMaxWidth(0)
-//								setMinWidth(0)
-//								setPreferredWidth(0)
-//								setResizable(false)
-//							}
-//						}
-//					}
-//				}).visible = true
-//				
-//			})
-//			
-//			menuItem(text: "Show lines in graph...", mnemonic: 'L', actionPerformed: {
-//				
-//				UIDialogFactory.createShowColDlg(mainFrame, uibind.showCol, "Show lines in graph", crTable.line, {
-//					
-//					chpan.getChart().getXYPlot().getRenderer().with {
-//						crTable.line.eachWithIndex { name, label, idx ->
-//							setSeriesVisible (idx, new Boolean (uibind.showCol."${name}"))
-//						}
-//					}
-//					
-//				}).visible = true
-//				
-//			})
-//			
-//		}
 	}	
 	
-	
-
 	
 	
 	panel() {

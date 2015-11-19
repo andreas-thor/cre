@@ -106,25 +106,12 @@ class CRTable {
 		
 		println System.currentTimeMillis()
 		if (removed) {
-			println "removed"
-			println System.currentTimeMillis()
+//			println "removed"
+//			println System.currentTimeMillis()
 			List id = crId2Index.keySet() as List
 			crMatch.restrict(id)
 
-			println System.currentTimeMillis()
-			
-//			List delCluster = []	// list of empty clusters after deletion
-//			
-//			clusterId2Objects.each { cid, objects ->
-//				clusterId2Objects[cid].removeAll { !id.contains(it) }	// remove deleted CRs from cluster
-//				if (clusterId2Objects[cid].size() == 0) {
-//					delCluster << cid
-//				}
-//			}
 //			println System.currentTimeMillis()
-//			clusterId2Objects.keySet().removeAll { delCluster.contains(it) }	// remove empty clusters from index 
-			
-			
 			clusterId2Objects.clear()
 			crData.each { CRType cr ->
 				if (clusterId2Objects[cr.CID2] == null) { 
@@ -137,8 +124,8 @@ class CRTable {
 				cr.CID_S = clusterId2Objects[cr.CID2].size()
 			}
 			
-			println System.currentTimeMillis()
-			println "removed done"
+//			println System.currentTimeMillis()
+//			println "removed done"
 		}
 		
 		

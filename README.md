@@ -2,22 +2,24 @@
 
 ##ToDo
 * performance improvements; handling of large data files
-** remove CRs after clustering takes too long (restrict match ... rewrite Match/Pair as list of each CR???)
+* documentation of source code
+* website
 
-* documentation
 
-
-##UPDATE 2015/11/18
-* changed settings dialog (list of attributes is in three columns; year range values with separator)
+##UPDATE 2015/11/19
+* settings dialog 
+..* list of attributes is in three columns
+..* year range values without separator (,)
+..* digits for percent values
+..* at least one chart line must be visible
 * last window position is stored (before exit) and loaded (on startup)
 * re-arranged Java/Groovy classes into packages "data" and "ui", respectively
-
+* "save as CSV" warning if file exists
 
 ##UPDATE 2015/11/16
 * import by year range only (changed settings tab "miscellaneous" to "import") 
 * label adjustes (to check!)
 * remove by PERCENT YEAR threshold (new menu entry)
-
 
 ##UPDATE 2015/10/30
 * revision of program settings (re-arranged in settings dialog, stored for next program start)
