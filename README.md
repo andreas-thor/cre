@@ -1,5 +1,10 @@
 # CRE: Cited References Explorer
 
+## Start
+* via [Java Web Start](http://www1.hft-leipzig.de/thor/citationtest/CitedReferencesExplorer.jnlp)
+* via [Runnable Jar](http://www1.hft-leipzig.de/thor/citationtest/CitedReferencesExplorerFull.jar)
+  * for large files use heap space options (e.g., -Xms512m -Xmx4g)
+
 ##ToDo
 * performance improvements; handling of large data files
 * documentation of source code
