@@ -14,13 +14,14 @@ import org.jfree.chart.ChartPanel
 
 import cre.data.CRTable
 import cre.data.CRTable.*
+import cre.data.source.FileCSV
+import cre.ui.StatusBar
+import cre.ui.TableFactory
 import cre.ui.UIBind
 import cre.ui.UIChartPanelFactory
 import cre.ui.UIDialogFactory
 import cre.ui.UIMatchPanelFactory
 import cre.ui.UISettings
-import cre.ui.StatusBar
-import cre.ui.TableFactory
 
 
 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
@@ -74,6 +75,9 @@ mainFrame = sb.frame(
 							} catch (FileTooLargeException e1) {
 								wait.dispose()
 								JOptionPane.showMessageDialog(null, "You try to import too man cited references.\nImport was aborted after loading ${e1.numberOfCRs} Cited References.\nYou can change the maximum number in the File > Settings > Miscellaneous menu. " );
+							} catch (UnsupportedFileFormatException e4) {
+								wait.dispose()
+								JOptionPane.showMessageDialog(null, "Unknown file format." );
 							} catch (AbortedException e2) {
 								wait.dispose()
 							} catch (OutOfMemoryError mem) {
@@ -117,7 +121,7 @@ mainFrame = sb.frame(
 						public void run() {
 							matchpan.visible = false
 							try {
-								crTable.loadCSV(dlg.getSelectedFile())
+								FileCSV.loadCSV(dlg.getSelectedFile(), crTable)
 								wait.dispose()
 							} catch (AbortedException e) { 
 								wait.dispose()
@@ -151,7 +155,7 @@ mainFrame = sb.frame(
 						if (answer == JOptionPane.YES_OPTION) {
 							Runnable runnable = new Runnable() {
 								public void run() {
-									crTable.save2CSV (dlg.getSelectedFile())
+									FileCSV.save2CSV (dlg.getSelectedFile(), crTable)
 									uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
 								}
 							}

@@ -50,7 +50,15 @@ public class CRType /* implements Comparable<CRType>*/ {
 	]
 	
 	public CRType () {
-		
+		N_CR = 1
+		VI = 1
+		CO = 0
+		DOI = ""
+		AU = null
+		AU_F = null
+		AU_L = null
+		PAG = ""
+		VOL = "" 
 	}
 
 

@@ -5,6 +5,7 @@ import groovy.transform.CompileStatic
 
 import java.awt.Color
 import java.awt.Component
+import java.awt.Dimension;
 import java.awt.Point
 import java.awt.event.ActionEvent
 import java.awt.event.MouseAdapter
@@ -42,8 +43,8 @@ class TableFactory {
 			tableModel(  id:'tmodel',  list :  crTable.crData  ) {
 	
 				// first two columns are ALWAYS invisible; used to specify what rows are displayed (VI) and what background color they have (CO)
-				propertyColumn(header:'VI', 					propertyName:'VI', 			type: Integer, maxWidth:0 , minWidth:0, preferredWidth:0, resizable:true, editable: false)
-				propertyColumn(header:'CO', 					propertyName:'CO', 			type: Integer, maxWidth:0 , minWidth:0, preferredWidth:0, resizable:true, editable: false)
+				propertyColumn(header:'VI', 					propertyName:'VI', 			type: Integer, maxWidth:0 , minWidth:0, preferredWidth:0, editable: false)
+				propertyColumn(header:'CO', 					propertyName:'CO', 			type: Integer, maxWidth:0 , minWidth:0, preferredWidth:0, editable: false)
 	
 				propertyColumn(header:CRType.attr.ID,  			propertyName:'ID', 			type: Integer, 	editable: false)
 				propertyColumn(header:CRType.attr.CR,  			propertyName:'CR', 			type: String, 	editable: false)

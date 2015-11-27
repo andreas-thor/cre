@@ -3,16 +3,15 @@ package cre.data
 import groovy.beans.Bindable
 import groovy.transform.CompileStatic
 
-import java.util.regex.Matcher
-
 import org.jfree.data.xy.DefaultXYDataset
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein
-import au.com.bytecode.opencsv.CSVReader
-import au.com.bytecode.opencsv.CSVWriter
 import cre.data.CRMatch.Pair
-import cre.ui.UIMatchPanelFactory
+import cre.data.source.FileImport
+import cre.data.source.Scopus
+import cre.data.source.WoS
 import cre.ui.StatusBar
+import cre.ui.UIMatchPanelFactory
 
 
 /**
@@ -37,7 +36,9 @@ class CRTable {
 	}
 	
 	public class AbortedException extends Exception { }
-		
+	
+	public class UnsupportedFileFormatException extends Exception { }
+	
 	
 	
 		
@@ -58,11 +59,11 @@ class CRTable {
 	private Map<Integer, Integer> sumPerYear = [:]	// year -> sum of CRs (also for years without any CR)
 	private Map<Integer, Integer> crPerYear = [:]	// year -> number of CRs (<0, i.e., only years with >=1 CR are in the map)
 	
-	private CRMatch crMatch = new CRMatch()
+	CRMatch crMatch = new CRMatch()
 	private Map<Integer, Integer> crId2Index = [:]						// object Id -> index in crData list
 	private Map<CRCluster, List<Integer>> clusterId2Objects = [:]		// clusterId->[object ids]
 
-	private StatusBar stat	// status bar to indicate current information / progress
+	StatusBar stat	// status bar to indicate current information / progress
 	
 	
 	
@@ -93,7 +94,7 @@ class CRTable {
 	 * @param removed Data has been removed --> adjust clustering data structures
 	 */
 	
-	private void updateData (boolean removed) throws OutOfMemoryError {
+	public void updateData (boolean removed) throws OutOfMemoryError {
 
 		println "update Data"
 		println System.currentTimeMillis()
@@ -592,147 +593,27 @@ class CRTable {
 		[NCRs.min(), NCRs.max()]
 	}
 	
-	
-	/**
-	 * Save CR table to CSV file
-	 * @param file
-	 */
-	public void save2CSV (File file) {
 
-		String d = "${new Date()}: "
-		stat.setValue(d + "Saving CSV file ...", 0)
-		
-		// add csv extension if necessary
-		String file_name = file.toString();
-		if (!file_name.endsWith(".csv")) file_name += ".csv";
-		
-		CSVWriter csv = new CSVWriter (new FileWriter(new File(file_name)))
-		
-		List<String> csvColumns = CRType.attr.collect{ it.key } - ["CID2", "CID_S"]	// ignore cluster information
-		csv.writeNext(csvColumns + ["_SAMEAS", "_DIFFERENTTO"] as String[]) // add columns for manual match result
-		
-		crData.eachWithIndex  { CRType it, int idx -> 
-			stat.setValue (d + "Save CSV file ...", ((idx+1)*100.0/crData.size()).intValue())
-		
-			List<String> csvValues = csvColumns.collect { name -> it[name] as String}
-			
-			// add manual match result (2 columns: _SAMEAS, _DIFFERENTTO)
-			Map mM = ["SAMEAS":[], "DIFFERENTTO":[]]
-			crMatch.getMapping(it.ID, true).each { k, v ->
-				if (v!=null) {
-					mM[((v as Double) ==2d)?"SAMEAS":"DIFFERENTTO"] << (Integer)k
-				}
-			} 
-			csvValues << mM["SAMEAS"].join(",") << mM["DIFFERENTTO"].join(",") 
-
-			csv.writeNext (csvValues as String[]) 
-		} 
-		csv.close()
-		
-		stat.setValue("${new Date()}: Saving CSV file done", 0)
-	}
-
-		
-	/**
-	 * Load CR table from CSV file
-	 * @param file
-	 */
-	public void loadCSV (File file) throws AbortedException {
-		
-		this.abort = false	// can be changed by "wait dialog"
-		
-		String d = "${new Date()}: "
-		stat.setValue(d + "Loading CSV file ...", 0)
-
-		init()
-		
-		Map<String, Integer> attrPos = [:]
-
-		long fileSize = file.length()
-		long fileSizeRead = 0
-		
-		CSVReader csv = new CSVReader(new FileReader(file))
-		String[] line = csv.readNext() 
-		
-		if (line != null) {
-
-			line.each { String it -> fileSizeRead += it.length()+3 }
-			line.eachWithIndex { String a, int i -> attrPos[a.toUpperCase()] = i }
-//			println attrPos
-			while ((line = csv.readNext()) != null) {
-
-				if (this.abort) {
-					init()
-					this.updateData(false);
-					stat.setValue("${new Date()}: Loading CSV file aborted", 0)
-					this.abort = false
-					throw new AbortedException()
-				}
-				
-				
-				line.each { String it -> fileSizeRead += it.length()+3 }
-				stat.setValue ("Loading CSV file ...", (fileSizeRead*100.0/fileSize).intValue())
-				
-									
-				CRType cr = new CRType() 
-				CRType.attr.each { 
-					if (attrPos[it.key] != null) {
-						String v = line[attrPos[it.key]]
-						cr[it.key] = ["ID", "N_CR", "RPY"].contains(it.key) ? v.toInteger() : ( ["PERC_YR", "PERC_ALL"].contains(it.key) ? v.toDouble() : v)
-					}  
-				} 
-				cr.VI = 1	// visible
-				cr.CO = 0	// default color
-				cr.CID2 = new CRCluster(cr.ID, new Integer(1))
-				cr.CID_S = 1
-
-				["_SAMEAS":2, "_DIFFERENTTO":-2].each { String k, int v ->
-					if (line[attrPos[k]] != "") {
-						line[attrPos[k]].split(",").each { String it ->
-							crMatch.setMapping(line[attrPos["ID"]].toInteger(), it.toInteger(), v as Double, true, false)
-						}
-					}
-				}
-
-				crData << cr
-				clusterId2Objects[cr.CID2] = [cr.ID]
-			}
-		}
-		
-		this.updateData(false);
-		stat.setValue("${new Date()}: Loading CSV file done", 0)
-		
-	} 
-	
 	
 	/**
 	 * Load data files from Web Of Science (WOS)
 	 * @param files array of files
 	 */
-	public void loadDataFiles (File[] files, int maxCR, int[] yearRange) throws FileTooLargeException, AbortedException, OutOfMemoryError {
+	public void loadDataFiles (File[] files, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError {
 		
 		this.abort = false	// can be changed by "wait dialog"
 		
 		String d = "${new Date()}: "
-		stat.setValue(d + "Loading WOS files ...", 0)
+		stat.setValue(d + "Loading files ...", 0)
 		
-		boolean crBlock = false
-
-		init()
-		
+		HashMap<Character,  HashMap<String,Integer>> crDup = [:]	// first character -> (crString -> id )
 		int indexCount = 0
-		Map<Integer,  Map<String,Integer>> crDup = [:]	// year -> (crString -> id )
-		Matcher matchAuthor = "" =~ "([^ ]*)( )?(.*)?"
-		List<Matcher> matchAuthorVon = ["(von)()", "(van)( der)?", "(van't)()"].collect { "" =~ "${it}([^ ]*)( )([^ ]*)(.*)" }
-		Matcher matchPageVolumes = "" =~ "([PV])([0-9]+)"
-		Matcher matchDOI = "" =~ ".*DOI (10\\.[^/]+/ *[^ ,]+).*"
+		this.init()
 		
-		
-//		long[] timeMarks = [0,0,0,0,0,0]
-//		long[] timeDiffs = [0,0,0,0,0]
-//		long timeStart = System.currentTimeMillis()
 		int stepCount = 0
 		int stepSize = 5
+		CRType cr 
+		
 		
 		files.eachWithIndex { File f, int idx ->
 
@@ -740,9 +621,19 @@ class CRTable {
 			long fileSizeRead = 0
 			
 			BufferedReader br = new BufferedReader(new FileReader(f)) 
-			String line;
+			String line = br.readLine()
+			
+			FileImport parser = null 
+			if (line!=null) { 
+				if (line.contains("FN Thomson Reuters Web of")) parser = new WoS(yearRange)
+				if (line.contains("Scopus")) parser = new Scopus(yearRange)
+			}
+			
+			if (parser == null) throw new UnsupportedFileFormatException()
+			
 			while ((line = br.readLine()) != null) {
 			
+				// Check for abort by user
 				if (this.abort) {
 					this.init()
 					this.updateData(false);
@@ -751,139 +642,67 @@ class CRTable {
 					throw new AbortedException()
 				}
 				
-				
+				// update status bar
 				fileSizeRead += line.length()+1
 				if (stepCount*fileSizeStep < fileSizeRead) {
 					stat.setValue (d + "Loading WOS file ${idx+1} of ${files.length}", stepCount*stepSize)
 					stepCount++
 				}
 				
-				
-				if (!line.startsWith("   ")) crBlock = false
-				
-				if (line.startsWith("TI ")) this.noOfPubs++ // publication that has cites the other pubs (CR) 
-				
-				if (line.startsWith("CR ") || (line.startsWith("   ") && crBlock)) {
-					crBlock = true
+				cr = parser.parseLine(line)
+				if (cr != null) {
+						
+//					println cr.CR
+//					println cr.CR[0]
 					
 					
-					String cr = line[3..-1]
-					String[] crsplit = cr.split (",", 3)
-					
-					String yearS = crsplit.length > 1 ? crsplit[1].trim() : ""
-					if (yearS.isNumber()) {
+					// if CR already in database: increase N_CR by 1; else add new record
+					if (crDup[cr.CR.charAt(0)] == null) crDup[cr.CR.charAt(0)] = [:]
+					Integer id = crDup[cr.CR.charAt(0)][cr.CR]
+					if (id != null) {
+						crData[id].N_CR++
+//						println cr.CR
+					} else {
+						crDup[cr.CR.charAt(0)][cr.CR] = indexCount
 						
-//						for (int i=1; i<timeMarks.length; i++) {
-//							timeDiffs[i-1] += timeMarks[i]-timeMarks[i-1]
-//						}
-//						timeMarks[0] = System.currentTimeMillis()
-						
-						Integer year = yearS.toInteger()
-						if (((year >= yearRange[0]) || (yearRange[0]==0)) && ((year <= yearRange[1]) || (yearRange[1]==0))) {
-						
-							String author = crsplit[0].trim()
-							String lastname = null
-							String firstname = null
-							String doi = ""
-							
-							// process "difficult" last names starting with "von" etc.
-							if ((author.length()>0) && (author[0]=='v')) {
-								matchAuthorVon.each { Matcher matchVon ->
-									matchVon.reset(author)
-									if (matchVon.matches()) {
-										String[] m = (String[]) matchVon[0]
-										lastname = (m[1] + (m[2]?:"") + m[ ((m[3] == "") ? 5 : 3) ]).replaceAll(" ","").replaceAll("\\-","")
-										firstname = ((((m[3] == "") ? "" : m[5]) + m[6]).trim() as List)[0]?:""	// cast as List to avoid Index out of Bounds exception
-									}
-								}
-							}
-							
-	//						timeMarks[1] = System.currentTimeMillis()
-							
-							// process all other authors
-							if (lastname == null) {
-								matchAuthor.reset(author)
-								if (matchAuthor.matches()) {
-									String[] m = (String[]) matchAuthor[0]
-									lastname = m[1].replaceAll("\\-","")
-									firstname = (m[3]?:" ")[0]
-								}
-							}
-								
-	//						timeMarks[2] = System.currentTimeMillis()
-							
-							// process all journals
-							String journal = crsplit.length > 2 ? crsplit[2].trim() : ""
-							String journal_name = journal.split(",")[0]
-							def String[] split = journal_name.split(" ")
-							String journal_short = (split.size()==1) ? split[0] : split.inject("") { x, y -> x + ((y.length()>0) ? y[0] : "") }
-							
-	//						timeMarks[3] = System.currentTimeMillis()
-							
-							// find Volume and Pages and DOI
-							Map pagVol = ["P":"","V":""]
-							journal.split(",").each { String it ->
-								matchPageVolumes.reset(it.trim())
-								if (matchPageVolumes.matches()) {
-									String[] m = (String[]) matchPageVolumes[0]
-									pagVol[m[1]]=m[2]
-								}
-								
-								matchDOI.reset(it.trim())
-								if (matchDOI.matches()) {
-									String[] m = (String[]) matchDOI[0]
-									doi = m[1].replaceAll("  ","").toUpperCase()
-								}
-							} 
-							
-	//						timeMarks[4] = System.currentTimeMillis()
-	
-							
-							// if CR already in database: increase N_CR by 1; else add new record						
-							if (crDup[year] == null) crDup[year] = [:]
-							Integer id = crDup[year][cr]
-							if (id != null) {	
-								crData[id].N_CR++
-							} else {
-								crDup[year][cr] = indexCount
-								
-								if ((maxCR>0) && (indexCount==maxCR)) {
-									this.updateData(false);
-									stat.setValue("${new Date()}: Loading WOS files aborted", 0)
-									throw new FileTooLargeException (indexCount);
-								}
-								
-								CRCluster c = new CRCluster (indexCount+1, 1)
-								
-								crData << new CRType (
-									indexCount+1,
-									cr,
-									author,
-									firstname,
-									lastname,
-									journal,
-									journal_name,
-									journal_short,
-									1,
-									year,
-									pagVol["P"],
-									pagVol["V"],
-									doi,
-									c,		// each CR forms its own cluster
-									1,		// cluster size is 1 (by default)
-									1,		// is visible by default
-									0		// default color
-								)
-								
-								clusterId2Objects[c] = [indexCount+1]
-								indexCount++
-							}
-							
-	//						timeMarks[5] = System.currentTimeMillis()
+						if ((maxCR>0) && (indexCount==maxCR)) {
+							this.updateData(false);
+							stat.setValue("${new Date()}: Loading WOS files aborted", 0)
+							throw new FileTooLargeException (indexCount);
 						}
+						
+						cr.ID = indexCount+1
+						cr.CID2 = new CRCluster (indexCount+1, 1)
+						cr.CID_S = 1
+						crData << cr
+						
+	//					crData << new CRType (
+	//						indexCount+1,
+	//						cr,
+	//						author,
+	//						firstname,
+	//						lastname,
+	//						journal,
+	//						journal_name,
+	//						journal_short,
+	//						1,
+	//						year,
+	//						pagVol["P"],
+	//						pagVol["V"],
+	//						doi,
+	//						c,		// each CR forms its own cluster
+	//						1,		// cluster size is 1 (by default)
+	//						1,		// is visible by default
+	//						0		// default color
+	//					)
+						
+						clusterId2Objects[cr.CID2] = [indexCount+1]
+						indexCount++
 					}
 				}
 			}
+			
+			this.noOfPubs += parser.noOfPubs
 		}
 
 		
@@ -896,6 +715,7 @@ class CRTable {
 //		}
 //		
 //		println indexCount
+		
 		
 		this.updateData(false);
 		stat.setValue("${new Date()}: Loading WOS files done", 0)
