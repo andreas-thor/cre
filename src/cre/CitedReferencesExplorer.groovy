@@ -42,7 +42,7 @@ JFrame mainFrame
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2015/11/19)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2015/12/07)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -74,7 +74,7 @@ mainFrame = sb.frame(
 								wait.dispose()
 							} catch (FileTooLargeException e1) {
 								wait.dispose()
-								JOptionPane.showMessageDialog(null, "You try to import too man cited references.\nImport was aborted after loading ${e1.numberOfCRs} Cited References.\nYou can change the maximum number in the File > Settings > Miscellaneous menu. " );
+								JOptionPane.showMessageDialog(null, "You try to import too many cited references.\nImport was aborted after loading ${e1.numberOfCRs} Cited References.\nYou can change the maximum number in the File > Settings > Miscellaneous menu. " );
 							} catch (UnsupportedFileFormatException e4) {
 								wait.dispose()
 								JOptionPane.showMessageDialog(null, "Unknown file format." );

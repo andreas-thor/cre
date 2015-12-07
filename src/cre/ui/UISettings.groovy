@@ -136,7 +136,7 @@ class UISettings {
 		userPrefs.put("lastFileDir", lastFileDir.getAbsolutePath())
 		
 		// set the default directory for "Save as png/jpg"
-		chpan.setDefaultDirectoryForSaveAs(f)
+		try { chpan.setDefaultDirectoryForSaveAs(lastFileDir) } catch (Exception e) { } 
 	}
 	
 	public int getMaxCR () {

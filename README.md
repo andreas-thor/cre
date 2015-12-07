@@ -11,6 +11,12 @@
 * website
 
 
+##UPDATE 2015/12/07
+* bug fix: CRE does not start if last directory not available any more --> catch Exception
+
+##UPDATE 2015/11/27
+* added Scopus file format
+
 ##UPDATE 2015/11/19
 * settings dialog 
   * list of attributes is in three columns
