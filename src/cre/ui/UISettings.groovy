@@ -33,6 +33,7 @@ class UISettings {
 	private Preferences userPrefs
 	private JTable tab
 	private JFrame mainFrame
+	private CRTable crTab
 	
 	private ChartPanel chpan
 	private byte[] attributes
@@ -42,26 +43,40 @@ class UISettings {
 	private int maxCR
 	private int[] yearRange
 	private int digits;
+	private int medianRange;
 	
 	
-	public UISettings(JTable tab, ChartPanel chpan, JFrame mainFrame) {
+	
+	public UISettings(JTable tab, ChartPanel chpan, JFrame mainFrame, CRTable crTab) {
 		this.tab = tab
 		this.chpan = chpan
 		this.mainFrame = mainFrame
+		this.crTab = crTab
 		
 		userPrefs = Preferences.userNodeForPackage( CitedReferencesExplorer.getClass() )
 		setAttributes(userPrefs.getByteArray("attributes", CRType.attr.collect {k, v -> 1} as byte[]))
 		setLines(userPrefs.getByteArray("lines", CRTable.line.collect {k, v -> 1} as byte[]))
-		setSeriesSizes(userPrefs.getByteArray("seriesSizes", ([6,3] as byte[])))
+		setSeriesSizes(userPrefs.getByteArray("seriesSizes", ([1,1] as byte[])))
 		setLastDirectory(new File (userPrefs.get("lastFileDir", "")))
 		setMaxCR(userPrefs.getInt("maxCR", 100000))
 		setYearRange([userPrefs.getInt("minYear", 0), userPrefs.getInt("maxYear", 0)] as int[])
 		setDigits (userPrefs.getInt("digits", 3));
+		setMedianRange(userPrefs.getInt("medianRange",2));
 		
 		mainFrame.setSize(userPrefs.getInt("WindowWidth", 800), userPrefs.getInt("WindowHeight", 600))
 		mainFrame.setLocation(userPrefs.getInt("WindowX", 0), userPrefs.getInt("WindowY", 0))
 	}
 	
+	
+	public void setMedianRange (int medianRange) {
+		this.medianRange = Math.max (medianRange, 1)
+		userPrefs.putInt("medianRange", this.medianRange);
+		crTab.generateChart(this.medianRange)
+	}
+	
+	public int getMedianRange() {
+		return medianRange;
+	}
 	
 	public void setWindowPos () {
 		userPrefs.putInt("WindowX", mainFrame.getX());
@@ -248,7 +263,15 @@ class UISettings {
 											}
 											
 										}
-									}}}
+									} } }
+									tr { td (align:'left') { sb.panel (border: BorderFactory.createTitledBorder("Median")) {
+										tableLayout (id: 'medianRange', cellpadding: 0 ) {
+											tr {
+												td (align:'right') { label(text:"Median Range: +/-") }
+												td (align:'left') {  widget (createTF(medianRange))  }
+											}
+										}
+									} } }
 								}
 							}
 							
@@ -285,6 +308,7 @@ class UISettings {
 								setDigits ((Integer) (((JPanel) sb.val).getComponents())[1].getValue())
 								setLines (((JPanel) sb.lines).getComponents().collect { JCheckBox cb ->  cb.isSelected()?1:0} as byte[])
 								setSeriesSizes ((0..1).collect { (Integer) ((JPanel) sb.seriesSizes).getComponents()[2*it+1].getValue() } as byte[])
+								setMedianRange ((Integer) (((JPanel) sb.medianRange).getComponents())[1].getValue())
 								setMaxCR ((Integer) (((JPanel) sb.imp).getComponents())[1].getValue())
 								setYearRange ((1..2).collect { (Integer) ((JPanel) sb.imp).getComponents()[2*it+1].getValue() } as int[])
 								setDlg.dispose()

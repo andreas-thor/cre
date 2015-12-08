@@ -4,6 +4,7 @@ import groovy.beans.Bindable
 import groovy.transform.CompileStatic
 
 import org.jfree.data.xy.DefaultXYDataset
+import org.jfree.data.xy.XYSeries
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein
 import cre.data.CRMatch.Pair
@@ -65,6 +66,7 @@ class CRTable {
 
 	StatusBar stat	// status bar to indicate current information / progress
 	
+	private int medianRange
 	
 	
 	
@@ -158,24 +160,40 @@ class CRTable {
 
 		println System.currentTimeMillis()
 		
-		// generate data rows for chart
-		Map<Integer, Integer> NCRperYearMedian = [:]
-		sumPerYear.each { y, crs -> NCRperYearMedian[y] = crs - ((-2..+2).collect { sumPerYear[y+it]?:0 }.sort {it}[2]) }
-		
-		println System.currentTimeMillis()
-		
-		// generate chart lines
-		sumPerYear = sumPerYear.sort { it.key }
-		ds.addSeries(line['NCR_PER_YEAR'], [sumPerYear.collect  { it.key }, sumPerYear.collect  { it.value }] as double[][])
-		NCRperYearMedian = NCRperYearMedian.sort { it.key }
-		ds.addSeries(line['DEV_FROM_MED'], [NCRperYearMedian.collect  { it.key }, NCRperYearMedian.collect  { it.value }] as double[][])
+		generateChart()
 		
 		duringUpdate = false
 		
 		println System.currentTimeMillis()
 		
 	}
+
 	
+	public generateChart (int medianRange=-1) {
+		
+		if (medianRange>0) {
+			this.medianRange = medianRange
+		}
+		
+		// generate data rows for chart
+		Map<Integer, Integer> NCRperYearMedian = [:]
+		sumPerYear.each { y, crs -> NCRperYearMedian[y] = crs - ((-this.medianRange..this.medianRange).collect { sumPerYear[y+it]?:0 }.sort {it}[this.medianRange]) }
+		
+		println System.currentTimeMillis()
+		
+		while (ds.getSeriesCount()>0) {
+			ds.removeSeries(ds.getSeriesKey(ds.getSeriesCount()-1))
+		}
+		
+		// generate chart lines
+		sumPerYear = sumPerYear.sort { it.key }
+		ds.addSeries(line['NCR_PER_YEAR'], [sumPerYear.collect  { it.key }, sumPerYear.collect  { it.value }] as double[][])
+		NCRperYearMedian = NCRperYearMedian.sort { it.key }
+		ds.addSeries("Deviation from the ${2*this.medianRange+1}-Year-Median", [NCRperYearMedian.collect  { it.key }, NCRperYearMedian.collect  { it.value }] as double[][])
+		
+		stat.setValue("", 0, getInfoString())
+	}
+		
 	
 	/**
 	 * 
@@ -330,7 +348,7 @@ class CRTable {
 			}
 		}
 		
-		stat.setValue ("${new Date()}: Clustering done", 0)
+		stat.setValue ("${new Date()}: Clustering done", 0, getInfoString())
 	}
 	
 	
@@ -467,7 +485,7 @@ class CRTable {
 		// remove all invalidated CRs
 		crData.removeAll { CRType it -> it.CID2 == null }
 		updateData(true)
-		stat.setValue ("Merging done", 0)
+		stat.setValue ("Merging done", 0, getInfoString())
 		
 	}
 	
@@ -487,6 +505,11 @@ class CRTable {
 			"Maximal Cited References Year": years[1],
 			"Number of Citing Publications": noOfPubs
 		]
+	}
+	
+	public String getInfoString() {
+		List<Integer> years = getMaxRangeYear()
+		"${crData.size()} CRs (${crData.findAll { CRType it -> it.VI==1}.size()} shown), ${clusterId2Objects.keySet().size()} clusters, ${years[0]}-${years[1]} "
 	}
 	
 
@@ -604,7 +627,7 @@ class CRTable {
 		this.abort = false	// can be changed by "wait dialog"
 		
 		String d = "${new Date()}: "
-		stat.setValue(d + "Loading files ...", 0)
+		stat.setValue(d + "Loading files ...", 0, "")
 		
 		HashMap<Character,  HashMap<String,Integer>> crDup = [:]	// first character -> (crString -> id )
 		int indexCount = 0
@@ -718,7 +741,7 @@ class CRTable {
 		
 		
 		this.updateData(false);
-		stat.setValue("${new Date()}: Loading WOS files done", 0)
+		stat.setValue("${new Date()}: Loading WOS files done", 0, getInfoString())
 	}
 	
 }

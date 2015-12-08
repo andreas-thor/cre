@@ -42,7 +42,7 @@ JFrame mainFrame
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2015/12/07)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2015/12/08)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -307,7 +307,7 @@ mainFrame = sb.frame(
 mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage("CRE32.png"));
 mainFrame.pack()
 mainFrame.setLocationRelativeTo(null)
-uisetting = new UISettings(tab, chpan, mainFrame)
+uisetting = new UISettings(tab, chpan, mainFrame, crTable)
 mainFrame.visible = true
 
 

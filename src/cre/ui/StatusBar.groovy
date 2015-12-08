@@ -20,6 +20,7 @@ class StatusBar {
 	public JPanel pan
 	private JLabel sblabel
 	private JProgressBar sbpb
+	private JLabel sbinfo
 	
 
 	public StatusBar() {
@@ -32,16 +33,17 @@ class StatusBar {
 				constraints: gbc(gridx:0,gridy:0,fill:java.awt.GridBagConstraints.BOTH,anchor:java.awt.GridBagConstraints.WEST,weightx:0, weighty:0))
 			sbpb = progressBar(preferredSize:[300, 16], minimum: 0, maximum: 100,value:0,
 				constraints: gbc(gridx:1,gridy:0,fill:java.awt.GridBagConstraints.BOTH,anchor:java.awt.GridBagConstraints.EAST,weightx:1, weighty:0))
-			label (text:"   ",
+			sbinfo = label (text:"   ",
 				constraints: gbc(gridx:2,gridy:0,fill:java.awt.GridBagConstraints.BOTH,anchor:java.awt.GridBagConstraints.WEST,weightx:0, weighty:0))
 		}
 	}
 
 		
 	@CompileStatic
-	public void setValue (String label, int value) {
+	public void setValue (String label, int value, String info=null) {
 		sblabel.text = "   ${label}       "
 		sbpb.setValue(value)
+		if (info != null) sbinfo.text = "       ${info}   "
 	}
 	
 	

@@ -49,7 +49,7 @@ class FileCSV {
 		}
 		csv.close()
 		
-		crTab.stat.setValue("${new Date()}: Saving CSV file done", 0)
+		crTab.stat.setValue("${new Date()}: Saving CSV file done", 0, crTab.getInfoString())
 	}
 
 		
@@ -62,7 +62,7 @@ class FileCSV {
 		crTab.abort = false	// can be changed by "wait dialog"
 		
 		String d = "${new Date()}: "
-		crTab.stat.setValue(d + "Loading CSV file ...", 0)
+		crTab.stat.setValue(d + "Loading CSV file ...", 0, "")
 
 		crTab.init()
 		
@@ -84,7 +84,7 @@ class FileCSV {
 				if (crTab.abort) {
 					crTab.init()
 					crTab.updateData(true);
-					crTab.stat.setValue("${new Date()}: Loading CSV file aborted", 0)
+					crTab.stat.setValue("${new Date()}: Loading CSV file aborted", 0, crTab.getInfoString())
 					crTab.abort = false
 					throw new AbortedException()
 				}
@@ -119,7 +119,7 @@ class FileCSV {
 		}
 		
 		crTab.updateData(true);
-		crTab.stat.setValue("${new Date()}: Loading CSV file done", 0)
+		crTab.stat.setValue("${new Date()}: Loading CSV file done", 0, crTab.getInfoString())
 		
 	}
 	

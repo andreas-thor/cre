@@ -10,6 +10,11 @@
 * documentation of source code
 * website
 
+##UPDATE 2015/12/..
+* median range (+/- years) incorporated
+* status bar has info on data set
+* !!! found bugfix: click on dataitem sometimes leads to index array out of bounds exception)
+
 
 ##UPDATE 2015/12/07
 * bug fix: CRE does not start if last directory not available any more --> catch Exception

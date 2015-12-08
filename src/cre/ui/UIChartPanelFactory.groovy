@@ -84,6 +84,7 @@ class UIChartPanelFactory {
 				if (! crTable.duringUpdate) {	// ignore updates during data update
 					((XYPlot)pcevent.getPlot()).getDomainAxis().with { crTable.filterByYear (getLowerBound(), getUpperBound()) }
 					((AbstractTableModel)tab.getModel()).fireTableDataChanged()	// automatically triggers UI refresh
+					crTable.stat.setValue("", 0, crTable.getInfoString())
 //					sb.tmodel.fireTableDataChanged()
 				}
 			}] as PlotChangeListener )
