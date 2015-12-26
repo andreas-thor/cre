@@ -10,7 +10,7 @@
 * documentation of source code
 * website
 
-##UPDATE 2015/12/..
+##UPDATE 2015/12/08
 * median range (+/- years) incorporated
 * status bar has info on data set
 * !!! found bugfix: click on dataitem sometimes leads to index array out of bounds exception)

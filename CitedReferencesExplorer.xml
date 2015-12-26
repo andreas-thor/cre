@@ -12,7 +12,9 @@
 	<property name="src.dir" value="./src/"/>
 	<property name="bin.dir" value="./bin/"/>
 	<property name="lib.dir" value="./lib/"/>
-	<property name="deploy.dir" value="H:/www1_thor/citationtest"/>
+	<property name="deploy.dir" value="H:/www1_thor/crexplorer"/>
+	<property name="deploy2.dir" value="H:/www1_thor/citationtest"/>
+	<property name="html.dir" value="./html/"/>
 
 	<!-- clean,create_jws_jar,create_fat_jar,sign,deploy -->
 	<target name="all" depends="clean,create_jws_jar,create_fat_jar,sign,deploy"></target>
@@ -59,6 +61,9 @@
 	<target name="deploy">
 		<copy todir="${deploy.dir}">
 			<fileset dir="${build.dir}"/>
+		</copy>
+		<copy todir="${deploy.dir}">
+			<fileset dir="${html.dir}"/>
 		</copy>
 		<copy file="${jnlp}" todir="${deploy.dir}"/>
 		<copy file="CRE64.png" todir="${deploy.dir}"/>
