@@ -15,7 +15,7 @@
 	}
 </script>
 </head>
-<body>
+<body onload="showSection(0);">
 
 	<div class="header">
 		<h1>Cited References Explorer</h1>
@@ -23,9 +23,9 @@
 
 	<div class="nav">
 		<p><a href="#" onclick="showSection(0);">Introduction</a></p> 
-		<p><a href="#" onclick="showSection(1);">Example</a></p> 
-		<p><a href="#" onclick="showSection(2);">Run & Download</a></p> 
-		<p><a href="#"	onclick="showSection(3);">Papers & Datasets</a></p> 
+		<p><a href="#" onclick="showSection(1);">Run & Download</a></p> 
+		<p><a href="#" onclick="showSection(2);">Guide & Datasets</a></p> 
+		<p><a href="#" onclick="showSection(3);">Papers</a></p> 
 		<p><a href="#" onclick="showSection(4);">Authors</a></p>
 	</div>
 
@@ -49,11 +49,7 @@
 			"spectrogram" with peaks. CRExplorer visualizes this spectrogram,
 			cleans the cited references (so-called "disambiguation"), and uses a
 			smoothing algorithm to suppress the noise.</p>
-	</div>
-
-	<div class="section" style="display: none">
-		<h1>Example</h1>
-		
+	
 		 <figure>
 		  	<img src="fig1.png" alt="Figure 1">
   			<figcaption><i>Figure 1: Three citation classics of “climate change” appearing as peaks in the spectrogram</i></figcaption>
@@ -95,10 +91,10 @@
 
 
 
-	<div class="section" style="display: none">
+	<div class="section">
 		<h1>Running CRExplorer & System Requirements</h1>
 		<p>CRExplorer requires a system with Java 7 support. There are two
-			options to run CRExplorer.</p>
+			options to run CRExplorer:</p>
 		<ol>
 			<li><b>Java Web Start</b>: Click the 
 				<a	href="http://www1.hft-leipzig.de/thor/crexplorer/CitedReferencesExplorer.jnlp">CRExplorer Start link</a> 
@@ -123,19 +119,33 @@
 	</div>
 
 
-	<div class="section" style="display: none">
-		<h1>Papers and Datasets</h1>
+	<div class="section">
+		<h1>Guide and Datasets</h1>
+		
+		<p>Introducing CitedReferencesExplorer (CRExplorer): A program 
+			for Reference Publication Year Spectroscopy with Cited References
+			Disambiguation<br />
+			by Andreas Thor, Werner Marx, Loet Leydesdorff, and Lutz Bornmann
+		</p>
+
+		<p>Datasets:</p>
 		<ul>
-			<li>Introducing CitedReferencesExplorer (CRExplorer): A program
-				for Reference Publication Year Spectroscopy with Cited References
-				Disambiguation</li>
 			<li><a href="http://www1.hft-leipzig.de/thor/crexplorer/savedrecs_JOI1.txt">Dataset #1</a> (2MB)</li>
 			<li><a href="http://www1.hft-leipzig.de/thor/crexplorer/savedrecs_JOI2.txt">Dataset #2</a> (150kB)</li>
 		</ul>
 	</div>
 
 
-	<div class="section" style="display: none">
+	<div class="section">
+		<h1>Papers</h1>
+		<ul>
+			<li><a href="http://arxiv.org/abs/1307.8239">Detecting the historical roots of research fields by reference publication year spectroscopy (RPYS)</a>
+			<br />by Werner Marx, Lutz Bornmann, Andreas Barth, and Loet Leydesdorff</li>
+		</ul>
+	</div>
+
+
+	<div class="section">
 		<h1>Authors/Inventors</h1>
 		<p>
 Andreas Thor<br />
