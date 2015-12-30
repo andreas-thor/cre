@@ -132,49 +132,7 @@ class UIChartPanelFactory {
 		 */
 		JPopupMenu saveAs = (JPopupMenu) chpan.getPopupMenu().getSubElements()[2].getSubElements()[0]
 		saveAs.remove (2)
-//		
-//		JMenuItem saveAsCSV = new JMenuItem("CSV...")
-//		saveAsCSV.addActionListener([
-//			actionPerformed: { ActionEvent e ->
-//
-//				JFileChooser dlg = new JFileChooser(dialogTitle: "Save as CSV file", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
-//				dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
-//				dlg.setCurrentDirectory(chpan.getDefaultDirectoryForSaveAs())
-//
-//				
-//				int answer = JOptionPane.NO_OPTION
-//				while (answer == JOptionPane.NO_OPTION) {
-//					
-//					if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
-//						
-//						answer = JOptionPane.YES_OPTION
-//						if (dlg.getSelectedFile().exists()) {
-//							answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
-//						}
-//						if (answer == JOptionPane.YES_OPTION) {
-//							Runnable runnable = new Runnable() {
-//								public void run() {
-////									FileCSV.save2CSV (dlg.getSelectedFile(), crTable)
-//									
-////									uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
-//								}
-//							}
-//							Thread t = new Thread(runnable)
-//							t.start()
-//						}
-//					} else {
-//						break
-//					}
-//				}
-//
-//								
-//				
-//			}] as ActionListener)
-			
-			
 		saveAs.add(saveAsCSV) 
-		
-//		((JMenuItem)chpan.getPopupMenu().getSubElements()[2].getSubElements()[0].getSubElements()[2]).setVisible(false)
 		
 		return chpan
 		
