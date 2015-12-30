@@ -4,12 +4,15 @@ import groovy.transform.CompileStatic
 
 import java.awt.BasicStroke
 import java.awt.Color
+import java.awt.event.ActionEvent
+import java.awt.event.ActionListener
 import java.awt.geom.Ellipse2D
 import java.awt.geom.Rectangle2D
 import java.text.DecimalFormat
 
 import javax.swing.*
 import javax.swing.table.AbstractTableModel
+import javax.swing.filechooser.FileFilter
 
 import org.jfree.chart.ChartFactory
 import org.jfree.chart.ChartMouseEvent
@@ -37,7 +40,7 @@ import cre.data.CRTable
 class UIChartPanelFactory {
 
 	
-	static ChartPanel create(CRTable crTable, JTable tab) {
+	static ChartPanel create(CRTable crTable, JTable tab, JMenuItem saveAsCSV) {
 
 		JFreeChart chart = ChartFactory.createXYLineChart("", "Cited Reference Year", "Cited References", crTable.ds )
 		
@@ -121,9 +124,57 @@ class UIChartPanelFactory {
 			}] as ChartMouseListener)
 		
 		
-		/* hide "save as -> pdf" menu item because it prints "Evaluation version of OrsonPDF" on the pdf */
-		((JMenuItem)chpan.getPopupMenu().getSubElements()[2].getSubElements()[0].getSubElements()[2]).setVisible(false)
+
+		/*
+		 * Adjust "Save As"	popup menu
+		 * remove "save as -> pdf" menu item because it prints "Evaluation version of OrsonPDF" on the pdf 
+		 * add "save as -> csv"
+		 */
+		JPopupMenu saveAs = (JPopupMenu) chpan.getPopupMenu().getSubElements()[2].getSubElements()[0]
+		saveAs.remove (2)
+//		
+//		JMenuItem saveAsCSV = new JMenuItem("CSV...")
+//		saveAsCSV.addActionListener([
+//			actionPerformed: { ActionEvent e ->
+//
+//				JFileChooser dlg = new JFileChooser(dialogTitle: "Save as CSV file", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
+//				dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
+//				dlg.setCurrentDirectory(chpan.getDefaultDirectoryForSaveAs())
+//
+//				
+//				int answer = JOptionPane.NO_OPTION
+//				while (answer == JOptionPane.NO_OPTION) {
+//					
+//					if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
+//						
+//						answer = JOptionPane.YES_OPTION
+//						if (dlg.getSelectedFile().exists()) {
+//							answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
+//						}
+//						if (answer == JOptionPane.YES_OPTION) {
+//							Runnable runnable = new Runnable() {
+//								public void run() {
+////									FileCSV.save2CSV (dlg.getSelectedFile(), crTable)
+//									
+////									uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
+//								}
+//							}
+//							Thread t = new Thread(runnable)
+//							t.start()
+//						}
+//					} else {
+//						break
+//					}
+//				}
+//
+//								
+//				
+//			}] as ActionListener)
+			
+			
+		saveAs.add(saveAsCSV) 
 		
+//		((JMenuItem)chpan.getPopupMenu().getSubElements()[2].getSubElements()[0].getSubElements()[2]).setVisible(false)
 		
 		return chpan
 		

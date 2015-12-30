@@ -22,11 +22,21 @@
 	</div>
 
 	<div class="nav">
-		<p><a href="#" onclick="showSection(0);">Introduction</a></p> 
-		<p><a href="#" onclick="showSection(1);">Run & Download</a></p> 
-		<p><a href="#" onclick="showSection(2);">Guide & Datasets</a></p> 
-		<p><a href="#" onclick="showSection(3);">Papers</a></p> 
-		<p><a href="#" onclick="showSection(4);">Authors</a></p>
+		<p>
+			<a href="#" onclick="showSection(0);">Introduction</a>
+		</p>
+		<p>
+			<a href="#" onclick="showSection(1);">Run & Download</a>
+		</p>
+		<p>
+			<a href="#" onclick="showSection(2);">Guide & Datasets</a>
+		</p>
+		<p>
+			<a href="#" onclick="showSection(3);">Papers</a>
+		</p>
+		<p>
+			<a href="#" onclick="showSection(4);">Authors</a>
+		</p>
 	</div>
 
 	<div class="section">
@@ -37,23 +47,33 @@
 			intellectual roots of a research topic? These questions can be
 			answered by using the program CitedReferencesExplorer (CRExplorer).
 			The CRExplorer is a new software development which is based on the
-			programs provided at 
-			<a href="http://www.leydesdorff.net/software/rpys/">Loet Leydesdorff’s homepage</a>.
+			programs provided at <a
+				href="http://www.leydesdorff.net/software/rpys/">Loet
+				Leydesdorff’s homepage</a>.
 		</p>
-		<p>The CRExplorer uses data from Web of Science (Thomson Reuters)
-			as input. Publication sets have to be downloaded including the
+		<p>
+			The CRExplorer uses data from Web of Science (Thomson Reuters) as
+			input. Publication sets have to be downloaded including the
 			references cited. The program focusses on the analysis of the cited
 			references, in particular on the referenced publication years. Over
 			time, "citation classics" of a field become more pronounced. When the
 			aggregated citations are plotted along the time axis, one obtains a
 			"spectrogram" with peaks. CRExplorer visualizes this spectrogram,
 			cleans the cited references (so-called "disambiguation"), and uses a
-			smoothing algorithm to suppress the noise.</p>
-	
-		 <figure>
-		  	<img src="fig1.png" alt="Figure 1">
-  			<figcaption><i>Figure 1: Three citation classics of “climate change” appearing as peaks in the spectrogram</i></figcaption>
-		</figure> 
+			smoothing algorithm to suppress the noise. The method Reference
+			Publication Year Spectroscopy (RPYS) was developed by Werner Marx who
+			used it for the first time in the <a
+				href="http://www.rmets.org/sites/default/files/hisnews1003.pdf">field
+				of meteorology (see his study on page 11)</a>.
+		</p>
+
+		<figure>
+			<img src="fig1.png" alt="Figure 1">
+			<figcaption>
+				<i>Figure 1: Three citation classics of “climate change”
+					appearing as peaks in the spectrogram</i>
+			</figcaption>
+		</figure>
 
 		<p>Figure 1, for example, shows three pronounced peaks during the
 			19th century, and a few smaller ones during the first half of the
@@ -96,42 +116,48 @@
 		<p>CRExplorer requires a system with Java 7 support. There are two
 			options to run CRExplorer:</p>
 		<ol>
-			<li><b>Java Web Start</b>: Click the 
-				<a	href="http://www1.hft-leipzig.de/thor/crexplorer/CitedReferencesExplorer.jnlp">CRExplorer Start link</a> 
-				to launch CRExplorer directly from this web page using
+			<li><b>Java Web Start</b>: Click the <a
+				href="http://www1.hft-leipzig.de/thor/crexplorer/CitedReferencesExplorer.jnlp">CRExplorer
+					Start link</a> to launch CRExplorer directly from this web page using
 				Java Web Start Launcher. If you start CRExplorer for the first time
 				your computer system will likely refuse to run the program due to
-				security reasons. If so, you have to put the URL 
-				<a href="http://www1.hft-leipzig.de">http://www1.hft-leipzig.de</a> in
+				security reasons. If so, you have to put the URL <a
+				href="http://www1.hft-leipzig.de">http://www1.hft-leipzig.de</a> in
 				the list of exceptions in your Java configuration. Please follow the
-				official Java instructions on <a href="https://www.java.com/en/download/faq/exception_sitelist.xml">
-				How can I configure the Exception Site List?</a>. This has to be done only
-				once.<br />
-			<br /></li>
+				official Java instructions on <a
+				href="https://www.java.com/en/download/faq/exception_sitelist.xml">
+					How can I configure the Exception Site List?</a>. This has to be done
+				only once.<br /> <br /></li>
 			<li><b>Download</b>: You can <a
 				href="http://www1.hft-leipzig.de/thor/crexplorer/CitedReferencesExplorerFull.jar">download
-				a runnable JAR file</a>. On most systems a double click on the JAR file
+					a runnable JAR file</a>. On most systems a double click on the JAR file
 				will start CRExplorer. If you want to run the JAR file from command
-				line please refer to the official Java documentation on <a href="https://docs.oracle.com/javase/tutorial/deployment/jar/run.html">
-				Running JAR-Packaged Software</a>. Here you can also set the heap space size if
-				you are processing large files.</li>
+				line please refer to the official Java documentation on <a
+				href="https://docs.oracle.com/javase/tutorial/deployment/jar/run.html">
+					Running JAR-Packaged Software</a>. Here you can also set the heap space
+				size if you are processing large files.</li>
 		</ol>
 	</div>
 
 
 	<div class="section">
 		<h1>Guide and Datasets</h1>
-		
-		<p>Introducing CitedReferencesExplorer (CRExplorer): A program 
-			for Reference Publication Year Spectroscopy with Cited References
-			Disambiguation<br />
-			by Andreas Thor, Werner Marx, Loet Leydesdorff, and Lutz Bornmann
+
+		<p>
+			Introducing CitedReferencesExplorer (CRExplorer): A program for
+			Reference Publication Year Spectroscopy with Cited References
+			Disambiguation<br /> by Andreas Thor, Werner Marx, Loet Leydesdorff,
+			and Lutz Bornmann
 		</p>
 
 		<p>Datasets:</p>
 		<ul>
-			<li><a href="http://www1.hft-leipzig.de/thor/crexplorer/savedrecs_JOI1.txt">Dataset #1</a> (2MB)</li>
-			<li><a href="http://www1.hft-leipzig.de/thor/crexplorer/savedrecs_JOI2.txt">Dataset #2</a> (150kB)</li>
+			<li><a
+				href="http://www1.hft-leipzig.de/thor/crexplorer/savedrecs_JOI1.txt">Dataset
+					#1</a> (2MB)</li>
+			<li><a
+				href="http://www1.hft-leipzig.de/thor/crexplorer/savedrecs_JOI2.txt">Dataset
+					#2</a> (150kB)</li>
 		</ul>
 	</div>
 
@@ -139,8 +165,30 @@
 	<div class="section">
 		<h1>Papers</h1>
 		<ul>
-			<li><a href="http://arxiv.org/abs/1307.8239">Detecting the historical roots of research fields by reference publication year spectroscopy (RPYS)</a>
-			<br />by Werner Marx, Lutz Bornmann, Andreas Barth, and Loet Leydesdorff</li>
+			<li><a href="http://arxiv.org/abs/1307.8239">Detecting the
+					historical roots of research fields by reference publication year
+					spectroscopy (RPYS)</a> <br />by Werner Marx, Lutz Bornmann, Andreas
+				Barth, and Loet Leydesdorff<br /><br /></li>
+			<li><a href="http://arxiv.org/abs/1410.3461">Philosophy of
+					science viewed through the lense of "References Publication Years
+					spectrosopy" (RPYS)</a><br />by K. Brad Wray, Lutz and Bornmann<br /><br /></li>
+			<li><a href="http://arxiv.org/abs/1311.5665">Tracing the
+					origin of a scientific legend by Reference Publication Year
+					Spectroscopy (RPYS): the legend of the Darwin finches </a><br />by
+				Werner Marx, and Lutz Bornmann<br /><br /></li>
+			<li><a href="http://arxiv.org/abs/1309.5706">Referenced
+					Publication Years Spectroscopy applied to iMetrics: Scientometrics,
+					Journal of Informetrics, and a relevant subset of JASIST </a><br />by
+				Loet Leydesdorff, Lutz Bornmann, Werner Marx, and Sta&#353;a
+				Milojevic<br /><br /></li>
+			<li><a href="https://dx.doi.org/10.6084/m9.figshare.1422015">Identifying
+					seminal works most important for research fields: Software for the
+					Reference Publication Year Spectroscopy (RPYS) </a><br />by Lutz
+				Bornmann, Andreas Thor, Werner Marx, and Loet Leydesdorff<br /><br /></li>
+			<li><a href="http://arxiv.org/abs/1402.4223">On the origins
+					and the historical roots of the Higgs boson research from a
+					bibliometric perspective </a><br />by Andreas Barth, Werner Marx, Lutz
+				Bornmann, and Ruediger Mutz<br /><br /></li>
 		</ul>
 	</div>
 
@@ -148,44 +196,36 @@
 	<div class="section">
 		<h1>Authors/Inventors</h1>
 		<p>
-Andreas Thor<br />
-University of Applied Sciences for Telecommunications Leipzig<br />
-Gustav-Freytag-Str. 43-45,<br />
-04277 Leipzig, Germany.<br />
-Email: thor@hft-leipzig.de
-</p>
-<p>
-Werner Marx<br />
-Max Planck Institute for Solid State Research<br />
-Information Service<br />
-Heisenbergstrasse 1,<br />
-70506 Stuttgart, Germany.<br />
-Email: w.marx@fkf.mpg.de
-</p>
-<p>
-Loet Leydesdorff<br />
-Amsterdam School of Communication Research (ASCoR),<br />
-University of Amsterdam,<br />
-P.O. Box 15793<br />
-1001 NG Amsterdam, The Netherlands.<br />
-Email: loet@leydesdorff.net <br />
-</p>
-<p>
-Lutz Bornmann<br />
-Division for Science and Innovation Studies<br />
-Administrative Headquarters of the Max Planck Society<br />
-Hofgartenstr. 8,<br />
-80539 Munich, Germany.<br />
-Email: bornmann@gv.mpg.de<br />
-</p>
+			Andreas Thor<br /> University of Applied Sciences for
+			Telecommunications Leipzig<br /> Gustav-Freytag-Str. 43-45,<br />
+			04277 Leipzig, Germany.<br /> Email: thor@hft-leipzig.de
+		</p>
+		<p>
+			Werner Marx<br /> Max Planck Institute for Solid State Research<br />
+			Information Service<br /> Heisenbergstrasse 1,<br /> 70506
+			Stuttgart, Germany.<br /> Email: w.marx@fkf.mpg.de
+		</p>
+		<p>
+			Loet Leydesdorff<br /> Amsterdam School of Communication Research
+			(ASCoR),<br /> University of Amsterdam,<br /> P.O. Box 15793<br />
+			1001 NG Amsterdam, The Netherlands.<br /> Email:
+			loet@leydesdorff.net <br />
+		</p>
+		<p>
+			Lutz Bornmann<br /> Division for Science and Innovation Studies<br />
+			Administrative Headquarters of the Max Planck Society<br />
+			Hofgartenstr. 8,<br /> 80539 Munich, Germany.<br /> Email:
+			bornmann@gv.mpg.de<br />
+		</p>
 	</div>
 
 	<div class="footer">
-		<a href="https://www.hft-leipzig.de/en.html"><img align="middle" height="50em" src="hftl.jpg"/></a>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<a href="http://www.mpg.de/en"><img align="middle" height="50em" src="mpg.png"/></a> 
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<a href="http://www.uva.nl/en/home"><img align="middle" height="25em" src="uva.jpg"/></a>
+		<a href="https://www.hft-leipzig.de/en.html"><img align="middle"
+			height="50em" src="hftl.jpg" /></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+			href="http://www.mpg.de/en"><img align="middle" height="50em"
+			src="mpg.png" /></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+			href="http://www.uva.nl/en/home"><img align="middle"
+			height="25em" src="uva.jpg" /></a>
 	</div>
 
 </body>

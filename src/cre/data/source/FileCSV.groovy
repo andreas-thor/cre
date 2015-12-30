@@ -1,5 +1,9 @@
 package cre.data.source
 
+import org.jfree.data.DomainOrder;
+import org.jfree.data.general.Dataset;
+import org.jfree.data.xy.DefaultXYDataset
+
 import groovy.transform.CompileStatic
 import au.com.bytecode.opencsv.CSVReader
 import au.com.bytecode.opencsv.CSVWriter
@@ -52,6 +56,33 @@ class FileCSV {
 		crTab.stat.setValue("${new Date()}: Saving CSV file done", 0, crTab.getInfoString())
 	}
 
+	
+	
+	/**
+	 * Save CR table to CSV file
+	 * @param file
+	 */
+	public static void saveGraph2CSV (File file, CRTable crTab) {
+
+		String d = "${new Date()}: "
+		crTab.stat.setValue(d + "Saving Graph as CSV file ...", 0)
+		
+		// add csv extension if necessary
+		String file_name = file.toString();
+		if (!file_name.endsWith(".csv")) file_name += ".csv";
+		
+		CSVWriter csv = new CSVWriter (new FileWriter(new File(file_name)))
+		csv.writeNext(["Year", "NCR", "Median-${2*crTab.getMedianRange()+1}"] as String[])
+		crTab.getChartData().each { int year, int[] values ->
+			csv.writeNext ([year, values[0], values[1]] as String[])
+		}
+				
+		csv.close()
+		
+		crTab.stat.setValue("${new Date()}: Saving Graph as CSV file done", 0, crTab.getInfoString())
+	}
+	
+	
 		
 	/**
 	 * Load CR table from CSV file

@@ -12,8 +12,8 @@
 	<property name="src.dir" value="./src/"/>
 	<property name="bin.dir" value="./bin/"/>
 	<property name="lib.dir" value="./lib/"/>
-	<property name="deploy.dir" value="H:/www1_thor/crexplorer"/>
-	<property name="deploy2.dir" value="H:/www1_thor/citationtest"/>
+	<property name="deploy2.dir" value="H:/www1_thor/crexplorer"/>
+	<property name="deploy.dir" value="H:/www1_thor/citationtest"/>
 	<property name="html.dir" value="./html/"/>
 
 	<!-- clean,create_jws_jar,create_fat_jar,sign,deploy -->

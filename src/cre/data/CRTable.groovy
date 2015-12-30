@@ -59,6 +59,7 @@ class CRTable {
 	private long noOfPubs = 0
 	private Map<Integer, Integer> sumPerYear = [:]	// year -> sum of CRs (also for years without any CR)
 	private Map<Integer, Integer> crPerYear = [:]	// year -> number of CRs (<0, i.e., only years with >=1 CR are in the map)
+	private Map<Integer, Integer> NCRperYearMedian = [:]	// year -> median of sumPerYear[year-range] ... sumPerYear[year+range]   
 	
 	CRMatch crMatch = new CRMatch()
 	private Map<Integer, Integer> crId2Index = [:]						// object Id -> index in crData list
@@ -176,7 +177,7 @@ class CRTable {
 		}
 		
 		// generate data rows for chart
-		Map<Integer, Integer> NCRperYearMedian = [:]
+		NCRperYearMedian = [:]
 		sumPerYear.each { y, crs -> NCRperYearMedian[y] = crs - ((-this.medianRange..this.medianRange).collect { sumPerYear[y+it]?:0 }.sort {it}[this.medianRange]) }
 		
 		println System.currentTimeMillis()
@@ -194,6 +195,20 @@ class CRTable {
 		stat.setValue("", 0, getInfoString())
 	}
 		
+	
+	public HashMap<Integer, int[]> getChartData () {
+		
+		HashMap<Integer, int[]> result = new HashMap<Integer, int[]>()
+		NCRperYearMedian.each { 
+			result[it.key] = [sumPerYear[it.key]?:0, it.value] as int[]
+		}
+		
+		return result
+	}
+	
+	public int getMedianRange() {
+		return this.medianRange
+	}
 	
 	/**
 	 * 

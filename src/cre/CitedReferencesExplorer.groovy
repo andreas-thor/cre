@@ -32,7 +32,6 @@ SwingBuilder sb = new groovy.swing.SwingBuilder()
 StatusBar stat = new StatusBar()
 CRTable crTable = new CRTable(stat)
 JTable tab = TableFactory.create(crTable)
-ChartPanel chpan = UIChartPanelFactory.create(crTable, tab)
 UISettings uisetting
 UIBind uibind = new UIBind()
 
@@ -41,8 +40,43 @@ JFrame mainFrame
 
 
 
+ChartPanel chpan = UIChartPanelFactory.create(crTable, tab, 
+	sb.menuItem(id: "menuSave", text: "CSV...", actionPerformed: {
+		JFileChooser dlg = new JFileChooser(dialogTitle: "Save as CSV file", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
+		dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
+		dlg.setCurrentDirectory(uisetting.getLastDirectory())
+	
+		int answer = JOptionPane.NO_OPTION
+		while (answer == JOptionPane.NO_OPTION) {
+			
+			if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
+				
+				answer = JOptionPane.YES_OPTION
+				if (dlg.getSelectedFile().exists()) {
+					answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
+				}
+				if (answer == JOptionPane.YES_OPTION) {
+					Runnable runnable = new Runnable() {
+						public void run() {
+							FileCSV.saveGraph2CSV (dlg.getSelectedFile(), crTable)
+							uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
+						}
+					}
+					Thread t = new Thread(runnable)
+					t.start()
+				}
+			} else {
+				break
+			}
+		}
+	})
+	)
+
+
+
+
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2015/12/08)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2015/12/30, *DEV*)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
