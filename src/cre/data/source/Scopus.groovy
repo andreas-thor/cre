@@ -1,5 +1,6 @@
 package cre.data.source
 
+import java.io.BufferedReader;
 import java.util.regex.Matcher;
 
 import groovy.transform.CompileStatic
@@ -17,12 +18,25 @@ public class Scopus extends FileImport {
 	static Matcher matchYearTitle = "" =~ "(.*?)\\((\\d{4})\\)(.*)"
 	static Matcher matchDOI = "" =~ ".*((DOI)|(doi))\\:?=?(10\\.[^/]+/ *[^;,]+).*"
 	
-	public Scopus(int[] yearRange) {
-		super (yearRange)
+	public Scopus(int[] yearRange, BufferedReader br) {
+		super (yearRange, br)
 		crBlock = false
 	}
 	
+	
 	@Override
+	public boolean hasNextPub() {
+
+		this.fe = null
+		
+
+		
+		
+		return (this.fe == null);
+	}
+
+	
+	
 	public CRType parseLine(String line) {
 
 
@@ -132,6 +146,9 @@ public class Scopus extends FileImport {
 		
 		return null
 	}
+
+
+
 	
 	
 	

@@ -4,7 +4,6 @@ import groovy.beans.Bindable
 import groovy.transform.CompileStatic
 
 import org.jfree.data.xy.DefaultXYDataset
-import org.jfree.data.xy.XYSeries
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein
 import cre.data.CRMatch.Pair
@@ -52,11 +51,12 @@ class CRTable {
 	
 	@Bindable DefaultXYDataset ds  = new DefaultXYDataset()
 	@Bindable List<CRType> crData = new ArrayList<CRType>()	// all CR data
+	List<PubType> pubData = new ArrayList<PubType>()	// all Publication data
 	
 	boolean duringUpdate = false
 	boolean abort = false
 	
-	private long noOfPubs = 0
+//	private long noOfPubs = 0
 	private Map<Integer, Integer> sumPerYear = [:]	// year -> sum of CRs (also for years without any CR)
 	private Map<Integer, Integer> crPerYear = [:]	// year -> number of CRs (<0, i.e., only years with >=1 CR are in the map)
 	private Map<Integer, Integer> NCRperYearMedian = [:]	// year -> median of sumPerYear[year-range] ... sumPerYear[year+range]   
@@ -65,6 +65,8 @@ class CRTable {
 	private Map<Integer, Integer> crId2Index = [:]						// object Id -> index in crData list
 	private Map<CRCluster, List<Integer>> clusterId2Objects = [:]		// clusterId->[object ids]
 
+	
+	
 	StatusBar stat	// status bar to indicate current information / progress
 	
 	private int medianRange
@@ -84,11 +86,12 @@ class CRTable {
 	 */
 	
 	public void init() {
-		noOfPubs = 0
+//		noOfPubs = 0
 		crData.clear ()
 		crMatch.clear(false)
 		crMatch.clear(true)
 		clusterId2Objects.clear()
+		pubData.clear()
 	}
 	
 	/**
@@ -518,7 +521,7 @@ class CRTable {
 			"Number of different Cited References Years": crPerYear.size(), 
 			"Minimal Cited References Year": years[0], 
 			"Maximal Cited References Year": years[1],
-			"Number of Citing Publications": noOfPubs
+			"Number of Citing Publications": pubData.size()
 		]
 	}
 	
@@ -650,7 +653,6 @@ class CRTable {
 		
 		int stepCount = 0
 		int stepSize = 5
-		CRType cr 
 		
 		
 		files.eachWithIndex { File f, int idx ->
@@ -663,13 +665,16 @@ class CRTable {
 			
 			FileImport parser = null 
 			if (line!=null) { 
-				if (line.contains("FN Thomson Reuters Web of")) parser = new WoS(yearRange)
-				if (line.contains("Scopus")) parser = new Scopus(yearRange)
+				if (line.contains("FN Thomson Reuters Web of")) parser = new WoS(yearRange, br)
+				if (line.contains("Scopus")) parser = new Scopus(yearRange, br)
 			}
 			
 			if (parser == null) throw new UnsupportedFileFormatException()
 			
-			while ((line = br.readLine()) != null) {
+			
+			while (parser.hasNextPub()) {
+			
+//			while ((line = br.readLine()) != null) {
 			
 				// Check for abort by user
 				if (this.abort) {
@@ -680,15 +685,22 @@ class CRTable {
 					throw new AbortedException()
 				}
 				
+				
+//				cr = parser.parseLine(line)
+				PubType pub = parser.getNextPub()
+
 				// update status bar
-				fileSizeRead += line.length()+1
+				//				fileSizeRead += line.length()+1
+				fileSizeRead += pub.length;
 				if (stepCount*fileSizeStep < fileSizeRead) {
 					stat.setValue (d + "Loading WOS file ${idx+1} of ${files.length}", stepCount*stepSize)
 					stepCount++
 				}
 				
-				cr = parser.parseLine(line)
-				if (cr != null) {
+								
+				pub.crList.eachWithIndex { CRType cr, int crPos -> 
+//				for (CRType cr: fe.crList) {
+//				if (cr != null) {
 						
 //					println cr.CR
 //					println cr.CR[0]
@@ -699,6 +711,8 @@ class CRTable {
 					Integer id = crDup[cr.CR.charAt(0)][cr.CR]
 					if (id != null) {
 						crData[id].N_CR++
+						pub.crList[crPos] = crData[id]
+						 
 //						println cr.CR
 					} else {
 						crDup[cr.CR.charAt(0)][cr.CR] = indexCount
@@ -737,10 +751,14 @@ class CRTable {
 						clusterId2Objects[cr.CID2] = [indexCount+1]
 						indexCount++
 					}
+					
 				}
+				
+				this.pubData << pub
+//				this.noOfPubs++
 			}
 			
-			this.noOfPubs += parser.noOfPubs
+//			this.noOfPubs += parser.noOfPubs
 		}
 
 		

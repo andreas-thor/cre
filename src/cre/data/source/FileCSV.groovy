@@ -10,6 +10,7 @@ import au.com.bytecode.opencsv.CSVWriter
 import cre.data.CRCluster;
 import cre.data.CRTable;
 import cre.data.CRType;
+import cre.data.PubType;
 import cre.data.CRTable.AbortedException
 
 @CompileStatic
@@ -56,6 +57,40 @@ class FileCSV {
 		crTab.stat.setValue("${new Date()}: Saving CSV file done", 0, crTab.getInfoString())
 	}
 
+	
+	public static void saveRuediger2CSV (File file, CRTable crTab) {
+		
+		String d = "${new Date()}: "
+		crTab.stat.setValue(d + "Saving CSV file ...", 0)
+		
+		// add csv extension if necessary
+		String file_name = file.toString();
+		if (!file_name.endsWith(".csv")) file_name += ".csv";
+		
+		CSVWriter csv = new CSVWriter (new FileWriter(new File(file_name)))
+		
+		List<String> csvColumns = CRType.attr.collect{ it.key } - ["N_CR", "CID2", "CID_S"]	// ignore N_CR and cluster information
+		csv.writeNext(csvColumns + ["PY"] as String[]) 
+		
+		
+		crTab.pubData.eachWithIndex { PubType pub, int pubIdx ->
+			
+			crTab.stat.setValue (d + "Save CSV file ...", ((pubIdx+1)*100.0/crTab.pubData.size()).intValue())
+			
+			pub.crList.eachWithIndex  { CRType it, int idx ->
+			
+				List<String> csvValues = csvColumns.collect { name -> it[name] as String}
+				csvValues << (pub.year as String)
+				csv.writeNext (csvValues as String[])
+			}
+		}
+		csv.close()
+		
+		crTab.stat.setValue("${new Date()}: Saving CSV file done", 0, crTab.getInfoString())
+	}
+		
+		
+	
 	
 	
 	/**

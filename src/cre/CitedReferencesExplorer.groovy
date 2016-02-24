@@ -13,6 +13,7 @@ import javax.swing.table.AbstractTableModel
 import org.jfree.chart.ChartPanel
 
 import cre.data.CRTable
+import cre.data.PubType;
 import cre.data.CRTable.*
 import cre.data.source.FileCSV
 import cre.ui.StatusBar
@@ -76,7 +77,7 @@ ChartPanel chpan = UIChartPanelFactory.create(crTable, tab,
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2015/12/30, *DEV*)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2016/02/24 **DEV**)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -204,6 +205,39 @@ mainFrame = sb.frame(
 
 			separator()
 			
+			menuItem(id: "menuSaveRuediger", text: "Save as CSV File for Ruediger...", mnemonic: 'R', accelerator: KeyStroke.getKeyStroke("ctrl R"), actionPerformed: {
+				JFileChooser dlg = new JFileChooser(dialogTitle: "Save as CSV file for Ruediger", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
+				dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
+				dlg.setCurrentDirectory(uisetting.getLastDirectory())
+
+				int answer = JOptionPane.NO_OPTION
+				while (answer == JOptionPane.NO_OPTION) {
+					
+					if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
+						
+						answer = JOptionPane.YES_OPTION
+						if (dlg.getSelectedFile().exists()) {
+							answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
+						}
+						if (answer == JOptionPane.YES_OPTION) {
+							Runnable runnable = new Runnable() {
+								public void run() {
+									FileCSV.saveRuediger2CSV (dlg.getSelectedFile(), crTable)
+									uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
+								}
+							}
+							Thread t = new Thread(runnable)
+							t.start()
+						}
+					} else {
+						break
+					}
+				}
+			})
+			
+			
+			separator()
+			
 			menuItem(id:'settingsDlg', text: "Settings...", mnemonic: 'T', actionPerformed: {
 				uisetting.createSettingsDlg(mainFrame).visible = true 
 			})
@@ -222,7 +256,7 @@ mainFrame = sb.frame(
 		menu(text: "Data", mnemonic: 'D') {
 			
 			menuItem(id:'infoDlg', text: "Info", mnemonic: 'I', actionPerformed: {
-					UIDialogFactory.createInfoDlg(mainFrame, crTable.getInfo()).visible = true
+				UIDialogFactory.createInfoDlg(mainFrame, crTable.getInfo()).visible = true
 			})
 
 			
