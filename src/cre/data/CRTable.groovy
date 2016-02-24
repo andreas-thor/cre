@@ -97,7 +97,7 @@ class CRTable {
 	/**
 	 * Update computation of percentiles for all CRs
 	 * Called after loading, deleting or merging of CRs
-	 * @param removed Data has been removed --> adjust clustering data structures
+	 * @param removed Data has been removed --> adjust clustering data structures; adjust CR lists per publication
 	 */
 	
 	public void updateData (boolean removed) throws OutOfMemoryError {
@@ -130,6 +130,10 @@ class CRTable {
 			crData.each { CRType cr ->
 				cr.CID_S = clusterId2Objects[cr.CID2].size()
 			}
+			
+			// remove CRs for each publication
+			pubData.each { PubType pub -> pub.crList.removeAll { CRType cr -> !crData.contains(cr) } }
+			
 			
 //			println System.currentTimeMillis()
 //			println "removed done"
@@ -418,7 +422,7 @@ class CRTable {
 	
 	
 	/**
-	 * Re-initializes all objects of the given clusters, i.e., cluster Id is ste to object id (=> individual clusters)
+	 * Re-initializes all objects of the given clusters, i.e., cluster Id is set to object id (=> individual clusters)
 	 * @param clusterIds
 	 * @return list of object ids
 	 */
@@ -472,9 +476,9 @@ class CRTable {
 		
 		stat.setValue ("Start merging ...", 0)
 				
-		clusterId2Objects.eachWithIndex { cid, crlist, idx -> 
+		clusterId2Objects.eachWithIndex { cid, crlist, cidx -> 
 			
-			stat.setValue ("Merging in progress ...", ((idx.doubleValue()/clusterId2Objects.keySet().size().doubleValue())*100).intValue())
+			stat.setValue ("Merging in progress ...", ((cidx.doubleValue()/clusterId2Objects.keySet().size().doubleValue())*100).intValue())
 			
 			if (crlist.size()>1) {
 				
@@ -482,26 +486,40 @@ class CRTable {
 				int max_cr = 0
 				int sum_N_CR = 0
 	
-				// sum all N_CR; find max; invalidate all CRs			
+				// sum all N_CR; find max			
 				crlist.each { it -> 
-					idx = crId2Index[it]
+					int idx = crId2Index[it]
 					sum_N_CR += crData[idx].N_CR
-					crData[idx].CID2 = null
 					if (crData[idx].N_CR>max_N_CR) {
 						max_N_CR = crData[idx].N_CR
 						max_cr = idx 
 					}
 				}
 				
-				// re-validate max-CR  
-				crData[max_cr].N_CR = sum_N_CR
-				crData[max_cr].CID2 = cid
-				crData[max_cr].CID_S = 1
+				// update cluster representative; invalidate all others (set mergedTo)
+				crlist.each { 
+					int idx = crId2Index[it]
+					if (idx == max_cr) {
+						crData[idx].N_CR = sum_N_CR
+						crData[idx].CID_S = 1
+					} else {
+						crData[idx].mergedTo = max_cr
+					}
+				}
+				
 			}
+			
+			
+		}
+		
+		// for all CRs that will eventually be removed: add the cluster representative to the crList of each publication
+		pubData.each { PubType pub ->
+			pub.crList.addAll (pub.crList.findAll { CRType it -> it.mergedTo >= 0 }.collect { CRType it -> crData[it.mergedTo] })
+			pub.crList.unique()	// in case, both merged CRs are in a list of the same publication
 		}
 		
 		// remove all invalidated CRs
-		crData.removeAll { CRType it -> it.CID2 == null }
+		crData.removeAll { CRType it -> it.mergedTo >= 0 }
 		updateData(true)
 		stat.setValue ("Merging done", 0, getInfoString())
 		

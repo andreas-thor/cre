@@ -27,6 +27,8 @@ public class CRType /* implements Comparable<CRType>*/ {
 	double PERC_ALL;
 
 	String blockkey;
+	
+	int mergedTo
 
 	// Mapping of internal attribute names to labels
 	static Map<String, String> attr = [
@@ -59,6 +61,7 @@ public class CRType /* implements Comparable<CRType>*/ {
 		AU_L = null
 		PAG = ""
 		VOL = "" 
+		mergedTo = -1
 	}
 
 
