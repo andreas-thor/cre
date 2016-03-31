@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 
 import groovy.transform.CompileStatic
 import cre.data.CRType
+import cre.data.PubType
 
 @CompileStatic
 public class Scopus extends FileImport {
@@ -25,14 +26,13 @@ public class Scopus extends FileImport {
 	
 	
 	@Override
-	public boolean hasNextPub() {
-
-		this.fe = null
-		
+	public PubType getNextPub() {
 
 		
+
 		
-		return (this.fe == null);
+		
+		return null
 	}
 
 	

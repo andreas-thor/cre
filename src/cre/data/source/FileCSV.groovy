@@ -31,7 +31,7 @@ class FileCSV {
 		String file_name = file.toString();
 		if (!file_name.endsWith(".csv")) file_name += ".csv";
 		
-		CSVWriter csv = new CSVWriter (new FileWriter(new File(file_name)))
+		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"))
 		
 		List<String> csvColumns = CRType.attr.collect{ it.key } - ["CID2", "CID_S"]	// ignore cluster information
 		csv.writeNext(csvColumns + ["_SAMEAS", "_DIFFERENTTO"] as String[]) // add columns for manual match result
@@ -67,7 +67,7 @@ class FileCSV {
 		String file_name = file.toString();
 		if (!file_name.endsWith(".csv")) file_name += ".csv";
 		
-		CSVWriter csv = new CSVWriter (new FileWriter(new File(file_name)))
+		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"))
 		
 		List<String> csvColumns = CRType.attr.collect{ it.key } - ["N_CR", "CID2", "CID_S"]	// ignore N_CR and cluster information
 		csv.writeNext(csvColumns + ["PY"] as String[]) 
@@ -106,7 +106,7 @@ class FileCSV {
 		String file_name = file.toString();
 		if (!file_name.endsWith(".csv")) file_name += ".csv";
 		
-		CSVWriter csv = new CSVWriter (new FileWriter(new File(file_name)))
+		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"))
 		csv.writeNext(["Year", "NCR", "Median-${2*crTab.getMedianRange()+1}"] as String[])
 		crTab.getChartData().each { int year, int[] values ->
 			csv.writeNext ([year, values[0], values[1]] as String[])
@@ -137,7 +137,7 @@ class FileCSV {
 		long fileSize = file.length()
 		long fileSizeRead = 0
 		
-		CSVReader csv = new CSVReader(new FileReader(file))
+		CSVReader csv = new CSVReader(new InputStreamReader(new FileInputStream(file), "UTF-8"))
 		String[] line = csv.readNext()
 		
 		if (line != null) {

@@ -677,20 +677,24 @@ class CRTable {
 
 			int fileSizeStep = (int) (f.length()*stepSize/100)
 			long fileSizeRead = 0
-			
-			BufferedReader br = new BufferedReader(new FileReader(f)) 
-			String line = br.readLine()
+
+			// peek into first line to check what file format is given
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
+			br.mark(1000);		// mark for reset later
+			String line = br.readLine();
 			
 			FileImport parser = null 
 			if (line!=null) { 
-				if (line.contains("FN Thomson Reuters Web of")) parser = new WoS(yearRange, br)
-				if (line.contains("Scopus")) parser = new Scopus(yearRange, br)
+				br.reset();		// reset to beginning of the file
+				if (line.contains("FN Thomson Reuters Web of")) parser = (FileImport) new WoS(yearRange, br)
+				if (line.contains("Scopus")) parser = (FileImport) new Scopus(yearRange, br)
 			}
 			
 			if (parser == null) throw new UnsupportedFileFormatException()
 			
 			
-			while (parser.hasNextPub()) {
+			PubType pub
+			while ((pub = parser.getNextPub()) != null) {
 			
 //			while ((line = br.readLine()) != null) {
 			
@@ -705,7 +709,7 @@ class CRTable {
 				
 				
 //				cr = parser.parseLine(line)
-				PubType pub = parser.getNextPub()
+//				PubType pub = parser.getNextPub()
 
 				// update status bar
 				//				fileSizeRead += line.length()+1

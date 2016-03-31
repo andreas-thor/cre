@@ -2,19 +2,24 @@ package cre.data.source
 
 import groovy.transform.CompileStatic
 
+import java.io.File;
 import java.util.regex.Matcher
 
+import cre.data.CRTable;
 import cre.data.CRType
 import cre.data.PubType;
 
 @CompileStatic
 public class WoS extends FileImport {
 
+	// TODO: von Autoren paasen nicht; warum uppercase (hab ich mal rausgenommen)
 	static Matcher matchAuthor = "" =~ "([^ ]*)( )?(.*)?"
-	static List<Matcher> matchAuthorVon = ["(von)()", "(van)( der)?", "(van't)()"].collect { "" =~ "${it}([^ ]*)( )([^ ]*)(.*)" }
+	static List<Matcher> matchAuthorVon = ["(von )()", "(van )(der )?", "(van't )()"].collect { "" =~ "${it}([^ ]*)( )([^ ]*)(.*)" }
 	static Matcher matchPageVolumes = "" =~ "([PV])([0-9]+)"
 	static Matcher matchDOI = "" =~ ".*DOI (10\\.[^/]+/ *[^ ,]+).*"
 	
+	
+	static String[] tags = ["PT" ,"AU" ,"AF" ,"CA" ,"TI" ,"ED" ,"SO" ,"SE" ,"BS" ,"LA" ,"DT" ,"CT" ,"CY" ,"HO" ,"CL" ,"SP" ,"DE" ,"ID" ,"AB" ,"C1" ,"RP" ,"EM" ,"RI", "OI", "FU" ,"FX" ,"CR" ,"NR" ,"TC" ,"Z9" ,"PU" ,"PI" ,"PA" ,"SN" ,"BN" ,"J9" ,"JI" ,"PD" ,"PY" ,"VL" ,"IS" ,"PN" ,"SU" ,"SI" ,"BP" ,"EP" ,"AR" ,"PG" ,"DI" ,"WC", "SC" ,"GA" ,"UT"]
 	
 	public WoS(int[] yearRange, BufferedReader br) {
 		super (yearRange, br)
@@ -26,51 +31,34 @@ public class WoS extends FileImport {
 	 */
 	
 	@Override
-	public boolean hasNextPub() {
+	public PubType getNextPub() {
 
-		this.fe = null
 		String line
-		int length = 0;
 		
 		String currentTag = ""
 		String tagBlock = ""
 		
+		PubType pub = new PubType()
+				
 		while ((line = br.readLine()) != null) {
 			
-			length += line.length()+1
-			
+			pub.length += line.length()+1
 			if (line.length()<2) continue
 			currentTag = line.substring(0, 2)
 
-			// ER = End Of Record
-			if (currentTag.equals("ER")) break;
-				
-			if (this.fe==null) {
-				if ( ["TI", "CR", "PT", "PY"].any {it.equals(currentTag)} ) {
-					this.fe = new PubType()
-				}
-			}
-			
+			if (currentTag.equals("ER")) break;	// ER = End Of Record
+			if (currentTag.equals("EF")) return null;	// EF = End Of File
+						
 			tagBlock = currentTag.equals("  ") ? tagBlock : new String(currentTag)
+			pub.entries.put(tagBlock, (pub.entries.get(tagBlock) == null) ? line.substring(3) : pub.entries.get(tagBlock) + "\n" + line.substring(3))
+		}
+		
+		if (pub.entries.get("TI")==null) return null;
+		
+		pub.year = pub.entries.get("PY")?.toInteger().intValue()
+		pub.crList = pub.entries.get("CR")?.split("\n").collect { String it -> parseCR (it) }.findAll { CRType it -> it != null }
 
-			// Parse CR line
-			if (tagBlock.equals("CR")) {
-				CRType cr = parseCR(line)
-				if (cr != null) this.fe.crList << cr
-			}
-			
-			if (tagBlock.equals("PY")) {
-				this.fe.year = line.substring(3).toInteger().intValue()
-			}
-			
-			
-		}
-		
-		if (this.fe != null) {
-			this.fe.length = length
-		}
-		
-		return (this.fe != null);
+		return pub
 	}
 	
 	
@@ -81,7 +69,7 @@ public class WoS extends FileImport {
 	private CRType parseCR (String line) {
 
 		CRType result = new CRType()
-		result.CR = line[3..-1].toUpperCase()
+		result.CR = line // [3..-1] // .toUpperCase()
 		String[] crsplit = result.CR.split (",", 3)
 		
 		// abort if year is not a number
@@ -146,6 +134,50 @@ public class WoS extends FileImport {
 	
 	
 
+	
+	public static void save2TXT (File file, CRTable crTab) {
+		
+		String d = "${new Date()}: "
+		crTab.stat.setValue(d + "Saving TXT file in WoS format ...", 0)
+		
+		// add csv extension if necessary
+		String file_name = file.toString();
+		if (!file_name.endsWith(".txt")) file_name += ".txt";
+				
+		
+		BufferedWriter bw = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"))
+		bw.writeLine("FN Thomson Reuters Web of Science\u0153 modified by CRExplorer")
+		bw.writeLine("VR 1.0")
+		crTab.pubData.eachWithIndex { PubType pub, int idx ->
+			
+			crTab.stat.setValue (d + "Saving TXT file in WoS format ...", ((idx+1)*100.0/crTab.pubData.size()).intValue())
+			
+			WoS.tags.each { String field ->
+				if (field.equals("CR")) {
+					pub.crList.eachWithIndex { CRType cr, int pos ->
+						bw.write ((pos==0)?field:"  ")
+						bw.write (" ")
+						bw.writeLine (cr.CR)
+					}
+				} else if (field.equals("NR")) {
+					bw.writeLine ("NR " + pub.crList.size())
+				} else {
+					pub.entries.get(field)?.split("\n").eachWithIndex { String value, int pos ->
+						bw.write ((pos==0)?field:"  ")
+						bw.write (" ")
+						bw.writeLine (value)
+					}
+				}
+			}
+			
+			bw.writeLine("ER")
+			bw.writeLine("")
+		}
+		bw.writeLine("EF")
+		bw.close()
+		crTab.stat.setValue("${new Date()}: Saving TXT file in WoS format done", 0, crTab.getInfoString())
+			
+	}
 	
 }
 

@@ -10,6 +10,11 @@
 * documentation of source code
 * website
 
+##UPDATE 2016/..
+* UTF-8 support (e.g., for chinese characters)
+* export to WOS format --> TESTING (complete; merging of CRs correct?; sort CRs ... merged CRs are not sorted)
+
+
 ##UPDATE 2015/12/08
 * median range (+/- years) incorporated
 * status bar has info on data set

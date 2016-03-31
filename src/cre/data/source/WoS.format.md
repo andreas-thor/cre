@@ -36,7 +36,6 @@ TC 	Times Cited
 PU 	Publisher
 PI 	Publisher City
 PA 	Publisher Address
-SC 	Subject Category
 SN 	ISSN
 BN 	ISBN
 J9 	29-Character Source Abbreviation

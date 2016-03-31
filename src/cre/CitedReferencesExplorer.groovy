@@ -16,6 +16,7 @@ import cre.data.CRTable
 import cre.data.PubType;
 import cre.data.CRTable.*
 import cre.data.source.FileCSV
+import cre.data.source.WoS;
 import cre.ui.StatusBar
 import cre.ui.TableFactory
 import cre.ui.UIBind
@@ -86,7 +87,8 @@ mainFrame = sb.frame(
 	menuBar{ 
 		menu(text: "File", mnemonic: 'F') {
 			
-			menuItem(text: "Import WoS Files...", mnemonic: 'I', accelerator: KeyStroke.getKeyStroke("ctrl I"), actionPerformed: {
+			
+			menuItem(text: "Import WoS / Scopus Files...", mnemonic: 'I', accelerator: KeyStroke.getKeyStroke("ctrl I"), actionPerformed: {
 				
 				if (crTable.crData.size()>0) {
 					int answer = JOptionPane.showConfirmDialog (null, "Save changes before opening WoS files?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
@@ -173,68 +175,108 @@ mainFrame = sb.frame(
 				}
 			})
 			
-			menuItem(id: "menuSave", text: "Save as CSV File...", mnemonic: 'S', accelerator: KeyStroke.getKeyStroke("ctrl S"), actionPerformed: {
-				JFileChooser dlg = new JFileChooser(dialogTitle: "Save as CSV file", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
-				dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
-				dlg.setCurrentDirectory(uisetting.getLastDirectory())
-
-				int answer = JOptionPane.NO_OPTION
-				while (answer == JOptionPane.NO_OPTION) {
-					
-					if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
-						
-						answer = JOptionPane.YES_OPTION
-						if (dlg.getSelectedFile().exists()) {
-							answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
-						}
-						if (answer == JOptionPane.YES_OPTION) {
-							Runnable runnable = new Runnable() {
-								public void run() {
-									FileCSV.save2CSV (dlg.getSelectedFile(), crTable)
-									uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
-								}
-							}
-							Thread t = new Thread(runnable)
-							t.start()
-						}
-					} else {
-						break
-					} 
-				}
-			})
-
-			separator()
 			
-			menuItem(id: "menuSaveRuediger", text: "Save as CSV File for Ruediger...", mnemonic: 'R', accelerator: KeyStroke.getKeyStroke("ctrl R"), actionPerformed: {
-				JFileChooser dlg = new JFileChooser(dialogTitle: "Save as CSV file for Ruediger", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
-				dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
-				dlg.setCurrentDirectory(uisetting.getLastDirectory())
-
-				int answer = JOptionPane.NO_OPTION
-				while (answer == JOptionPane.NO_OPTION) {
-					
-					if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
+			menu(text: "Save as") {
+			
+			
+			
+		
+			
+			
+				menuItem(id: "menuSaveCSV", text: "CSV...", mnemonic: 'S', accelerator: KeyStroke.getKeyStroke("ctrl S"), actionPerformed: {
+					JFileChooser dlg = new JFileChooser(dialogTitle: "Save as CSV file", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
+					dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
+					dlg.setCurrentDirectory(uisetting.getLastDirectory())
+	
+					int answer = JOptionPane.NO_OPTION
+					while (answer == JOptionPane.NO_OPTION) {
 						
-						answer = JOptionPane.YES_OPTION
-						if (dlg.getSelectedFile().exists()) {
-							answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
-						}
-						if (answer == JOptionPane.YES_OPTION) {
-							Runnable runnable = new Runnable() {
-								public void run() {
-									FileCSV.saveRuediger2CSV (dlg.getSelectedFile(), crTable)
-									uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
-								}
+						if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
+							
+							answer = JOptionPane.YES_OPTION
+							if (dlg.getSelectedFile().exists()) {
+								answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
 							}
-							Thread t = new Thread(runnable)
-							t.start()
-						}
-					} else {
-						break
+							if (answer == JOptionPane.YES_OPTION) {
+								Runnable runnable = new Runnable() {
+									public void run() {
+										FileCSV.save2CSV (dlg.getSelectedFile(), crTable)
+										uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
+									}
+								}
+								Thread t = new Thread(runnable)
+								t.start()
+							}
+						} else {
+							break
+						} 
 					}
-				}
-			})
+				})
+				
+				menuItem(id: "menuSaveWoS", text: "WoS...", mnemonic: 'W', accelerator: KeyStroke.getKeyStroke("ctrl W"), actionPerformed: {
+					JFileChooser dlg = new JFileChooser(dialogTitle: "Save as WoS file", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
+					dlg.setFileFilter([getDescription: {"TXT files (*.txt)"}, accept:{File f -> f ==~ /.*?\.txt/ || f.isDirectory() }] as FileFilter)
+					dlg.setCurrentDirectory(uisetting.getLastDirectory())
+	
+					int answer = JOptionPane.NO_OPTION
+					while (answer == JOptionPane.NO_OPTION) {
+						
+						if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
+							
+							answer = JOptionPane.YES_OPTION
+							if (dlg.getSelectedFile().exists()) {
+								answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
+							}
+							if (answer == JOptionPane.YES_OPTION) {
+								Runnable runnable = new Runnable() {
+									public void run() {
+										WoS.save2TXT(dlg.getSelectedFile(), crTable)
+										uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
+									}
+								}
+								Thread t = new Thread(runnable)
+								t.start()
+							}
+						} else {
+							break
+						}
+					}
+				})
+
+	
+				separator()
+				
+				menuItem(id: "menuSaveRuediger", text: "Ruediger...", mnemonic: 'R', accelerator: KeyStroke.getKeyStroke("ctrl R"), actionPerformed: {
+					JFileChooser dlg = new JFileChooser(dialogTitle: "Save as CSV file for Ruediger", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
+					dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
+					dlg.setCurrentDirectory(uisetting.getLastDirectory())
+	
+					int answer = JOptionPane.NO_OPTION
+					while (answer == JOptionPane.NO_OPTION) {
+						
+						if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
+							
+							answer = JOptionPane.YES_OPTION
+							if (dlg.getSelectedFile().exists()) {
+								answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
+							}
+							if (answer == JOptionPane.YES_OPTION) {
+								Runnable runnable = new Runnable() {
+									public void run() {
+										FileCSV.saveRuediger2CSV (dlg.getSelectedFile(), crTable)
+										uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
+									}
+								}
+								Thread t = new Thread(runnable)
+								t.start()
+							}
+						} else {
+							break
+						}
+					}
+				})
 			
+			}
 			
 			separator()
 			
