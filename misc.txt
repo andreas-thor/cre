@@ -1,0 +1,93 @@
+
+Scopus
+=======
+
+- Bislang werden noch viele Informationen verschluckt (auf die Datenspalten verteilt),
+ wie die weiteren Autoren (neben dem Erstautor) und der Titel einer Arbeit
+
+- Bei den Scopus-Daten würde ich als neue Spalte den Titel einer Arbeit mit aufnehmen
+
+- Bei den Scopus-Daten würde ich nicht nur den Erstautor, sondern alle Autoren in die Spalte Author extrahieren. 
+Entsprechend können die Spalten Last Name und First Name Initial entfallen
+
+- Das Programm hat generell ein Problem, wenn ganz am Anfang in Klammern das Publikationsjahr steht. 
+Dann findet keine Aufspaltung der Daten in die weiteren Spalten statt.
+
+- Das Programm hat Probleme mit Sonderzeichen (Umlauten, ß etc.).
+
+- Wenn es kein cited reference year gibt, sollte keine 0 in der Spalte eingetragen werden
+
+- Das Programm findet manchmal die DOI nicht, auch wenn "doi" davor steht
+
+Auch wenn die Scopus-Daten uneinheitlicher als die WoS-Daten sind, kann ich mir vorstellen, dass sie besser geclustert werden können. 
+Es sind einfach mehr Informationen pro Referenz vorhanden und insbesondere der Titel einer Arbeit sollte sich doch hervorragend 
+für eine clusterung eignen, oder?
+
+Das sind Werners Punkte:
+
+1. Eine Reihe von Referenzen hat Publication Year=0. Das kommt z.B. im Falle langer Titel vor. 
+Grund: Weil dadurch das PY abgeschnitten wird bzw. weil das PY nicht direkt nach dem Autor zitiert wurde?
+
+2. Manchmal erscheinen innerhalb der Referenzen zwei Kommas (nur durch ein Blank getrennt) direkt hintereinander, z.B. vor arXive-Links.
+
+3. Nicht alle Referenzen enden mit Punktkomma. Warum?
+
+4. Der Titel ist selten komplett sichtbar. Vorschlag: Titel in extra Spalte oder umbrechen.
+
+5. Manchmal erscheinen in den Feldern Cited Reference und Title Short einzelne Klammern: z.B. Scientometrics) oder AP(
+
+6. Manchmal erscheinen in den Feldern Author und Source Links statt den Autoren- bzw. Source-Namen.
+
+7. Umlaute, Hochkommas und französische Accents werden verunstaltet.
+
+8. Buchzitate werden zumeist in viele Varianten aufgespalten (z.B.  
+US-Verlagsstädte mit und ohne Angabe des Bundesstaates). Vermutlich wegen der Berücksichtigung der kompletten 
+und im Falle von Büchern besonders uneinheitlichen Referenzen?
+
+9. Im Falle von Buchzitaten erscheint als Source oft nur der Verlag.
+
+10. Manche Cited References beginnen mit einer Jahreszahl in Klammern.
+
+
+
+
+
+Features
+
+1) Employing a mouse tracking over the data portion of the visualization with a subtle tool-tip to reveal "highlights" for that year.
+
+This is a good point. In my opinion, the absolute deviation for that RPY as well as the first authors of the three most referenced publication with their percentages of cited references in that year should be additionally shown in the window.
+
+2) Clicking on a data point will forward a user to the most commonly referenced article in that year (mine tries to do this by assessing most common name/journal info and finding the corresponding DOI - it doesn't work perfectly for every year because some don't have DOIs, have bad DOIs, etc; nevertheless, it is a useful feature and could probably be done really well by you and your team)
+
+This could be integrated as a feature to the table in our tool. A right click on a line could search the publication in Google; if a DOI is available the publishers side could be searched.
+
+3) Separate axes (left and right side) for the raw/normalized data so they can be overlaid while fitting the data for each to its own scale - this prevents the user from having to necessarily rescale the RPYS analysis each time they run an analysis.
+
+Also a good point. The figure of his tool is better to read than our figure, in my opinion.
+
+
+
+Datasets
+
+    Import of Scopus Data
+
+    Process large amounts of publications
+
+User Interface
+
+
+    Text filter ("It would be nice if users of CRExplorer could search/filter cited references. In the main window of CRExplorer, you could think of adding a number of text boxes above the list of cited references. These text boxes could then be used to search in the various cited reference fields. This is similar to the search/filter functionality that we have in CitNetExplorer on the Publications tab.")
+
+Chart
+
+    Median computation for -t ... +t year range ... adjust median label in chart accordingly ("Five-Year-Meadian")
+
+    Chart options via context menu (right click) ("I think the options on the Chart tab in the Settings dialog box should also be available by right-clicking on the chart. At the moment it is quite difficult to find these options. You should try to make this more intuitive.")
+
+    Lower default values stroke / shape size
+    In addition, you could offer options for additional lines that can be shown in the chart. I am thinking of lines for the number of unique cited references in a year or the number of cited reference clusters in a year.")
+
+    Additional chart lines ("I am thinking of lines for the number of unique cited references in a year or
+    the number of cited reference clusters in a year.")
+

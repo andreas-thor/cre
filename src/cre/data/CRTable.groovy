@@ -687,7 +687,9 @@ class CRTable {
 			if (line!=null) { 
 				br.reset();		// reset to beginning of the file
 				if (line.contains("FN Thomson Reuters Web of")) parser = (FileImport) new WoS(yearRange, br)
-				if (line.contains("Scopus")) parser = (FileImport) new Scopus(yearRange, br)
+				
+				// TODO: How do I detect scopus files??
+				/*if (line.contains("Scopus")) */ parser = (FileImport) new Scopus(yearRange, br)
 			}
 			
 			if (parser == null) throw new UnsupportedFileFormatException()
@@ -702,7 +704,7 @@ class CRTable {
 				if (this.abort) {
 					this.init()
 					this.updateData(false);
-					stat.setValue("${new Date()}: Loading WOS files aborted", 0)
+					stat.setValue("${new Date()}: Loading files aborted", 0)
 					this.abort = false
 					throw new AbortedException()
 				}

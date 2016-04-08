@@ -12,7 +12,7 @@
 
 ##UPDATE 2016/..
 * UTF-8 support (e.g., for chinese characters)
-* export to WOS format --> TESTING (complete; merging of CRs correct?; sort CRs ... merged CRs are not sorted)
+* export to WOS format --> TESTING (complete; merging of CRs correct?; sort CRs ... merged CRs are not sorted -> necessary?)
 
 
 ##UPDATE 2015/12/08
