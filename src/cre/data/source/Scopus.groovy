@@ -74,7 +74,7 @@ public class Scopus extends FileImport {
 			}
 		}
 		pub.year = pub.entries.get("PY")?.toInteger().intValue()
-		pub.crList = pub.entries.get("CR")?.split(";").collect { String it -> parseLine (it) }.findAll { CRType it -> it != null }
+		pub.crList = pub.entries.get("CR")?.split(";").collect { String it -> parseLine (it) }.findAll { CRType it -> it != null } as List
 		
 		return pub
 		

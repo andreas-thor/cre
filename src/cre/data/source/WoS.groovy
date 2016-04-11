@@ -56,7 +56,7 @@ public class WoS extends FileImport {
 		if (pub.entries.get("TI")==null) return null;
 		
 		pub.year = pub.entries.get("PY")?.toInteger().intValue()
-		pub.crList = pub.entries.get("CR")?.split("\n").collect { String it -> parseCR (it) }.findAll { CRType it -> it != null }
+		pub.crList = pub.entries.get("CR")?.split("\n").collect { String it -> parseCR (it) }.findAll { CRType it -> it != null } as List
 
 		return pub
 	}
