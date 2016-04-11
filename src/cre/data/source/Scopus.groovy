@@ -1,10 +1,13 @@
 package cre.data.source
 
-import java.io.BufferedReader;
+import java.io.BufferedReader
+import java.io.File;
 import java.util.regex.Matcher;
 
 import groovy.transform.CompileStatic
 import au.com.bytecode.opencsv.CSVReader
+import au.com.bytecode.opencsv.CSVWriter
+import cre.data.CRTable;
 import cre.data.CRType
 import cre.data.PubType
 
@@ -29,8 +32,8 @@ public class Scopus extends FileImport {
 		 'Cited by' : 'NR' ,
 		 'DOI' : 'DI' ,
 //		 'Link' : '' ,
-		 'Affiliations' : '' ,
-		 'Authors with affiliations' : '' ,
+//		 'Affiliations' : '' ,
+//		 'Authors with affiliations' : '' ,
 		 'Abstract' : 'AB' ,
 		 'Author Keywords' : 'DE' ,
 		 'References' : 'CR' ,
@@ -54,7 +57,7 @@ public class Scopus extends FileImport {
 		super (yearRange, br)
 
 		csv = new CSVReader(br)
-		attributes = csv.readNext()
+		attributes = csv.readNext().collect { String field -> field.trim() }
 	}
 	
 	
@@ -67,10 +70,10 @@ public class Scopus extends FileImport {
 
 		PubType pub = new PubType()
 		
-		line.eachWithIndex { String val, int idx -> 
+		line.eachWithIndex { String val, int idx ->
 			pub.length += val.length()+1
 			if (mapScopusToWoS[attributes[idx]]!=null) { 
-				pub.entries[mapScopusToWoS[attributes[idx]]] = val
+				pub.entries [mapScopusToWoS[attributes[idx]]] = val
 			}
 		}
 		pub.year = pub.entries.get("PY")?.toInteger().intValue()
@@ -180,7 +183,35 @@ public class Scopus extends FileImport {
 
 
 
+	public static void save2CSV (File file, CRTable crTab) {
+		
+		String d = "${new Date()}: "
+		crTab.stat.setValue(d + "Saving CSV file in Scopus format ...", 0)
+		
+		// add csv extension if necessary
+		String file_name = file.toString();
+		if (!file_name.endsWith(".csv")) file_name += ".csv";
+				
+		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"))
+		String[] attributes = mapScopusToWoS.keySet() as String[] 
+		String[] fields = attributes.collect { mapScopusToWoS[it] } 
+		csv.writeNext(attributes)
+		
+		crTab.pubData.eachWithIndex  { PubType pub, int idx ->
+			crTab.stat.setValue (d + "Saving CSV file in Scopus format ...", ((idx+1)*100.0/crTab.pubData.size()).intValue())
+			csv.writeNext (
+				fields.collect { 
+					it.equals("CR") ? pub.crList.collect { CRType cr -> cr.CR }.join("; ") : pub.entries[it]?:""  
+				} as String[]); 
+		}
+		csv.close()
+
+	
+		crTab.stat.setValue("${new Date()}: Saving CSV file in Scopus format done", 0, crTab.getInfoString())
+			
+	}
 	
 	
 	
-}
+	
+} 

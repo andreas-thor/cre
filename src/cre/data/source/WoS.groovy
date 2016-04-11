@@ -140,7 +140,7 @@ public class WoS extends FileImport {
 		String d = "${new Date()}: "
 		crTab.stat.setValue(d + "Saving TXT file in WoS format ...", 0)
 		
-		// add csv extension if necessary
+		// add txt extension if necessary
 		String file_name = file.toString();
 		if (!file_name.endsWith(".txt")) file_name += ".txt";
 				
