@@ -16,9 +16,6 @@ public abstract class FileImport {
 		this.br = br
 	}
 	
-//	public abstract CRType parseLine(String line)
-	
-	
 	public abstract PubType getNextPub() 
 	
 

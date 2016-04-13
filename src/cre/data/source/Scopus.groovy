@@ -18,32 +18,22 @@ public class Scopus extends FileImport {
 	String[] attributes = null
 	
 	
-	static HashMap<String, String> mapScopusToWoS = [
-		 'Authors' : 'AU' ,
-		 'Title' : 'TI' ,
-		 'Year' : 'PY' ,
-		 'Source title' : 'SO' ,
-		 'Volume' : 'VL' ,
-		 'Issue' : 'IS' ,
-		 'Art. No.' : 'AR' ,
-		 'Page start' : 'BP' ,
-		 'Page end' : 'EP' ,
-		 'Page count' : 'PG' ,
-		 'Cited by' : 'NR' ,
-		 'DOI' : 'DI' ,
-//		 'Link' : '' ,
-//		 'Affiliations' : '' ,
-//		 'Authors with affiliations' : '' ,
-		 'Abstract' : 'AB' ,
-		 'Author Keywords' : 'DE' ,
-		 'References' : 'CR' ,
-		 'Document Type' : 'DT' ,
-//		 'Source' : '' ,
-		 'EID' : 'UT']
-	
-	
-	
-	
+	static HashMap<String, String> mapScopus = [
+		'AU' : 'Authors' ,
+		'TI' : 'Title' ,
+		'PY' : 'Year' ,
+		'SO' : 'Source title' ,
+		'VL' : 'Volume' ,
+		'IS' : 'Issue' ,
+		'BP' : 'Page start' ,
+		'EP' : 'Page end' ,
+		'PG' : 'Page count' ,
+		'NR' : 'Cited by' ,
+		'DI' : 'DOI' ,
+		'AB' : 'Abstract' ,
+		'CR' : 'References' ,
+		'DT' : 'Document Type' 
+	]
 	
 	
 	static Matcher matchBlock = "" =~ "^([A-Y ]+)(\\: )(.*)"
@@ -69,15 +59,30 @@ public class Scopus extends FileImport {
 		if (line == null) return null
 
 		PubType pub = new PubType()
+		HashMap<String, String> entries = [:]
 		
 		line.eachWithIndex { String val, int idx ->
 			pub.length += val.length()+1
-			if (mapScopusToWoS[attributes[idx]]!=null) { 
-				pub.entries [mapScopusToWoS[attributes[idx]]] = val
-			}
+			entries.put(attributes[idx], val)
 		}
-		pub.year = pub.entries.get("PY")?.toInteger().intValue()
-		pub.crList = pub.entries.get("CR")?.split(";").collect { String it -> parseLine (it) }.findAll { CRType it -> it != null } as List
+		
+		pub.with {
+			AU = entries.get(mapScopus.get("AU"));
+			TI = entries.get(mapScopus.get("TI"));
+			PY = entries.get(mapScopus.get("PY"))?.isInteger() ? entries.get(mapScopus.get("PY")).toInteger() : null
+			SO = entries.get(mapScopus.get("SO"));
+			VL = entries.get(mapScopus.get("VL"));
+			IS = entries.get(mapScopus.get("IS"));
+			BP = entries.get(mapScopus.get("BP"))?.isInteger() ? entries.get(mapScopus.get("BP")).toInteger() : null
+			EP = entries.get(mapScopus.get("EP"))?.isInteger() ? entries.get(mapScopus.get("EP")).toInteger() : null
+			PG = entries.get(mapScopus.get("PG"))?.isInteger() ? entries.get(mapScopus.get("PG")).toInteger() : null
+			NR = entries.get(mapScopus.get("NR"))?.isInteger() ? entries.get(mapScopus.get("NR")).toInteger() : null
+			DOI = entries.get(mapScopus.get("DOI"));
+			AB = entries.get(mapScopus.get("AB"));
+			DT = entries.get(mapScopus.get("DT"));
+		}
+		
+		pub.crList = entries.get(mapScopus.get("CR"))?.split(";").collect { String it -> parseLine (it) }.findAll { CRType it -> it != null } as List
 		
 		return pub
 		
@@ -193,16 +198,20 @@ public class Scopus extends FileImport {
 		if (!file_name.endsWith(".csv")) file_name += ".csv";
 				
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"))
-		String[] attributes = mapScopusToWoS.keySet() as String[] 
-		String[] fields = attributes.collect { mapScopusToWoS[it] } 
-		csv.writeNext(attributes)
+		
+		String[] attributes = ["AU","TI","PY","SO","VL", "IS", "BP", "EP", "PG", "CR", "NR", "DOI", "AB", "DT"] 
+		String[] fields = attributes.collect { mapScopus.get(it) } 
+		csv.writeNext(fields)
 		
 		crTab.pubData.eachWithIndex  { PubType pub, int idx ->
 			crTab.stat.setValue (d + "Saving CSV file in Scopus format ...", ((idx+1)*100.0/crTab.pubData.size()).intValue())
-			csv.writeNext (
-				fields.collect { 
-					it.equals("CR") ? pub.crList.collect { CRType cr -> cr.CR }.join("; ") : pub.entries[it]?:""  
-				} as String[]); 
+			pub.with {
+				csv.writeNext ([
+					AU?:"", TI?:"", PY?:"", SO?:"", VL?:"", IS?:"", BP?:"", EP?:"", PG?:"",
+					crList.collect { CRType cr -> cr.CR }.join("; "),
+					NR?:"", DOI?:"", AB?:"", DT?:""
+				] as String[])
+			} 
 		}
 		csv.close()
 

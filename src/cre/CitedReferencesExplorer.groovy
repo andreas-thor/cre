@@ -91,6 +91,8 @@ Closure doOpenFiles = { String dlgTitle, FileFilter filter, boolean multipleFile
 
 	JFileChooser dlg = new JFileChooser(dialogTitle: dlgTitle, multiSelectionEnabled: multipleFiles, fileSelectionMode: JFileChooser.FILES_ONLY)
 	dlg.setFileFilter(filter)
+//	dlg.setFileFilter([getDescription: {"ACSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
+	
 	dlg.setCurrentDirectory(uisetting.getLastDirectory())
 	
 	if (dlg.showOpenDialog()==JFileChooser.APPROVE_OPTION) {
@@ -137,6 +139,8 @@ Closure doOpenFiles = { String dlgTitle, FileFilter filter, boolean multipleFile
 
 
 
+
+
 mainFrame = sb.frame(
 	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2016/04/11 **DEV**++)",  
 	size:[800,600],
@@ -152,7 +156,7 @@ mainFrame = sb.frame(
 				menuItem(text: "Web of Science...", mnemonic: 'W', actionPerformed: {
 					doOpenFiles (
 						"Import Web of Science files",
-						[getDescription: {"TXT files (*.txt)"}, accept:{File f -> f ==~ /.*?\.txt/ || f.isDirectory() }] as FileFilter,
+						[getDescription: {"TXT files (*.txt)"}, accept:{File f -> f ==~ /.*\.txt/ || f.isDirectory() }] as FileFilter,
 						true
 					)					
 				})
@@ -160,7 +164,7 @@ mainFrame = sb.frame(
 				menuItem(text: "Scopus...", mnemonic: 'S', actionPerformed: {
 					doOpenFiles (
 						"Import Scopus files",
-						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter,
+						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter,
 						true
 					)
 

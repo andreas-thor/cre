@@ -33,13 +33,13 @@ public class WoS extends FileImport {
 	@Override
 	public PubType getNextPub() {
 
-		String line
-		
 		String currentTag = ""
 		String tagBlock = ""
 		
 		PubType pub = new PubType()
-				
+		HashMap<String, String> entries = [:]	
+			
+		String line
 		while ((line = br.readLine()) != null) {
 			
 			pub.length += line.length()+1
@@ -50,14 +50,27 @@ public class WoS extends FileImport {
 			if (currentTag.equals("EF")) return null;	// EF = End Of File
 						
 			tagBlock = currentTag.equals("  ") ? tagBlock : new String(currentTag)
-			pub.entries.put(tagBlock, (pub.entries.get(tagBlock) == null) ? line.substring(3) : pub.entries.get(tagBlock) + "\n" + line.substring(3))
+			entries.put(tagBlock, (entries.get(tagBlock) == null) ? line.substring(3) : entries.get(tagBlock) + "\n" + line.substring(3))
 		}
 		
-		if (pub.entries.get("TI")==null) return null;
+		pub.with {
+			AU = entries.get("AU");
+			TI = entries.get("TI");
+			PY = entries.get("PY")?.isInteger() ? entries.get("PY").toInteger() : null
+			SO = entries.get("SO");
+			VL = entries.get("VL");
+			IS = entries.get("IS");
+			BP = entries.get("BP")?.isInteger() ? entries.get("BP").toInteger() : null
+			EP = entries.get("EP")?.isInteger() ? entries.get("EP").toInteger() : null
+			PG = entries.get("PG")?.isInteger() ? entries.get("PG").toInteger() : null
+			NR = entries.get("NR")?.isInteger() ? entries.get("NR").toInteger() : null
+			DOI = entries.get("DOI");
+			AB = entries.get("AB");
+			DT = entries.get("DT");
+		}
 		
-		pub.year = pub.entries.get("PY")?.toInteger().intValue()
-		pub.crList = pub.entries.get("CR")?.split("\n").collect { String it -> parseCR (it) }.findAll { CRType it -> it != null } as List
-
+		if (pub.TI == null) return null;
+		pub.crList = entries.get("CR")?.split("\n").collect { String it -> parseCR (it) }.findAll { CRType it -> it != null } as List
 		return pub
 	}
 	
@@ -132,8 +145,17 @@ public class WoS extends FileImport {
 		
 	}
 	
-	
 
+	/**
+	 * Writes a tagged field
+	 */
+	private static writeTag (BufferedWriter bw, String tag, String value) {
+		if (value==null) return;
+		value.split("\n").eachWithIndex { String line, int pos ->
+			bw.write ((pos==0) ? tag+" " : "   ")
+			bw.writeLine (line)
+		}
+	}
 	
 	public static void save2TXT (File file, CRTable crTab) {
 		
@@ -141,35 +163,33 @@ public class WoS extends FileImport {
 		crTab.stat.setValue(d + "Saving TXT file in WoS format ...", 0)
 		
 		// add txt extension if necessary
+		// TODO: Do I really need to adjust the file extension??
 		String file_name = file.toString();
 		if (!file_name.endsWith(".txt")) file_name += ".txt";
 				
-		
+						
 		BufferedWriter bw = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"))
 		bw.writeLine("FN Thomson Reuters Web of Science\u0153 modified by CRExplorer")
 		bw.writeLine("VR 1.0")
+		
 		crTab.pubData.eachWithIndex { PubType pub, int idx ->
-			
 			crTab.stat.setValue (d + "Saving TXT file in WoS format ...", ((idx+1)*100.0/crTab.pubData.size()).intValue())
-			
-			WoS.tags.each { String field ->
-				if (field.equals("CR")) {
-					pub.crList.eachWithIndex { CRType cr, int pos ->
-						bw.write ((pos==0)?field:"  ")
-						bw.write (" ")
-						bw.writeLine (cr.CR)
-					}
-				} else if (field.equals("NR")) {
-					bw.writeLine ("NR " + pub.crList.size())
-				} else {
-					pub.entries.get(field)?.split("\n").eachWithIndex { String value, int pos ->
-						bw.write ((pos==0)?field:"  ")
-						bw.write (" ")
-						bw.writeLine (value)
-					}
-				}
+			pub.with {
+				writeTag(bw, "AU", AU)
+				writeTag(bw, "TI", TI)
+				writeTag(bw, "PY", PY?.toString())
+				writeTag(bw, "SO", SO)
+				writeTag(bw, "VL", VL)
+				writeTag(bw, "IS", IS?.toString())
+				writeTag(bw, "BP", BP?.toString())
+				writeTag(bw, "EP", EP?.toString())
+				writeTag(bw, "PG", PG?.toString())
+				writeTag(bw, "CR", crList.collect { CRType cr -> cr.CR }.join("\n")) 
+				writeTag(bw, "NR", NR?.toString())
+				writeTag(bw, "DOI", DOI)
+				writeTag(bw, "AB", AB)
+				writeTag(bw, "DT", DT)
 			}
-			
 			bw.writeLine("ER")
 			bw.writeLine("")
 		}
