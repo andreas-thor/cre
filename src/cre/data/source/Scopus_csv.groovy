@@ -12,7 +12,7 @@ import cre.data.CRType
 import cre.data.PubType
 
 @CompileStatic
-public class Scopus extends FileImport {
+public class Scopus_csv extends FileImportExport {
 
 	CSVReader csv
 	String[] attributes = null
@@ -43,7 +43,7 @@ public class Scopus extends FileImport {
 	static Matcher matchYearTitle = "" =~ "(.*?)\\((\\d{4})\\)(.*)"
 	static Matcher matchDOI = "" =~ ".*((DOI)|(doi))\\:?=?(10\\.[^/]+/ *[^;,]+).*"
 	
-	public Scopus(int[] yearRange, BufferedReader br) {
+	public Scopus_csv(int[] yearRange, BufferedReader br) {
 		super (yearRange, br)
 
 		csv = new CSVReader(br)
@@ -188,7 +188,7 @@ public class Scopus extends FileImport {
 
 
 
-	public static void save2CSV (File file, CRTable crTab) {
+	public static void save (File file, CRTable crTab) {
 		
 		String d = "${new Date()}: "
 		crTab.stat.setValue(d + "Saving CSV file in Scopus format ...", 0)

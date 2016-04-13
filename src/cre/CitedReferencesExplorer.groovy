@@ -16,9 +16,10 @@ import org.jfree.chart.ChartPanel
 import cre.data.CRTable
 import cre.data.PubType;
 import cre.data.CRTable.*
-import cre.data.source.FileCSV
-import cre.data.source.Scopus;
-import cre.data.source.WoS;
+import cre.data.source.CRE_csv
+import cre.data.source.FileImportExport;
+import cre.data.source.Scopus_csv;
+import cre.data.source.WoS_txt;
 import cre.ui.StatusBar
 import cre.ui.TableFactory
 import cre.ui.UIBind
@@ -65,7 +66,7 @@ ChartPanel chpan = UIChartPanelFactory.create(crTable, tab,
 				if (answer == JOptionPane.YES_OPTION) {
 					Runnable runnable = new Runnable() {
 						public void run() {
-							FileCSV.saveGraph2CSV (dlg.getSelectedFile(), crTable)
+							CRE_csv.saveGraph2CSV (dlg.getSelectedFile(), crTable)
 							uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
 						}
 					}
@@ -82,7 +83,7 @@ ChartPanel chpan = UIChartPanelFactory.create(crTable, tab,
 
 
 
-Closure doOpenFiles = { String dlgTitle, FileFilter filter, boolean multipleFiles  ->
+Closure doOpenFiles = { String dlgTitle, FileFilter filter, boolean multipleFiles, String source  ->
 	
 	if (crTable.crData.size()>0) {
 		int answer = JOptionPane.showConfirmDialog (null, "Save changes before opening another file?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
@@ -104,7 +105,8 @@ Closure doOpenFiles = { String dlgTitle, FileFilter filter, boolean multipleFile
 				matchpan.visible = false
 				
 				try {
-					crTable.loadDataFiles (dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange())
+//					crTable.loadDataFiles (dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange())
+					FileImportExport.load(crTable, source, dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange())
 					wait.dispose()
 				} catch (FileTooLargeException e1) {
 					wait.dispose()
@@ -157,7 +159,8 @@ mainFrame = sb.frame(
 					doOpenFiles (
 						"Import Web of Science files",
 						[getDescription: {"TXT files (*.txt)"}, accept:{File f -> f ==~ /.*\.txt/ || f.isDirectory() }] as FileFilter,
-						true
+						true,
+						"WoS_txt"
 					)					
 				})
 				
@@ -165,7 +168,8 @@ mainFrame = sb.frame(
 					doOpenFiles (
 						"Import Scopus files",
 						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter,
-						true
+						true,
+						"Scopus_csv"
 					)
 
 				})
@@ -244,7 +248,7 @@ mainFrame = sb.frame(
 							if (answer == JOptionPane.YES_OPTION) {
 								Runnable runnable = new Runnable() {
 									public void run() {
-										WoS.save2TXT(dlg.getSelectedFile(), crTable)
+										WoS_txt.save2TXT(dlg.getSelectedFile(), crTable)
 										uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
 									}
 								}
@@ -275,7 +279,7 @@ mainFrame = sb.frame(
 							if (answer == JOptionPane.YES_OPTION) {
 								Runnable runnable = new Runnable() {
 									public void run() {
-										Scopus.save2CSV(dlg.getSelectedFile(), crTable)
+										Scopus_csv.save2CSV(dlg.getSelectedFile(), crTable)
 										uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
 									}
 								}
@@ -307,7 +311,7 @@ mainFrame = sb.frame(
 							if (answer == JOptionPane.YES_OPTION) {
 								Runnable runnable = new Runnable() {
 									public void run() {
-										FileCSV.saveRuediger2CSV (dlg.getSelectedFile(), crTable)
+										CRE_csv.saveRuediger2CSV (dlg.getSelectedFile(), crTable)
 										uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
 									}
 								}
@@ -340,7 +344,7 @@ mainFrame = sb.frame(
 						if (answer == JOptionPane.YES_OPTION) {
 							Runnable runnable = new Runnable() {
 								public void run() {
-									FileCSV.save2CSV (dlg.getSelectedFile(), crTable)
+									CRE_csv.save2CSV (dlg.getSelectedFile(), crTable)
 									uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
 								}
 							}

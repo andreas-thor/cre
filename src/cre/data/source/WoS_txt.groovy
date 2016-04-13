@@ -2,6 +2,7 @@ package cre.data.source
 
 import groovy.transform.CompileStatic
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.util.regex.Matcher
 
@@ -10,7 +11,7 @@ import cre.data.CRType
 import cre.data.PubType;
 
 @CompileStatic
-public class WoS extends FileImport {
+public class WoS_txt extends FileImportExport {
 
 	// TODO: von Autoren paasen nicht; warum uppercase (hab ich mal rausgenommen)
 	static Matcher matchAuthor = "" =~ "([^ ]*)( )?(.*)?"
@@ -21,15 +22,18 @@ public class WoS extends FileImport {
 	
 	static String[] tags = ["PT" ,"AU" ,"AF" ,"CA" ,"TI" ,"ED" ,"SO" ,"SE" ,"BS" ,"LA" ,"DT" ,"CT" ,"CY" ,"HO" ,"CL" ,"SP" ,"DE" ,"ID" ,"AB" ,"C1" ,"RP" ,"EM" ,"RI", "OI", "FU" ,"FX" ,"CR" ,"NR" ,"TC" ,"Z9" ,"PU" ,"PI" ,"PA" ,"SN" ,"BN" ,"J9" ,"JI" ,"PD" ,"PY" ,"VL" ,"IS" ,"PN" ,"SU" ,"SI" ,"BP" ,"EP" ,"AR" ,"PG" ,"DI" ,"WC", "SC" ,"GA" ,"UT"]
 	
-	public WoS(int[] yearRange, BufferedReader br) {
-		super (yearRange, br)
-	}
+	
 	
 
+	public WoS_txt(int[] yearRange, BufferedReader br) {
+		super(yearRange, br);
+	}
+
+
 	/**
-	 * Parses (and create) next element but only returns "is available" info 	
+	 * @return next publication entry; null if there is no more data
 	 */
-	
+		
 	@Override
 	public PubType getNextPub() {
 
@@ -157,7 +161,7 @@ public class WoS extends FileImport {
 		}
 	}
 	
-	public static void save2TXT (File file, CRTable crTab) {
+	public static void save (File file, CRTable crTab) {
 		
 		String d = "${new Date()}: "
 		crTab.stat.setValue(d + "Saving TXT file in WoS format ...", 0)
@@ -200,6 +204,69 @@ public class WoS extends FileImport {
 	}
 	
 }
+
+/*
+*Web of Science*
+
+Field Tags (Articles and Conference Proceedings)
+
+These two-character field tags identify fields in records that you e-mail or save to file.
+
+FN 	File Name
+VR 	Version Number
+PT 	Publication Type (conference, book, journal, book in series, or patent)
+AU 	Authors
+AF 	Author Full Name
+CA 	Group Authors
+TI 	Document Title
+ED 	Editors
+SO 	Publication Name
+SE 	Book Series Title
+BS 	Book Series Subtitle
+LA 	Language
+DT 	Document Type
+CT 	Conference Title
+CY 	Conference Date
+HO 	Conference Host
+CL 	Conference Location
+SP 	Conference Sponsors
+DE 	Author Keywords
+ID 	Keywords Plus®
+AB 	Abstract
+C1 	Author Address
+RP 	Reprint Address
+EM 	E-mail Address
+FU 	Funding Agency and Grant Number
+FX 	Funding Text
+CR 	Cited References
+NR 	Cited Reference Count
+TC 	Times Cited
+PU 	Publisher
+PI 	Publisher City
+PA 	Publisher Address
+SN 	ISSN
+BN 	ISBN
+J9 	29-Character Source Abbreviation
+JI 	ISO Source Abbreviation
+PD 	Publication Date
+PY 	Year Published
+VL 	Volume
+IS 	Issue
+PN 	Part Number
+SU 	Supplement
+SI 	Special Issue
+BP 	Beginning Page
+EP 	Ending Page
+AR 	Article Number
+PG 	Page Count
+DI 	Digital Object Identifier (DOI)
+SC 	Subject Category
+GA 	Document Delivery Number
+UT 	Unique Article Identifier
+ER 	End of Record
+EF 	End of File
+
+*/
 
 
 //	public CRType parseLine(String line) {

@@ -14,7 +14,7 @@ import cre.data.PubType;
 import cre.data.CRTable.AbortedException
 
 @CompileStatic
-class FileCSV {
+class CRE_csv {
 
 	
 	
@@ -80,7 +80,7 @@ class FileCSV {
 			pub.crList.eachWithIndex  { CRType it, int idx ->
 			
 				List<String> csvValues = csvColumns.collect { name -> it[name] as String}
-				csvValues << (pub.year as String)
+				csvValues << (pub.PY as String)
 				csv.writeNext (csvValues as String[])
 			}
 		}

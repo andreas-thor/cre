@@ -7,9 +7,9 @@ import org.jfree.data.xy.DefaultXYDataset
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein
 import cre.data.CRMatch.Pair
-import cre.data.source.FileImport
-import cre.data.source.Scopus
-import cre.data.source.WoS
+import cre.data.source.FileImportExport
+import cre.data.source.Scopus_csv
+import cre.data.source.WoS_txt
 import cre.ui.StatusBar
 import cre.ui.UIMatchPanelFactory
 
@@ -683,13 +683,13 @@ class CRTable {
 			br.mark(1000);		// mark for reset later
 			String line = br.readLine();
 			
-			FileImport parser = null 
+			FileImportExport parser = null 
 			if (line!=null) { 
 				br.reset();		// reset to beginning of the file
-				if (line.contains("FN Thomson Reuters Web of")) parser = (FileImport) new WoS(yearRange, br)
+				if (line.contains("FN Thomson Reuters Web of")) parser = (FileImportExport) new WoS_txt(yearRange, br)
 				
 				// TODO: How do I detect scopus files??
-				/*if (line.contains("Scopus")) */ parser = (FileImport) new Scopus(yearRange, br)
+				/*if (line.contains("Scopus")) */ parser = (FileImportExport) new Scopus_csv(yearRange, br)
 			}
 			
 			if (parser == null) throw new UnsupportedFileFormatException()
