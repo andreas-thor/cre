@@ -208,8 +208,8 @@ public class Scopus_csv extends FileImportExport {
 			pub.with {
 				csv.writeNext ([
 					AU?:"", TI?:"", PY?:"", SO?:"", VL?:"", IS?:"", BP?:"", EP?:"", PG?:"",
-					crList.collect { CRType cr -> cr.CR }.join("; "),
-					NR?:"", DOI?:"", AB?:"", DT?:""
+					pub.crList.collect { CRType cr -> cr.CR }.join("; "),
+					pub.crList.size(), DOI?:"", AB?:"", DT?:""
 				] as String[])
 			} 
 		}

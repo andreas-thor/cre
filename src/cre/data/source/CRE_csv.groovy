@@ -22,7 +22,7 @@ class CRE_csv {
 	 * Save CR table to CSV file
 	 * @param file
 	 */
-	public static void save2CSV (File file, CRTable crTab) {
+	public static void save (File file, CRTable crTab) {
 
 		String d = "${new Date()}: "
 		crTab.stat.setValue(d + "Saving CSV file ...", 0)
@@ -58,7 +58,7 @@ class CRE_csv {
 	}
 
 	
-	public static void saveRuediger2CSV (File file, CRTable crTab) {
+	public static void saveRuediger (File file, CRTable crTab) {
 		
 		String d = "${new Date()}: "
 		crTab.stat.setValue(d + "Saving CSV file ...", 0)
@@ -97,7 +97,7 @@ class CRE_csv {
 	 * Save CR table to CSV file
 	 * @param file
 	 */
-	public static void saveGraph2CSV (File file, CRTable crTab) {
+	public static void saveGraph (File file, CRTable crTab) {
 
 		String d = "${new Date()}: "
 		crTab.stat.setValue(d + "Saving Graph as CSV file ...", 0)
@@ -123,7 +123,7 @@ class CRE_csv {
 	 * Load CR table from CSV file
 	 * @param file
 	 */
-	public static void loadCSV (File file, CRTable crTab) throws AbortedException {
+	public static void load (File file, CRTable crTab) throws AbortedException {
 		
 		crTab.abort = false	// can be changed by "wait dialog"
 		

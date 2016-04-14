@@ -155,6 +155,7 @@ public class WoS_txt extends FileImportExport {
 	 */
 	private static writeTag (BufferedWriter bw, String tag, String value) {
 		if (value==null) return;
+		if (value.trim().size()==0) return;
 		value.split("\n").eachWithIndex { String line, int pos ->
 			bw.write ((pos==0) ? tag+" " : "   ")
 			bw.writeLine (line)
@@ -188,8 +189,8 @@ public class WoS_txt extends FileImportExport {
 				writeTag(bw, "BP", BP?.toString())
 				writeTag(bw, "EP", EP?.toString())
 				writeTag(bw, "PG", PG?.toString())
-				writeTag(bw, "CR", crList.collect { CRType cr -> cr.CR }.join("\n")) 
-				writeTag(bw, "NR", NR?.toString())
+				writeTag(bw, "CR", pub.crList.collect { CRType cr -> cr.CR }.join("\n")) 
+				writeTag(bw, "NR", pub.crList.size().toString())
 				writeTag(bw, "DOI", DOI)
 				writeTag(bw, "AB", AB)
 				writeTag(bw, "DT", DT)

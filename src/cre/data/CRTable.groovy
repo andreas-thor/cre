@@ -63,7 +63,7 @@ class CRTable {
 	
 	CRMatch crMatch = new CRMatch()
 	private Map<Integer, Integer> crId2Index = [:]						// object Id -> index in crData list
-	private Map<CRCluster, List<Integer>> clusterId2Objects = [:]		// clusterId->[object ids]
+	public Map<CRCluster, List<Integer>> clusterId2Objects = [:]		// clusterId->[object ids]
 
 	
 	

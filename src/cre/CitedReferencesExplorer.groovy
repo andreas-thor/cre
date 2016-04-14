@@ -46,53 +46,64 @@ JFrame mainFrame
 
 
 
+/* Workflow for saving / exporting files */
+Closure doExportFile = { String source, String dlgTitle, FileFilter filter ->
+	JFileChooser dlg = new JFileChooser(dialogTitle: dlgTitle, multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
+	dlg.setFileFilter(filter)
+	dlg.setCurrentDirectory(uisetting.getLastDirectory())
 
-
-ChartPanel chpan = UIChartPanelFactory.create(crTable, tab, 
-	sb.menuItem(id: "menuSave", text: "CSV...", actionPerformed: {
-		JFileChooser dlg = new JFileChooser(dialogTitle: "Save as CSV file", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
-		dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
-		dlg.setCurrentDirectory(uisetting.getLastDirectory())
-	
-		int answer = JOptionPane.NO_OPTION
-		while (answer == JOptionPane.NO_OPTION) {
+	int answer = JOptionPane.NO_OPTION
+	while (answer == JOptionPane.NO_OPTION) {
+		
+		if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
 			
-			if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
-				
-				answer = JOptionPane.YES_OPTION
-				if (dlg.getSelectedFile().exists()) {
-					answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
-				}
-				if (answer == JOptionPane.YES_OPTION) {
-					Runnable runnable = new Runnable() {
-						public void run() {
-							CRE_csv.saveGraph2CSV (dlg.getSelectedFile(), crTable)
+			answer = JOptionPane.YES_OPTION
+			if (dlg.getSelectedFile().exists()) {
+				answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
+			}
+			if (answer == JOptionPane.YES_OPTION) {
+				Runnable runnable = new Runnable() {
+					public void run() {
+						try {
+							switch (source) {
+								case "WoS_txt": WoS_txt.save(dlg.getSelectedFile(), crTable); break;
+								case "Scopus_csv": Scopus_csv.save(dlg.getSelectedFile(), crTable); break;
+								case "CRE_csv": CRE_csv.save(dlg.getSelectedFile(), crTable); break;
+								case "CRE_csv_Graph": CRE_csv.saveGraph(dlg.getSelectedFile(), crTable); break;
+								case "CRE_csv_Ruediger": CRE_csv.saveRuediger(dlg.getSelectedFile(), crTable); break;
+								default: JOptionPane.showMessageDialog(null, "Unknown file format." );
+							}
 							uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
+						} catch (Exception e) {
+							e.printStackTrace()
+							JOptionPane.showMessageDialog(null, "Error while saving file.\n(${e.toString()})" );
 						}
 					}
-					Thread t = new Thread(runnable)
-					t.start()
 				}
-			} else {
-				break
+				Thread t = new Thread(runnable)
+				t.start()
 			}
+		} else {
+			break
 		}
-	})
-	)
+	}
+}
 
-
-
-
-Closure doOpenFiles = { String dlgTitle, FileFilter filter, boolean multipleFiles, String source  ->
+/* Workflow for loading / importing files */
+Closure doImportFiles = { String source, String dlgTitle, boolean multipleFiles, FileFilter filter ->
 	
 	if (crTable.crData.size()>0) {
 		int answer = JOptionPane.showConfirmDialog (null, "Save changes before opening another file?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
-		if (answer == JOptionPane.YES_OPTION) sb.menuSave.doClick();
+		if (answer == JOptionPane.CANCEL_OPTION) return
+		if (answer == JOptionPane.YES_OPTION) { 
+			doExportFile (
+				"CRE_csv", "Export CRE file",
+				[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
+		}
 	}
-
+	
 	JFileChooser dlg = new JFileChooser(dialogTitle: dlgTitle, multiSelectionEnabled: multipleFiles, fileSelectionMode: JFileChooser.FILES_ONLY)
 	dlg.setFileFilter(filter)
-//	dlg.setFileFilter([getDescription: {"ACSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
 	
 	dlg.setCurrentDirectory(uisetting.getLastDirectory())
 	
@@ -103,10 +114,13 @@ Closure doOpenFiles = { String dlgTitle, FileFilter filter, boolean multipleFile
 		Runnable runnable = new Runnable() {
 			public void run() {
 				matchpan.visible = false
-				
 				try {
-//					crTable.loadDataFiles (dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange())
-					FileImportExport.load(crTable, source, dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange())
+					switch (source) {
+						case "WoS_txt": FileImportExport.load(crTable, source, dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange()); break;
+						case "Scopus_csv": FileImportExport.load(crTable, source, dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange()); break;
+						case "CRE_csv": FileCSV.loadCSV(dlg.getSelectedFile(), crTable); break;
+						default: JOptionPane.showMessageDialog(null, "Unknown file format." );
+					}
 					wait.dispose()
 				} catch (FileTooLargeException e1) {
 					wait.dispose()
@@ -141,10 +155,19 @@ Closure doOpenFiles = { String dlgTitle, FileFilter filter, boolean multipleFile
 
 
 
+ChartPanel chpan = UIChartPanelFactory.create(crTable, tab,
+	sb.menuItem(id: "menuSave", text: "CSV...", actionPerformed: {
+		doExportFile (
+			"CRE_csv_Graph", "Export Graph Data as CSV",
+			[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
+	})
+)
+
+
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2016/04/11 **DEV**++)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2016/04/14 **DEV**++)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -154,209 +177,53 @@ mainFrame = sb.frame(
 		menu(text: "File", mnemonic: 'F') {
 			
 			menu(text: "Import") {
-			
 				menuItem(text: "Web of Science...", mnemonic: 'W', actionPerformed: {
-					doOpenFiles (
-						"Import Web of Science files",
-						[getDescription: {"TXT files (*.txt)"}, accept:{File f -> f ==~ /.*\.txt/ || f.isDirectory() }] as FileFilter,
-						true,
-						"WoS_txt"
-					)					
+					doImportFiles (
+						"WoS_txt", "Import Web of Science files", true,
+						[getDescription: {"TXT files (*.txt)"}, accept:{File f -> f ==~ /.*\.txt/ || f.isDirectory() }] as FileFilter)					
 				})
-				
 				menuItem(text: "Scopus...", mnemonic: 'S', actionPerformed: {
-					doOpenFiles (
-						"Import Scopus files",
-						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter,
-						true,
-						"Scopus_csv"
-					)
-
+					doImportFiles (
+						"Scopus_csv", "Import Scopus files", true, 
+						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
 				})
-			
 			}
 			
-			
-			
 			menuItem(text: "Open...", mnemonic: 'O', accelerator: KeyStroke.getKeyStroke("ctrl O"), actionPerformed: {
-				
-				doOpenFiles (
-					"Open CSV file",
-					[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter,
-					false
-				)
-				
-				// FileCSV.loadCSV(dlg.getSelectedFile(), crTable)
-				
-				
-//				if (crTable.crData.size()>0) {
-//					int answer = JOptionPane.showConfirmDialog (null, "Save changes before opening another CSV file?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
-//					if (answer == JOptionPane.YES_OPTION) sb.menuSave.doClick();
-//				}
-//				
-//				JFileChooser dlg = new JFileChooser(dialogTitle: "Open CSV files", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
-//				dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
-//				dlg.setCurrentDirectory(uisetting.getLastDirectory())
-//				
-//				if (dlg.showOpenDialog()==JFileChooser.APPROVE_OPTION) {
-//
-//					JDialog wait = UIDialogFactory.createWaitDlg(mainFrame, { crTable.abort = true })
-//					
-//					Runnable runnable = new Runnable() {
-//						public void run() {
-//							matchpan.visible = false
-//							try {
-//								FileCSV.loadCSV(dlg.getSelectedFile(), crTable)
-//								wait.dispose()
-//							} catch (AbortedException e) { 
-//								wait.dispose()
-//							}
-//							UIDialogFactory.createInfoDlg(mainFrame, crTable.getInfo()).visible = true
-//							(tab.getModel() as AbstractTableModel).fireTableDataChanged()
-//							uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
-//						}
-//					}
-//					Thread t = new Thread(runnable)
-//					t.start()
-//					wait.visible = true
-//
-//				}
+				doImportFiles (
+					"CRE_csv", "Open CSV file", false, 
+					[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
 			})
 			
 			separator()
 			
 			
-			
 			menu(text: "Export") {
-			
-
-				
 				menuItem(id: "menuSaveWoS", text: "Web of Science...", mnemonic: 'W', actionPerformed: {
-					JFileChooser dlg = new JFileChooser(dialogTitle: "Save as WoS file", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
-					dlg.setFileFilter([getDescription: {"TXT files (*.txt)"}, accept:{File f -> f ==~ /.*?\.txt/ || f.isDirectory() }] as FileFilter)
-					dlg.setCurrentDirectory(uisetting.getLastDirectory())
-	
-					int answer = JOptionPane.NO_OPTION
-					while (answer == JOptionPane.NO_OPTION) {
-						
-						if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
-							
-							answer = JOptionPane.YES_OPTION
-							if (dlg.getSelectedFile().exists()) {
-								answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
-							}
-							if (answer == JOptionPane.YES_OPTION) {
-								Runnable runnable = new Runnable() {
-									public void run() {
-										WoS_txt.save2TXT(dlg.getSelectedFile(), crTable)
-										uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
-									}
-								}
-								Thread t = new Thread(runnable)
-								t.start()
-							}
-						} else {
-							break
-						}
-					}
+					doExportFile (
+						"WoS_txt", "Export Web of Science file",
+						[getDescription: {"TXT files (*.txt)"}, accept:{File f -> f ==~ /.*\.txt/ || f.isDirectory() }] as FileFilter)
 				})
-
-	
 				menuItem(id: "menuSaveScopus", text: "Scopus...", mnemonic: 'S', actionPerformed: {
-					JFileChooser dlg = new JFileChooser(dialogTitle: "Save as Scopus file", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
-					dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
-					dlg.setCurrentDirectory(uisetting.getLastDirectory())
-	
-					int answer = JOptionPane.NO_OPTION
-					while (answer == JOptionPane.NO_OPTION) {
-						
-						if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
-							
-							answer = JOptionPane.YES_OPTION
-							if (dlg.getSelectedFile().exists()) {
-								answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
-							}
-							if (answer == JOptionPane.YES_OPTION) {
-								Runnable runnable = new Runnable() {
-									public void run() {
-										Scopus_csv.save2CSV(dlg.getSelectedFile(), crTable)
-										uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
-									}
-								}
-								Thread t = new Thread(runnable)
-								t.start()
-							}
-						} else {
-							break
-						}
-					}
+					doExportFile (
+						"Scopus_csv", "Export Scopus file",
+						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
 				})
 				
 				separator()
 				
 				menuItem(id: "menuSaveRuediger", text: "Ruediger...", mnemonic: 'R', accelerator: KeyStroke.getKeyStroke("ctrl R"), actionPerformed: {
-					JFileChooser dlg = new JFileChooser(dialogTitle: "Save as CSV file for Ruediger", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
-					dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
-					dlg.setCurrentDirectory(uisetting.getLastDirectory())
-	
-					int answer = JOptionPane.NO_OPTION
-					while (answer == JOptionPane.NO_OPTION) {
-						
-						if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
-							
-							answer = JOptionPane.YES_OPTION
-							if (dlg.getSelectedFile().exists()) {
-								answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
-							}
-							if (answer == JOptionPane.YES_OPTION) {
-								Runnable runnable = new Runnable() {
-									public void run() {
-										CRE_csv.saveRuediger2CSV (dlg.getSelectedFile(), crTable)
-										uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
-									}
-								}
-								Thread t = new Thread(runnable)
-								t.start()
-							}
-						} else {
-							break
-						}
-					}
+					doExportFile (
+						"CRE_csv_Ruediger", "Export CRE file for Ruediger",
+						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
 				})
-			
 			}
 			
-			
 			menuItem(id: "menuSaveCSV", text: "Save...", mnemonic: 'S', accelerator: KeyStroke.getKeyStroke("ctrl S"), actionPerformed: {
-				JFileChooser dlg = new JFileChooser(dialogTitle: "Save as CSV file", multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
-				dlg.setFileFilter([getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
-				dlg.setCurrentDirectory(uisetting.getLastDirectory())
-
-				int answer = JOptionPane.NO_OPTION
-				while (answer == JOptionPane.NO_OPTION) {
-					
-					if (dlg.showSaveDialog() == JFileChooser.APPROVE_OPTION) {
-						
-						answer = JOptionPane.YES_OPTION
-						if (dlg.getSelectedFile().exists()) {
-							answer = JOptionPane.showConfirmDialog (null, "File exists! Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
-						}
-						if (answer == JOptionPane.YES_OPTION) {
-							Runnable runnable = new Runnable() {
-								public void run() {
-									CRE_csv.save2CSV (dlg.getSelectedFile(), crTable)
-									uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
-								}
-							}
-							Thread t = new Thread(runnable)
-							t.start()
-						}
-					} else {
-						break
-					}
-				}
+				doExportFile (
+					"CRE_csv", "Export CRE file",
+					[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
 			})
-			
 			
 			separator()
 			
@@ -499,8 +366,4 @@ mainFrame.pack()
 mainFrame.setLocationRelativeTo(null)
 uisetting = new UISettings(tab, chpan, mainFrame, crTable)
 mainFrame.visible = true
-
-
-
-	
 

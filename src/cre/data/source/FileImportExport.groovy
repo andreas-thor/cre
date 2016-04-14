@@ -100,6 +100,8 @@ public abstract class FileImportExport {
 							throw new FileTooLargeException (indexCount);
 						}
 						
+						// todo: add new CR as separate function (make clusterId2Objects private again)
+						
 						cr.ID = indexCount+1
 						cr.CID2 = new CRCluster (indexCount+1, 1)
 						cr.CID_S = 1
