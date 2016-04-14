@@ -8,6 +8,7 @@ import java.awt.Component
 import java.awt.Dimension;
 import java.awt.Point
 import java.awt.event.ActionEvent
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.text.DecimalFormat
@@ -55,6 +56,8 @@ class TableFactory {
 				propertyColumn(header:CRType.attr.AU, 			propertyName:'AU', 			type: String, 	editable: false)
 				propertyColumn(header:CRType.attr.AU_L, 		propertyName:'AU_L', 		type: String, 	editable: false)
 				propertyColumn(header:CRType.attr.AU_F, 		propertyName:'AU_F', 		type: String, 	editable: false)
+				propertyColumn(header:CRType.attr.AU_A, 		propertyName:'AU_A', 		type: String, 	editable: false)
+				propertyColumn(header:CRType.attr.TI, 			propertyName:'TI',	 		type: String, 	editable: false)
 				propertyColumn(header:CRType.attr.J, 			propertyName:'J', 			type: String, 	editable: false)
 				propertyColumn(header:CRType.attr.J_N, 			propertyName:'J_N', 		type: String, 	editable: false)
 				propertyColumn(header:CRType.attr.J_S, 			propertyName:'J_S', 		type: String, 	editable: false)
@@ -66,8 +69,15 @@ class TableFactory {
 				
 			}
 		}
+		
+		
+		
+		
 		return tab
 	}
+	
+	
+
 	
 	
 	@CompileStatic

@@ -10,6 +10,8 @@ public class CRType /* implements Comparable<CRType>*/ {
 	String AU;
 	String AU_F;
 	String AU_L;
+	String AU_A;	// all Authors
+	String TI; 		// title
 	String J;
 	String J_N;
 	String J_S;
@@ -41,6 +43,8 @@ public class CRType /* implements Comparable<CRType>*/ {
 		'AU': 'Author',
 		'AU_L': 'Last Name',
 		'AU_F': 'First Name Initial',
+		'AU_A': 'Authors',
+		'TI': 'Title',
 		'J': 'Source',
 		'J_N': 'Source Title',
 		'J_S': 'Title Short',
@@ -59,6 +63,8 @@ public class CRType /* implements Comparable<CRType>*/ {
 		AU = null
 		AU_F = null
 		AU_L = null
+		AU_A = null
+		TI = null
 		PAG = ""
 		VOL = "" 
 		mergedTo = -1

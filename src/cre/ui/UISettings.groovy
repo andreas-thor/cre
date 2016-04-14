@@ -92,6 +92,14 @@ class UISettings {
 	
 	
 	public void setAttributes (byte[] attributes) {
+		
+//		CRType.attr.eachWithIndex { String a, int idx -> 
+		
+		// make sure attributes has the correct size
+		List<Byte> defAtt = CRType.attr.collect { 1 }
+		attributes.eachWithIndex { byte val, int idx -> if (idx<defAtt.size()) defAtt[idx]=val }
+		attributes = defAtt as byte[]
+		
 		this.attributes = attributes
 		userPrefs.putByteArray ("attributes", attributes)
 		

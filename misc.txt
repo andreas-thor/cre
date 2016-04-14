@@ -2,20 +2,42 @@
 Scopus
 =======
 
-- Bislang werden noch viele Informationen verschluckt (auf die Datenspalten verteilt),
- wie die weiteren Autoren (neben dem Erstautor) und der Titel einer Arbeit
+- Wenn es kein cited reference year gibt, sollte keine 0 in der Spalte eingetragen werden
+
+==> Das kann man machen, ist aber dann inkonsistent zur Berechnung der Percentages (die sind dann auch leer) und des Graphen. 
+Konsequenterweise müsste man CRs ohne Jahrangabe beim Import wegschmeißen, oder?
+
+
+- Das Programm hat Probleme mit Sonderzeichen (Umlauten, ß etc.).
+
+==> Das Programm liest nun standardmäßig in UTF-8 ein und kann somit auch Sonderzeichen (z.B. auch chinesische Zeichen).
+Werden dennoch Sonderzeichen verunstaltet, bitte ich zunächst zu prüfen, 
+ob die Zeichen in einem normalen Editor (Notepad o.ä.) richtig dargestellt werden.
+Falls nicht, liegt es an der Datei. 
+
 
 - Bei den Scopus-Daten würde ich als neue Spalte den Titel einer Arbeit mit aufnehmen
-
 - Bei den Scopus-Daten würde ich nicht nur den Erstautor, sondern alle Autoren in die Spalte Author extrahieren. 
 Entsprechend können die Spalten Last Name und First Name Initial entfallen
+- Bislang werden noch viele Informationen verschluckt (auf die Datenspalten verteilt),
+ wie die weiteren Autoren (neben dem Erstautor) und der Titel einer Arbeit
+ 
+==> Hier stellt sich die Frage, wie mit den unterschiedlichen Formaten umgegangen werden soll.
+Ich persönlich strebe eine einheitliche Verwendung im Programm an, 
+unabhängig in welchem Format die Daten importiert wurden. 
+Natürlich sind Datenqualität und verfügbare Werte abhängig vom Import-Format.
+...
+
+
+
+
+
 
 - Das Programm hat generell ein Problem, wenn ganz am Anfang in Klammern das Publikationsjahr steht. 
 Dann findet keine Aufspaltung der Daten in die weiteren Spalten statt.
 
-- Das Programm hat Probleme mit Sonderzeichen (Umlauten, ß etc.).
 
-- Wenn es kein cited reference year gibt, sollte keine 0 in der Spalte eingetragen werden
+
 
 - Das Programm findet manchmal die DOI nicht, auch wenn "doi" davor steht
 

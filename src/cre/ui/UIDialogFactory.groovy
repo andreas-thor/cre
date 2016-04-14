@@ -2,6 +2,7 @@ package cre.ui
 
 import groovy.swing.SwingBuilder
 
+import java.awt.event.ActionEvent
 import java.text.NumberFormat
 
 import javax.swing.*
@@ -203,7 +204,127 @@ class UIDialogFactory {
 		return rangeDialog
 	}
 
+	 
 	
+	public static AbstractAction showCRDetails (JFrame f, CRTable crTab) {
+		AbstractAction save = new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				JTable tab = (JTable)e.getSource()
+				if (tab.getSelectedRow()!=-1) {
+					CRType cr = crTab.crData[tab.convertRowIndexToModel(tab.getSelectedRow())]
+//					JOptionPane.showConfirmDialog (null, crTab.crData[tab.convertRowIndexToModel(tab.getSelectedRow())].toString(), "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
+					
+					 
+					SwingBuilder sb = new SwingBuilder()
+					JButton defBtn
+					JDialog CRDlg = sb.dialog(modal:true, title: "CR Info")
+					CRDlg.getContentPane().add (
+						sb.panel(border: BorderFactory.createEmptyBorder(10, 10, 10, 10)) {
+							tableLayout(cellpadding:3) {
+								tr {
+									td (align:'center') {
+										panel(border:BorderFactory.createTitledBorder("Cited Reference")) {
+											tableLayout (cellpadding: 3 ) {
+												tr {
+													td (align:'right') { label(text:"ID:  ") }
+													td (colfill:true) { label(text:cr.ID) }
+												}
+												tr { 
+													td (align:'right') { label(text:"CR:  ") } 
+													td (colfill:true) { label(text:cr.CR) }	
+												}
+												tr { 
+													td (align:'right') { label(text:"AU:  ") } 
+													td (colfill:true) { label(text:cr.AU) }	
+												}
+												tr { 
+													td (align:'right') { label(text:"AU_F:  ") } 
+													td (colfill:true) { label(text:cr.AU_F) }	
+												}
+												tr { 
+													td (align:'right') { label(text:"AU_L:  ") } 
+													td (colfill:true) { label(text:cr.AU_L) }	
+												}
+												tr { 
+													td (align:'right') { label(text:"AU_A:  ") } 
+													td (colfill:true) { label(text:cr.AU_A) }	
+												}
+												tr { 
+													td (align:'right') { label(text:"TI:  ") } 
+													td (colfill:true) { label(text:cr.TI) }	
+												}
+												tr { 
+													td (align:'right') { label(text:"J:  ") } 
+													td (colfill:true) { label(text:cr.J) }	
+												}
+												tr { 
+													td (align:'right') { label(text:"J_N:  ") } 
+													td (colfill:true) { label(text:cr.J_N) }	
+												}
+												tr { 
+													td (align:'right') { label(text:"J_S:  ") } 
+													td (colfill:true) { label(text:cr.J_S) }	
+												}
+												tr { 
+													td (align:'right') { label(text:"N_CR:  ") } 
+													td (colfill:true) { label(text:cr.N_CR) }	
+												}
+												tr { 
+													td (align:'right') { label(text:"RPY:  ") } 
+													td (colfill:true) { label(text:cr.RPY) }	
+												}
+												tr { 
+													td (align:'right') { label(text:"PAG:  ") } 
+													td (colfill:true) { label(text:cr.PAG) }	
+												}
+												tr { 
+													td (align:'right') { label(text:"VOL:  ") } 
+													td (colfill:true) { label(text:cr.VOL) }	
+												}
+												tr { 
+													td (align:'right') { label(text:"DOI:  ") } 
+													td (colfill:true) { label(text:cr.DOI) }	
+												}
+												tr { 
+													td (align:'right') { label(text:"CID2:  ") } 
+													td (colfill:true) { label(text:cr.CID2) }	
+												}
+												tr { 
+													td (align:'right') { label(text:"CID_S:  ") } 
+													td (colfill:true) { label(text:cr.CID_S) }	
+												}
+											}
+										}
+									}
+								}
+								tr {
+									td (align:'center') {
+										defBtn = button(preferredSize:[100, 25], text:'Ok', actionPerformed: { CRDlg.dispose() })
+									}
+								}
+							}
+						}
+					)
+					CRDlg.getRootPane().setDefaultButton(defBtn)
+					CRDlg.pack()
+					CRDlg.setLocationRelativeTo(f)
+					CRDlg.visible = true
+			
+					
+					
+					
+				}
+				
+//				JOptionPane.showConfirmDialog (null, "File exists! " + crTab.getInfoString() + "Overwrite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
+//					TestTableKeyBinding.this.table, "Action Triggered.");
+//				table.editingCanceled(null);
+			}
+		};
+		return save;
+	}
 	
 
 	

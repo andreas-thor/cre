@@ -37,7 +37,7 @@ public class Scopus_csv extends FileImportExport {
 	
 	
 	static Matcher matchBlock = "" =~ "^([A-Y ]+)(\\: )(.*)"
-	static List<Matcher> matchPAG  = ["" =~ "p\\. ([0-9]+)[\\.;]", "" =~ "pp\\. ([0-9]+)\\-[0-9]+[\\.;]"]
+	static List<Matcher> matchPAG  = ["" =~ "p\\. ([0-9]+)\$", "" =~ "p\\. ([0-9]+)[\\.;,]",  "" =~ "pp\\. ([0-9]+)\\-[0-9]+[\\.;,]", "" =~ "pp\\. ([0-9]+)\\-[0-9]+\$"]
 	static List<Matcher> matchVOL  = ["" =~ "([0-9]+)", "" =~ "([0-9]+) \\([0-9]+\\)", "" =~ "([0-9]+) \\([0-9]+\\-[0-9]+\\)"]
 	static Matcher matchAuthor = "" =~ "^([^,]+),([ A-Z\\-\\.]+\\.),(.*)"
 	static Matcher matchYearTitle = "" =~ "(.*?)\\((\\d{4})\\)(.*)"
@@ -107,6 +107,9 @@ public class Scopus_csv extends FileImportExport {
 				result.AU_L = m[1]
 				result.AU_F = (m[2].trim())[0]
 				result.AU = m[1] + "," + m[2]
+				result.AU_A = m[1] + "," + m[2]
+			} else {
+				result.AU_A += "; " + m[1] + "," + m[2]
 			}
 			firstAuthor = false
 			line = m[3].trim()
@@ -116,6 +119,7 @@ public class Scopus_csv extends FileImportExport {
 		// find publication year and title
 		result.J_N = ""
 		result.J = ""
+		result.TI = ""
 		matchYearTitle.reset (line)
 		if (matchYearTitle.matches()) {
 			String[] m = (String[]) matchYearTitle[0]
@@ -125,6 +129,7 @@ public class Scopus_csv extends FileImportExport {
 				int pos = m[3].indexOf(", ,") 
 				if (pos>=0) {
 //						TITLE = m[3][0..pos]
+					result.TI = m[3][0..pos]
 					result.J_N = ""
 					result.J = m[3][pos+3..-1].trim()
 				} else {
@@ -135,6 +140,7 @@ public class Scopus_csv extends FileImportExport {
 				
 			} else {
 //					TITLE = m[1] 
+				result.TI = m[1]
 				result.RPY = Integer.valueOf (m[2]).intValue()
 				String[] crsplit = m[3].split (",", 2)
 				result.J_N = crsplit[0].trim()

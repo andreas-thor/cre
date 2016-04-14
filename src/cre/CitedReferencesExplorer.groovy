@@ -3,9 +3,11 @@ package cre
 
 
 import groovy.swing.SwingBuilder
-import groovy.swing.factory.SeparatorFactory;
+import groovy.swing.factory.SeparatorFactory
 
-import java.awt.*
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent
+import java.awt.event.KeyEvent;
 
 import javax.swing.*
 import javax.swing.filechooser.FileFilter
@@ -118,7 +120,7 @@ Closure doImportFiles = { String source, String dlgTitle, boolean multipleFiles,
 					switch (source) {
 						case "WoS_txt": FileImportExport.load(crTable, source, dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange()); break;
 						case "Scopus_csv": FileImportExport.load(crTable, source, dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange()); break;
-						case "CRE_csv": FileCSV.loadCSV(dlg.getSelectedFile(), crTable); break;
+						case "CRE_csv": CRE_csv.load (dlg.getSelectedFile(), crTable); break;
 						default: JOptionPane.showMessageDialog(null, "Unknown file format." );
 					}
 					wait.dispose()
@@ -180,12 +182,12 @@ mainFrame = sb.frame(
 				menuItem(text: "Web of Science...", mnemonic: 'W', actionPerformed: {
 					doImportFiles (
 						"WoS_txt", "Import Web of Science files", true,
-						[getDescription: {"TXT files (*.txt)"}, accept:{File f -> f ==~ /.*\.txt/ || f.isDirectory() }] as FileFilter)					
+						[getDescription: {"TXT files (*.txt)"}, accept:{File f -> f ==~ ".*\\.txt\$" || f.isDirectory() }] as FileFilter)					
 				})
 				menuItem(text: "Scopus...", mnemonic: 'S', actionPerformed: {
 					doImportFiles (
 						"Scopus_csv", "Import Scopus files", true, 
-						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
+						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ ".*\\.csv\$" || f.isDirectory() }] as FileFilter)
 				})
 			}
 			
@@ -361,9 +363,22 @@ mainFrame = sb.frame(
 	
 }
 	
+	
+
+	
 mainFrame.setIconImage(Toolkit.getDefaultToolkit().getImage("CRE32.png"));
 mainFrame.pack()
 mainFrame.setLocationRelativeTo(null)
 uisetting = new UISettings(tab, chpan, mainFrame, crTable)
+
+
+InputMap im = tab.getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+ActionMap am = tab.getActionMap()
+
+im.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,  0), "showCRDetails");
+am.put("showCRDetails", UIDialogFactory.showCRDetails(mainFrame, crTable));
+
+
+
 mainFrame.visible = true
 
