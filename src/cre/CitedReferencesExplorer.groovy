@@ -144,7 +144,7 @@ Closure doImportFiles = { String source, String dlgTitle, boolean multipleFiles,
 				
 				UIDialogFactory.createInfoDlg(mainFrame, crTable.getInfo()).visible = true
 				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
-				uisetting.setLastDirectory((multipleFiles ? dlg.getSelectedFiles()[0] : dlg.getSelectedFile).getParentFile() )
+				uisetting.setLastDirectory((multipleFiles ? dlg.getSelectedFiles()[0] : dlg.getSelectedFile()).getParentFile() )
 			 }
 		}
 		
