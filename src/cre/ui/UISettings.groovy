@@ -1,22 +1,18 @@
 package cre.ui 
 
-import groovy.lang.Closure;
 import groovy.swing.SwingBuilder
-import groovy.transform.CompileStatic
 
 import java.awt.BasicStroke
 import java.awt.geom.Ellipse2D
 import java.awt.geom.Rectangle2D
-import java.util.Map.Entry;
-import java.util.prefs.Preferences
 import java.text.DecimalFormat
 import java.text.NumberFormat
+import java.util.Map.Entry
+import java.util.prefs.Preferences
 
 import javax.swing.*
 
-import org.codehaus.groovy.util.StringUtil;
 import org.jfree.chart.ChartPanel
-import org.jfree.util.StringUtils;
 
 import cre.CitedReferencesExplorer
 import cre.data.CRTable
@@ -46,6 +42,11 @@ class UISettings {
 	private int medianRange;
 	
 	
+	public static Map<String, String> line = [
+		'NCR_PER_YEAR' : 'Number of Cited References',
+		'DEV_FROM_MED' : 'Deviation from the Median'
+	]
+	
 	
 	public UISettings(JTable tab, ChartPanel chpan, JFrame mainFrame, CRTable crTab) {
 		this.tab = tab
@@ -55,7 +56,7 @@ class UISettings {
 		
 		userPrefs = Preferences.userNodeForPackage( CitedReferencesExplorer.getClass() )
 		setAttributes(userPrefs.getByteArray("attributes", CRType.attr.collect {k, v -> 1} as byte[]))
-		setLines(userPrefs.getByteArray("lines", CRTable.line.collect {k, v -> 1} as byte[]))
+		setLines(userPrefs.getByteArray("lines", UISettings.line.collect {k, v -> 1} as byte[]))
 		setSeriesSizes(userPrefs.getByteArray("seriesSizes", ([1,1] as byte[])))
 		setLastDirectory(new File (userPrefs.get("lastFileDir", "")))
 		setMaxCR(userPrefs.getInt("maxCR", 100000))
@@ -256,7 +257,7 @@ class UISettings {
 								tableLayout(cellpadding:0) {
 									tr { td (align:'left') { sb.panel (border: BorderFactory.createTitledBorder("Show Lines in Chart")) {
 										tableLayout (id: 'lines', cellpadding: 0 ) {
-											CRTable.line.eachWithIndex { name, label, idx -> tr { td { checkBox(id: name, text: label, selected: lines[idx]==1) } } }
+											UISettings.line.eachWithIndex { name, label, idx -> tr { td { checkBox(id: name, text: label, selected: lines[idx]==1) } } }
 										}
 									} } }
 									tr { td (align:'left') { sb.panel (border: BorderFactory.createTitledBorder("Size of Chart Lines")) {

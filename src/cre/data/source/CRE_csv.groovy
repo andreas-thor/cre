@@ -1,17 +1,14 @@
 package cre.data.source
 
-import org.jfree.data.DomainOrder;
-import org.jfree.data.general.Dataset;
-import org.jfree.data.xy.DefaultXYDataset
-
 import groovy.transform.CompileStatic
 import au.com.bytecode.opencsv.CSVReader
 import au.com.bytecode.opencsv.CSVWriter
-import cre.data.CRCluster;
-import cre.data.CRTable;
-import cre.data.CRType;
-import cre.data.PubType;
-import cre.data.CRTable.AbortedException
+import cre.Exceptions.AbortedException
+import cre.data.CRCluster
+import cre.data.CRTable
+import cre.data.CRType
+import cre.data.PubType
+import cre.ui.StatusBar
 
 @CompileStatic
 class CRE_csv {
@@ -22,10 +19,10 @@ class CRE_csv {
 	 * Save CR table to CSV file
 	 * @param file
 	 */
-	public static void save (File file, CRTable crTab) {
+	public static void save (File file, CRTable crTab, StatusBar stat) {
 
 		String d = "${new Date()}: "
-		crTab.stat.setValue(d + "Saving CSV file ...", 0)
+		stat.setValue(d + "Saving CSV file ...", 0)
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -37,13 +34,13 @@ class CRE_csv {
 		csv.writeNext(csvColumns + ["_SAMEAS", "_DIFFERENTTO"] as String[]) // add columns for manual match result
 		
 		crTab.crData.eachWithIndex  { CRType it, int idx ->
-			crTab.stat.setValue (d + "Save CSV file ...", ((idx+1)*100.0/crTab.crData.size()).intValue())
+			stat.setValue (d + "Save CSV file ...", ((idx+1)*100.0/crTab.crData.size()).intValue())
 		
 			List<String> csvValues = csvColumns.collect { name -> it[name] as String}
 			
 			// add manual match result (2 columns: _SAMEAS, _DIFFERENTTO)
 			Map mM = ["SAMEAS":[], "DIFFERENTTO":[]]
-			crTab.crMatch.getMapping(it.ID, true).each { k, v ->
+			crTab.getMapping(it.ID, true).each { k, v ->
 				if (v!=null) {
 					mM[((v as Double) ==2d)?"SAMEAS":"DIFFERENTTO"] << (Integer)k
 				}
@@ -54,14 +51,14 @@ class CRE_csv {
 		}
 		csv.close()
 		
-		crTab.stat.setValue("${new Date()}: Saving CSV file done", 0, crTab.getInfoString())
+		stat.setValue("${new Date()}: Saving CSV file done", 0, crTab.getInfoString())
 	}
 
 	
-	public static void saveRuediger (File file, CRTable crTab) {
+	public static void saveRuediger (File file, CRTable crTab, StatusBar stat) {
 		
 		String d = "${new Date()}: "
-		crTab.stat.setValue(d + "Saving CSV file ...", 0)
+		stat.setValue(d + "Saving CSV file ...", 0)
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -75,7 +72,7 @@ class CRE_csv {
 		
 		crTab.pubData.eachWithIndex { PubType pub, int pubIdx ->
 			
-			crTab.stat.setValue (d + "Save CSV file ...", ((pubIdx+1)*100.0/crTab.pubData.size()).intValue())
+			stat.setValue (d + "Save CSV file ...", ((pubIdx+1)*100.0/crTab.pubData.size()).intValue())
 			
 			pub.crList.eachWithIndex  { CRType it, int idx ->
 			
@@ -86,7 +83,7 @@ class CRE_csv {
 		}
 		csv.close()
 		
-		crTab.stat.setValue("${new Date()}: Saving CSV file done", 0, crTab.getInfoString())
+		stat.setValue("${new Date()}: Saving CSV file done", 0, crTab.getInfoString())
 	}
 		
 		
@@ -97,10 +94,10 @@ class CRE_csv {
 	 * Save CR table to CSV file
 	 * @param file
 	 */
-	public static void saveGraph (File file, CRTable crTab) {
+	public static void saveGraph (File file, CRTable crTab, StatusBar stat) {
 
 		String d = "${new Date()}: "
-		crTab.stat.setValue(d + "Saving Graph as CSV file ...", 0)
+		stat.setValue(d + "Saving Graph as CSV file ...", 0)
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -114,7 +111,7 @@ class CRE_csv {
 				
 		csv.close()
 		
-		crTab.stat.setValue("${new Date()}: Saving Graph as CSV file done", 0, crTab.getInfoString())
+		stat.setValue("${new Date()}: Saving Graph as CSV file done", 0, crTab.getInfoString())
 	}
 	
 	
@@ -123,12 +120,12 @@ class CRE_csv {
 	 * Load CR table from CSV file
 	 * @param file
 	 */
-	public static void load (File file, CRTable crTab) throws AbortedException {
+	public static void load (File file, CRTable crTab, StatusBar stat) throws AbortedException {
 		
 		crTab.abort = false	// can be changed by "wait dialog"
 		
 		String d = "${new Date()}: "
-		crTab.stat.setValue(d + "Loading CSV file ...", 0, "")
+		stat.setValue(d + "Loading CSV file ...", 0, "")
 
 		crTab.init()
 		
@@ -150,14 +147,14 @@ class CRE_csv {
 				if (crTab.abort) {
 					crTab.init()
 					crTab.updateData(true);
-					crTab.stat.setValue("${new Date()}: Loading CSV file aborted", 0, crTab.getInfoString())
+					stat.setValue("${new Date()}: Loading CSV file aborted", 0, crTab.getInfoString())
 					crTab.abort = false
 					throw new AbortedException()
 				}
 				
 				
 				line.each { String it -> fileSizeRead += it.length()+3 }
-				crTab.stat.setValue ("Loading CSV file ...", (fileSizeRead*100.0/fileSize).intValue())
+				stat.setValue ("Loading CSV file ...", (fileSizeRead*100.0/fileSize).intValue())
 				
 									
 				CRType cr = new CRType()
@@ -175,7 +172,7 @@ class CRE_csv {
 				["_SAMEAS":2, "_DIFFERENTTO":-2].each { String k, int v ->
 					if (line[attrPos[k]] != "") {
 						line[attrPos[k]].split(",").each { String it ->
-							crTab.crMatch.setMapping(line[attrPos["ID"]].toInteger(), it.toInteger(), v as Double, true, false)
+							crTab.setMapping(line[attrPos["ID"]].toInteger(), it.toInteger(), v as Double, true, false)
 						}
 					}
 				}
@@ -185,7 +182,7 @@ class CRE_csv {
 		}
 		
 		crTab.updateData(true);
-		crTab.stat.setValue("${new Date()}: Loading CSV file done", 0, crTab.getInfoString())
+		stat.setValue("${new Date()}: Loading CSV file done", 0, crTab.getInfoString())
 		
 	}
 	

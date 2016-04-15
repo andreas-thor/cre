@@ -7,9 +7,6 @@ import org.jfree.data.xy.DefaultXYDataset
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein
 import cre.data.CRMatch.Pair
-import cre.data.source.FileImportExport
-import cre.data.source.Scopus_csv
-import cre.data.source.WoS_txt
 import cre.ui.StatusBar
 import cre.ui.UIMatchPanelFactory
 
@@ -22,33 +19,6 @@ import cre.ui.UIMatchPanelFactory
 @CompileStatic
 class CRTable {
 
-	
-	public class FileTooLargeException extends Exception {
-		
-		int numberOfCRs;
-
-		public FileTooLargeException(int numberOfCRs) {
-			super();
-			this.numberOfCRs = numberOfCRs;
-		}
-		
-		
-	}
-	
-	public class AbortedException extends Exception { }
-	
-	public class UnsupportedFileFormatException extends Exception { }
-	
-	
-	
-		
-
-
-	public static Map<String, String> line = [
-		'NCR_PER_YEAR' : 'Number of Cited References',
-		'DEV_FROM_MED' : 'Deviation from the Median'
-	]
-	
 	@Bindable DefaultXYDataset ds  = new DefaultXYDataset()
 	@Bindable List<CRType> crData = new ArrayList<CRType>()	// all CR data
 	List<PubType> pubData = new ArrayList<PubType>()	// all Publication data
@@ -56,18 +26,17 @@ class CRTable {
 	boolean duringUpdate = false
 	boolean abort = false
 	
-//	private long noOfPubs = 0
 	private Map<Integer, Integer> sumPerYear = [:]	// year -> sum of CRs (also for years without any CR)
 	private Map<Integer, Integer> crPerYear = [:]	// year -> number of CRs (<0, i.e., only years with >=1 CR are in the map)
 	private Map<Integer, Integer> NCRperYearMedian = [:]	// year -> median of sumPerYear[year-range] ... sumPerYear[year+range]   
 	
-	CRMatch crMatch = new CRMatch()
+	private CRMatch crMatch = new CRMatch()
 	private Map<Integer, Integer> crId2Index = [:]						// object Id -> index in crData list
 	public Map<CRCluster, List<Integer>> clusterId2Objects = [:]		// clusterId->[object ids]
 
 	
 	
-	StatusBar stat	// status bar to indicate current information / progress
+	private StatusBar stat	// status bar to indicate current information / progress
 	
 	private int medianRange
 	
@@ -86,7 +55,6 @@ class CRTable {
 	 */
 	
 	public void init() {
-//		noOfPubs = 0
 		crData.clear ()
 		crMatch.clear(false)
 		crMatch.clear(true)
@@ -195,7 +163,7 @@ class CRTable {
 		
 		// generate chart lines
 		sumPerYear = sumPerYear.sort { it.key }
-		ds.addSeries(line['NCR_PER_YEAR'], [sumPerYear.collect  { it.key }, sumPerYear.collect  { it.value }] as double[][])
+		ds.addSeries("Number of Cited References", [sumPerYear.collect  { it.key }, sumPerYear.collect  { it.value }] as double[][])
 		NCRperYearMedian = NCRperYearMedian.sort { it.key }
 		ds.addSeries("Deviation from the ${2*this.medianRange+1}-Year-Median", [NCRperYearMedian.collect  { it.key }, NCRperYearMedian.collect  { it.value }] as double[][])
 		
@@ -534,7 +502,7 @@ class CRTable {
 		List<Integer> years = getMaxRangeYear()
 		[
 			"Number of Cited References": crData.size(), 
-			"Number of Cited References (shown)": crData.findAll { CRType it -> it.VI==1}.size() , 
+			"Number of Cited References (shown)": crData.findAll { CRType it -> it.VI==1 }.size() , 
 			"Number of Cited References Clusters": clusterId2Objects.keySet().size(), 
 			"Number of different Cited References Years": crPerYear.size(), 
 			"Minimal Cited References Year": years[0], 
@@ -565,19 +533,14 @@ class CRTable {
 	 * @param idx list of CR indexes
 	 */
 	public void remove (List<Integer> idx) {
-
-		println "remove"
-		println System.currentTimeMillis()
-		
 		idx.sort()
 		Iterator crIt = crData.iterator()
 		int lastIdx = 0
 		idx.each { 
-			(lastIdx..it).each { crIt.next() }
-			crIt.remove()
-			lastIdx = it+1
+			(lastIdx..it).each { crIt.next() }		// iterate until next CR to remove
+			crIt.remove()							// remove current
+			lastIdx = it+1	
 		}
-
 		updateData(true)
 	}
 	
@@ -603,20 +566,12 @@ class CRTable {
 	}
 	
 	public void removeByPercentYear (String comp, double threshold) {
-		if (comp.equals("<")) {
-			crData.removeAll { CRType it -> it.PERC_YR < threshold }
-		}
-		if (comp.equals("<=")) {
-			crData.removeAll { CRType it -> it.PERC_YR <= threshold }
-		}
-		if (comp.equals("=")) {
-			crData.removeAll { CRType it -> it.PERC_YR == threshold }
-		}
-		if (comp.equals(">=")) {
-			crData.removeAll { CRType it -> it.PERC_YR >= threshold }
-		}
-		if (comp.equals(">")) {
-			crData.removeAll { CRType it -> it.PERC_YR > threshold }
+		switch (comp) {
+			case "<" : crData.removeAll { CRType it -> it.PERC_YR <  threshold }; break;
+			case "<=": crData.removeAll { CRType it -> it.PERC_YR <= threshold }; break;
+			case "=" : crData.removeAll { CRType it -> it.PERC_YR == threshold }; break;
+			case ">=": crData.removeAll { CRType it -> it.PERC_YR >= threshold }; break;
+			case ">" : crData.removeAll { CRType it -> it.PERC_YR >  threshold }; break; 
 		}
 		updateData(true)
 	}
@@ -654,152 +609,14 @@ class CRTable {
 	
 
 	
-	/**
-	 * Load data files from Web Of Science (WOS)
-	 * @param files array of files
-	 */
-	public void loadDataFiles (File[] files, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError {
-		
-		this.abort = false	// can be changed by "wait dialog"
-		
-		String d = "${new Date()}: "
-		stat.setValue(d + "Loading files ...", 0, "")
-		
-		HashMap<Character,  HashMap<String,Integer>> crDup = [:]	// first character -> (crString -> id )
-		int indexCount = 0
-		this.init()
-		
-		int stepCount = 0
-		int stepSize = 5
-		
-		
-		files.eachWithIndex { File f, int idx ->
-
-			int fileSizeStep = (int) (f.length()*stepSize/100)
-			long fileSizeRead = 0
-
-			// peek into first line to check what file format is given
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
-			br.mark(1000);		// mark for reset later
-			String line = br.readLine();
-			
-			FileImportExport parser = null 
-			if (line!=null) { 
-				br.reset();		// reset to beginning of the file
-				if (line.contains("FN Thomson Reuters Web of")) parser = (FileImportExport) new WoS_txt(yearRange, br)
-				
-				// TODO: How do I detect scopus files??
-				/*if (line.contains("Scopus")) */ parser = (FileImportExport) new Scopus_csv(yearRange, br)
-			}
-			
-			if (parser == null) throw new UnsupportedFileFormatException()
-			
-			
-			PubType pub
-			while ((pub = parser.getNextPub()) != null) {
-			
-//			while ((line = br.readLine()) != null) {
-			
-				// Check for abort by user
-				if (this.abort) {
-					this.init()
-					this.updateData(false);
-					stat.setValue("${new Date()}: Loading files aborted", 0)
-					this.abort = false
-					throw new AbortedException()
-				}
-				
-				
-//				cr = parser.parseLine(line)
-//				PubType pub = parser.getNextPub()
-
-				// update status bar
-				//				fileSizeRead += line.length()+1
-				fileSizeRead += pub.length;
-				if (stepCount*fileSizeStep < fileSizeRead) {
-					stat.setValue (d + "Loading WOS file ${idx+1} of ${files.length}", stepCount*stepSize)
-					stepCount++
-				}
-				
-								
-				pub.crList.eachWithIndex { CRType cr, int crPos -> 
-//				for (CRType cr: fe.crList) {
-//				if (cr != null) {
-						
-//					println cr.CR
-//					println cr.CR[0]
-					
-					
-					// if CR already in database: increase N_CR by 1; else add new record
-					if (crDup[cr.CR.charAt(0)] == null) crDup[cr.CR.charAt(0)] = [:]
-					Integer id = crDup[cr.CR.charAt(0)][cr.CR]
-					if (id != null) {
-						crData[id].N_CR++
-						pub.crList[crPos] = crData[id]
-						 
-//						println cr.CR
-					} else {
-						crDup[cr.CR.charAt(0)][cr.CR] = indexCount
-						
-						if ((maxCR>0) && (indexCount==maxCR)) {
-							this.updateData(false);
-							stat.setValue("${new Date()}: Loading WOS files aborted", 0)
-							throw new FileTooLargeException (indexCount);
-						}
-						
-						cr.ID = indexCount+1
-						cr.CID2 = new CRCluster (indexCount+1, 1)
-						cr.CID_S = 1
-						crData << cr
-						
-	//					crData << new CRType (
-	//						indexCount+1,
-	//						cr,
-	//						author,
-	//						firstname,
-	//						lastname,
-	//						journal,
-	//						journal_name,
-	//						journal_short,
-	//						1,
-	//						year,
-	//						pagVol["P"],
-	//						pagVol["V"],
-	//						doi,
-	//						c,		// each CR forms its own cluster
-	//						1,		// cluster size is 1 (by default)
-	//						1,		// is visible by default
-	//						0		// default color
-	//					)
-						
-						clusterId2Objects[cr.CID2] = [indexCount+1]
-						indexCount++
-					}
-					
-				}
-				
-				this.pubData << pub
-//				this.noOfPubs++
-			}
-			
-//			this.noOfPubs += parser.noOfPubs
-		}
-
-		
-//		long timeEnd = System.currentTimeMillis()
-//		long overall = timeEnd-timeStart
-//		println "Overall: ${overall}"
-//		for (int i=0; i<timeDiffs.length; i++) {
-//			long percent = (long) (timeDiffs[i]*100 / overall)
-//			println "${i} : ${percent}%"
-//		}
-//		
-//		println indexCount
-		
-		
-		this.updateData(false);
-		stat.setValue("${new Date()}: Loading WOS files done", 0, getInfoString())
+	public void setMapping (Integer id1, Integer id2, Double s, boolean isManual, boolean add, Long timestamp=null) {
+		this.crMatch.setMapping(id1, id2, s, isManual, add, timestamp)
 	}
+		
+	public Map getMapping (Integer id1, Boolean isManual) {
+		this.crMatch.getMapping (id1, isManual) 
+	}
+	
 	
 }
 

@@ -1,15 +1,14 @@
 package cre.data.source
 
-import java.io.File;
-
+import groovy.transform.CompileStatic
+import cre.Exceptions.AbortedException
+import cre.Exceptions.FileTooLargeException
+import cre.Exceptions.UnsupportedFileFormatException
 import cre.data.CRCluster
-import cre.data.CRTable;
+import cre.data.CRTable
 import cre.data.CRType
 import cre.data.PubType
-import cre.data.CRTable.AbortedException;
-import cre.data.CRTable.FileTooLargeException;
-import cre.data.CRTable.UnsupportedFileFormatException;
-import groovy.transform.CompileStatic
+import cre.ui.StatusBar
 
 @CompileStatic
 public abstract class FileImportExport {
@@ -31,12 +30,12 @@ public abstract class FileImportExport {
 	 * Load data files from Web Of Science (WOS)
 	 * @param files array of files
 	 */
-	public static  void load (CRTable crTab, String source, File[] files, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError {
+	public static  void load (CRTable crTab, StatusBar stat, String source, File[] files, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError {
 		
 		crTab.abort = false	// can be changed by "wait dialog"
 		
 		String d = "${new Date()}: "
-		crTab.stat.setValue(d + "Loading files ...", 0, "")
+		stat.setValue(d + "Loading files ...", 0, "")
 		
 		// TODO: initialize crDup  when "no init" mode  
 		HashMap<Character,  HashMap<String,Integer>> crDup = [:]	// first character -> (crString -> id )
@@ -68,7 +67,7 @@ public abstract class FileImportExport {
 				if (crTab.abort) {
 					crTab.init()
 					crTab.updateData(false);
-					crTab.stat.setValue("${new Date()}: Loading files aborted", 0)
+					stat.setValue("${new Date()}: Loading files aborted", 0)
 					crTab.abort = false
 					throw new AbortedException()
 				}
@@ -76,7 +75,7 @@ public abstract class FileImportExport {
 				// update status bar
 				fileSizeRead += pub.length;
 				if (stepCount*fileSizeStep < fileSizeRead) {
-					crTab.stat.setValue (d + "Loading WOS file ${idx+1} of ${files.length}", stepCount*stepSize)
+					stat.setValue (d + "Loading WOS file ${idx+1} of ${files.length}", stepCount*stepSize)
 					stepCount++
 				}
 				
@@ -96,7 +95,7 @@ public abstract class FileImportExport {
 						
 						if ((maxCR>0) && (indexCount==maxCR)) {
 							crTab.updateData(false);
-							crTab.stat.setValue("${new Date()}: Loading WOS files aborted", 0)
+							stat.setValue("${new Date()}: Loading WOS files aborted", 0)
 							throw new FileTooLargeException (indexCount);
 						}
 						
@@ -133,7 +132,7 @@ public abstract class FileImportExport {
 		
 		
 		crTab.updateData(false);
-		crTab.stat.setValue("${new Date()}: Loading WOS files done", 0, crTab.getInfoString())
+		stat.setValue("${new Date()}: Loading files done", 0, crTab.getInfoString())
 	}
 	
 }

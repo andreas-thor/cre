@@ -8,7 +8,8 @@ import java.util.regex.Matcher
 
 import cre.data.CRTable;
 import cre.data.CRType
-import cre.data.PubType;
+import cre.data.PubType
+import cre.ui.StatusBar;;
 
 @CompileStatic
 public class WoS_txt extends FileImportExport {
@@ -162,10 +163,10 @@ public class WoS_txt extends FileImportExport {
 		}
 	}
 	
-	public static void save (File file, CRTable crTab) {
+	public static void save (File file, CRTable crTab, StatusBar stat) {
 		
 		String d = "${new Date()}: "
-		crTab.stat.setValue(d + "Saving TXT file in WoS format ...", 0)
+		stat.setValue(d + "Saving TXT file in WoS format ...", 0)
 		
 		// add txt extension if necessary
 		// TODO: Do I really need to adjust the file extension??
@@ -178,7 +179,7 @@ public class WoS_txt extends FileImportExport {
 		bw.writeLine("VR 1.0")
 		
 		crTab.pubData.eachWithIndex { PubType pub, int idx ->
-			crTab.stat.setValue (d + "Saving TXT file in WoS format ...", ((idx+1)*100.0/crTab.pubData.size()).intValue())
+			stat.setValue (d + "Saving TXT file in WoS format ...", ((idx+1)*100.0/crTab.pubData.size()).intValue())
 			pub.with {
 				writeTag(bw, "AU", AU)
 				writeTag(bw, "TI", TI)
@@ -200,7 +201,7 @@ public class WoS_txt extends FileImportExport {
 		}
 		bw.writeLine("EF")
 		bw.close()
-		crTab.stat.setValue("${new Date()}: Saving TXT file in WoS format done", 0, crTab.getInfoString())
+		stat.setValue("${new Date()}: Saving TXT file in WoS format done", 0, crTab.getInfoString())
 			
 	}
 	

@@ -3,11 +3,9 @@ package cre
 
 
 import groovy.swing.SwingBuilder
-import groovy.swing.factory.SeparatorFactory
 
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent
-import java.awt.event.KeyEvent;
+import java.awt.Toolkit
+import java.awt.event.KeyEvent
 
 import javax.swing.*
 import javax.swing.filechooser.FileFilter
@@ -15,13 +13,15 @@ import javax.swing.table.AbstractTableModel
 
 import org.jfree.chart.ChartPanel
 
+import cre.Exceptions.AbortedException
+import cre.Exceptions.FileTooLargeException
+import cre.Exceptions.UnsupportedFileFormatException
 import cre.data.CRTable
-import cre.data.PubType;
 import cre.data.CRTable.*
 import cre.data.source.CRE_csv
-import cre.data.source.FileImportExport;
-import cre.data.source.Scopus_csv;
-import cre.data.source.WoS_txt;
+import cre.data.source.FileImportExport
+import cre.data.source.Scopus_csv
+import cre.data.source.WoS_txt
 import cre.ui.StatusBar
 import cre.ui.TableFactory
 import cre.ui.UIBind
@@ -68,11 +68,11 @@ Closure doExportFile = { String source, String dlgTitle, FileFilter filter ->
 					public void run() {
 						try {
 							switch (source) {
-								case "WoS_txt": WoS_txt.save(dlg.getSelectedFile(), crTable); break;
-								case "Scopus_csv": Scopus_csv.save(dlg.getSelectedFile(), crTable); break;
-								case "CRE_csv": CRE_csv.save(dlg.getSelectedFile(), crTable); break;
-								case "CRE_csv_Graph": CRE_csv.saveGraph(dlg.getSelectedFile(), crTable); break;
-								case "CRE_csv_Ruediger": CRE_csv.saveRuediger(dlg.getSelectedFile(), crTable); break;
+								case "WoS_txt": WoS_txt.save(dlg.getSelectedFile(), crTable, stat); break;
+								case "Scopus_csv": Scopus_csv.save(dlg.getSelectedFile(), crTable, stat); break;
+								case "CRE_csv": CRE_csv.save(dlg.getSelectedFile(), crTable, stat); break;
+								case "CRE_csv_Graph": CRE_csv.saveGraph(dlg.getSelectedFile(), crTable, stat); break;
+								case "CRE_csv_Ruediger": CRE_csv.saveRuediger(dlg.getSelectedFile(), crTable, stat); break;
 								default: JOptionPane.showMessageDialog(null, "Unknown file format." );
 							}
 							uisetting.setLastDirectory(dlg.getSelectedFile().getParentFile())
@@ -116,11 +116,11 @@ Closure doImportFiles = { String source, String dlgTitle, boolean multipleFiles,
 		Runnable runnable = new Runnable() {
 			public void run() {
 				matchpan.visible = false
-				try {
+				try { 
 					switch (source) {
-						case "WoS_txt": FileImportExport.load(crTable, source, dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange()); break;
-						case "Scopus_csv": FileImportExport.load(crTable, source, dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange()); break;
-						case "CRE_csv": CRE_csv.load (dlg.getSelectedFile(), crTable); break;
+						case "WoS_txt": FileImportExport.load(crTable, stat, source, dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange()); break;
+						case "Scopus_csv": FileImportExport.load(crTable, stat, source, dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange()); break;
+						case "CRE_csv": CRE_csv.load (dlg.getSelectedFile(), crTable, stat); break;
 						default: JOptionPane.showMessageDialog(null, "Unknown file format." );
 					}
 					wait.dispose()
@@ -169,7 +169,7 @@ ChartPanel chpan = UIChartPanelFactory.create(crTable, tab,
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2016/04/14 **DEV**++)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2016/04/15 **DEV**++)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -238,7 +238,10 @@ mainFrame = sb.frame(
 			menuItem(id: "menuExit", text: "Exit", mnemonic: 'X', accelerator: KeyStroke.getKeyStroke("alt F4"), actionPerformed: { 
 				int answer = JOptionPane.showConfirmDialog (null, "Save changes before exit?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION) 
 				switch (answer) {
-					case JOptionPane.YES_OPTION: sb.menuSave.doClick(); 
+					case JOptionPane.YES_OPTION: 
+						doExportFile (
+							"CRE_csv", "Export CRE file",
+							[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter); // no break!
 					case JOptionPane.NO_OPTION: uisetting.setWindowPos (); System.exit(0); 
 				}
 			})
@@ -342,11 +345,9 @@ mainFrame = sb.frame(
 				gridBagLayout()
 				widget ( matchpan , 
 					constraints: gbc(gridx:0,gridy:0,fill:java.awt.GridBagConstraints.BOTH,anchor:java.awt.GridBagConstraints.NORTHWEST,weightx:1, weighty:0)
-					
 				)
 				widget (new JScrollPane(tab), 
 					constraints: gbc(gridx:0,gridy:1,fill:java.awt.GridBagConstraints.BOTH,anchor:java.awt.GridBagConstraints.NORTHWEST,weightx:1, weighty:1)
-					
 				)
 			}
 			
@@ -371,14 +372,9 @@ mainFrame.pack()
 mainFrame.setLocationRelativeTo(null)
 uisetting = new UISettings(tab, chpan, mainFrame, crTable)
 
-
-InputMap im = tab.getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-ActionMap am = tab.getActionMap()
-
-im.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,  0), "showCRDetails");
-am.put("showCRDetails", UIDialogFactory.showCRDetails(mainFrame, crTable));
-
-
+// Pressing space key shows CR Details Dialog
+tab.getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE,  0), "showCRDetails");
+tab.getActionMap().put("showCRDetails", UIDialogFactory.showCRDetails(mainFrame, crTable));
 
 mainFrame.visible = true
 

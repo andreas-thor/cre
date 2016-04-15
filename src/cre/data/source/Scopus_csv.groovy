@@ -10,6 +10,7 @@ import au.com.bytecode.opencsv.CSVWriter
 import cre.data.CRTable;
 import cre.data.CRType
 import cre.data.PubType
+import cre.ui.StatusBar;
 
 @CompileStatic
 public class Scopus_csv extends FileImportExport {
@@ -194,10 +195,10 @@ public class Scopus_csv extends FileImportExport {
 
 
 
-	public static void save (File file, CRTable crTab) {
+	public static void save (File file, CRTable crTab, StatusBar stat) {
 		
 		String d = "${new Date()}: "
-		crTab.stat.setValue(d + "Saving CSV file in Scopus format ...", 0)
+		stat.setValue(d + "Saving CSV file in Scopus format ...", 0)
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -210,7 +211,7 @@ public class Scopus_csv extends FileImportExport {
 		csv.writeNext(fields)
 		
 		crTab.pubData.eachWithIndex  { PubType pub, int idx ->
-			crTab.stat.setValue (d + "Saving CSV file in Scopus format ...", ((idx+1)*100.0/crTab.pubData.size()).intValue())
+			stat.setValue (d + "Saving CSV file in Scopus format ...", ((idx+1)*100.0/crTab.pubData.size()).intValue())
 			pub.with {
 				csv.writeNext ([
 					AU?:"", TI?:"", PY?:"", SO?:"", VL?:"", IS?:"", BP?:"", EP?:"", PG?:"",
@@ -222,7 +223,7 @@ public class Scopus_csv extends FileImportExport {
 		csv.close()
 
 	
-		crTab.stat.setValue("${new Date()}: Saving CSV file in Scopus format done", 0, crTab.getInfoString())
+		stat.setValue("${new Date()}: Saving CSV file in Scopus format done", 0, crTab.getInfoString())
 			
 	}
 	
