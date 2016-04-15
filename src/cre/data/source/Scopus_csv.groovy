@@ -49,6 +49,9 @@ public class Scopus_csv extends FileImportExport {
 
 		csv = new CSVReader(br)
 		attributes = csv.readNext().collect { String field -> field.trim() }
+		
+		// TODO: Scopus import; first character of file !!!
+		attributes[0] = attributes[0].substring(1)
 	}
 	
 	
@@ -66,6 +69,10 @@ public class Scopus_csv extends FileImportExport {
 			pub.length += val.length()+1
 			entries.put(attributes[idx], val)
 		}
+		
+		println "<" + attributes[0] + ">"
+		println "<" + mapScopus.get("AU") + ">"
+		println "<" + (attributes[0].equals (mapScopus.get("AU"))) + ">"
 		
 		pub.with {
 			AU = entries.get(mapScopus.get("AU"));

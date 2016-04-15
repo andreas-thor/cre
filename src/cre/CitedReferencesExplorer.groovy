@@ -1,5 +1,5 @@
 package cre 
-
+ 
 
 
 import groovy.swing.SwingBuilder
@@ -42,7 +42,7 @@ JTable tab = TableFactory.create(crTable)
 UISettings uisetting
 UIBind uibind = new UIBind()
 
-JPanel matchpan = UIMatchPanelFactory.create(uibind.uiMatchConfig, crTable, tab, stat)
+JPanel matchpan = UIMatchPanelFactory.create(uibind.uiMatchConfig, crTable.crMatch, tab, stat)
 JFrame mainFrame
 
 
@@ -296,7 +296,7 @@ mainFrame = sb.frame(
 					
 				Runnable runnable = new Runnable() {
 					public void run() {
-						crTable.doBlocking()
+						crTable.crMatch.doBlocking()
 						matchpan.visible = true
 						matchpan.updateClustering() 
 					 }
@@ -308,7 +308,7 @@ mainFrame = sb.frame(
 			
 			menuItem(text: "Merge Clustered Cited References...", mnemonic: 'M', actionPerformed: {
 				
-				long toDelete = crTable.crData.size()-crTable.clusterId2Objects.keySet().size()
+				long toDelete = crTable.crData.size()-crTable.crMatch.getNoOfClusters()
 				if (toDelete == 0) {
 					JOptionPane.showMessageDialog(null, "No Clusters to merge!");
 				} else {

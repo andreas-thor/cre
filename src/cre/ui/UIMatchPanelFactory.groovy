@@ -15,6 +15,7 @@ import javax.swing.event.ChangeEvent
 import javax.swing.event.ChangeListener
 import javax.swing.table.AbstractTableModel
 
+import cre.data.CRMatch
 import cre.data.CRTable
 import cre.ui.UIBind.UIMatchConfig
 
@@ -34,7 +35,7 @@ class UIMatchPanelFactory {
 	
 	
 	
-	public static JPanel create (UIMatchConfig uiMC, CRTable crTable, JTable tab, StatusBar stat ) {
+	public static JPanel create (UIMatchConfig uiMC, CRMatch crMatch, JTable tab, StatusBar stat ) {
 		
 		JSlider framesPerSecond
 		List useBoxes = [null, null, null]
@@ -44,13 +45,13 @@ class UIMatchPanelFactory {
 		Closure manualButtonAction = { int matchType -> 
 			
 			if (matchType == matchUndo) {
-				crTable.matchUndo(uiMC.threshold, uiMC.useVol, uiMC.usePag, uiMC.useDOI)
+				crMatch.matchUndo(uiMC.threshold, uiMC.useVol, uiMC.usePag, uiMC.useDOI)
 				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
 			} else {	// matchSame/Different/Extract
 				if (tab.getSelectedRowCount() == 0) {
 					JOptionPane.showMessageDialog(null, "No Cited References selected");
 				} else {
-					crTable.matchManual (tab.getSelectedRows().collect { tab.convertRowIndexToModel (it) }, matchType, uiMC.threshold, uiMC.useVol, uiMC.usePag, uiMC.useDOI)
+					crMatch.matchManual (tab.getSelectedRows().collect { tab.convertRowIndexToModel (it) }, matchType, uiMC.threshold, uiMC.useVol, uiMC.usePag, uiMC.useDOI)
 					(tab.getModel() as AbstractTableModel).fireTableDataChanged()
 				}
 			}
@@ -105,7 +106,7 @@ class UIMatchPanelFactory {
 		Runnable runnable = new Runnable() {
 			public void run() {
 				try {
-					crTable.updateClusterId(framesPerSecond.getValue()/100.0, true, uiMC.useVol, uiMC.usePag, uiMC.useDOI)
+					crMatch.updateClusterId(framesPerSecond.getValue()/100.0, true, uiMC.useVol, uiMC.usePag, uiMC.useDOI)
 					(tab.getModel() as AbstractTableModel).fireTableDataChanged()
 //					tab.getRowSorter().setSortKeys (null)
 //					tab.getRowSorter().setSortKeys([new RowSorter.SortKey (17, SortOrder.ASCENDING)])
