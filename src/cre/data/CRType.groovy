@@ -16,7 +16,7 @@ public class CRType /* implements Comparable<CRType>*/ {
 	String J_N;
 	String J_S;
 	int N_CR;
-	int RPY;
+	Integer RPY;
 	String PAG;
 	String VOL;
 	String DOI;
@@ -25,8 +25,8 @@ public class CRType /* implements Comparable<CRType>*/ {
 	int VI;
 	int CO;
 	
-	double PERC_YR;
-	double PERC_ALL;
+	Double PERC_YR;
+	Double PERC_ALL;
 
 	String blockkey;
 	
@@ -65,14 +65,18 @@ public class CRType /* implements Comparable<CRType>*/ {
 		AU_L = null
 		AU_A = null
 		TI = null
+		RPY = null
 		PAG = ""
 		VOL = "" 
 		mergedTo = -1
+		RPY = null
+		PERC_ALL = null
+		PERC_YR = null
 	}
 
 
 	public CRType(int iD, String cR, String aU, String aU_F, String aU_L,
-			String j, String j_N, String j_S, int n_CR, int rPY,
+			String j, String j_N, String j_S, int n_CR, Integer rPY,
 			String pAG, String vOL, String dOI, CRCluster cID2, int cID_S,
 			int vI, int cO) {
 			

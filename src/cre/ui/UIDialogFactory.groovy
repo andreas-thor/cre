@@ -167,10 +167,13 @@ class UIDialogFactory {
 											td (align:'left') { textField(id:'tfTo', columns: 10, text: bind('to', source: range, mutual:true) ) }
 											td (colfill:true) { checkBox(text:'Maximum', actionPerformed: { e -> sb.tfTo.enabled = !e.source.selected; if (e.source.selected) sb.tfTo.text = maxRange[1] } ) }
 										}
+										
+									
 									}
 								}
 							}
 						}
+						
 						tr {
 							td (align:'right') {
 								defBtn = button(preferredSize:[100, 25], text:'Ok', actionPerformed: {

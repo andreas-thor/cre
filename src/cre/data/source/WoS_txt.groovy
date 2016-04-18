@@ -21,7 +21,7 @@ public class WoS_txt extends FileImportExport {
 	static Matcher matchDOI = "" =~ ".*DOI (10\\.[^/]+/ *[^ ,]+).*"
 	
 	
-	static String[] tags = ["PT" ,"AU" ,"AF" ,"CA" ,"TI" ,"ED" ,"SO" ,"SE" ,"BS" ,"LA" ,"DT" ,"CT" ,"CY" ,"HO" ,"CL" ,"SP" ,"DE" ,"ID" ,"AB" ,"C1" ,"RP" ,"EM" ,"RI", "OI", "FU" ,"FX" ,"CR" ,"NR" ,"TC" ,"Z9" ,"PU" ,"PI" ,"PA" ,"SN" ,"BN" ,"J9" ,"JI" ,"PD" ,"PY" ,"VL" ,"IS" ,"PN" ,"SU" ,"SI" ,"BP" ,"EP" ,"AR" ,"PG" ,"DI" ,"WC", "SC" ,"GA" ,"UT"]
+//	static String[] tags = ["PT" ,"AU" ,"AF" ,"CA" ,"TI" ,"ED" ,"SO" ,"SE" ,"BS" ,"LA" ,"DT" ,"CT" ,"CY" ,"HO" ,"CL" ,"SP" ,"DE" ,"ID" ,"AB" ,"C1" ,"RP" ,"EM" ,"RI", "OI", "FU" ,"FX" ,"CR" ,"NR" ,"TC" ,"Z9" ,"PU" ,"PI" ,"PA" ,"SN" ,"BN" ,"J9" ,"JI" ,"PD" ,"PY" ,"VL" ,"IS" ,"PN" ,"SU" ,"SI" ,"BP" ,"EP" ,"AR" ,"PG" ,"DI" ,"WC", "SC" ,"GA" ,"UT"]
 	
 	
 	
@@ -65,13 +65,21 @@ public class WoS_txt extends FileImportExport {
 			SO = entries.get("SO");
 			VL = entries.get("VL");
 			IS = entries.get("IS");
+			AR = entries.get("AR");
 			BP = entries.get("BP")?.isInteger() ? entries.get("BP").toInteger() : null
 			EP = entries.get("EP")?.isInteger() ? entries.get("EP").toInteger() : null
 			PG = entries.get("PG")?.isInteger() ? entries.get("PG").toInteger() : null
-			NR = entries.get("NR")?.isInteger() ? entries.get("NR").toInteger() : null
-			DOI = entries.get("DOI");
+			TC = entries.get("TC")?.isInteger() ? entries.get("TC").toInteger() : null
+			DI = entries.get("DOI");
+			LI = entries.get("LI");
+			AF = entries.get("AF");
+			AA = null // Scopus only
 			AB = entries.get("AB");
+			DE = entries.get("DE");
 			DT = entries.get("DT");
+			FS = "WoS";
+			UT = entries.get("UT");
+			
 		}
 		
 		if (pub.TI == null) return null;
@@ -192,7 +200,7 @@ public class WoS_txt extends FileImportExport {
 				writeTag(bw, "PG", PG?.toString())
 				writeTag(bw, "CR", pub.crList.collect { CRType cr -> cr.CR }.join("\n")) 
 				writeTag(bw, "NR", pub.crList.size().toString())
-				writeTag(bw, "DOI", DOI)
+				writeTag(bw, "DI", DI)
 				writeTag(bw, "AB", AB)
 				writeTag(bw, "DT", DT)
 			}

@@ -20,9 +20,19 @@ public class PubType {
 	Integer EP;		// Ending Page / Page End
 	Integer PG;		// Page Count
 	Integer NR;		// Number of References
-	String DOI;
+	String DI;
 	String AB;	// Abstract
 	String DT;	// Document Typs
+	
+	// TODO: adjust import/export!!!
+	Integer TC;	// Times Cited
+	String AR; 	// Article Number
+	String LI;	// Link
+	String AF;	// Affiliations
+	String AA;	// Authors with affiliations
+	String DE;	// Author Keywords
+	String UT;	// Unique Article Identifier
+	String FS;	// File Source
 	
 	public int length	// approx. size for import status bar
 
@@ -41,31 +51,52 @@ public class PubType {
 		EP = null;
 		PG = null;
 		NR = null;
-		DOI = null;
+		DI = null;
 		AB = null;
 		DT = null;
+		TC = null;
+		AR = null;
+		LI = null;
+		AF = null;
+		AA = null;
+		DE = null;
+		UT = null;
+		FS = null;
 	}
 
 	
-	public PubType(List<CRType> crList, String aU, String tI, Integer pY, String sO, String vL, String iS, Integer bP, Integer eP,
-			Integer pG, Integer nR, String dOI, String aB, String dT) {
+
+	public PubType(List<CRType> crList, String aU, String tI, Integer pY, String sO, String vL, String iS, Integer bP,
+			Integer eP, Integer pG, Integer nR, String dO, String aB, String dT, Integer tC, String aR, String lI, String aF,
+			String aA, String dE, String uT, String fS) {
 			
 		super();
 		this.crList = crList;
-		AU = aU;
-		TI = tI;
-		PY = pY;
-		SO = sO;
-		VL = vL;
-		IS = iS;
-		BP = bP;
-		EP = eP;
-		PG = pG;
-		NR = nR;
-		DOI = dOI;
-		AB = aB;
-		DT = dT;
+		this.AU = aU;
+		this.TI = tI;
+		this.PY = pY;
+		this.SO = sO;
+		this.VL = vL;
+		this.IS = iS;
+		this.BP = bP;
+		this.EP = eP;
+		this.PG = pG;
+		this.NR = nR;
+		this.DI = dO;
+		this.AB = aB;
+		this.DT = dT;
+		this.TC = tC;
+		this.AR = aR;
+		this.LI = lI;
+		this.AF = aF;
+		this.AA = aA;
+		this.DE = dE;
+		this.UT = uT;
+		this.FS = fS;
 	}
+
+	
+
 
 	
 	

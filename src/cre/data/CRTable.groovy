@@ -25,13 +25,14 @@ class CRTable {
 	
 	boolean duringUpdate = false
 	boolean abort = false
+	boolean showNull = false
 	
 	private Map<Integer, Integer> sumPerYear = [:]	// year -> sum of CRs (also for years without any CR)
 	private Map<Integer, Integer> crPerYear = [:]	// year -> number of CRs (<0, i.e., only years with >=1 CR are in the map)
 	private Map<Integer, Integer> NCRperYearMedian = [:]	// year -> median of sumPerYear[year-range] ... sumPerYear[year+range]   
 	
 	public CRMatch crMatch
-	private StatusBar stat	// status bar to indicate current information / progress
+	public StatusBar stat	// status bar to indicate current information / progress
 	
 	private int medianRange
 	
@@ -52,6 +53,7 @@ class CRTable {
 	
 	public void init() {
 		crData.clear ()
+		showNull = true
 		crMatch.clear()
 		pubData.clear()
 	}
@@ -77,8 +79,10 @@ class CRTable {
 		crPerYear = [:]
 		sumPerYear = [:]
 		crData.each { CRType it ->
-			crPerYear[it.RPY] = (crPerYear[it.RPY]?:0) + 1
-			sumPerYear[it.RPY] = (sumPerYear[it.RPY]?:0) + it.N_CR 
+			if (it.RPY != null) {
+				crPerYear[it.RPY] = (crPerYear[it.RPY]?:0) + 1
+				sumPerYear[it.RPY] = (sumPerYear[it.RPY]?:0) + it.N_CR
+			} 
 		}
 
 		println System.currentTimeMillis()
@@ -93,10 +97,10 @@ class CRTable {
 		// compute PERC_YR and PERC_ALL
 		int sum = sumPerYear.inject (0) { int r, int k, int v -> r+v } as Integer
 		crData.each { CRType it ->
-			it.PERC_YR  = ((it.N_CR as double)/sumPerYear[it.RPY])
+			if (it.RPY != null) {
+				it.PERC_YR  = ((it.N_CR as double)/sumPerYear[it.RPY])
+			}
 			it.PERC_ALL = ((it.N_CR as double)/sum)
-//			it.PERC_YR  = Math.round (10000*(it.N_CR as float)/sumPerYear[it.RPY])/100f
-//			it.PERC_ALL = Math.round (10000*(it.N_CR as float)/sum)/100f
 		}
 
 		println System.currentTimeMillis()
@@ -202,6 +206,18 @@ class CRTable {
 		updateData(true)
 	}
 	
+	
+	
+	public int getNumberWithoutYear () {
+		crData.findAll { CRType it -> it.RPY == null}.size()  
+	}
+	
+	public void removeWithoutYear () {
+		crData.removeAll { CRType it -> it.RPY == null}
+//		crData.removeAll { CRType it -> (100 <= it.RPY) && (it.RPY <= 2300) }
+		updateData(true)
+	}
+
 
 	/**
 	 * Remove publications based on year range (from <= x <= to)	
@@ -242,9 +258,14 @@ class CRTable {
 	 * @param to
 	 */
 	public void filterByYear (double from, double to) {
-		crData.each { CRType it -> it.VI = ((from<=it.RPY) && (to>=it.RPY)) ? 1 : 0 }
+		crData.each { CRType it -> it.VI = ((from<=it.RPY) && (to>=it.RPY)) ? 1 : (this.showNull?1:0) }
 	}
 	
+	
+	public void setShowNull (boolean showNull) {
+		this.showNull = showNull;
+		crData.each { CRType it -> if (it.RPY == null) it.VI = showNull ? 1 : 0  }
+	}
 	
 	/**
 	 * 

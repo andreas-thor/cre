@@ -116,6 +116,7 @@ Closure doImportFiles = { String source, String dlgTitle, boolean multipleFiles,
 		Runnable runnable = new Runnable() {
 			public void run() {
 				matchpan.visible = false
+				
 				try { 
 					switch (source) {
 						case "WoS_txt": FileImportExport.load(crTable, stat, source, dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange()); break;
@@ -142,6 +143,7 @@ Closure doImportFiles = { String source, String dlgTitle, boolean multipleFiles,
 					JOptionPane.showMessageDialog(null, "Error while loading file.\n(${e3.toString()})" );
 				}
 				
+				sb.showNull.selected = true
 				UIDialogFactory.createInfoDlg(mainFrame, crTable.getInfo()).visible = true
 				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
 				uisetting.setLastDirectory((multipleFiles ? dlg.getSelectedFiles()[0] : dlg.getSelectedFile()).getParentFile() )
@@ -253,6 +255,11 @@ mainFrame = sb.frame(
 				UIDialogFactory.createInfoDlg(mainFrame, crTable.getInfo()).visible = true
 			})
 
+			checkBoxMenuItem (id:'showNull', text: "Show CRs without Year", actionPerformed: { 
+				crTable.setShowNull(sb.showNull.selected)
+				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
+				crTable.stat.setValue("", 0, crTable.getInfoString())
+			})
 			
 			menuItem(text: "Filter by Cited Reference Year ...", mnemonic: 'Y', actionPerformed: {
 				UIDialogFactory.createIntRangeDlg(mainFrame, uibind.uiRanges[2], "Filter by Cited Reference Year", "Cited Reference Years", crTable.getMaxRangeYear(), { min, max -> chpan.getChart().getXYPlot()?.getDomainAxis()?.setRange(min-0.5, max+0.5) }).visible = true
@@ -272,7 +279,21 @@ mainFrame = sb.frame(
 					}
 				}
 			})
-			
+
+			menuItem(text: "Remove Cited References without Year...", actionPerformed: {
+				
+				int n = crTable.getNumberWithoutYear()
+				if (n == 0) {
+					JOptionPane.showMessageDialog(null, "No Cited References without Year");
+				} else {
+					if (JOptionPane.showConfirmDialog (null, "Would you like to remove all ${n} Cited References without year?", "Warning", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+						crTable.removeWithoutYear()
+						(tab.getModel() as AbstractTableModel).fireTableDataChanged()
+					}
+				}
+			})
+				
+						
 			menuItem(text: "Remove by Cited Reference Year ...", mnemonic: 'Y', actionPerformed: {
 				UIDialogFactory.createIntRangeDlg(mainFrame, uibind.uiRanges[0], "Remove by Cited Reference Year", "Cited Reference Years", crTable.getMaxRangeYear(), { min, max -> crTable.removeByYear(min, max) }).visible = true
 				(tab.getModel() as AbstractTableModel).fireTableDataChanged()

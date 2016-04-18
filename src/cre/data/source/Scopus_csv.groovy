@@ -29,11 +29,18 @@ public class Scopus_csv extends FileImportExport {
 		'BP' : 'Page start' ,
 		'EP' : 'Page end' ,
 		'PG' : 'Page count' ,
-		'NR' : 'Cited by' ,
+		'TC' : 'Cited By' ,
 		'DI' : 'DOI' ,
 		'AB' : 'Abstract' ,
 		'CR' : 'References' ,
-		'DT' : 'Document Type' 
+		'DT' : 'Document Type',
+		'AR' : 'Art. No.',
+		'LI' : 'Link',
+		'AF' : 'Affiliations',
+		'AA' : 'Authors with affiliations',
+		'DE' : 'Author Keywords',
+		'FS' : 'Source', 
+ 		'UT' : 'EID'
 	]
 	
 	
@@ -50,8 +57,12 @@ public class Scopus_csv extends FileImportExport {
 		csv = new CSVReader(br)
 		attributes = csv.readNext().collect { String field -> field.trim() }
 		
-		// TODO: Scopus import; first character of file !!!
-		attributes[0] = attributes[0].substring(1)
+		/*
+			http://stackoverflow.com/questions/21891578/removing-bom-characters-using-java
+			Java does not handle BOM properly. In fact Java handles a BOM like every other char.
+			Found this:	http://www.rgagnon.com/javadetails/java-handle-utf8-file-with-bom.html
+		*/
+		if (attributes[0].startsWith("\uFEFF")) attributes[0] = attributes[0].substring(1)
 	}
 	
 	
@@ -70,9 +81,9 @@ public class Scopus_csv extends FileImportExport {
 			entries.put(attributes[idx], val)
 		}
 		
-		println "<" + attributes[0] + ">"
-		println "<" + mapScopus.get("AU") + ">"
-		println "<" + (attributes[0].equals (mapScopus.get("AU"))) + ">"
+//		println "<" + attributes[0] + ">"
+//		println "<" + mapScopus.get("AU") + ">"
+//		println "<" + (attributes[0].equals (mapScopus.get("AU"))) + ">"
 		
 		pub.with {
 			AU = entries.get(mapScopus.get("AU"));
@@ -81,13 +92,20 @@ public class Scopus_csv extends FileImportExport {
 			SO = entries.get(mapScopus.get("SO"));
 			VL = entries.get(mapScopus.get("VL"));
 			IS = entries.get(mapScopus.get("IS"));
+			AR = entries.get(mapScopus.get("AR"));
 			BP = entries.get(mapScopus.get("BP"))?.isInteger() ? entries.get(mapScopus.get("BP")).toInteger() : null
 			EP = entries.get(mapScopus.get("EP"))?.isInteger() ? entries.get(mapScopus.get("EP")).toInteger() : null
 			PG = entries.get(mapScopus.get("PG"))?.isInteger() ? entries.get(mapScopus.get("PG")).toInteger() : null
-			NR = entries.get(mapScopus.get("NR"))?.isInteger() ? entries.get(mapScopus.get("NR")).toInteger() : null
-			DOI = entries.get(mapScopus.get("DOI"));
+			TC = entries.get(mapScopus.get("TC"))?.isInteger() ? entries.get(mapScopus.get("TC")).toInteger() : null
+			DI = entries.get(mapScopus.get("DI"));
+			LI = entries.get(mapScopus.get("LI"));
+			AF = entries.get(mapScopus.get("AF"));
+			AA = entries.get(mapScopus.get("AA"));
 			AB = entries.get(mapScopus.get("AB"));
+			DE = entries.get(mapScopus.get("DE"));
 			DT = entries.get(mapScopus.get("DT"));
+			FS = entries.get(mapScopus.get("FS"));
+			UT = entries.get(mapScopus.get("UT"));
 		}
 		
 		pub.crList = entries.get(mapScopus.get("CR"))?.split(";").collect { String it -> parseLine (it) }.findAll { CRType it -> it != null } as List
@@ -132,8 +150,8 @@ public class Scopus_csv extends FileImportExport {
 		if (matchYearTitle.matches()) {
 			String[] m = (String[]) matchYearTitle[0]
 			if (m[1].length() == 0) {
-//					result.J = "XXX"
-				result.RPY = Integer.valueOf (m[2]).intValue()
+//					result.J = "XXX" 
+				if (m[2]?.isInteger()) result.RPY = m[2].toInteger() 
 				int pos = m[3].indexOf(", ,") 
 				if (pos>=0) {
 //						TITLE = m[3][0..pos]
@@ -149,7 +167,7 @@ public class Scopus_csv extends FileImportExport {
 			} else {
 //					TITLE = m[1] 
 				result.TI = m[1]
-				result.RPY = Integer.valueOf (m[2]).intValue()
+				if (m[2]?.isInteger()) result.RPY = m[2].toInteger() 
 				String[] crsplit = m[3].split (",", 2)
 				result.J_N = crsplit[0].trim()
 				result.J = m[3].trim()
@@ -213,7 +231,29 @@ public class Scopus_csv extends FileImportExport {
 				
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"))
 		
-		String[] attributes = ["AU","TI","PY","SO","VL", "IS", "BP", "EP", "PG", "CR", "NR", "DOI", "AB", "DT"] 
+		String[] attributes = [
+			"AU",
+			"TI",
+			"PY",
+			"SO",
+			"VL", 
+			"IS", 
+			"AR", 
+			"BP", 
+			"EP", 
+			"PG", 
+			"TC", 
+			"DI", 
+			"LI",
+			"AF",
+			"AA", 
+			"AB",
+			"DE",
+			"CR", 
+			"DT",
+			"FS",
+			"UT"]
+		 
 		String[] fields = attributes.collect { mapScopus.get(it) } 
 		csv.writeNext(fields)
 		
@@ -221,9 +261,27 @@ public class Scopus_csv extends FileImportExport {
 			stat.setValue (d + "Saving CSV file in Scopus format ...", ((idx+1)*100.0/crTab.pubData.size()).intValue())
 			pub.with {
 				csv.writeNext ([
-					AU?:"", TI?:"", PY?:"", SO?:"", VL?:"", IS?:"", BP?:"", EP?:"", PG?:"",
+					AU?:"", 
+					TI?:"", 
+					PY?:"", 
+					SO?:"", 
+					VL?:"", 
+					IS?:"", 
+					AR?:"", 
+					BP?:"", 
+					EP?:"", 
+					PG?:"", 
+					TC?:"", 
+					DI?:"", 
+					LI?:"",
+					AF?:"",
+					AA?:"",
+					AB?:"",
+					DE?:"",
 					pub.crList.collect { CRType cr -> cr.CR }.join("; "),
-					pub.crList.size(), DOI?:"", AB?:"", DT?:""
+					DT?:"",
+					FS?:"",
+					UT?:""
 				] as String[])
 			} 
 		}
