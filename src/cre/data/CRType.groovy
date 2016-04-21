@@ -28,7 +28,7 @@ public class CRType /* implements Comparable<CRType>*/ {
 	Double PERC_YR;
 	Double PERC_ALL;
 
-	String blockkey;
+//	String blockkey;
 	
 	int mergedTo
 

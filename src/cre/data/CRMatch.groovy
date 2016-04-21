@@ -164,9 +164,11 @@ class CRMatch {
 		stat.setValue("${new Date()}: Start Blocking of ${crTab.crData.size()} objects", 0)
 		Map<String, ArrayList<Integer>> blocks = [:]	// block key -> list of indexes (not IDs)!
 		crTab.crData.eachWithIndex { CRType cr, Integer idx ->
-			cr.blockkey = cr.RPY + ((cr.AU_L+"  ")[0..0]).toLowerCase()
-			if (blocks[cr.blockkey]==null) blocks[cr.blockkey] = new ArrayList<Integer>()
-			blocks[cr.blockkey] << idx
+			if ((cr.RPY != null) && ((cr.AU_L?:"").length() > 0)) {
+				String blockkey = cr.RPY + ((cr.AU_L+"  ")[0..0]).toLowerCase()
+				if (blocks[blockkey]==null) blocks[blockkey] = new ArrayList<Integer>()
+				blocks[blockkey] << idx
+			}
 		}
 		println "${new Date()}: Blocking done (${blocks.size()} blocks)"
 //		println blocks
@@ -202,10 +204,32 @@ class CRMatch {
 				compareY.pop()
 				l.batchCompareSet(compareY as String[], x).eachWithIndex { double s1, int yIndx ->
 					if (s1>=threshold) {
-						s2 = l.getSimilarity((crTab.crData[crlist[xIndx]].J_N?:"").toLowerCase(), (crTab.crData[crlist[ySize-yIndx-1]].J_N?:"").toLowerCase())
-						s = (2*s1+s2)/3.0		// weighted average of AU_L and J_N
+
+						// the two CR to be compared
+						CRType[] comp_CR = [(CRType) crTab.crData[crlist[xIndx]], (CRType)crTab.crData[crlist[ySize-yIndx-1]]]
+						
+						// increasing sim + weight if data is available; weight for author is 2
+						double sim = 2*s1
+						double weight = 2
+						
+						// compare Journal name (weight=1)
+						String[] comp_J = [comp_CR[0].J_N?:"", comp_CR[0].J_N?:""]
+						if ((comp_J[0].length()>0) && (comp_J[1].length()>0)) {
+							sim += 1.0* l.getSimilarity(comp_J[0].toLowerCase(), comp_J[1].toLowerCase())
+							weight += 1.0
+						}
+						
+						// compare title (weight=5)
+						// ignore if both titles are empty; set sim=0 if just one is emtpy; compute similarity otherwise
+						String[] comp_T = [comp_CR[0].TI?:"", comp_CR[1].TI?:""]
+						if ((comp_T[0].length()>0) || (comp_T[1].length()>0)) {
+							sim += 5.0 * (((comp_T[0].length()>0) && (comp_T[1].length()>0)) ? l.getSimilarity(comp_T[0].toLowerCase(), comp_T[1].toLowerCase()) : 0.0)
+							weight += 5.0
+						}
+						
+						s = sim/weight		// weighted average of AU_L, J_N, and TI
 						if (s>=threshold) {
-							setMapping(crTab.crData[crlist[xIndx]].ID, crTab.crData[crlist[ySize-yIndx-1]].ID, s, false, true)
+							setMapping(comp_CR[0].ID, comp_CR[1].ID, s, false, true)
 						}
 					}
 				}

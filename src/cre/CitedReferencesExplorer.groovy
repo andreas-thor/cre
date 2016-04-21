@@ -337,7 +337,7 @@ mainFrame = sb.frame(
 						
 						Runnable runnable = new Runnable() {
 							public void run() {
-								crTable.merge ()
+								crTable.crMatch.merge ()
 								(tab.getModel() as AbstractTableModel).fireTableDataChanged()
 							}
 						}
