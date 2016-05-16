@@ -1,4 +1,6 @@
 
+parseLine für CR global, da unabhängig von Scopus, WoS etc.!!!
+
 Scopus
 =======
 
