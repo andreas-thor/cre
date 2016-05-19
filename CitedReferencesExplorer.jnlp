@@ -16,7 +16,7 @@
       <all-permissions/>
   </security>
   <resources>
-    <j2se version="1.7+" href="http://java.sun.com/products/autodl/j2se"/>
+    <j2se version="1.8+" href="http://java.sun.com/products/autodl/j2se"/>
     <jar href="CitedReferencesExplorer.jar" main="true"/>
   	<property name="swing.defaultlaf" value="com.sun.java.swing.plaf.windows.WindowsLookAndFeel"/>
   

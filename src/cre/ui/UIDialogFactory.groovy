@@ -7,8 +7,7 @@ import java.text.NumberFormat
 
 import javax.swing.*
 
-import cre.data.CRTable
-import cre.data.CRType
+import cre.data.*
 import cre.ui.UIBind.UIRange
 
 class UIDialogFactory {
@@ -325,8 +324,8 @@ class UIDialogFactory {
 //					TestTableKeyBinding.this.table, "Action Triggered.");
 //				table.editingCanceled(null);
 			}
-		};
-		return save;
+		}
+		return save
 	}
 	
 

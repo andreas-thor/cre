@@ -1,5 +1,6 @@
 package cre.ui 
 
+
 import groovy.transform.CompileStatic
 
 import java.awt.BasicStroke
@@ -31,6 +32,8 @@ import org.jfree.data.xy.XYDataset
 
 import cre.data.CRTable
 
+
+
 /**
  * Factory class to create panel with chart 
  * @author thor
@@ -52,7 +55,7 @@ class UIChartPanelFactory {
 			setRangeZeroBaselineStroke(new BasicStroke(2))
 			
 			// domain=year -> show year number always with 4 digits
-			setRenderer(new XYSplineRenderer());
+			setRenderer(new XYSplineRenderer())
 			((NumberAxis) getDomainAxis()).with {
 				setNumberFormatOverride(new DecimalFormat("0000.#"))
 			}
@@ -113,10 +116,10 @@ class UIChartPanelFactory {
 					tab.getRowSorter().setSortKeys([new RowSorter.SortKey (TableFactory.columns['RPY'], SortOrder.ASCENDING), new RowSorter.SortKey (TableFactory.columns['N_CR'], SortOrder.DESCENDING)])
 					
 					/* find first row of the selected year; select and scroll to make it visible */
-					int firstRow=0;
+					int firstRow=0
 					while (tab.getValueAt(firstRow, TableFactory.columns['RPY']) != year) { firstRow++ }
-					tab.setRowSelectionInterval(firstRow, firstRow);
-					tab.scrollRectToVisible(tab.getCellRect(firstRow,0, true));
+					tab.setRowSelectionInterval(firstRow, firstRow)
+					tab.scrollRectToVisible(tab.getCellRect(firstRow,0, true))
 					
 				}
 			},

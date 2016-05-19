@@ -1,5 +1,7 @@
 package cre.data 
 
+import java.util.Map;
+
 import groovy.transform.CompileStatic
 
 @CompileStatic
@@ -33,7 +35,7 @@ public class CRType /* implements Comparable<CRType>*/ {
 	int mergedTo
 
 	// Mapping of internal attribute names to labels
-	static Map<String, String> attr = [
+	public static Map<String, String> attr = [
 		'ID'  : 'ID',
 		'CR'  : 'Cited Reference',
 		'RPY' : 'Cited Reference Year',

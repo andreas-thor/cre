@@ -1,4 +1,6 @@
+
 package cre.ui 
+
 
 import groovy.swing.SwingBuilder
 
@@ -15,8 +17,8 @@ import javax.swing.*
 import org.jfree.chart.ChartPanel
 
 import cre.CitedReferencesExplorer
-import cre.data.CRTable
-import cre.data.CRType
+import cre.data.*
+
 
 /**
  * Helper class that holds all properties that are bound to a UI element
@@ -38,8 +40,8 @@ class UISettings {
 	private File lastFileDir
 	private int maxCR
 	private int[] yearRange
-	private int digits;
-	private int medianRange;
+	private int digits
+	private int medianRange
 	
 	
 	public static Map<String, String> line = [
@@ -61,8 +63,8 @@ class UISettings {
 		setLastDirectory(new File (userPrefs.get("lastFileDir", "")))
 		setMaxCR(userPrefs.getInt("maxCR", 100000))
 		setYearRange([userPrefs.getInt("minYear", 0), userPrefs.getInt("maxYear", 0)] as int[])
-		setDigits (userPrefs.getInt("digits", 3));
-		setMedianRange(userPrefs.getInt("medianRange",2));
+		setDigits (userPrefs.getInt("digits", 3))
+		setMedianRange(userPrefs.getInt("medianRange",2))
 		
 		mainFrame.setSize(userPrefs.getInt("WindowWidth", 800), userPrefs.getInt("WindowHeight", 600))
 		mainFrame.setLocation(userPrefs.getInt("WindowX", 0), userPrefs.getInt("WindowY", 0))
@@ -71,19 +73,19 @@ class UISettings {
 	
 	public void setMedianRange (int medianRange) {
 		this.medianRange = Math.max (medianRange, 1)
-		userPrefs.putInt("medianRange", this.medianRange);
+		userPrefs.putInt("medianRange", this.medianRange)
 		crTab.generateChart(this.medianRange)
 	}
 	
 	public int getMedianRange() {
-		return medianRange;
+		return medianRange
 	}
 	
 	public void setWindowPos () {
-		userPrefs.putInt("WindowX", mainFrame.getX());
-		userPrefs.putInt("WindowY", mainFrame.getY());
-		userPrefs.putInt("WindowWidth", mainFrame.getWidth());
-		userPrefs.putInt("WindowHeight", mainFrame.getHeight());
+		userPrefs.putInt("WindowX", mainFrame.getX())
+		userPrefs.putInt("WindowY", mainFrame.getY())
+		userPrefs.putInt("WindowWidth", mainFrame.getWidth())
+		userPrefs.putInt("WindowHeight", mainFrame.getHeight())
 	}
 
 	

@@ -1,15 +1,16 @@
 package cre.data.source
 
-import groovy.transform.CompileStatic
-
-import java.io.BufferedReader;
-import java.io.File;
+import java.io.BufferedReader
+import java.io.BufferedWriter
+import java.io.File
+import java.util.List
 import java.util.regex.Matcher
 
-import cre.data.CRTable;
+import cre.data.CRTable
 import cre.data.CRType
 import cre.data.PubType
-import cre.ui.StatusBar;;
+import cre.ui.StatusBar
+import groovy.transform.CompileStatic;
 
 @CompileStatic
 public class WoS_txt extends FileImportExport {
@@ -27,7 +28,7 @@ public class WoS_txt extends FileImportExport {
 	
 
 	public WoS_txt(int[] yearRange, BufferedReader br) {
-		super(yearRange, br);
+		super(yearRange, br)
 	}
 
 
@@ -51,63 +52,67 @@ public class WoS_txt extends FileImportExport {
 			if (line.length()<2) continue
 			currentTag = line.substring(0, 2)
 
-			if (currentTag.equals("ER")) break;	// ER = End Of Record
-			if (currentTag.equals("EF")) return null;	// EF = End Of File
+			if (currentTag.equals("ER")) break	// ER = End Of Record
+			if (currentTag.equals("EF")) return null	// EF = End Of File
 						
 			tagBlock = currentTag.equals("  ") ? tagBlock : new String(currentTag)
 			entries.put(tagBlock, (entries.get(tagBlock) == null) ? line.substring(3) : entries.get(tagBlock) + "\n" + line.substring(3))
 		}
 		
 		pub.with {
-			AU = entries.get("AU");
-			TI = entries.get("TI");
+			AU = entries.get("AU")
+			TI = entries.get("TI")
 			PY = entries.get("PY")?.isInteger() ? entries.get("PY").toInteger() : null
-			SO = entries.get("SO");
-			VL = entries.get("VL");
-			IS = entries.get("IS");
-			AR = entries.get("AR");
+			SO = entries.get("SO")
+			VL = entries.get("VL")
+			IS = entries.get("IS")
+			AR = entries.get("AR")
 			BP = entries.get("BP")?.isInteger() ? entries.get("BP").toInteger() : null
 			EP = entries.get("EP")?.isInteger() ? entries.get("EP").toInteger() : null
 			PG = entries.get("PG")?.isInteger() ? entries.get("PG").toInteger() : null
 			TC = entries.get("TC")?.isInteger() ? entries.get("TC").toInteger() : null
-			DI = entries.get("DOI");
-			LI = entries.get("LI");
-			AF = entries.get("AF");
+			DI = entries.get("DOI")
+			LI = entries.get("LI")
+			AF = entries.get("AF")
 			AA = null // Scopus only
-			AB = entries.get("AB");
-			DE = entries.get("DE");
-			DT = entries.get("DT");
-			FS = "WoS";
-			UT = entries.get("UT");
+			AB = entries.get("AB")
+			DE = entries.get("DE")
+			DT = entries.get("DT")
+			FS = "WoS"
+			UT = entries.get("UT")
 			
 		}
 		
-		if (pub.TI == null) return null;
-		pub.crList = entries.get("CR")?.split("\n").collect { String it -> parseCR (it) }.findAll { CRType it -> it != null } as List
+		if (pub.TI == null) return null
+		pub.crList = entries.get("CR")?.split("\n").collect { String it -> parseCR (it, yearRange, true) }.findAll { CRType it -> it != null } as List
 		return pub
 	}
 	
 	
 	/**
 	 * @param line line of WoS file in the CR section
+	 * @param yearRange
+	 * @param first = true if called from Scopus Reader (false, if called from WoS-Reader in case of import / export scenarios)
 	 * @return parsed Cited References 
 	 */
-	private CRType parseCR (String line) {
+	public static CRType parseCR (String line, int[] yearRange, boolean first) {
 
 		CRType result = new CRType()
 		result.CR = line // [3..-1] // .toUpperCase()
 		String[] crsplit = result.CR.split (",", 3)
 		
-		// abort if year is not a number
 		String yearS = crsplit.length > 1 ? crsplit[1].trim() : ""
-		if (!yearS.isInteger()) return null
-			
-		// abort if year is out of range
-		int year = yearS.toInteger().intValue()
+		if (yearS.isInteger()) {
+			// abort if year is out of range
+			int year = yearS.toInteger().intValue()
+			if (((year < yearRange[0]) && (yearRange[0]!=0)) || ((year > yearRange[1]) && (yearRange[1]!=0))) return null
+			result.RPY = year
+		} else {
+			// try Scopus parser if no year could be found
+			if (first) return Scopus_csv.parseCR (line, yearRange, false)
+			return null
+		}		
 		
-		if (((year < yearRange[0]) && (yearRange[0]!=0)) || ((year > yearRange[1]) && (yearRange[1]!=0))) return null
-		
-		result.RPY = year
 		result.AU = crsplit[0].trim()
 		
 		// process "difficult" last names starting with "von" etc.
@@ -154,8 +159,8 @@ public class WoS_txt extends FileImportExport {
 			}
 		}
 		
+		if (result.RPY == null) return null
 		return result
-		
 	}
 	
 
@@ -163,8 +168,8 @@ public class WoS_txt extends FileImportExport {
 	 * Writes a tagged field
 	 */
 	private static writeTag (BufferedWriter bw, String tag, String value) {
-		if (value==null) return;
-		if (value.trim().size()==0) return;
+		if (value==null) return
+		if (value.trim().size()==0) return
 		value.split("\n").eachWithIndex { String line, int pos ->
 			bw.write ((pos==0) ? tag+" " : "   ")
 			bw.writeLine (line)
@@ -178,8 +183,8 @@ public class WoS_txt extends FileImportExport {
 		
 		// add txt extension if necessary
 		// TODO: Do I really need to adjust the file extension??
-		String file_name = file.toString();
-		if (!file_name.endsWith(".txt")) file_name += ".txt";
+		String file_name = file.toString()
+		if (!file_name.endsWith(".txt")) file_name += ".txt"
 				
 						
 		BufferedWriter bw = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"))

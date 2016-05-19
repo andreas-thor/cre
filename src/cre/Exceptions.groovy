@@ -4,11 +4,11 @@ class Exceptions {
 
 	public class FileTooLargeException extends Exception {
 		
-		int numberOfCRs;
+		int numberOfCRs
 
 		public FileTooLargeException(int numberOfCRs) {
-			super();
-			this.numberOfCRs = numberOfCRs;
+			super()
+			this.numberOfCRs = numberOfCRs
 		}
 		
 		

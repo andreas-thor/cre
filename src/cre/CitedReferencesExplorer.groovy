@@ -1,6 +1,4 @@
-package cre 
- 
-
+package cre
 
 import groovy.swing.SwingBuilder
 
@@ -18,10 +16,7 @@ import cre.Exceptions.FileTooLargeException
 import cre.Exceptions.UnsupportedFileFormatException
 import cre.data.CRTable
 import cre.data.CRTable.*
-import cre.data.source.CRE_csv
-import cre.data.source.FileImportExport
-import cre.data.source.Scopus_csv
-import cre.data.source.WoS_txt
+import cre.data.source.*
 import cre.ui.StatusBar
 import cre.ui.TableFactory
 import cre.ui.UIBind
@@ -47,7 +42,7 @@ JFrame mainFrame
 
 
 
-
+ 
 /* Workflow for saving / exporting files */
 Closure doExportFile = { String source, String dlgTitle, FileFilter filter ->
 	JFileChooser dlg = new JFileChooser(dialogTitle: dlgTitle, multiSelectionEnabled: false, fileSelectionMode: JFileChooser.FILES_ONLY)
@@ -171,7 +166,7 @@ ChartPanel chpan = UIChartPanelFactory.create(crTable, tab,
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2016/05/16 **DEV**++)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2016/05/19 **DEV**++)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE

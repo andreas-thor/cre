@@ -1,14 +1,15 @@
 package cre.data.source
 
-import groovy.transform.CompileStatic
+import java.io.File
+
 import au.com.bytecode.opencsv.CSVReader
 import au.com.bytecode.opencsv.CSVWriter
 import cre.Exceptions.AbortedException
-import cre.data.CRCluster
 import cre.data.CRTable
 import cre.data.CRType
 import cre.data.PubType
 import cre.ui.StatusBar
+import groovy.transform.CompileStatic
 
 @CompileStatic
 class CRE_csv {
@@ -25,8 +26,8 @@ class CRE_csv {
 		stat.setValue(d + "Saving CSV file ...", 0)
 		
 		// add csv extension if necessary
-		String file_name = file.toString();
-		if (!file_name.endsWith(".csv")) file_name += ".csv";
+		String file_name = file.toString()
+		if (!file_name.endsWith(".csv")) file_name += ".csv"
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"))
 		
@@ -61,8 +62,8 @@ class CRE_csv {
 		stat.setValue(d + "Saving CSV file ...", 0)
 		
 		// add csv extension if necessary
-		String file_name = file.toString();
-		if (!file_name.endsWith(".csv")) file_name += ".csv";
+		String file_name = file.toString()
+		if (!file_name.endsWith(".csv")) file_name += ".csv"
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"))
 		
@@ -100,8 +101,8 @@ class CRE_csv {
 		stat.setValue(d + "Saving Graph as CSV file ...", 0)
 		
 		// add csv extension if necessary
-		String file_name = file.toString();
-		if (!file_name.endsWith(".csv")) file_name += ".csv";
+		String file_name = file.toString()
+		if (!file_name.endsWith(".csv")) file_name += ".csv"
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"))
 		csv.writeNext(["Year", "NCR", "Median-${2*crTab.getMedianRange()+1}"] as String[])
@@ -146,7 +147,7 @@ class CRE_csv {
 
 				if (crTab.abort) {
 					crTab.init()
-					crTab.updateData(true);
+					crTab.updateData(true)
 					stat.setValue("${new Date()}: Loading CSV file aborted", 0, crTab.getInfoString())
 					crTab.abort = false
 					throw new AbortedException()
@@ -166,7 +167,7 @@ class CRE_csv {
 				}
 				cr.VI = 1	// visible
 				cr.CO = 0	// default color
-				cr.CID2 = new CRCluster(cr.ID, new Integer(1))
+				cr.CID2 = new cre.data.CRCluster(cr.ID, new Integer(1))
 				cr.CID_S = 1
 
 				["_SAMEAS":2, "_DIFFERENTTO":-2].each { String k, int v ->
@@ -181,7 +182,7 @@ class CRE_csv {
 			}
 		}
 		
-		crTab.updateData(true);
+		crTab.updateData(true)
 		stat.setValue("${new Date()}: Loading CSV file done", 0, crTab.getInfoString())
 		
 	}

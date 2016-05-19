@@ -1,16 +1,16 @@
 package cre.data.source
-
+ 
 import java.io.BufferedReader
-import java.io.File;
-import java.util.regex.Matcher;
+import java.io.File
+import java.util.HashMap
+import java.util.List
+import java.util.regex.Matcher
 
-import groovy.transform.CompileStatic
 import au.com.bytecode.opencsv.CSVReader
 import au.com.bytecode.opencsv.CSVWriter
-import cre.data.CRTable;
-import cre.data.CRType
-import cre.data.PubType
-import cre.ui.StatusBar;
+import cre.data.*
+import cre.ui.StatusBar
+import groovy.transform.CompileStatic
 
 @CompileStatic
 public class Scopus_csv extends FileImportExport {
@@ -69,7 +69,7 @@ public class Scopus_csv extends FileImportExport {
 	@Override
 	public PubType getNextPub() {
 		
-		if (attributes == null) return null;
+		if (attributes == null) return null
 		String[] line = csv.readNext()
 		if (line == null) return null
 
@@ -86,37 +86,44 @@ public class Scopus_csv extends FileImportExport {
 //		println "<" + (attributes[0].equals (mapScopus.get("AU"))) + ">"
 		
 		pub.with {
-			AU = entries.get(mapScopus.get("AU"));
-			TI = entries.get(mapScopus.get("TI"));
+			AU = entries.get(mapScopus.get("AU"))
+			TI = entries.get(mapScopus.get("TI"))
 			PY = entries.get(mapScopus.get("PY"))?.isInteger() ? entries.get(mapScopus.get("PY")).toInteger() : null
-			SO = entries.get(mapScopus.get("SO"));
-			VL = entries.get(mapScopus.get("VL"));
-			IS = entries.get(mapScopus.get("IS"));
-			AR = entries.get(mapScopus.get("AR"));
+			SO = entries.get(mapScopus.get("SO"))
+			VL = entries.get(mapScopus.get("VL"))
+			IS = entries.get(mapScopus.get("IS"))
+			AR = entries.get(mapScopus.get("AR"))
 			BP = entries.get(mapScopus.get("BP"))?.isInteger() ? entries.get(mapScopus.get("BP")).toInteger() : null
 			EP = entries.get(mapScopus.get("EP"))?.isInteger() ? entries.get(mapScopus.get("EP")).toInteger() : null
 			PG = entries.get(mapScopus.get("PG"))?.isInteger() ? entries.get(mapScopus.get("PG")).toInteger() : null
 			TC = entries.get(mapScopus.get("TC"))?.isInteger() ? entries.get(mapScopus.get("TC")).toInteger() : null
-			DI = entries.get(mapScopus.get("DI"));
-			LI = entries.get(mapScopus.get("LI"));
-			AF = entries.get(mapScopus.get("AF"));
-			AA = entries.get(mapScopus.get("AA"));
-			AB = entries.get(mapScopus.get("AB"));
-			DE = entries.get(mapScopus.get("DE"));
-			DT = entries.get(mapScopus.get("DT"));
-			FS = entries.get(mapScopus.get("FS"));
-			UT = entries.get(mapScopus.get("UT"));
+			DI = entries.get(mapScopus.get("DI"))
+			LI = entries.get(mapScopus.get("LI"))
+			AF = entries.get(mapScopus.get("AF"))
+			AA = entries.get(mapScopus.get("AA"))
+			AB = entries.get(mapScopus.get("AB"))
+			DE = entries.get(mapScopus.get("DE"))
+			DT = entries.get(mapScopus.get("DT"))
+			FS = entries.get(mapScopus.get("FS"))
+			UT = entries.get(mapScopus.get("UT"))
 		}
 		
-		pub.crList = entries.get(mapScopus.get("CR"))?.split(";").collect { String it -> parseLine (it) }.findAll { CRType it -> it != null } as List
+		pub.crList = entries.get(mapScopus.get("CR"))?.split(";").collect { String it -> parseCR (it, yearRange, true) }.findAll { CRType it -> it != null } as List
 		
 		return pub
 		
 	}
 
+
+	/**
+	 * 	
+	 * @param line
+	 * @param yearRange
+	 * @param first = true if called from Scopus Reader (false, if called from WoS-Reader in case of import / export scenarios)
+	 * @return
+	 */
 	
-	
-	public static CRType parseLine(String line) {
+	public static CRType parseCR(String line, int[] yearRange, boolean first) {
 
 		line = line.trim()
 		if (line.length() == 0) return null
@@ -173,6 +180,16 @@ public class Scopus_csv extends FileImportExport {
 				result.J = m[3].trim()
 			}
 		} 
+
+		
+		if (result.RPY != null) {
+			if (((result.RPY < yearRange[0]) && (yearRange[0]!=0)) || ((result.RPY > yearRange[1]) && (yearRange[1]!=0))) return null
+		} else {
+			if (first) return WoS_txt.parseCR(line, yearRange, false)
+			return null
+		}
+		
+		
 		
 //			result.J = line
 		
@@ -213,8 +230,7 @@ public class Scopus_csv extends FileImportExport {
 			
 		}
 		
-		
-		
+		if (result.RPY == null) return null
 		return result
 	}
 
@@ -226,8 +242,8 @@ public class Scopus_csv extends FileImportExport {
 		stat.setValue(d + "Saving CSV file in Scopus format ...", 0)
 		
 		// add csv extension if necessary
-		String file_name = file.toString();
-		if (!file_name.endsWith(".csv")) file_name += ".csv";
+		String file_name = file.toString()
+		if (!file_name.endsWith(".csv")) file_name += ".csv"
 				
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"))
 		

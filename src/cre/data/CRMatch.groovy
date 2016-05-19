@@ -1,9 +1,15 @@
 package cre.data 
 
-import groovy.transform.CompileStatic
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein
+
 import cre.ui.StatusBar
 import cre.ui.UIMatchPanelFactory
+import groovy.transform.CompileStatic
 
 @CompileStatic
 class CRMatch {
@@ -356,7 +362,7 @@ class CRMatch {
 		Long timestamp = System.currentTimeMillis()		// used to group together all individual mapping pairs of match operation
 		
 		List<Integer> crIds = idx.collect { Integer it -> crTab.crData[it].ID }
-		
+		 
 		// manual-same is indicated by similarity = 2; different = -2
 		if ((matchType==UIMatchPanelFactory.matchSame) || (matchType==UIMatchPanelFactory.matchDifferent)) {
 			crIds.each { Integer id1 ->

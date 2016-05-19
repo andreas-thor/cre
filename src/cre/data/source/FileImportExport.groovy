@@ -1,14 +1,14 @@
 package cre.data.source
+ 
+import java.io.BufferedReader
+import java.io.File
 
-import groovy.transform.CompileStatic
 import cre.Exceptions.AbortedException
 import cre.Exceptions.FileTooLargeException
 import cre.Exceptions.UnsupportedFileFormatException
-import cre.data.CRCluster
-import cre.data.CRTable
-import cre.data.CRType
-import cre.data.PubType
+import cre.data.*
 import cre.ui.StatusBar
+import groovy.transform.CompileStatic
 
 @CompileStatic
 public abstract class FileImportExport {
@@ -51,11 +51,11 @@ public abstract class FileImportExport {
 			int fileSizeStep = (int) (f.length()*stepSize/100)
 			long fileSizeRead = 0
 
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"))
 			FileImportExport parser = null
 			switch (source) {
-				case "WoS_txt": parser = new WoS_txt(yearRange, br); break;
-				case "Scopus_csv": parser = new Scopus_csv(yearRange, br); break;
+				case "WoS_txt": parser = new WoS_txt(yearRange, br); break
+				case "Scopus_csv": parser = new Scopus_csv(yearRange, br); break
 				default: throw new UnsupportedFileFormatException()
 			}
 			
@@ -66,14 +66,14 @@ public abstract class FileImportExport {
 				// Check for abort by user
 				if (crTab.abort) {
 					crTab.init()
-					crTab.updateData(false);
+					crTab.updateData(false)
 					stat.setValue("${new Date()}: Loading files aborted", 0)
 					crTab.abort = false
 					throw new AbortedException()
 				}
 				
 				// update status bar
-				fileSizeRead += pub.length;
+				fileSizeRead += pub.length
 				if (stepCount*fileSizeStep < fileSizeRead) {
 					stat.setValue (d + "Loading WOS file ${idx+1} of ${files.length}", stepCount*stepSize)
 					stepCount++
@@ -94,9 +94,9 @@ public abstract class FileImportExport {
 						crDup[cr.CR.charAt(0)][cr.CR] = indexCount
 						
 						if ((maxCR>0) && (indexCount==maxCR)) {
-							crTab.updateData(false);
+							crTab.updateData(false)
 							stat.setValue("${new Date()}: Loading WOS files aborted", 0)
-							throw new FileTooLargeException (indexCount);
+							throw new FileTooLargeException (indexCount)
 						}
 						
 						// todo: add new CR as separate function (make clusterId2Objects private again)
@@ -130,7 +130,7 @@ public abstract class FileImportExport {
 //		println indexCount
 		
 		
-		crTab.updateData(false);
+		crTab.updateData(false)
 		stat.setValue("${new Date()}: Loading files done", 0, crTab.getInfoString())
 	}
 	

@@ -1,5 +1,6 @@
 package cre.ui 
 
+
 import groovy.swing.SwingBuilder
 import groovy.transform.CompileStatic
 
@@ -22,9 +23,7 @@ import javax.swing.table.JTableHeader
 import javax.swing.table.TableModel
 import javax.swing.table.TableRowSorter
 
-import cre.data.CRCluster;
-import cre.data.CRTable;
-import cre.data.CRType;
+import cre.data.*
 
 
 /**
@@ -37,7 +36,7 @@ class TableFactory {
 	private static String clickedCol 
 	
 	public static final Map<String, Integer> columns = ['VI':0, 'CO':1, 'RPY':4, 'N_CR':5, 'PERC_YR':6, 'PERC_ALL':7]
-	private static DecimalFormat formatter = new DecimalFormat( "##0.0000%" );
+	private static DecimalFormat formatter = new DecimalFormat( "##0.0000%" )
 	
 	private static JTable init(CRTable crTable) {
 		JTable tab = new SwingBuilder().table (id:'tab') {
@@ -90,7 +89,7 @@ class TableFactory {
 		/* show only visible rows (VI property == 1) */
 		TableRowSorter tsort = new TableRowSorter<TableModel>(tab.getModel())
 		tsort.setRowFilter(RowFilter.numberFilter(ComparisonType.EQUAL, 1, columns['VI'].intValue()))	// VI column defines visibility
-		tab.setRowSorter(tsort);
+		tab.setRowSorter(tsort)
 
 		
 		/* Recompute background color for all visible rows after re-sorting
@@ -101,7 +100,7 @@ class TableFactory {
 				if (e.type != RowSorterEvent.Type.SORTED) return
 				
 				int sortColumn = (tab.getRowSorter().getSortKeys().size()>0) ? tab.getRowSorter().getSortKeys().get(0).getColumn() : -1
-				int currColor = 0;
+				int currColor = 0
 				
 				for (int r=0; r<tsort.getViewRowCount(); r++) {
 					if ((r>0) && (tab.getModel().getValueAt(tab.convertRowIndexToModel(r-1), sortColumn) != tab.getModel().getValueAt(tab.convertRowIndexToModel(r), sortColumn)) ) {
@@ -120,14 +119,14 @@ class TableFactory {
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
 			{
 				if (((column==columns['PERC_YR']) || (column==columns['PERC_ALL'])) && (value instanceof Double)) {
-					value = formatter.format((Number)value);
+					value = formatter.format((Number)value)
 				}
 				
 				Color gColor = ((TableModel)table.getModel()).getValueAt(table.convertRowIndexToModel(row), columns['CO']) == 0 ? UIManager.getColor("Table.background") : Color.LIGHT_GRAY
-				final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-				c.setBackground(isSelected ? UIManager.getColor("Table.selectionBackground") : gColor);
+				final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column)
+				c.setBackground(isSelected ? UIManager.getColor("Table.selectionBackground") : gColor)
 //				c.setForeground(isSelected ? UIManager.getColor("Table.selectionForeground") : UIManager.getColor("Table.foreground"))
-				return c;
+				return c
 			}
 		}
 

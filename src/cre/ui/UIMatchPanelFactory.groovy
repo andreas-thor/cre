@@ -15,8 +15,7 @@ import javax.swing.event.ChangeEvent
 import javax.swing.event.ChangeListener
 import javax.swing.table.AbstractTableModel
 
-import cre.data.CRMatch
-import cre.data.CRTable
+import cre.data.*
 import cre.ui.UIBind.UIMatchConfig
 
 
@@ -49,7 +48,7 @@ class UIMatchPanelFactory {
 				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
 			} else {	// matchSame/Different/Extract
 				if (tab.getSelectedRowCount() == 0) {
-					JOptionPane.showMessageDialog(null, "No Cited References selected");
+					JOptionPane.showMessageDialog(null, "No Cited References selected")
 				} else {
 					crMatch.matchManual (tab.getSelectedRows().collect { tab.convertRowIndexToModel (it) }, matchType, uiMC.threshold, uiMC.useVol, uiMC.usePag, uiMC.useDOI)
 					(tab.getModel() as AbstractTableModel).fireTableDataChanged()
@@ -124,7 +123,7 @@ class UIMatchPanelFactory {
 			
 		framesPerSecond.addChangeListener([stateChanged: { ChangeEvent e ->
 			
-			JSlider source = (JSlider)e.getSource();
+			JSlider source = (JSlider)e.getSource()
 			if (!source.getValueIsAdjusting()) match.updateClustering()
 			
 			} ] as ChangeListener)

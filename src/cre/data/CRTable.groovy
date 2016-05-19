@@ -1,14 +1,14 @@
 package cre.data 
-
-import groovy.beans.Bindable
-import groovy.transform.CompileStatic
+  
+import java.util.HashMap
+import java.util.List
+import java.util.Map
 
 import org.jfree.data.xy.DefaultXYDataset
 
-import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein
-import cre.data.CRMatch.Pair
 import cre.ui.StatusBar
-import cre.ui.UIMatchPanelFactory
+import groovy.beans.Bindable
+import groovy.transform.CompileStatic
 
 
 /**
@@ -241,11 +241,11 @@ class CRTable {
 	
 	public void removeByPercentYear (String comp, double threshold) {
 		switch (comp) {
-			case "<" : crData.removeAll { CRType it -> it.PERC_YR <  threshold }; break;
-			case "<=": crData.removeAll { CRType it -> it.PERC_YR <= threshold }; break;
-			case "=" : crData.removeAll { CRType it -> it.PERC_YR == threshold }; break;
-			case ">=": crData.removeAll { CRType it -> it.PERC_YR >= threshold }; break;
-			case ">" : crData.removeAll { CRType it -> it.PERC_YR >  threshold }; break; 
+			case "<" : crData.removeAll { CRType it -> it.PERC_YR <  threshold }; break
+			case "<=": crData.removeAll { CRType it -> it.PERC_YR <= threshold }; break
+			case "=" : crData.removeAll { CRType it -> it.PERC_YR == threshold }; break
+			case ">=": crData.removeAll { CRType it -> it.PERC_YR >= threshold }; break
+			case ">" : crData.removeAll { CRType it -> it.PERC_YR >  threshold }; break 
 		}
 		updateData(true)
 	}
@@ -263,7 +263,7 @@ class CRTable {
 	
 	
 	public void setShowNull (boolean showNull) {
-		this.showNull = showNull;
+		this.showNull = showNull
 		crData.each { CRType it -> if (it.RPY == null) it.VI = showNull ? 1 : 0  }
 	}
 	

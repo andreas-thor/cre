@@ -1,7 +1,7 @@
 package cre.data
 
 
-import java.util.List;
+import java.util.List
 
 import groovy.transform.CompileStatic
 
@@ -10,58 +10,58 @@ public class PubType {
 
 	public List<CRType> crList
 
-	String AU;	// Authors
-	String TI; 	// Title
-	Integer PY; 	// Year
-	String SO;	// Source title
-	String VL;	// Volume
-	String IS; 	// Issue
-	Integer BP;		// Beginning Page / Page Start
-	Integer EP;		// Ending Page / Page End
-	Integer PG;		// Page Count
-	Integer NR;		// Number of References
-	String DI;
-	String AB;	// Abstract
-	String DT;	// Document Typs
+	String AU	// Authors
+	String TI 	// Title
+	Integer PY 	// Year
+	String SO	// Source title
+	String VL	// Volume
+	String IS 	// Issue
+	Integer BP		// Beginning Page / Page Start
+	Integer EP		// Ending Page / Page End
+	Integer PG		// Page Count
+	Integer NR		// Number of References
+	String DI
+	String AB	// Abstract
+	String DT	// Document Typs
 	
 	// TODO: adjust import/export!!!
-	Integer TC;	// Times Cited
-	String AR; 	// Article Number
-	String LI;	// Link
-	String AF;	// Affiliations
-	String AA;	// Authors with affiliations
-	String DE;	// Author Keywords
-	String UT;	// Unique Article Identifier
-	String FS;	// File Source
+	Integer TC	// Times Cited
+	String AR 	// Article Number
+	String LI	// Link
+	String AF	// Affiliations
+	String AA	// Authors with affiliations
+	String DE	// Author Keywords
+	String UT	// Unique Article Identifier
+	String FS	// File Source
 	
 	public int length	// approx. size for import status bar
 
 	
 	public PubType() {
 		
-		super();
-		this.crList = new ArrayList<CRType>();
-		AU = null;
-		TI = null;
-		PY = null;
-		SO = null;
-		VL = null;
-		IS = null;
-		BP = null;
-		EP = null;
-		PG = null;
-		NR = null;
-		DI = null;
-		AB = null;
-		DT = null;
-		TC = null;
-		AR = null;
-		LI = null;
-		AF = null;
-		AA = null;
-		DE = null;
-		UT = null;
-		FS = null;
+		super()
+		this.crList = new ArrayList<CRType>()
+		AU = null
+		TI = null
+		PY = null
+		SO = null
+		VL = null
+		IS = null
+		BP = null
+		EP = null
+		PG = null
+		NR = null
+		DI = null
+		AB = null
+		DT = null
+		TC = null
+		AR = null
+		LI = null
+		AF = null
+		AA = null
+		DE = null
+		UT = null
+		FS = null
 	}
 
 	
@@ -70,29 +70,29 @@ public class PubType {
 			Integer eP, Integer pG, Integer nR, String dO, String aB, String dT, Integer tC, String aR, String lI, String aF,
 			String aA, String dE, String uT, String fS) {
 			
-		super();
-		this.crList = crList;
-		this.AU = aU;
-		this.TI = tI;
-		this.PY = pY;
-		this.SO = sO;
-		this.VL = vL;
-		this.IS = iS;
-		this.BP = bP;
-		this.EP = eP;
-		this.PG = pG;
-		this.NR = nR;
-		this.DI = dO;
-		this.AB = aB;
-		this.DT = dT;
-		this.TC = tC;
-		this.AR = aR;
-		this.LI = lI;
-		this.AF = aF;
-		this.AA = aA;
-		this.DE = dE;
-		this.UT = uT;
-		this.FS = fS;
+		super()
+		this.crList = crList
+		this.AU = aU
+		this.TI = tI
+		this.PY = pY
+		this.SO = sO
+		this.VL = vL
+		this.IS = iS
+		this.BP = bP
+		this.EP = eP
+		this.PG = pG
+		this.NR = nR
+		this.DI = dO
+		this.AB = aB
+		this.DT = dT
+		this.TC = tC
+		this.AR = aR
+		this.LI = lI
+		this.AF = aF
+		this.AA = aA
+		this.DE = dE
+		this.UT = uT
+		this.FS = fS
 	}
 
 	
