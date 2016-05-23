@@ -86,7 +86,7 @@ public class Scopus_csv extends FileImportExport {
 //		println "<" + (attributes[0].equals (mapScopus.get("AU"))) + ">"
 		
 		pub.with {
-			AU = entries.get(mapScopus.get("AU"))
+			AU = entries.get(mapScopus.get("AU")).split("\\., ").collect { String name -> name.replaceAll("\\.", "") }
 			TI = entries.get(mapScopus.get("TI"))
 			PY = entries.get(mapScopus.get("PY"))?.isInteger() ? entries.get(mapScopus.get("PY")).toInteger() : null
 			SO = entries.get(mapScopus.get("SO"))
@@ -128,7 +128,7 @@ public class Scopus_csv extends FileImportExport {
 		line = line.trim()
 		if (line.length() == 0) return null
 		
-		CRType result = new CRType()
+		CRType result = new CRType(CRType.TYPE_SCOPUS)
 		result.CR = line
 		
 		// parse all authors (but save first author only)
@@ -277,7 +277,15 @@ public class Scopus_csv extends FileImportExport {
 			stat.setValue (d + "Saving CSV file in Scopus format ...", ((idx+1)*100.0/crTab.pubData.size()).intValue())
 			pub.with {
 				csv.writeNext ([
-					AU?:"", 
+					// add dots to each initial
+					(AU != null) ? AU.collect { String a -> 
+						String split = a.split(", ")
+						if (split.length()==2) {
+							a[0] + ", " + a[1].replaceAll("([A-Z])", "\$1.")
+						} else {
+							a
+						}
+					}.join(', ') : "", 
 					TI?:"", 
 					PY?:"", 
 					SO?:"", 
@@ -294,7 +302,7 @@ public class Scopus_csv extends FileImportExport {
 					AA?:"",
 					AB?:"",
 					DE?:"",
-					pub.crList.collect { CRType cr -> cr.CR }.join("; "),
+					pub.crList.collect { CRType cr -> cr.getCRString(CRType.TYPE_SCOPUS) }.join("; "),
 					DT?:"",
 					FS?:"",
 					UT?:""

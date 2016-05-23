@@ -63,6 +63,7 @@ Closure doExportFile = { String source, String dlgTitle, FileFilter filter ->
 					public void run() {
 						try {
 							switch (source) {
+								case "CRE_json": CRE_json.save(dlg.getSelectedFile(), crTable, stat); break;
 								case "WoS_txt": WoS_txt.save(dlg.getSelectedFile(), crTable, stat); break;
 								case "Scopus_csv": Scopus_csv.save(dlg.getSelectedFile(), crTable, stat); break;
 								case "CRE_csv": CRE_csv.save(dlg.getSelectedFile(), crTable, stat); break;
@@ -188,12 +189,18 @@ mainFrame = sb.frame(
 				})
 			}
 			
-			menuItem(text: "Open...", mnemonic: 'O', accelerator: KeyStroke.getKeyStroke("ctrl O"), actionPerformed: {
+//			menuItem(text: "Open...", mnemonic: 'O', accelerator: KeyStroke.getKeyStroke("ctrl O"), actionPerformed: {
+//				doImportFiles (
+//					"CRE_json", "Open CRE file", false, 
+//					[getDescription: {"CRE files (*.cre)"}, accept:{File f -> f ==~ /.*?\.cre/ || f.isDirectory() }] as FileFilter)
+//			})
+
+			menuItem(text: "DEPRECATED Open CSV ...", actionPerformed: {
 				doImportFiles (
-					"CRE_csv", "Open CSV file", false, 
+					"CRE_csv", "Open CSV file", false,
 					[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
 			})
-			
+
 			separator()
 			
 			
@@ -218,12 +225,18 @@ mainFrame = sb.frame(
 				})
 			}
 			
-			menuItem(id: "menuSaveCSV", text: "Save...", mnemonic: 'S', accelerator: KeyStroke.getKeyStroke("ctrl S"), actionPerformed: {
+			menuItem(id: "menuSaveCRE", text: "Save...", mnemonic: 'S', accelerator: KeyStroke.getKeyStroke("ctrl S"), actionPerformed: {
+				doExportFile (
+					"CRE_json", "Export CRE file",
+					[getDescription: {"CRE files (*.cre)"}, accept:{File f -> f ==~ /.*\.cre/ || f.isDirectory() }] as FileFilter)
+			})
+			
+			menuItem(id: "menuSaveCSV", text: "DEPERCATED Save...", actionPerformed: {
 				doExportFile (
 					"CRE_csv", "Export CRE file",
 					[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
 			})
-			
+
 			separator()
 			
 			menuItem(id:'settingsDlg', text: "Settings...", mnemonic: 'T', actionPerformed: {

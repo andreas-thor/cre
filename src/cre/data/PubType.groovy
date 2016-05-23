@@ -3,6 +3,7 @@ package cre.data
 
 import java.util.List
 
+import groovy.json.JsonOutput
 import groovy.transform.CompileStatic
 
 @CompileStatic
@@ -10,7 +11,7 @@ public class PubType {
 
 	public List<CRType> crList
 
-	String AU	// Authors
+	String[] AU	// Authors; each author has format: "<lastname>, <initials_without_dots>"
 	String TI 	// Title
 	Integer PY 	// Year
 	String SO	// Source title
@@ -28,7 +29,7 @@ public class PubType {
 	Integer TC	// Times Cited
 	String AR 	// Article Number
 	String LI	// Link
-	String AF	// Affiliations
+	String AF	// Authors Full Name
 	String AA	// Authors with affiliations
 	String DE	// Author Keywords
 	String UT	// Unique Article Identifier
@@ -36,6 +37,28 @@ public class PubType {
 	
 	public int length	// approx. size for import status bar
 
+	
+	public String getJSON () {
+		
+		JsonOutput.toJson([
+			TI: this.TI,
+			PY: this.PY,
+			SO: this.SO,
+			VL: this.VL,
+			IS: this.IS,
+			BP: this.BP,
+			EP: this.EP,
+			PG: this.PG,
+			NR: this.NR,
+			DI: this.DI,
+			AP: this.AB,
+			DT: this.DT,
+			AU: this.AU
+			]);
+		
+	}
+	
+	
 	
 	public PubType() {
 		
@@ -66,7 +89,7 @@ public class PubType {
 
 	
 
-	public PubType(List<CRType> crList, String aU, String tI, Integer pY, String sO, String vL, String iS, Integer bP,
+	public PubType(List<CRType> crList, String[] aU, String tI, Integer pY, String sO, String vL, String iS, Integer bP,
 			Integer eP, Integer pG, Integer nR, String dO, String aB, String dT, Integer tC, String aR, String lI, String aF,
 			String aA, String dE, String uT, String fS) {
 			

@@ -158,7 +158,7 @@ class CRE_csv {
 				stat.setValue ("Loading CSV file ...", (fileSizeRead*100.0/fileSize).intValue())
 				
 									
-				CRType cr = new CRType()
+				CRType cr = new CRType((byte)0)
 				CRType.attr.each {
 					if (attrPos[it.key] != null) {
 						String v = line[attrPos[it.key]]

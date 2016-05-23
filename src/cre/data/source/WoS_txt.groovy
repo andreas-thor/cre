@@ -43,7 +43,7 @@ public class WoS_txt extends FileImportExport {
 		String tagBlock = ""
 		
 		PubType pub = new PubType()
-		HashMap<String, String> entries = [:]	
+		HashMap<String, ArrayList<String>> entries = [:]	
 			
 		String line
 		while ((line = br.readLine()) != null) {
@@ -56,35 +56,38 @@ public class WoS_txt extends FileImportExport {
 			if (currentTag.equals("EF")) return null	// EF = End Of File
 						
 			tagBlock = currentTag.equals("  ") ? tagBlock : new String(currentTag)
-			entries.put(tagBlock, (entries.get(tagBlock) == null) ? line.substring(3) : entries.get(tagBlock) + "\n" + line.substring(3))
+			if (entries.get(tagBlock) == null) entries.put(tagBlock, new ArrayList<String>())
+			entries.get(tagBlock).add(line.substring(3)) 
 		}
 		
 		pub.with {
 			AU = entries.get("AU")
-			TI = entries.get("TI")
-			PY = entries.get("PY")?.isInteger() ? entries.get("PY").toInteger() : null
-			SO = entries.get("SO")
-			VL = entries.get("VL")
-			IS = entries.get("IS")
-			AR = entries.get("AR")
-			BP = entries.get("BP")?.isInteger() ? entries.get("BP").toInteger() : null
-			EP = entries.get("EP")?.isInteger() ? entries.get("EP").toInteger() : null
-			PG = entries.get("PG")?.isInteger() ? entries.get("PG").toInteger() : null
-			TC = entries.get("TC")?.isInteger() ? entries.get("TC").toInteger() : null
-			DI = entries.get("DOI")
-			LI = entries.get("LI")
-			AF = entries.get("AF")
+			TI = entries.get("TI")?.join(" ")
+			PY = entries.get("PY")?.get(0)?.isInteger() ? entries.get("PY").get(0).toInteger() : null
+			SO = entries.get("SO")?.join(" ")
+			VL = entries.get("VL")?.join(" ")
+			IS = entries.get("IS")?.join(" ")
+			AR = entries.get("AR")?.join(" ")
+			BP = entries.get("BP")?.get(0)?.isInteger() ? entries.get("BP").get(0).toInteger() : null
+			EP = entries.get("EP")?.get(0)?.isInteger() ? entries.get("EP").get(0).toInteger() : null
+			PG = entries.get("PG")?.get(0)?.isInteger() ? entries.get("PG").get(0).toInteger() : null
+			TC = entries.get("TC")?.get(0)?.isInteger() ? entries.get("TC").get(0).toInteger() : null
+			DI = entries.get("DOI")?.join(" ")
+			LI = entries.get("LI")?.join(" ")
+			AF = entries.get("AF")?.join(" ")
 			AA = null // Scopus only
-			AB = entries.get("AB")
-			DE = entries.get("DE")
-			DT = entries.get("DT")
+			AB = entries.get("AB")?.join(" ")
+			DE = entries.get("DE")?.join(" ")
+			DT = entries.get("DT")?.join(" ")
 			FS = "WoS"
-			UT = entries.get("UT")
+			UT = entries.get("UT")?.join(" ")
 			
 		}
 		
 		if (pub.TI == null) return null
-		pub.crList = entries.get("CR")?.split("\n").collect { String it -> parseCR (it, yearRange, true) }.findAll { CRType it -> it != null } as List
+		if (entries.get("CR") != null) {
+			pub.crList = entries.get("CR")?.collect { String it -> parseCR (it, yearRange, true) }?.findAll { CRType it -> it != null } as List 
+		}
 		return pub
 	}
 	
@@ -97,7 +100,7 @@ public class WoS_txt extends FileImportExport {
 	 */
 	public static CRType parseCR (String line, int[] yearRange, boolean first) {
 
-		CRType result = new CRType()
+		CRType result = new CRType(CRType.TYPE_WOS)
 		result.CR = line // [3..-1] // .toUpperCase()
 		String[] crsplit = result.CR.split (",", 3)
 		
@@ -194,7 +197,7 @@ public class WoS_txt extends FileImportExport {
 		crTab.pubData.eachWithIndex { PubType pub, int idx ->
 			stat.setValue (d + "Saving TXT file in WoS format ...", ((idx+1)*100.0/crTab.pubData.size()).intValue())
 			pub.with {
-				writeTag(bw, "AU", AU)
+				writeTag(bw, "AU", AU.join("\n"))
 				writeTag(bw, "TI", TI)
 				writeTag(bw, "PY", PY?.toString())
 				writeTag(bw, "SO", SO)
@@ -203,7 +206,7 @@ public class WoS_txt extends FileImportExport {
 				writeTag(bw, "BP", BP?.toString())
 				writeTag(bw, "EP", EP?.toString())
 				writeTag(bw, "PG", PG?.toString())
-				writeTag(bw, "CR", pub.crList.collect { CRType cr -> cr.CR }.join("\n")) 
+				writeTag(bw, "CR", pub.crList.collect { CRType cr -> cr.getCRString(CRType.TYPE_WOS) }.join("\n")) 
 				writeTag(bw, "NR", pub.crList.size().toString())
 				writeTag(bw, "DI", DI)
 				writeTag(bw, "AB", AB)

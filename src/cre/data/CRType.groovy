@@ -1,7 +1,11 @@
 package cre.data 
 
-import java.util.Map;
+import java.util.Map
 
+import com.orsoncharts.util.json.JSONObject;
+
+import groovy.json.JsonBuilder;
+import groovy.json.JsonOutput;
 import groovy.transform.CompileStatic
 
 @CompileStatic
@@ -26,6 +30,10 @@ public class CRType /* implements Comparable<CRType>*/ {
 	int CID_S;
 	int VI;
 	int CO;
+	
+	static byte TYPE_WOS = 1
+	static byte TYPE_SCOPUS = 2
+	byte type;	
 	
 	Double PERC_YR;
 	Double PERC_ALL;
@@ -57,7 +65,9 @@ public class CRType /* implements Comparable<CRType>*/ {
 		'CID_S': 'Cluster Size'
 	]
 	
-	public CRType () {
+
+	
+	public CRType (byte type) {
 		N_CR = 1
 		VI = 1
 		CO = 0
@@ -74,8 +84,8 @@ public class CRType /* implements Comparable<CRType>*/ {
 		RPY = null
 		PERC_ALL = null
 		PERC_YR = null
+		this.type = type
 	}
-
 
 	public CRType(int iD, String cR, String aU, String aU_F, String aU_L,
 			String j, String j_N, String j_S, int n_CR, Integer rPY,
@@ -103,4 +113,55 @@ public class CRType /* implements Comparable<CRType>*/ {
 	}
 	
 
+	public String getCRString (byte targetType) {
+		
+		if (targetType==this.type) return this.CR
+		
+		if (targetType==TYPE_WOS) {
+			return AU_L + " " + AU_F + ", " + RPY + ", " + J
+		}
+		
+		if (targetType==TYPE_SCOPUS) {
+			String a = (AU_A == null) ? AU_L + ", " + AU_F.replaceAll("([A-Z])", "\$1.") : AU_A.replaceAll(";", ",")
+			return a + ", " + TI?:"" + " (" + RPY + ") " + J
+		}
+		
+	}
+	
+	
+	public JSONObject getJSON () {
+		
+		JsonBuilder jb = new JsonBuilder()
+		
+//		def a = jb {
+//			ID: this.ID
+//		}
+//		
+////		JsonOutput.toJson([
+		jb (
+				ID: this.ID,
+				CR: this.CR,
+				AU: this.AU,
+				AU_F: this.AU_F,
+				AU_L: this.AU_L,
+				AU_A: this.AU_A,
+				TI: this.TI,
+				J: this.J,
+				J_N: this.J_N,
+				J_S: this.J_S,
+				N_CR: this.N_CR,
+				RPY: this.RPY,
+				PAG: this.PAG,
+				VOL: this.VOL,
+				DOI: this.DOI,
+				CID2: this.CID2.toString(),
+				CID_S: this.CID_S,
+				VI: this.VI,
+				CO: this.CO,
+				type: this.type
+		) as JSONObject
+		
+//		jb
+	}
+			
 }
