@@ -15,18 +15,11 @@ import groovy.transform.CompileStatic;
 @CompileStatic
 public class WoS_txt extends FileImportExport {
 
-	// TODO: von Autoren paasen nicht; warum uppercase (hab ich mal rausgenommen)
-	static Matcher matchAuthor = "" =~ "([^ ]*)( )?(.*)?"
-	static List<Matcher> matchAuthorVon = ["(von )()", "(van )(der )?", "(van't )()"].collect { "" =~ "${it}([^ ]*)( )([^ ]*)(.*)" }
-	static Matcher matchPageVolumes = "" =~ "([PV])([0-9]+)"
-	static Matcher matchDOI = "" =~ ".*DOI (10\\.[^/]+/ *[^ ,]+).*"
 	
 	
 //	static String[] tags = ["PT" ,"AU" ,"AF" ,"CA" ,"TI" ,"ED" ,"SO" ,"SE" ,"BS" ,"LA" ,"DT" ,"CT" ,"CY" ,"HO" ,"CL" ,"SP" ,"DE" ,"ID" ,"AB" ,"C1" ,"RP" ,"EM" ,"RI", "OI", "FU" ,"FX" ,"CR" ,"NR" ,"TC" ,"Z9" ,"PU" ,"PI" ,"PA" ,"SN" ,"BN" ,"J9" ,"JI" ,"PD" ,"PY" ,"VL" ,"IS" ,"PN" ,"SU" ,"SI" ,"BP" ,"EP" ,"AR" ,"PG" ,"DI" ,"WC", "SC" ,"GA" ,"UT"]
 	
 	
-	
-
 	public WoS_txt(int[] yearRange, BufferedReader br) {
 		super(yearRange, br)
 	}
@@ -39,20 +32,20 @@ public class WoS_txt extends FileImportExport {
 	@Override
 	public PubType getNextPub() {
 
+		HashMap<String, ArrayList<String>> entries = [:]
+		
 		String currentTag = ""
 		String tagBlock = ""
-		
-		PubType pub = new PubType()
-		HashMap<String, ArrayList<String>> entries = [:]	
-			
 		String line
+		int length = 0
+		
 		while ((line = br.readLine()) != null) {
 			
-			pub.length += line.length()+1
+			length += line.length()+1
 			if (line.length()<2) continue
 			currentTag = line.substring(0, 2)
 
-			if (currentTag.equals("ER")) break	// ER = End Of Record
+			if (currentTag.equals("ER")) break			// ER = End Of Record
 			if (currentTag.equals("EF")) return null	// EF = End Of File
 						
 			tagBlock = currentTag.equals("  ") ? tagBlock : new String(currentTag)
@@ -60,125 +53,14 @@ public class WoS_txt extends FileImportExport {
 			entries.get(tagBlock).add(line.substring(3)) 
 		}
 		
-		pub.with {
-			AU = entries.get("AU")
-			TI = entries.get("TI")?.join(" ")
-			PY = entries.get("PY")?.get(0)?.isInteger() ? entries.get("PY").get(0).toInteger() : null
-			SO = entries.get("SO")?.join(" ")
-			VL = entries.get("VL")?.join(" ")
-			IS = entries.get("IS")?.join(" ")
-			AR = entries.get("AR")?.join(" ")
-			BP = entries.get("BP")?.get(0)?.isInteger() ? entries.get("BP").get(0).toInteger() : null
-			EP = entries.get("EP")?.get(0)?.isInteger() ? entries.get("EP").get(0).toInteger() : null
-			PG = entries.get("PG")?.get(0)?.isInteger() ? entries.get("PG").get(0).toInteger() : null
-			TC = entries.get("TC")?.get(0)?.isInteger() ? entries.get("TC").get(0).toInteger() : null
-			DI = entries.get("DOI")?.join(" ")
-			LI = entries.get("LI")?.join(" ")
-			AF = entries.get("AF")?.join(" ")
-			AA = null // Scopus only
-			AB = entries.get("AB")?.join(" ")
-			DE = entries.get("DE")?.join(" ")
-			DT = entries.get("DT")?.join(" ")
-			FS = "WoS"
-			UT = entries.get("UT")?.join(" ")
-			
-		}
 		
-		if (pub.TI == null) return null
-		if (entries.get("CR") != null) {
-			pub.crList = entries.get("CR")?.collect { String it -> parseCR (it, yearRange, true) }?.findAll { CRType it -> it != null } as List 
-		}
-		return pub
+		return new PubType().parseWoS(entries, length, yearRange)
 	}
 	
-	
-	/**
-	 * @param line line of WoS file in the CR section
-	 * @param yearRange
-	 * @param first = true if called from Scopus Reader (false, if called from WoS-Reader in case of import / export scenarios)
-	 * @return parsed Cited References 
-	 */
-	public static CRType parseCR (String line, int[] yearRange, boolean first) {
-
-		CRType result = new CRType(CRType.TYPE_WOS)
-		result.CR = line // [3..-1] // .toUpperCase()
-		String[] crsplit = result.CR.split (",", 3)
-		
-		String yearS = crsplit.length > 1 ? crsplit[1].trim() : ""
-		if (yearS.isInteger()) {
-			// abort if year is out of range
-			int year = yearS.toInteger().intValue()
-			if (((year < yearRange[0]) && (yearRange[0]!=0)) || ((year > yearRange[1]) && (yearRange[1]!=0))) return null
-			result.RPY = year
-		} else {
-			// try Scopus parser if no year could be found
-			if (first) return Scopus_csv.parseCR (line, yearRange, false)
-			return null
-		}		
-		
-		result.AU = crsplit[0].trim()
-		
-		// process "difficult" last names starting with "von" etc.
-		if ((result.AU.length()>0) && (result.AU[0]=='v')) {
-			matchAuthorVon.each { Matcher matchVon ->
-				matchVon.reset(result.AU)
-				if (matchVon.matches()) {
-					String[] m = (String[]) matchVon[0]
-					result.AU_L = (m[1] + (m[2]?:"") + m[ ((m[3] == "") ? 5 : 3) ]).replaceAll(" ","").replaceAll("\\-","")
-					result.AU_F = ((((m[3] == "") ? "" : m[5]) + m[6]).trim() as List)[0]?:""	// cast as List to avoid Index out of Bounds exception
-				}
-			}
-		}
-		
-		// process all other authors
-		if (result.AU_L == null) {
-			matchAuthor.reset(result.AU)
-			if (matchAuthor.matches()) {
-				String[] m = (String[]) matchAuthor[0]
-				result.AU_L = m[1].replaceAll("\\-","")
-				result.AU_F = (m[3]?:" ")[0]
-			}
-		}
-			
-		// process all journals
-		result.J = crsplit.length > 2 ? crsplit[2].trim() : ""
-		result.J_N = result.J.split(",")[0]
-		String[] split = result.J_N.split(" ")
-		result.J_S = (split.size()==1) ? split[0] : split.inject("") { x, y -> x + ((y.length()>0) ? y[0] : "") }
-		
-		// find Volume, Pages and DOI
-		result.J.split(",").each { String it ->
-			matchPageVolumes.reset(it.trim())
-			if (matchPageVolumes.matches()) {
-				String[] m = (String[]) matchPageVolumes[0]
-				if (m[1].equals("P")) result.PAG = m[2]
-				if (m[1].equals("V")) result.VOL = m[2]
-			}
-			
-			matchDOI.reset(it.trim())
-			if (matchDOI.matches()) {
-				String[] m = (String[]) matchDOI[0]
-				result.DOI = m[1].replaceAll("  ","").toUpperCase()
-			}
-		}
-		
-		if (result.RPY == null) return null
-		return result
-	}
 	
 
-	/**
-	 * Writes a tagged field
-	 */
-	private static writeTag (BufferedWriter bw, String tag, String value) {
-		if (value==null) return
-		if (value.trim().size()==0) return
-		value.split("\n").eachWithIndex { String line, int pos ->
-			bw.write ((pos==0) ? tag+" " : "   ")
-			bw.writeLine (line)
-		}
-	}
 	
+
 	public static void save (File file, CRTable crTab, StatusBar stat) {
 		
 		String d = "${new Date()}: "
@@ -196,21 +78,13 @@ public class WoS_txt extends FileImportExport {
 		
 		crTab.pubData.eachWithIndex { PubType pub, int idx ->
 			stat.setValue (d + "Saving TXT file in WoS format ...", ((idx+1)*100.0/crTab.pubData.size()).intValue())
-			pub.with {
-				writeTag(bw, "AU", AU.join("\n"))
-				writeTag(bw, "TI", TI)
-				writeTag(bw, "PY", PY?.toString())
-				writeTag(bw, "SO", SO)
-				writeTag(bw, "VL", VL)
-				writeTag(bw, "IS", IS?.toString())
-				writeTag(bw, "BP", BP?.toString())
-				writeTag(bw, "EP", EP?.toString())
-				writeTag(bw, "PG", PG?.toString())
-				writeTag(bw, "CR", pub.crList.collect { CRType cr -> cr.getCRString(CRType.TYPE_WOS) }.join("\n")) 
-				writeTag(bw, "NR", pub.crList.size().toString())
-				writeTag(bw, "DI", DI)
-				writeTag(bw, "AB", AB)
-				writeTag(bw, "DT", DT)
+			pub.getWoS().each { String tag, lines -> 
+				lines.eachWithIndex { String line, int pos -> 
+					if (line != null) {
+						bw.write ((pos==0) ? tag+" " : "   ")
+						bw.writeLine (line)
+					}
+				}
 			}
 			bw.writeLine("ER")
 			bw.writeLine("")
@@ -286,6 +160,20 @@ EF 	End of File
 
 */
 
+
+
+//	/**
+//	 * Writes a tagged field
+//	 */
+//	private static writeTag (BufferedWriter bw, String tag, String value) {
+//		if (value==null) return
+//		if (value.trim().size()==0) return
+//		value.split("\n").eachWithIndex { String line, int pos ->
+//			bw.write ((pos==0) ? tag+" " : "   ")
+//			bw.writeLine (line)
+//		}
+//	}
+	
 
 //	public CRType parseLine(String line) {
 //
@@ -368,3 +256,86 @@ EF 	End of File
 //
 //
 //	
+
+
+
+/**
+ * @param line line of WoS file in the CR section
+ * @param yearRange
+ * @param first = true if called from Scopus Reader (false, if called from WoS-Reader in case of import / export scenarios)
+ * @return parsed Cited References
+ */
+//	public static CRType parseCR (String line, int[] yearRange, boolean first) {
+//
+//		CRType result = new CRType(CRType.TYPE_WOS)
+//		result.CR = line // [3..-1] // .toUpperCase()
+//		String[] crsplit = result.CR.split (",", 3)
+//
+//		String yearS = crsplit.length > 1 ? crsplit[1].trim() : ""
+//		if (yearS.isInteger()) {
+//			// abort if year is out of range
+//			int year = yearS.toInteger().intValue()
+//			if (((year < yearRange[0]) && (yearRange[0]!=0)) || ((year > yearRange[1]) && (yearRange[1]!=0))) return null
+//			result.RPY = year
+//		} else {
+//			// try Scopus parser if no year could be found
+//			if (first) return Scopus_csv.parseCR (line, yearRange, false)
+//			return null
+//		}
+//
+//		result.AU = crsplit[0].trim()
+//
+//		// process "difficult" last names starting with "von" etc.
+//		if ((result.AU.length()>0) && (result.AU[0]=='v')) {
+//			matchAuthorVon.each { Matcher matchVon ->
+//				matchVon.reset(result.AU)
+//				if (matchVon.matches()) {
+//					String[] m = (String[]) matchVon[0]
+//					result.AU_L = (m[1] + (m[2]?:"") + m[ ((m[3] == "") ? 5 : 3) ]).replaceAll(" ","").replaceAll("\\-","")
+//					result.AU_F = ((((m[3] == "") ? "" : m[5]) + m[6]).trim() as List)[0]?:""	// cast as List to avoid Index out of Bounds exception
+//				}
+//			}
+//		}
+//
+//		// process all other authors
+//		if (result.AU_L == null) {
+//			matchAuthor.reset(result.AU)
+//			if (matchAuthor.matches()) {
+//				String[] m = (String[]) matchAuthor[0]
+//				result.AU_L = m[1].replaceAll("\\-","")
+//				result.AU_F = (m[3]?:" ")[0]
+//			}
+//		}
+//
+//		// process all journals
+//		result.J = crsplit.length > 2 ? crsplit[2].trim() : ""
+//		result.J_N = result.J.split(",")[0]
+//		String[] split = result.J_N.split(" ")
+//		result.J_S = (split.size()==1) ? split[0] : split.inject("") { x, y -> x + ((y.length()>0) ? y[0] : "") }
+//
+//		// find Volume, Pages and DOI
+//		result.J.split(",").each { String it ->
+//			matchPageVolumes.reset(it.trim())
+//			if (matchPageVolumes.matches()) {
+//				String[] m = (String[]) matchPageVolumes[0]
+//				if (m[1].equals("P")) result.PAG = m[2]
+//				if (m[1].equals("V")) result.VOL = m[2]
+//			}
+//
+//			matchDOI.reset(it.trim())
+//			if (matchDOI.matches()) {
+//				String[] m = (String[]) matchDOI[0]
+//				result.DOI = m[1].replaceAll("  ","").toUpperCase()
+//			}
+//		}
+//
+//		if (result.RPY == null) return null
+//		return result
+//	}
+
+
+// TODO: von Autoren paasen nicht; warum uppercase (hab ich mal rausgenommen)
+//	static Matcher matchAuthor = "" =~ "([^ ]*)( )?(.*)?"
+//	static List<Matcher> matchAuthorVon = ["(von )()", "(van )(der )?", "(van't )()"].collect { "" =~ "${it}([^ ]*)( )([^ ]*)(.*)" }
+//	static Matcher matchPageVolumes = "" =~ "([PV])([0-9]+)"
+//	static Matcher matchDOI = "" =~ ".*DOI (10\\.[^/]+/ *[^ ,]+).*"

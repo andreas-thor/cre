@@ -54,7 +54,8 @@ public class CRE_json extends FileImportExport {
 		
 		JsonBuilder jb = new JsonBuilder()
 		jb (
-			crData: crTab.crData.collect { it.getJSON() }
+			crData: crTab.crData.collect { it.getJSON() },
+			pubData: crTab.pubData.collect { it.getJSON() }
 		)
 		
 		bw.writeLine (jb.toString())
