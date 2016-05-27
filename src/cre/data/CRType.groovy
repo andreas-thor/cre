@@ -84,27 +84,6 @@ public class CRType /* implements Comparable<CRType>*/ {
 	
 
 	
-//	public CRType () {
-//		N_CR = 1
-//		VI = 1
-//		CO = 0
-//		DOI = ""
-//		AU = null
-//		AU_F = null
-//		AU_L = null
-//		AU_A = null
-//		TI = null
-//		RPY = null
-//		PAG = ""
-//		VOL = "" 
-//		mergedTo = -1
-//		RPY = null
-//		PERC_ALL = null
-//		PERC_YR = null
-//		this.type = 0
-//	}
-
-	
 	
 	public CRType parseWoS (String line, int[] yearRange) {
 		
@@ -175,8 +154,19 @@ public class CRType /* implements Comparable<CRType>*/ {
 	
 	
 	public String getWoS () {
+		
 		if (type == TYPE_WOS) return this.CR
-		return AU_L + " " + AU_F + ", " + RPY + ", " + J
+		
+		String res = AU_L + " " + AU_F + ", " + RPY
+		if ((VOL!=null) || (PAG!=null)) {
+			if (J_N!=null) res += ", " + J_N 
+			if (VOL!=null) res += ", V" + VOL
+			if (PAG!=null) res += ", P" + VOL
+		} else {
+			res += ", " + J
+		}
+		if (DOI!=null) res += ", DOI " + VOL
+		return res
 	}
 
 	
@@ -278,7 +268,7 @@ public class CRType /* implements Comparable<CRType>*/ {
 				matchV.reset(s.trim())
 				if (matchV.matches()) {
 					String[] m = (String[]) matchV[0]
-					VOL = m[1]
+					this.VOL = m[1]
 				}
 			}
 			
@@ -291,40 +281,20 @@ public class CRType /* implements Comparable<CRType>*/ {
 	}
 		
 	public String getScopus () {
+		
 		if (type == TYPE_SCOPUS) return this.CR
-		String a = (AU_A == null) ? AU_L + ", " + AU_F.replaceAll("([A-Z])", "\$1.") : AU_A.replaceAll(";", ",")
-		return a + ", " + (TI?:"") + " (" + RPY + ") " + J
+		
+		String res = (AU_A == null) ? AU_L + ", " + AU_F.replaceAll("([A-Z])", "\$1.") : AU_A.replaceAll(";", ",")
+		res += ","
+		if (TI != null)	res += TI
+		if (RPY != null) res += " (" + RPY + ") "
+		if (J_N != null) res += J_N
+		if (VOL != null) res += ", " + VOL
+		if (PAG != null) res += ", pp." + VOL
+		if (DOI != null) res += ", DOI " + DOI
+
+		res		
 	}
-
-	
-	
-	
-//	public CRType(int iD, String cR, String aU, String aU_F, String aU_L,
-//			String j, String j_N, String j_S, int n_CR, Integer rPY,
-//			String pAG, String vOL, String dOI, CRCluster cID2, int cID_S,
-//			int vI, int cO) {
-//			
-//		super()
-//		ID = iD
-//		CR = cR
-//		AU = aU
-//		AU_F = aU_F
-//		AU_L = aU_L
-//		J = j
-//		J_N = j_N
-//		J_S = j_S
-//		N_CR = n_CR
-//		RPY = rPY
-//		PAG = pAG
-//		VOL = vOL
-//		DOI = dOI
-//		CID2 = cID2
-//		CID_S = cID_S
-//		VI = vI
-//		CO = cO  
-//	}
-	
-
 
 	
 	
@@ -358,3 +328,58 @@ public class CRType /* implements Comparable<CRType>*/ {
 	}
 			
 }
+
+
+
+	
+//	public CRType(int iD, String cR, String aU, String aU_F, String aU_L,
+//			String j, String j_N, String j_S, int n_CR, Integer rPY,
+//			String pAG, String vOL, String dOI, CRCluster cID2, int cID_S,
+//			int vI, int cO) {
+//			
+//		super()
+//		ID = iD
+//		CR = cR
+//		AU = aU
+//		AU_F = aU_F
+//		AU_L = aU_L
+//		J = j
+//		J_N = j_N
+//		J_S = j_S
+//		N_CR = n_CR
+//		RPY = rPY
+//		PAG = pAG
+//		VOL = vOL
+//		DOI = dOI
+//		CID2 = cID2
+//		CID_S = cID_S
+//		VI = vI
+//		CO = cO  
+//	}
+	
+
+
+	
+
+
+
+
+//	public CRType () {
+//		N_CR = 1
+//		VI = 1
+//		CO = 0
+//		DOI = ""
+//		AU = null
+//		AU_F = null
+//		AU_L = null
+//		AU_A = null
+//		TI = null
+//		RPY = null
+//		PAG = ""
+//		VOL = ""
+//		mergedTo = -1
+//		RPY = null
+//		PERC_ALL = null
+//		PERC_YR = null
+//		this.type = 0
+//	}
