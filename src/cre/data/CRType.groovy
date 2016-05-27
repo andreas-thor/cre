@@ -157,7 +157,9 @@ public class CRType /* implements Comparable<CRType>*/ {
 		
 		if (type == TYPE_WOS) return this.CR
 		
-		String res = AU_L + " " + AU_F + ", " + RPY
+		String res = (AU_L != null) ? AU_L + " " : ""
+		if (AU_F != null) res += AU_F
+		if (RPY != null) res += ", " + RPY
 		if ((VOL!=null) || (PAG!=null)) {
 			if (J_N!=null) res += ", " + J_N 
 			if (VOL!=null) res += ", V" + VOL
@@ -284,7 +286,12 @@ public class CRType /* implements Comparable<CRType>*/ {
 		
 		if (type == TYPE_SCOPUS) return this.CR
 		
-		String res = (AU_A == null) ? AU_L + ", " + AU_F.replaceAll("([A-Z])", "\$1.") : AU_A.replaceAll(";", ",")
+		String res = ""
+		if (AU_A == null) {
+			if (AU_L != null) res += AU_L + ", " + AU_F.replaceAll("([A-Z])", "\$1.") 
+		} else {
+			res += AU_A.replaceAll(";", ",")
+		}
 		res += ","
 		if (TI != null)	res += TI
 		if (RPY != null) res += " (" + RPY + ") "

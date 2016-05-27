@@ -65,7 +65,7 @@ public class PubType {
 	Integer TC	// Times Cited
 	public List<CRType> crList = new ArrayList<CRType>()
 	
-	String DI		// Digital Object Identifier (DOI)
+	String DI	// Digital Object Identifier (DOI)
 	String LI	// Link	(Scopus only)
 	String AB	// Abstract
 	String DE	// Author Keywords
@@ -93,7 +93,7 @@ public class PubType {
 		entries.get("C1")?.each {
 			int pos = it.indexOf(']')
 			if (pos>0) {
-				String names = it.substring(1, pos-1)
+				String names = it.substring(1, pos)
 				String affiliation = it.substring (pos+2)
 				names.split("; ").collect { String name -> 
 					C1 << ([name, affiliation] as String[])
@@ -119,7 +119,7 @@ public class PubType {
 			crList = entries.get("CR")?.collect { String it -> new CRType().parseWoS (it, yearRange) }?.findAll { CRType it -> it != null } as List
 		}
 
-		DI = entries.get("DOI")?.join(" ")
+		DI = entries.get("DI")?.join(" ")
 		LI = entries.get("LI")?.join(" ")
 		AB = entries.get("AB")?.join(" ")
 		DE = entries.get("DE")?.join(" ")
@@ -164,6 +164,7 @@ public class PubType {
 			"SO": [SO],
 			"VL": [VL],
 			"IS": [IS?.toString()],
+			"AR": [AR?.toString()],
 			"BP": [BP?.toString()],
 			"EP": [EP?.toString()],
 			"PG": [PG?.toString()],
@@ -192,7 +193,7 @@ public class PubType {
 
 		// Authors with affiliations: "<lastname>, <initials with dots>, affiliation"
 		C1 = []
-		entries.get('Authors with affiliations')?.each {String it ->
+		entries.get('Authors with affiliations')?.split("; ").each {String it ->
 			String[] split = it.split(", ", 3)
 			if (split.length == 3) {
 				C1 << ([(split[0]+", "+split[1].replaceAll("\\.", "")), split[2]] as String[])
@@ -212,7 +213,7 @@ public class PubType {
 		EP = entries.get('Page end')?.isInteger() ? entries.get('Page end').toInteger() : null
 		PG = entries.get('Page count')?.isInteger() ? entries.get('Page count').toInteger() : null
 		
-		TC = entries.get('Cited By')?.isInteger() ? entries.get('Cited By').toInteger() : null
+		TC = entries.get('Cited by')?.isInteger() ? entries.get('Cited by').toInteger() : null
 		crList = entries.get('References')?.split(";").collect { String it -> new CRType().parseScopus (it, yearRange) }.findAll { CRType it -> it != null } as List
 
 		DI = entries.get('DOI')
@@ -252,7 +253,14 @@ public class PubType {
 			DI?:"",
 			LI?:"",
 			(AA==null)?"":AA.join ("; "),
-			(C1==null)?"":C1.collect { String[] it -> it[0] + ", " + it[1]}.join ("; "),
+			(C1==null)?"":C1.collect { String[] it -> 
+				String[] split = it[0].split(", ", 2)
+				if (split.size()==2) {
+					split[0] + ", " + split[1].replaceAll("([A-Z])", "\$1.") + ", " + it[1]
+				} else {
+					it[0] + ", " + it[1]
+				}
+			}.join ("; "),
 			AB?:"",
 			DE?:"",
 			crList.collect { CRType cr -> cr.getScopus() }.join("; "),
