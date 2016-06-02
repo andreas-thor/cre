@@ -2,33 +2,58 @@ package cre.data.source
  
 import java.io.BufferedReader
 import java.io.File
+import java.nio.charset.Charset
 import java.util.HashMap
 import java.util.List
 import java.util.regex.Matcher
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
+
+import com.orsoncharts.util.json.JSONObject;
 
 import cre.data.*
 import cre.ui.StatusBar
 import groovy.json.JsonBuilder;
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 
 @CompileStatic
-public class CRE_json extends FileImportExport {
+public class CRE_json  {
 
 	
-	public CRE_json(int[] yearRange, BufferedReader br) {
-		super (yearRange, br)
+	public static void load (File file, CRTable crTab, StatusBar stat) {
+		
+		crTab.init()
+		
+		ZipInputStream zip = new ZipInputStream(new FileInputStream(file));
+		ZipEntry entry = null;
+		HashMap<String, StringBuffer> data = [:]
+		while ( (entry = zip.getNextEntry()) != null ) {
+		
+			StringBuffer sb = new StringBuffer()
+			byte[] buf = new byte[1024];
+			int n
+			while ((n = zip.read(buf, 0, 1024)) > -1) {
+				sb.append (new String (buf, 0, n))
+			}
 
-	}
-	
-	
-	@Override
-	public PubType getNextPub() {
+			data.put(entry.getName(), sb)
+		}
+		zip.close()
+		
+				
+		JsonSlurper slurper = new JsonSlurper()
+		
+		crTab.crData = slurper.parseText(data.get("crdata.json").toString()).collect { new CRType().parseJSON ((JSONObject) it) }
+		crTab.pubData = slurper.parseText(data.get("pubdata.json").toString()).collect { new PubType().parseJSON ((JSONObject) it) }
 		
 
 		
+		
+		crTab.updateData(false)
+		stat.setValue("${new Date()}: Loading files done", 0, crTab.getInfoString())
 	}
 
 
@@ -43,49 +68,24 @@ public class CRE_json extends FileImportExport {
 		if (!file_name.endsWith(".cre")) file_name += ".cre"
 		
 		JsonBuilder jb = new JsonBuilder()
-		
 		ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(file_name))
-		zip.putNextEntry(new ZipEntry("crData.json"))
+
+		zip.putNextEntry(new ZipEntry("crdata.json"))
+		BufferedWriter bw = new BufferedWriter (new OutputStreamWriter(zip, Charset.forName("UTF-8")))
 		
-		BufferedWriter bw = new BufferedWriter (new OutputStreamWriter(zip))
-		bw.write(jb ( crData: crTab.crData.collect { it.getJSON() } ).toString())
+		println crTab.crData.get(0).getJSON().toString()
+		println crTab.crData.get(0).getJSON().toJSONString()
+		
+		bw.write(jb ( crTab.crData.collect { it.getJSON().toString() } ).toString())
 		bw.flush()
 		zip.closeEntry();
-//		bw.close();
-		zip.close();		
-		
-//            int len;
-//            byte[] buffer = new byte[2048];
-//            while ((len = fis.read(buffer, 0, buffer.length)) > 0) {
-//                zos.write(buffer, 0, len);
-//            } )
-		
-		
-		
 
-//		bw.writeLine(
-//		JsonOutput.toJson (
-//			[crData : crTab.crData.collect {
-//				it.getJSON()
-//			}]
-//			
-//		)
-//		)
-		
-		
-//		jb (
-//			crData: crTab.crData.collect { it.getJSON() },
-//			pubData: crTab.pubData.collect { it.getJSON() }
-//		)
-//		
-//		bw.writeLine (jb.toString())
-		
-		
-//		crTab.crData.each { bw.writeLine(it.getJSON().toString()) }
-		
-		
-				
-		
+		zip.putNextEntry(new ZipEntry("pubdata.json"))
+		bw.write(jb ( pubData: crTab.pubData.collect { it.getJSON() } ).toString())
+		bw.flush()
+		zip.closeEntry();
+
+		zip.close();		
 		bw.close()
 		stat.setValue("${new Date()}: Saving CRE file done", 0, crTab.getInfoString())
 		

@@ -118,6 +118,7 @@ Closure doImportFiles = { String source, String dlgTitle, boolean multipleFiles,
 						case "WoS_txt": FileImportExport.load(crTable, stat, source, dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange()); break;
 						case "Scopus_csv": FileImportExport.load(crTable, stat, source, dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange()); break;
 						case "CRE_csv": CRE_csv.load (dlg.getSelectedFile(), crTable, stat); break;
+						case "CRE_json": CRE_json.load (dlg.getSelectedFile(), crTable, stat); break;
 						default: JOptionPane.showMessageDialog(null, "Unknown file format." );
 					}
 					wait.dispose()
@@ -189,17 +190,17 @@ mainFrame = sb.frame(
 				})
 			}
 			
-//			menuItem(text: "Open...", mnemonic: 'O', accelerator: KeyStroke.getKeyStroke("ctrl O"), actionPerformed: {
-//				doImportFiles (
-//					"CRE_json", "Open CRE file", false, 
-//					[getDescription: {"CRE files (*.cre)"}, accept:{File f -> f ==~ /.*?\.cre/ || f.isDirectory() }] as FileFilter)
-//			})
-
-			menuItem(text: "DEPRECATED Open CSV ...", actionPerformed: {
+			menuItem(text: "Open...", mnemonic: 'O', accelerator: KeyStroke.getKeyStroke("ctrl O"), actionPerformed: {
 				doImportFiles (
-					"CRE_csv", "Open CSV file", false,
-					[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
+					"CRE_json", "Open CRE file", false, 
+					[getDescription: {"CRE files (*.cre)"}, accept:{File f -> f ==~ /.*?\.cre/ || f.isDirectory() }] as FileFilter)
 			})
+
+//			menuItem(text: "DEPRECATED Open CSV ...", actionPerformed: {
+//				doImportFiles (
+//					"CRE_csv", "Open CSV file", false,
+//					[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
+//			})
 
 			separator()
 			
@@ -406,4 +407,8 @@ tab.getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyS
 tab.getActionMap().put("showCRDetails", UIDialogFactory.showCRDetails(mainFrame, crTable));
 
 mainFrame.visible = true
+
+if (this.args.length>0) {
+	CRE_json.load (new File(this.args[0]), crTable, stat);
+}
 

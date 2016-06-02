@@ -305,11 +305,38 @@ public class CRType /* implements Comparable<CRType>*/ {
 
 	
 	
+	public CRType parseJSON (JSONObject j) {
+		
+		ID = j.ID as int
+		CR = j.CR as String
+		AU = j.AU as String
+		AU_F = j.AU_F as String
+		AU_L = j.AU_L as String
+		AU_A = j.AU_A as String
+		TI = j.TI as String
+		J = j.J as String
+		J_N = j.J_N as String
+		J_S = j.J_S as String
+		N_CR = j.N_CR as int
+		RPY = j.RPY as Integer
+		PAG = j.PAG as String
+		VOL = j.VOL as String
+		DOI = j.DOI as String
+		CID2 = new CRCluster(j.CID2 as String) 
+		CID_S = j.CID_S as int
+		VI = j.VI as int
+		CO = j.CO as int
+		type = j.type as byte
+		
+		this
+		
+	}
+	
 	public JSONObject getJSON () {
 		
 		JsonBuilder jb = new JsonBuilder()
 		
-		jb (
+		jb ( 
 				ID: this.ID,
 				CR: this.CR,
 				AU: this.AU,

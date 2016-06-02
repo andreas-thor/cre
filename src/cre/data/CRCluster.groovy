@@ -16,6 +16,12 @@ public class CRCluster implements Serializable, Comparable<CRCluster>  {
 		this.c2 = c2
 	}
 
+	public CRCluster (String s) {
+		String[] split = s.split ("/")
+		this.c1 = split[0] as int	
+		this.c2 = split[1] as int	
+	}
+	
 	@Override
 	public String toString() {
 		return "${c1}/${c2}"

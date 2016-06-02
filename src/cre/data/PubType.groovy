@@ -293,7 +293,12 @@ public class PubType {
 		] as String[]
 	}
 	
-	
+	public PubType parseJSON (JSONObject j) {
+		
+		
+		
+		this
+	}
 	
 	public JSONObject getJSON () {
 		
