@@ -12,6 +12,18 @@
       <menu submenu="Cited References Explorer" />
     </shortcut>
   </information>
+<!-- from VosViewer   
+  <information>
+  <title>VOSviewer</title>
+  <vendor>Nees Jan van Eck and Ludo Waltman</vendor>
+  <homepage href="http://www.vosviewer.com"/>
+  <description>VOSviewer</description>
+  <icon href="http://www.vosviewer.com/images/vosviewer.gif"/>
+  <icon kind="splash" href="http://www.vosviewer.com/images/splash.png"/>
+  <offline-allowed/>
+</information>
+-->
+ 
   <security>
       <all-permissions/>
   </security>

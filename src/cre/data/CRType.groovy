@@ -167,7 +167,7 @@ public class CRType /* implements Comparable<CRType>*/ {
 		} else {
 			res += ", " + J
 		}
-		if (DOI!=null) res += ", DOI " + VOL
+		if (DOI!=null) res += ", DOI " + DOI
 		return res
 	}
 

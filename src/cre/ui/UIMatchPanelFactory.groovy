@@ -104,16 +104,16 @@ class UIMatchPanelFactory {
 		
 		Runnable runnable = new Runnable() {
 			public void run() {
-				try {
+//				try {
 					crMatch.updateClusterId(framesPerSecond.getValue()/100.0, true, uiMC.useVol, uiMC.usePag, uiMC.useDOI)
 					(tab.getModel() as AbstractTableModel).fireTableDataChanged()
 //					tab.getRowSorter().setSortKeys (null)
 //					tab.getRowSorter().setSortKeys([new RowSorter.SortKey (17, SortOrder.ASCENDING)])
 //					tab.repaint()
-				} catch (Exception intex) {
-					println "Exception"
-					println intex
-				}
+//				} catch (Exception intex) {
+//					println "Exception"
+//					println intex
+//				}
 			 }
 		}
 		Thread t = new Thread(runnable)

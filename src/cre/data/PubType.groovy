@@ -2,6 +2,7 @@ package cre.data
 
 
 import java.util.List
+import java.util.regex.Matcher;
 
 import com.orsoncharts.util.json.JSONObject;
 
@@ -17,6 +18,7 @@ PT		PT 		--												Publication Type (conference, book, journal, book in seri
 AU		AU 		Authors							+				Authors
 AF		AF 		--								+				Author Full Name
 C1		C1 		Authors with Affiliations		+				Author Address		
+EM		EM		Authors with Affiliations       + 				E-mail
 AA		--		Affiliations									Affiliations
 TI		TI 		Title											Document Title
 PY		PY 		Year											Year Published
@@ -48,6 +50,7 @@ public class PubType {
 	String[] AU	= [] // Authors; each author has format: "<lastname>, <initials_without_dots>"
 	String[] AF	= [] // Authors Full Name; format: "<lastname>, <firstnames>
 	List<String[]> C1 = [] // Authors with Affiliations / Adresses; format: "array ("<lastname>, <firstnames>]", "<affiliation>")
+	List<String> EM = [] // E-Mail Adressess
 	List<String> AA	// All affiliations	(Scopus only)
 	
 	String TI 	// Title
@@ -78,6 +81,8 @@ public class PubType {
 	public int length	// approx. size for import status bar
 
 
+	static Matcher Scopus_matchEMail = "" =~ '\\s(\\S+@\\w+(\\.\\w+)+)\\W*'
+	
 
 	public PubType parseWoS (HashMap<String, ArrayList<String>> entries, int length, int[] yearRange) {
 		
@@ -88,6 +93,7 @@ public class PubType {
 		AU = entries.get("AU")
 		AF = entries.get("AF")
 		C1 = []
+		EM = (entries.get("EM")?.get(0).split("; ") as List)
 		AA = []
 		// pattern: [author1; author2; ...] affiliation
 		entries.get("C1")?.each {
@@ -159,6 +165,7 @@ public class PubType {
 			"AU": AU,
 			"AF": AF,
 			"C1": C1.collect { String[] it -> "[" + it[0] + "] " + it[1]},	// TODO: Group together authors with same affiliation
+			"EM": [EM?.unique().join ("; ")], 
 			"TI": linesTI,
 			"PY": [PY?.toString()],
 			"SO": [SO],
@@ -187,16 +194,32 @@ public class PubType {
 		
 		PT = "J" // TODO: what is the default Publication Type? (No value in scopus!)
 		
-		// Scopus Authors: Lastname1, I1., Lastname2, I2.I2., ...
-		AU = entries.get('Authors').split("\\., ").collect { String name -> name.replaceAll("\\.", "") }
+		// Scopus Authors: Lastname1 I1., Lastname2 I2.I2. ...
+		AU = entries.get('Authors').split("\\., ").collect { String name -> 
+			name = name.replaceAll("\\.", "") 
+			int pos = name.lastIndexOf(" ");
+			(pos>0) ? name.substring(0, pos) + "," + name.substring (pos) : name
+		}
 		AF = AU		// there are no full names in Scopus 
 
 		// Authors with affiliations: "<lastname>, <initials with dots>, affiliation"
 		C1 = []
+		EM = []
 		entries.get('Authors with affiliations')?.split("; ").each {String it ->
 			String[] split = it.split(", ", 3)
 			if (split.length == 3) {
 				C1 << ([(split[0]+", "+split[1].replaceAll("\\.", "")), split[2]] as String[])
+			}
+			
+			if (it.contains("@")) {
+				println "@@@"
+			}
+			
+			PubType.Scopus_matchEMail.reset(it)
+			if (PubType.Scopus_matchEMail.find()) {
+				String[] m = (String[]) PubType.Scopus_matchEMail[0]
+				println m
+				EM << (m[1] as String)
 			}
 		}
 		AA = entries.get('Affiliations').split("; ") as List
@@ -281,6 +304,7 @@ public class PubType {
 			AU: this.AU,
 			AF: this.AF,
 			C1: this.C1,
+			EM: this.EM,
 			AA: this.AA,
 			TI: this.TI,
 			PY: this.PY,

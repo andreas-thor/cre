@@ -167,7 +167,7 @@ ChartPanel chpan = UIChartPanelFactory.create(crTable, tab,
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2016/05/27 **DEV**++)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2016/06/02 **DEV**++)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -180,12 +180,12 @@ mainFrame = sb.frame(
 				menuItem(text: "Web of Science...", mnemonic: 'W', actionPerformed: {
 					doImportFiles (
 						"WoS_txt", "Import Web of Science files", true,
-						[getDescription: {"TXT files (*.txt)"}, accept:{File f -> f ==~ ".*\\.txt\$" || f.isDirectory() }] as FileFilter)					
+						[getDescription: {"TXT files (*.txt)"}, accept:{File f -> f ==~ /.*\.txt/ || f.isDirectory() }] as FileFilter)					
 				})
 				menuItem(text: "Scopus...", mnemonic: 'S', actionPerformed: {
 					doImportFiles (
 						"Scopus_csv", "Import Scopus files", true, 
-						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ ".*\\.csv\$" || f.isDirectory() }] as FileFilter)
+						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
 				})
 			}
 			
@@ -198,7 +198,7 @@ mainFrame = sb.frame(
 			menuItem(text: "DEPRECATED Open CSV ...", actionPerformed: {
 				doImportFiles (
 					"CRE_csv", "Open CSV file", false,
-					[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*?\.csv/ || f.isDirectory() }] as FileFilter)
+					[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
 			})
 
 			separator()
@@ -231,11 +231,11 @@ mainFrame = sb.frame(
 					[getDescription: {"CRE files (*.cre)"}, accept:{File f -> f ==~ /.*\.cre/ || f.isDirectory() }] as FileFilter)
 			})
 			
-			menuItem(id: "menuSaveCSV", text: "DEPERCATED Save...", actionPerformed: {
-				doExportFile (
-					"CRE_csv", "Export CRE file",
-					[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
-			})
+//			menuItem(id: "menuSaveCSV", text: "DEPERCATED Save...", actionPerformed: {
+//				doExportFile (
+//					"CRE_csv", "Export CRE file",
+//					[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
+//			})
 
 			separator()
 			
