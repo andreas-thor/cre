@@ -93,7 +93,7 @@ public class PubType {
 		AU = entries.get("AU")
 		AF = entries.get("AF")
 		C1 = []
-		EM = (entries.get("EM")?.get(0).split("; ") as List)
+		EM = (entries.get("EM")?.get(0)?.split("; ") as List)
 		AA = []
 		// pattern: [author1; author2; ...] affiliation
 		entries.get("C1")?.each {

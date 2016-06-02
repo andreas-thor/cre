@@ -11,6 +11,8 @@
       <desktop/>
       <menu submenu="Cited References Explorer" />
     </shortcut>
+    <association mime-type="application-x/ext-file"  extensions="cre"/> 
+    <offline-allowed/>
   </information>
 <!-- from VosViewer   
   <information>
