@@ -168,7 +168,7 @@ ChartPanel chpan = UIChartPanelFactory.create(crTable, tab,
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2016/06/02 **DEV**++)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2016/06/03 **DEV**++)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -194,6 +194,12 @@ mainFrame = sb.frame(
 				doImportFiles (
 					"CRE_json", "Open CRE file", false, 
 					[getDescription: {"CRE files (*.cre)"}, accept:{File f -> f ==~ /.*?\.cre/ || f.isDirectory() }] as FileFilter)
+				
+				if (crTable.crMatch.hasMatches()) {
+					matchpan.visible = true
+					matchpan.updateClustering()
+				}
+				
 			})
 
 //			menuItem(text: "DEPRECATED Open CSV ...", actionPerformed: {
@@ -381,7 +387,7 @@ mainFrame = sb.frame(
 				)
 			}
 			
-		)
+		) 
 		
 		widget (
 			constraints: gbc(gridx:0,gridy:1,fill:java.awt.GridBagConstraints.HORIZONTAL,anchor:java.awt.GridBagConstraints.NORTHWEST,weightx:1, weighty:0),
@@ -408,7 +414,13 @@ tab.getActionMap().put("showCRDetails", UIDialogFactory.showCRDetails(mainFrame,
 
 mainFrame.visible = true
 
-if (this.args.length>0) {
-	CRE_json.load (new File(this.args[0]), crTable, stat);
+if (this.args.length>1) {
+	if (this.args[0].equals ("-open")) {
+		CRE_json.load (new File(this.args[1]), crTable, stat);
+		if (crTable.crMatch.hasMatches()) {
+			matchpan.visible = true
+			matchpan.updateClustering()
+		}
+	}
 }
 

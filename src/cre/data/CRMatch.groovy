@@ -7,8 +7,10 @@ import java.util.Map;
 import java.util.TreeMap;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein
 
+import com.orsoncharts.util.json.JSONObject
 import cre.ui.StatusBar
 import cre.ui.UIMatchPanelFactory
+import groovy.json.JsonBuilder
 import groovy.transform.CompileStatic
 
 @CompileStatic
@@ -25,6 +27,17 @@ class CRMatch {
 			this.id2 = id2;
 			this.s = s;
 		}
+		
+		public Pair (String s) {
+			String[] split = s.split ("/")
+			this.id1 = split[0] as int
+			this.id2 = split[1] as int
+			this.s = split[2] as double
+		}
+		public String toString () {
+			this.id1 + "/" + this.id2 + "/" + this.s
+		}
+		
 	}
 	
 	private CRTable crTab
@@ -36,6 +49,31 @@ class CRMatch {
 	private Map<Integer, Integer> crId2Index = [:]						// object Id -> index in crData list
 	public Map<CRCluster, List<Integer>> clusterId2Objects = [:]		// clusterId->[object ids]
 
+	public boolean hasMatches () {
+		(match[true].size()>0) || (match[false].size()>0) 
+	}
+	
+	public JSONObject getJSON() {
+		
+		JsonBuilder jb = new JsonBuilder()
+		
+		jb (
+			MATCH_AUTO: match[false].collect { Integer key, Map<Integer, Double> val -> val.collect { Integer k, Double v -> [key, k, v]}  },
+			MATCH_MANU: match[true].collect { Integer key, Map<Integer, Double> val -> val.collect { Integer k, Double v -> [key, k, v]}  }
+		) as JSONObject
+		
+		
+	}
+	
+	public void parseJSON (JSONObject j) {
+		
+		j.MATCH_AUTO.each { it.each { triple -> List l = triple as List; setMapping (l[0] as int, l[1] as int, l[2] as double, false, false) } }   
+		j.MATCH_MANU.each { it.each { triple -> List l = triple as List; setMapping (l[0] as int, l[1] as int, l[2] as double, true, false) } }   
+		
+		updateData (false)	// updates crId2Index
+		updateClusterId2Objects()	// updates clusterId2Objects
+	}
+	
 	
 
 	public CRMatch (CRTable crTab, StatusBar stat) {
@@ -48,6 +86,22 @@ class CRMatch {
 	}
 
 
+	private void updateClusterId2Objects () {
+		
+		clusterId2Objects.clear()
+		crTab.crData.each { CRType cr ->
+			if (clusterId2Objects[cr.CID2] == null) {
+				clusterId2Objects[cr.CID2] = []
+			}
+			clusterId2Objects[cr.CID2] << cr.ID
+		}
+		
+		crTab.crData.each { CRType cr ->
+			cr.CID_S = clusterId2Objects[cr.CID2].size()
+		}
+
+	}
+	
 	public void updateData (boolean removed) throws OutOfMemoryError {
 		
 		// refresh mapping crId -> index
@@ -62,18 +116,9 @@ class CRMatch {
 			restrict(id)
 
 //			println System.currentTimeMillis()
-			clusterId2Objects.clear()
-			crTab.crData.each { CRType cr ->
-				if (clusterId2Objects[cr.CID2] == null) {
-					clusterId2Objects[cr.CID2] = []
-				}
-				clusterId2Objects[cr.CID2] << cr.ID
-			}
-			
-			crTab.crData.each { CRType cr ->
-				cr.CID_S = clusterId2Objects[cr.CID2].size()
-			}
-			
+
+			updateClusterId2Objects()
+						
 			// remove CRs for each publication
 			crTab.pubData.each { PubType pub -> pub.crList.removeAll { CRType cr -> !crTab.crData.contains(cr) } }
 			

@@ -25,6 +25,12 @@ public class CRE_json  {
 	
 	public static void load (File file, CRTable crTab, StatusBar stat) {
 		
+		
+		crTab.abort = false	// can be changed by "wait dialog"
+		String d = "${new Date()}: "
+		stat.setValue(d + "Loading CRE file ...", 0, "")
+		
+		
 		crTab.init()
 		
 		ZipInputStream zip = new ZipInputStream(new FileInputStream(file));
@@ -46,19 +52,28 @@ public class CRE_json  {
 				
 		JsonSlurper slurper = new JsonSlurper()
 		
-		crTab.crData = slurper.parseText(data.get("crdata.json").toString()).collect { new CRType().parseJSON ((JSONObject) it) }
-		crTab.pubData = slurper.parseText(data.get("pubdata.json").toString()).collect { new PubType().parseJSON ((JSONObject) it) }
+		crTab.crData.addAll (slurper.parseText(data.get("crdata.json").toString()).collect { new CRType().parseJSON ((JSONObject) it) })
+		stat.setValue(d + "Loading CRE file ...", 50, "")
 		
-
+		HashMap<Integer, Integer> crId2Index = [:]
+		crTab.crData.eachWithIndex { CRType cr, int idx -> crId2Index[cr.ID] = idx }
+		crTab.pubData.addAll (slurper.parseText(data.get("pubdata.json").toString()).collect { new PubType().parseJSON ((JSONObject) it, crTab.crData, crId2Index) })
+		
+		crTab.crMatch.parseJSON(slurper.parseText(data.get("crmatch.json").toString()) as JSONObject)
+				
+// crTab.crMatch.clusterId2Objects[cr.CID2] = [indexCount+1]
 		
 		
+		
+		stat.setValue(d + "Loading CRE file ...", 90, "")
 		crTab.updateData(false)
-		stat.setValue("${new Date()}: Loading files done", 0, crTab.getInfoString())
+		stat.setValue("${d}: Loading CRE file done", 0, crTab.getInfoString())
 	}
 
 
 
 	public static void save (File file, CRTable crTab, StatusBar stat) {
+		
 		
 		String d = "${new Date()}: "
 		stat.setValue(d + "Saving CRE file ...", 0)
@@ -81,10 +96,16 @@ public class CRE_json  {
 		zip.closeEntry();
 
 		zip.putNextEntry(new ZipEntry("pubdata.json"))
-		bw.write(jb ( pubData: crTab.pubData.collect { it.getJSON() } ).toString())
+		bw.write(jb ( crTab.pubData.collect { it.getJSON().toString() } ).toString())
 		bw.flush()
 		zip.closeEntry();
 
+		zip.putNextEntry(new ZipEntry("crmatch.json"))
+		bw.write(crTab.crMatch.getJSON().toString())
+		bw.flush()
+		zip.closeEntry();
+
+		
 		zip.close();		
 		bw.close()
 		stat.setValue("${new Date()}: Saving CRE file done", 0, crTab.getInfoString())

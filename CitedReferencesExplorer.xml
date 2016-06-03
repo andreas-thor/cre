@@ -80,7 +80,7 @@
 		<scp trust="true" todir="thor:${ftpPW}@seru01.hft-leipzig.de:/home/thor/home/${deploy.dir}">
 		  	<fileset dir="${build.dir}"/>	 
 			<fileset dir="${html.dir}"/>
-			<fileset dir="." includes="${jnlp} CRE64.png CRE32.png" />
+			<fileset dir="." includes="${jnlp} CRE64.png CRE32.png CRE200.png" />
 		</scp>
 	</target>
 	
@@ -95,6 +95,7 @@
 		<copy file="${jnlp}" todir="${deploy.dir}"/>
 		<copy file="CRE64.png" todir="${deploy.dir}"/>
 		<copy file="CRE32.png" todir="${deploy.dir}"/>
+		<copy file="CRE200.png" todir="${deploy.dir}"/>
 	</target>
 
 	<!-- must be executed after create_ws_jar because it referes to the build/lib directory!!! -->

@@ -258,7 +258,7 @@ class CRTable {
 	 * @param to
 	 */
 	public void filterByYear (double from, double to) {
-		crData.each { CRType it -> it.VI = ((from<=it.RPY) && (to>=it.RPY)) ? 1 : (this.showNull?1:0) }
+		crData.each { CRType it -> it.VI = ((it.RPY!=null) && (from<=it.RPY) && (to>=it.RPY)) || ((it.RPY==null) && (this.showNull)) ? 1 : 0 }
 	}
 	
 	

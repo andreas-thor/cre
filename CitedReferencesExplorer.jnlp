@@ -4,9 +4,11 @@
   <information>
     <title>Cited References Explorer</title>
     <vendor>Andreas Thor</vendor>
+    <homepage href="http://www.crexplorer.net"/>
     <icon href="CRE64.png" width="64" height="64"/>
 	<icon kind="shortcut" href="CRE32.png" width="32" height="32"/>
 	<icon kind="shortcut" href="CRE64.png" width="64" height="64"/>
+	<icon kind="splash" href="CRE200.png" width="64" height="64"/>
     <shortcut online="true">
       <desktop/>
       <menu submenu="Cited References Explorer" />
@@ -14,18 +16,6 @@
     <association mime-type="application-x/ext-file"  extensions="cre"/> 
     <offline-allowed/>
   </information>
-<!-- from VosViewer   
-  <information>
-  <title>VOSviewer</title>
-  <vendor>Nees Jan van Eck and Ludo Waltman</vendor>
-  <homepage href="http://www.vosviewer.com"/>
-  <description>VOSviewer</description>
-  <icon href="http://www.vosviewer.com/images/vosviewer.gif"/>
-  <icon kind="splash" href="http://www.vosviewer.com/images/splash.png"/>
-  <offline-allowed/>
-</information>
--->
- 
   <security>
       <all-permissions/>
   </security>

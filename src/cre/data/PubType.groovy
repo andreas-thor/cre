@@ -165,7 +165,7 @@ public class PubType {
 			"AU": AU,
 			"AF": AF,
 			"C1": C1.collect { String[] it -> "[" + it[0] + "] " + it[1]},	// TODO: Group together authors with same affiliation
-			"EM": [EM?.unique().join ("; ")], 
+			"EM": [EM?.unique()?.join ("; ")], 
 			"TI": linesTI,
 			"PY": [PY?.toString()],
 			"SO": [SO],
@@ -293,9 +293,32 @@ public class PubType {
 		] as String[]
 	}
 	
-	public PubType parseJSON (JSONObject j) {
+	public PubType parseJSON (JSONObject j, List<CRType> crData, HashMap<Integer, Integer> crId2Index) {
 		
-		
+		PT = j.PT as String
+		AU = j.AU as String[]
+		AF = j.AF as String[]
+		C1 = j.C1.collect { it as String[] }
+		EM = j.EM as List<String>
+		AA = j.AA as List<String>
+		TI = j.TI as String
+		PY = j.PY as Integer
+		SO = j.SO as String
+		VL = j.VL as String
+		IS = j.IS as String
+		AR = j.AR as String
+		BP = j.BP as Integer
+		EP = j.EP as Integer
+		PG = j.PG as Integer
+		TC = j.TC as Integer
+		crList = (j.CRLISTID as String[]).collect { crData[crId2Index[it as int]] }
+		DI = j.DI as String
+		LI = j.LI as String
+		AB = j.AB as String
+		DE = j.DE as String
+		DT = j.DT as String
+		FS = j.FS as String
+		UT = j.UT as String
 		
 		this
 	}
@@ -306,9 +329,9 @@ public class PubType {
 		
 		jb (
 			PT: this.PT,
-			AU: this.AU,
-			AF: this.AF,
-			C1: this.C1,
+			AU: this.AU.collect { it },
+			AF: this.AF.collect { it },
+			C1: this.C1.collect { it.collect { x -> x } },
 			EM: this.EM,
 			AA: this.AA,
 			TI: this.TI,
@@ -321,7 +344,7 @@ public class PubType {
 			EP: this.EP,
 			PG: this.PG,
 			TC: this.TC,
-			CRLIST: crList.collect { it.ID },
+			CRLISTID: crList.collect { it.ID },
 			DI: this.DI,
 			LI: this.LI,
 			AB: this.AB,
