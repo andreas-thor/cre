@@ -17,8 +17,8 @@
 		
 		
 	<!-- Specify if release or test deployment -->	
-	<property name="deployRELEASE.dir" value="www1_thor/crexplorer/"/>
-	<property name="deploy.dir" value="www1_thor/citationtest/"/>
+	<property name="deploy.dir" value="www1_thor/crexplorer/"/>
+	<property name="deployTEST.dir" value="www1_thor/citationtest/"/>
 	
 	<!-- Specify if running from home or from HfTL -->	
 	<property name="plugin.dir" value="C:/Program Files (other)/eclipse-jee-mars-2-win32/plugins/org.codehaus.groovy_2.4.3.xx-201601131831-e45"/>
