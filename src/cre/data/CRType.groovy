@@ -163,7 +163,7 @@ public class CRType /* implements Comparable<CRType>*/ {
 		if ((VOL!=null) || (PAG!=null)) {
 			if (J_N!=null) res += ", " + J_N 
 			if (VOL!=null) res += ", V" + VOL
-			if (PAG!=null) res += ", P" + VOL
+			if (PAG!=null) res += ", P" + PAG
 		} else {
 			res += ", " + J
 		}
