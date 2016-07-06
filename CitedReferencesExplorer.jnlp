@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp spec="1.0+" codebase="http://www1.hft-leipzig.de/thor/crexplorer/"
+<jnlp spec="1.0+" codebase="http://www1.hft-leipzig.de/thor/citationtest/"
   href="CitedReferencesExplorer.jnlp">
   <information>
     <title>Cited References Explorer</title>
