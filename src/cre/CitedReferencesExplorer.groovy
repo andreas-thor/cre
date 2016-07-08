@@ -168,7 +168,7 @@ ChartPanel chpan = UIChartPanelFactory.create(crTable, tab,
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2016/07/05)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2016/07/12)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -295,6 +295,7 @@ mainFrame = sb.frame(
 				}
 			})
 
+			
 			menuItem(text: "Remove Cited References without Year...", actionPerformed: {
 				
 				int n = crTable.getNumberWithoutYear()
@@ -322,6 +323,20 @@ mainFrame = sb.frame(
 			menuItem(text: "Remove by Percent in Year...", mnemonic: 'P', actionPerformed: {
 				UIDialogFactory.createThresholdDlg(mainFrame, "Remove by Percent in Year", "Percent in Year", { comp, threshold -> crTable.removeByPercentYear (comp, threshold) }).visible = true
 				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
+			})
+			
+			separator()
+			
+			menuItem(text: "Retain Publication citing Selected Cited References...", mnemonic: 'C', actionPerformed: {
+				
+				if (tab.getSelectedRowCount() == 0) {
+					JOptionPane.showMessageDialog(null, "No Cited References selected");
+				} else {
+					if (JOptionPane.showConfirmDialog (null, "Would you like to remove all citing publications that do not cite one of the selected ${tab.getSelectedRowCount()} Cited References?", "Warning", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+						crTable.removeByCR (tab.getSelectedRows().collect { tab.convertRowIndexToModel (it) })
+						(tab.getModel() as AbstractTableModel).fireTableDataChanged()
+					}
+				}
 			})
 
 		}

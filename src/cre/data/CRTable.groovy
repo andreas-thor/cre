@@ -207,6 +207,30 @@ class CRTable {
 	}
 	
 	
+	/**
+	 * Remove all citing publications, that do not reference any of the given CRs (idx)
+	 * @param idx list of CR indexes
+	 */
+	public void removeByCR (List<Integer> idx) {
+		
+		List<CRType> selCR = idx.collect { crData[it] }
+		
+		pubData.removeAll { PubType pub ->
+			
+			// if crList of publications does not contain any of the CRs 
+			if (!pub.crList.any { CRType cr -> selCR.contains (cr) }) {
+				pub.crList.each { CRType cr -> cr.N_CR-- }	// remove number of CRs by 1
+				true	// delete pub
+			} else {
+				false
+			}
+		}
+		
+		// remove all CRs that are not referenced anymore
+		crData.removeAll { CRType it -> it.N_CR < 1}
+		updateData(true)
+	}
+	
 	
 	public int getNumberWithoutYear () {
 		crData.findAll { CRType it -> it.RPY == null}.size()  
