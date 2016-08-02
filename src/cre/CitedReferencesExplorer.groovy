@@ -168,7 +168,7 @@ ChartPanel chpan = UIChartPanelFactory.create(crTable, tab,
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., Version 2016/07/12)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., DEVELOPMENT Version 2016/07/11)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -223,13 +223,13 @@ mainFrame = sb.frame(
 						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
 				})
 				
-//				separator()
-//				
-//				menuItem(id: "menuSaveRuediger", text: "Ruediger...", mnemonic: 'R', accelerator: KeyStroke.getKeyStroke("ctrl R"), actionPerformed: {
-//					doExportFile (
-//						"CRE_csv_Ruediger", "Export CRE file for Ruediger",
-//						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
-//				})
+				separator()
+				
+				menuItem(id: "menuSaveRuediger", text: "Ruediger...", mnemonic: 'R', accelerator: KeyStroke.getKeyStroke("ctrl R"), actionPerformed: {
+					doExportFile (
+						"CRE_csv_Ruediger", "Export CRE file for Ruediger",
+						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
+				})
 			}
 			
 			menuItem(id: "menuSaveCRE", text: "Save...", mnemonic: 'S', accelerator: KeyStroke.getKeyStroke("ctrl S"), actionPerformed: {

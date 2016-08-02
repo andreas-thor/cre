@@ -38,22 +38,22 @@ public class CRType /* implements Comparable<CRType>*/ {
 	String J;
 	String J_N;
 	String J_S;
-	int N_CR = 1;
-	Integer RPY;
+	public int N_CR = 1;
+	public Integer RPY;
 	String PAG;
 	String VOL;
 	String DOI;
 	CRCluster CID2;
 	int CID_S;
-	int VI = 1;
+	public int VI = 1;
 	int CO = 0;
 	
 	static byte TYPE_WOS = 1
 	static byte TYPE_SCOPUS = 2
 	byte type = 0 ;	
 	
-	Double PERC_YR;
-	Double PERC_ALL;
+	public Double PERC_YR;
+	public Double PERC_ALL;
 
 //	String blockkey;
 	

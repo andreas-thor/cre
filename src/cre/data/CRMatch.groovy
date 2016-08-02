@@ -250,6 +250,7 @@ class CRMatch {
 			// ySize is used to re-adjust the index (correctIndex = ySize-yIdx-1)
 			int ySize = compareY.size()
 
+			
 			allX.eachWithIndex { x, xIndx ->
 				
 				compareY.pop()

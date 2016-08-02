@@ -36,7 +36,7 @@ class CRTable {
 	
 	private int medianRange
 	
-	
+	private CRTableJ8 crTableJ8;
 	
 	/**
 	 * @param stat status panel
@@ -44,6 +44,7 @@ class CRTable {
 	public CRTable (StatusBar stat) {
 		this.stat = stat
 		this.crMatch = new CRMatch(this, stat)
+//		this.crTableJ8 = new CRTableJ8 (crData);
 	}
 	
 	
@@ -249,9 +250,18 @@ class CRTable {
 	 * @param to
 	 */
 	public void removeByYear (int from, int to) {
+		long t1 = System.currentTimeMillis();
 		crData.removeAll { CRType it -> (from <= it.RPY) && (it.RPY <= to) }
+		long t2 = System.currentTimeMillis();
+		println ("GROOVY: " + (t2-t1));
 		updateData(true)
 	}
+	
+	public void removeByYear2 (int from, int to) {
+		crTableJ8.removeByYear (from, to);
+		updateData(true)
+	}
+
 	
 	/**
 	 * Remove publications based on NCR range (from <= N_CR <= to)

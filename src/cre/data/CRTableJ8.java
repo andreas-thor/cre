@@ -1,10 +1,12 @@
 package cre.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.jfree.data.xy.DefaultXYDataset;
@@ -141,29 +143,49 @@ public class CRTableJ8 {
 		}
 		
 		// generate chart lines
+		// TODO: CHECK!!!
+		ds.addSeries("Number of Cited References", sumPerYear
+			.entrySet()
+			.stream()
+			.sorted(Map.Entry.comparingByKey())
+			.toArray(double[][]::new));
 		
-		sumPerYear.entrySet().stream().so
-		sumPerYear = sumPerYear.sort { it.key }
-		ds.addSeries("Number of Cited References", [sumPerYear.collect  { it.key }, sumPerYear.collect  { it.value }] as double[][])
-		NCRperYearMedian = NCRperYearMedian.sort { it.key }
-		ds.addSeries("Deviation from the ${2*this.medianRange+1}-Year-Median", [NCRperYearMedian.collect  { it.key }, NCRperYearMedian.collect  { it.value }] as double[][])
+		ds.addSeries("Deviation from the ${2*this.medianRange+1}-Year-Median", NCRperYearMedian
+			.entrySet()
+			.stream()
+			.sorted(Map.Entry.comparingByKey())
+			.toArray(double[][]::new));	
+
+		
+		// groovy
+//		sumPerYear = sumPerYear.sort { it.key }
+//		ds.addSeries("Number of Cited References", [sumPerYear.collect  { it.key }, sumPerYear.collect  { it.value }] as double[][])
+//		NCRperYearMedian = NCRperYearMedian.sort { it.key }
+//		ds.addSeries("Deviation from the ${2*this.medianRange+1}-Year-Median", [NCRperYearMedian.collect  { it.key }, NCRperYearMedian.collect  { it.value }] as double[][])
 		
 		stat.setValue("", 0, getInfoString());
 	}
 		
 	
-	public HashMap<Integer, int[]> getChartData () {
+	public Map<Integer, int[]> getChartData () {
 		
-		HashMap<Integer, int[]> result = new HashMap<Integer, int[]>()
-		NCRperYearMedian.each { 
-			result[it.key] = [sumPerYear[it.key]?:0, it.value] as int[]
-		}
+		return NCRperYearMedian.keySet()
+			.stream()
+			.collect (Collectors.toMap(
+				year -> year, 
+				year -> new int[] { sumPerYear.getOrDefault(year, 0), NCRperYearMedian.getOrDefault(year, 0)} ));
 		
-		return result
+		
+//		HashMap<Integer, int[]> result = new HashMap<Integer, int[]>()
+//		NCRperYearMedian.each { 
+//			result[it.key] = [sumPerYear[it.key]?:0, it.value] as int[]
+//		}
+//		
+//		return result
 	}
 	
 	public int getMedianRange() {
-		return this.medianRange
+		return this.medianRange;
 	}
 	
 
@@ -173,21 +195,26 @@ public class CRTableJ8 {
 	 * @return Map with meta data
 	 */
 	public Map<String, Integer> getInfo() {
-		List<Integer> years = getMaxRangeYear()
-		[
-			"Number of Cited References": crData.size(), 
-			"Number of Cited References (shown)": crData.findAll { CRType it -> it.VI==1 }.size() , 
-			"Number of Cited References Clusters": crMatch.getNoOfClusters(),
-			"Number of different Cited References Years": crPerYear.size(), 
-			"Minimal Cited References Year": years[0], 
-			"Maximal Cited References Year": years[1],
-			"Number of Citing Publications": pubData.size()
-		]
+		List<Integer> years = getMaxRangeYear();
+		Map<String, Integer> result = new HashMap<String, Integer>();
+		result.put("Number of Cited References", crData.size());
+		result.put("Number of Cited References (shown)", (int) crData.stream().filter( (CRType it) -> it.VI == 1).count()); 
+		result.put("Number of Cited References Clusters", crMatch.getNoOfClusters());
+		result.put("Number of different Cited References Years", crPerYear.size()); 
+		result.put("Minimal Cited References Year", years.get(0));
+		result.put("Maximal Cited References Year", years.get(1));
+		result.put("Number of Citing Publications", pubData.size());
+		return result;
 	}
 	
 	public String getInfoString() {
-		List<Integer> years = getMaxRangeYear()
-		"${crData.size()} CRs (${crData.findAll { CRType it -> it.VI==1}.size()} shown), ${crMatch.getNoOfClusters()} clusters, ${years[0]}-${years[1]} "
+		List<Integer> years = getMaxRangeYear();
+		return String.format("%1$d CRs (%2$d shown), %3$d clusters, %4$d-%5$d ",
+			crData.size(),
+			crData.stream().filter ( (CRType it) -> it.VI==1).count(),
+			crMatch.getNoOfClusters(), 
+			years.get(0), 
+			years.get(1));
 	}
 	
 
@@ -197,7 +224,7 @@ public class CRTableJ8 {
 	 * @return
 	 */
 	public String getTooltip (Integer year) {
-		return "Year=${year}, N_CR=${sumPerYear[year]}"
+		return String.format("Year=%1$d, N_CR=%2$d", year, sumPerYear.get(year));
 	}
 	
 	
@@ -207,9 +234,9 @@ public class CRTableJ8 {
 	 * @param idx list of CR indexes
 	 */
 	public void remove (List<Integer> idx) {
-		idx.sort()
-		Iterator crIt = crData.iterator()
-		int lastIdx = 0
+		idx.sort();
+		Iterator crIt = crData.iterator();
+		int lastIdx = 0;
 		idx.each { 
 			(lastIdx..it).each { crIt.next() }		// iterate until next CR to remove
 			crIt.remove()							// remove current
@@ -245,13 +272,12 @@ public class CRTableJ8 {
 	
 	
 	public int getNumberWithoutYear () {
-		crData.findAll { CRType it -> it.RPY == null}.size()  
+		return (int) crData.stream().filter( (CRType it) -> it.RPY == null).count();  
 	}
 	
 	public void removeWithoutYear () {
-		crData.removeAll { CRType it -> it.RPY == null}
-//		crData.removeAll { CRType it -> (100 <= it.RPY) && (it.RPY <= 2300) }
-		updateData(true)
+		crData.removeIf( (CRType cr) -> { return cr.RPY == null; });
+		updateData(true);
 	}
 
 
@@ -278,13 +304,13 @@ public class CRTableJ8 {
 	
 	public void removeByPercentYear (String comp, double threshold) {
 		switch (comp) {
-			case "<" : crData.removeAll { CRType it -> it.PERC_YR <  threshold }; break
-			case "<=": crData.removeAll { CRType it -> it.PERC_YR <= threshold }; break
-			case "=" : crData.removeAll { CRType it -> it.PERC_YR == threshold }; break
-			case ">=": crData.removeAll { CRType it -> it.PERC_YR >= threshold }; break
-			case ">" : crData.removeAll { CRType it -> it.PERC_YR >  threshold }; break 
+			case "<" : crData.removeIf ( (CRType it) -> { return it.PERC_YR <  threshold; }); break;
+			case "<=": crData.removeIf ( (CRType it) -> { return it.PERC_YR <= threshold; }); break;
+			case "=" : crData.removeIf ( (CRType it) -> { return it.PERC_YR == threshold; }); break;
+			case ">=": crData.removeIf ( (CRType it) -> { return it.PERC_YR >= threshold; }); break;
+			case ">" : crData.removeIf ( (CRType it) -> { return it.PERC_YR >  threshold; }); break;
 		}
-		updateData(true)
+		updateData(true);
 	}
 	
 	
@@ -300,7 +326,7 @@ public class CRTableJ8 {
 	
 	
 	public void setShowNull (boolean showNull) {
-		this.showNull = showNull
+		this.showNull = showNull;
 		crData.each { CRType it -> if (it.RPY == null) it.VI = showNull ? 1 : 0  }
 	}
 	
@@ -325,12 +351,16 @@ public class CRTableJ8 {
 	
 
 	
-	public void setMapping (Integer id1, Integer id2, Double s, boolean isManual, boolean add, Long timestamp=null) {
-		this.crMatch.setMapping(id1, id2, s, isManual, add, timestamp)
+	public void setMapping (Integer id1, Integer id2, Double s, boolean isManual, boolean add, Long timestamp) {
+		this.crMatch.setMapping(id1, id2, s, isManual, add, timestamp);
+	}
+
+	public void setMapping (Integer id1, Integer id2, Double s, boolean isManual, boolean add) {
+		this.crMatch.setMapping(id1, id2, s, isManual, add, null);
 	}
 		
 	public Map getMapping (Integer id1, Boolean isManual) {
-		this.crMatch.getMapping (id1, isManual) 
+		return this.crMatch.getMapping (id1, isManual); 
 	}
 	
 	
