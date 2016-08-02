@@ -17,7 +17,7 @@ import groovy.transform.CompileStatic
  *
  */
 @CompileStatic
-class CRTable {
+class CRTableG {
 
 	@Bindable DefaultXYDataset ds  = new DefaultXYDataset()
 	@Bindable List<CRType> crData = new ArrayList<CRType>()	// all CR data
@@ -36,15 +36,14 @@ class CRTable {
 	
 	private int medianRange
 	
-	private CRTableJ8 crTableJ8;
+	
 	
 	/**
 	 * @param stat status panel
 	 */
-	public CRTable (StatusBar stat) {
+	public CRTableG(StatusBar stat) {
 		this.stat = stat
 		this.crMatch = new CRMatch(this, stat)
-//		this.crTableJ8 = new CRTableJ8 (crData);
 	}
 	
 	
@@ -257,10 +256,7 @@ class CRTable {
 		updateData(true)
 	}
 	
-	public void removeByYear2 (int from, int to) {
-		crTableJ8.removeByYear (from, to);
-		updateData(true)
-	}
+
 
 	
 	/**

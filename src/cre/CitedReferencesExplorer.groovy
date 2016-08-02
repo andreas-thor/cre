@@ -168,7 +168,7 @@ ChartPanel chpan = UIChartPanelFactory.create(crTable, tab,
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., DEVELOPMENT Version 2016/07/11)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., DEVELOPMENT Version 2016/08/02)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
