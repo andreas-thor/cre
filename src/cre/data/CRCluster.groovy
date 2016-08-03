@@ -8,8 +8,8 @@ import groovy.transform.CompileStatic
 @CompileStatic
 public class CRCluster implements Serializable, Comparable<CRCluster>  {
 	
-	int c1
-	int c2
+	public int c1
+	public int c2
 	
 	public CRCluster (int c1, int c2) {
 		this.c1 = c1

@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -45,7 +46,6 @@ public class CRTable {
 	 */
 	public CRTable (StatusBar stat) {
 		this.stat = stat;
-		// TODO: CRMATCH ADJUST
 		this.crMatch = new CRMatch(this, stat);
 	}
 	
@@ -76,7 +76,8 @@ public class CRTable {
 		
 		// update match
 		crMatch.updateData (removed);
-		
+		System.out.println("match done:" + System.currentTimeMillis());
+
 		
 		// Determine number of CRs and sum of citations per year
 		crPerYear = new HashMap<Integer, Integer>();
@@ -88,7 +89,7 @@ public class CRTable {
 			}
 		});
 
-		System.out.println(System.currentTimeMillis());
+		System.out.println("a" + System.currentTimeMillis());
 
 		// "fill" sumPerYear with zeros for missing years for "smoother" chart lines
 		if (crPerYear.size() > 0) {
@@ -99,7 +100,7 @@ public class CRTable {
 			});
 		} 
 		
-		System.out.println(System.currentTimeMillis());
+		System.out.println("b" + System.currentTimeMillis());
 		
 		// compute PERC_YR and PERC_ALL
 		int sum = sumPerYear.values().stream().mapToInt(Integer::intValue).sum(); 
@@ -147,27 +148,33 @@ public class CRTable {
 			ds.removeSeries(ds.getSeriesKey(ds.getSeriesCount()-1));
 		}
 		
-		// generate chart lines
-		// TODO: CHECK!!!
-//		ds.addSeries("Number of Cited References", sumPerYear
-//			.entrySet()
-//			.stream()
-//			.sorted(Map.Entry.comparingByKey())
-//			.map(it -> { return new double[] {it.getKey(), it.getValue()}; })
-//			.toArray(double[][]::new));
-//		
-//		ds.addSeries("Deviation from the ${2*this.medianRange+1}-Year-Median", NCRperYearMedian
-//			.entrySet()
-//			.stream()
-//			.sorted(Map.Entry.comparingByKey())
-//			.toArray(double[][]::new));	
-
 		
-		// groovy
-//		sumPerYear = sumPerYear.sort { it.key }
-//		ds.addSeries("Number of Cited References", [sumPerYear.collect  { it.key }, sumPerYear.collect  { it.value }] as double[][])
-//		NCRperYearMedian = NCRperYearMedian.sort { it.key }
-//		ds.addSeries("Deviation from the ${2*this.medianRange+1}-Year-Median", [NCRperYearMedian.collect  { it.key }, NCRperYearMedian.collect  { it.value }] as double[][])
+		// generate chart lines
+		ds.addSeries("Number of Cited References", new double[][] { 
+			sumPerYear.entrySet().stream()
+				.sorted(Map.Entry.comparingByKey())
+				.map(it -> { return it.getKey(); })
+				.mapToDouble(Double::valueOf)
+				.toArray(),
+			sumPerYear.entrySet().stream()
+				.sorted(Map.Entry.comparingByKey())
+				.map(it -> { return it.getValue(); })
+				.mapToDouble(Double::valueOf)
+				.toArray() }
+		);
+		
+		ds.addSeries(String.format("Deviation from the %1$d-Year-Median", 2*this.medianRange+1), new double[][] { 
+			NCRperYearMedian.entrySet().stream()
+				.sorted(Map.Entry.comparingByKey())
+				.map(it -> { return it.getKey(); })
+				.mapToDouble(Double::valueOf)
+				.toArray(),
+			NCRperYearMedian.entrySet().stream()
+				.sorted(Map.Entry.comparingByKey())
+				.map(it -> { return it.getValue(); })
+				.mapToDouble(Double::valueOf)
+				.toArray() }
+		);
 		
 		stat.setValue("", 0, getInfoString());
 	}
@@ -180,14 +187,7 @@ public class CRTable {
 			.collect (Collectors.toMap(
 				year -> year, 
 				year -> new int[] { sumPerYear.getOrDefault(year, 0), NCRperYearMedian.getOrDefault(year, 0)} ));
-		
-		
-//		HashMap<Integer, int[]> result = new HashMap<Integer, int[]>()
-//		NCRperYearMedian.each { 
-//			result[it.key] = [sumPerYear[it.key]?:0, it.value] as int[]
-//		}
-//		
-//		return result
+
 	}
 	
 	public int getMedianRange() {
@@ -212,6 +212,8 @@ public class CRTable {
 		result.put("Number of Citing Publications", pubData.size());
 		return result;
 	}
+	
+	
 	
 	public String getInfoString() {
 		List<Integer> years = getMaxRangeYear();
@@ -241,13 +243,11 @@ public class CRTable {
 	 */
 	public void remove (List<Integer> idx) {
 
-//		Iterator crIt = crData.iterator();
-//		int lastIdx = 0;
-//		idx.stream().sorted().forEach ( it -> { 
-//			IntStream.rangeClosed(lastIdx, it).forEach ( x -> { crIt.next(); });	// iterate until next CR to remove
-//			crIt.remove();							// remove current
-//			lastIdx = it+1;	
-//		});
+		System.out.println("Remove ");
+		idx.stream().sorted(Collections.reverseOrder()).forEach( id -> {
+			CRType cr = crData.remove(id.intValue());
+			cr.removed = true;
+		});
 		
 		updateData(true);
 	}
@@ -274,7 +274,7 @@ public class CRTable {
 		});
 		
 		// remove all CRs that are not referenced anymore
-		crData.removeIf (  it -> { return it.N_CR < 1; });
+		crData.removeIf (  it -> { it.removed = (it.N_CR < 1); return it.removed; });
 		updateData(true);
 	}
 	
@@ -284,7 +284,7 @@ public class CRTable {
 	}
 	
 	public void removeWithoutYear () {
-		crData.removeIf( (CRType cr) -> { return cr.RPY == null; });
+		crData.removeIf( (CRType cr) -> { cr.removed = (cr.RPY == null); return cr.removed; });
 		updateData(true);
 	}
 
@@ -295,7 +295,7 @@ public class CRTable {
 	 * @param to
 	 */
 	public void removeByYear (int from, int to) {
-		crData.removeIf( (CRType cr) -> { return (from <= cr.RPY) && (cr.RPY <= to); });
+		crData.removeIf( (CRType cr) -> { cr.removed = ((from <= cr.RPY) && (cr.RPY <= to)); return cr.removed; });
 		updateData(true);
 	}
 
@@ -306,17 +306,17 @@ public class CRTable {
 	 * @param to
 	 */
 	public void removeByNCR(int from, int to) {
-		crData.removeIf ( (CRType cr) -> { return (from <= cr.N_CR) && (cr.N_CR <= to); });
+		crData.removeIf ( (CRType cr) -> { cr.removed = ((from <= cr.N_CR) && (cr.N_CR <= to)); return cr.removed; });
 		updateData(true);
 	}
 	
 	public void removeByPercentYear (String comp, double threshold) {
 		switch (comp) {
-			case "<" : crData.removeIf ( (CRType it) -> { return it.PERC_YR <  threshold; }); break;
-			case "<=": crData.removeIf ( (CRType it) -> { return it.PERC_YR <= threshold; }); break;
-			case "=" : crData.removeIf ( (CRType it) -> { return it.PERC_YR == threshold; }); break;
-			case ">=": crData.removeIf ( (CRType it) -> { return it.PERC_YR >= threshold; }); break;
-			case ">" : crData.removeIf ( (CRType it) -> { return it.PERC_YR >  threshold; }); break;
+			case "<" : crData.removeIf ( (CRType it) -> { it.removed = (it.PERC_YR <  threshold); return it.removed; }); break;
+			case "<=": crData.removeIf ( (CRType it) -> { it.removed = (it.PERC_YR <= threshold); return it.removed; }); break;
+			case "=" : crData.removeIf ( (CRType it) -> { it.removed = (it.PERC_YR == threshold); return it.removed; }); break;
+			case ">=": crData.removeIf ( (CRType it) -> { it.removed = (it.PERC_YR >= threshold); return it.removed; }); break;
+			case ">" : crData.removeIf ( (CRType it) -> { it.removed = (it.PERC_YR >  threshold); return it.removed; }); break;
 		}
 		updateData(true);
 	}

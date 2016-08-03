@@ -1,26 +1,35 @@
-package cre.data 
+package cre.data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
-import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
-import com.orsoncharts.util.json.JSONObject
-import cre.ui.StatusBar
-import cre.ui.UIMatchPanelFactory
-import groovy.json.JsonBuilder
-import groovy.transform.CompileStatic
+import com.orsoncharts.util.json.JSONObject;
+
+import cre.ui.StatusBar;
+import cre.ui.UIMatchPanelFactory;
+import groovy.json.JsonBuilder;
+import groovy.transform.CompileStatic;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
 @CompileStatic
-class CRMatch {
+class CRMatchJ {
 
 
 	class Pair {
-		Integer id1
-		Integer id2
-		Double s
+		Integer id1;
+		Integer id2;
+		Double s;
 		public Pair(Integer id1, Integer id2, Double s) {
 			super();
 			this.id1 = id1;
@@ -29,104 +38,114 @@ class CRMatch {
 		}
 		
 		public Pair (String s) {
-			String[] split = s.split ("/")
-			this.id1 = split[0] as int
-			this.id2 = split[1] as int
-			this.s = split[2] as double
+			String[] split = s.split ("/");
+			this.id1 = Integer.valueOf(split[0]);
+			this.id2 = Integer.valueOf(split[1]);
+			this.s = Double.valueOf(split[2]);
 		}
+		
 		public String toString () {
-			this.id1 + "/" + this.id2 + "/" + this.s
+			return (this.id1 + "/" + this.id2 + "/" + this.s);
 		}
 		
 	}
 	
-	private CRTable crTab
-	private StatusBar stat
-	private Map <Boolean, Map<Integer, Map<Integer, Double>>> match = [:]
-	private TreeMap <Long, ArrayList<Pair>> timestampedPairs
+	private CRTable crTab;
+	private StatusBar stat;
+	private Map <Boolean, Map<Integer, Map<Integer, Double>>> match = new HashMap<Boolean, Map<Integer, Map<Integer,Double>>>();
+	private TreeMap <Long, ArrayList<Pair>> timestampedPairs;
 	
 	
-	private Map<Integer, Integer> crId2Index = [:]						// object Id -> index in crData list
-	public Map<CRCluster, List<Integer>> clusterId2Objects = [:]		// clusterId->[object ids]
+	private Map<Integer, Integer> crId2Index = new HashMap<Integer, Integer>();						// object Id -> index in crData list
+	public Map<CRCluster, List<Integer>> clusterId2Objects = new HashMap<CRCluster, List<Integer>>();		// clusterId->[object ids]
 
 	public boolean hasMatches () {
-		(match[true].size()>0) || (match[false].size()>0) 
+		return (match.get(true).size()>0) || (match.get(false).size()>0); 
 	}
 	
 	public JSONObject getJSON() {
 		
-		JsonBuilder jb = new JsonBuilder()
+		// TODO: J8 implement
+		return null;
 		
-		jb (
-			MATCH_AUTO: match[false].collect { Integer key, Map<Integer, Double> val -> val.collect { Integer k, Double v -> [key, k, v]}  },
-			MATCH_MANU: match[true].collect { Integer key, Map<Integer, Double> val -> val.collect { Integer k, Double v -> [key, k, v]}  }
-		) as JSONObject
+//		JsonBuilder jb = new JsonBuilder()
+//		
+//		jb (
+//			MATCH_AUTO: match[false].collect { Integer key, Map<Integer, Double> val -> val.collect { Integer k, Double v -> [key, k, v]}  },
+//			MATCH_MANU: match[true].collect { Integer key, Map<Integer, Double> val -> val.collect { Integer k, Double v -> [key, k, v]}  }
+//		) as JSONObject
 		
 		
 	}
 	
 	public void parseJSON (JSONObject j) {
-		
-		j.MATCH_AUTO.each { it.each { triple -> List l = triple as List; setMapping (l[0] as int, l[1] as int, l[2] as double, false, false) } }   
-		j.MATCH_MANU.each { it.each { triple -> List l = triple as List; setMapping (l[0] as int, l[1] as int, l[2] as double, true, false) } }   
-		
-		updateData (false)	// updates crId2Index
-		updateClusterId2Objects()	// updates clusterId2Objects
+
+		// TODO: J8 implement
+
+//		j.MATCH_AUTO.each { it.each { triple -> List l = triple as List; setMapping (l[0] as int, l[1] as int, l[2] as double, false, false) } }   
+//		j.MATCH_MANU.each { it.each { triple -> List l = triple as List; setMapping (l[0] as int, l[1] as int, l[2] as double, true, false) } }   
+//		
+//		updateData (false)	// updates crId2Index
+//		updateClusterId2Objects()	// updates clusterId2Objects
 	}
 	
 	
 
-	public CRMatch (CRTable crTab, StatusBar stat) {
-		this.crTab = crTab
-		this.stat = stat
-		match = [:]
-		match[false] = [:]		// automatic match result
-		match[true] = [:]		// manual match result
-		timestampedPairs = new TreeMap<Long, ArrayList<Pair>>()
+	public CRMatchJ (CRTable crTab, StatusBar stat) {
+		this.crTab = crTab;
+		this.stat = stat;
+		match = new HashMap<Boolean, Map<Integer,Map<Integer,Double>>>();
+		match.put(false, new HashMap<Integer,Map<Integer,Double>>());		// automatic match result
+		match.put(true,  new HashMap<Integer,Map<Integer,Double>>());		// manual match result
+		timestampedPairs = new TreeMap<Long, ArrayList<Pair>>();
 	}
 
 
 	private void updateClusterId2Objects () {
 		
-		clusterId2Objects.clear()
-		crTab.crData.each { CRType cr ->
-			if (clusterId2Objects[cr.CID2] == null) {
-				clusterId2Objects[cr.CID2] = []
+		clusterId2Objects.clear();
+		crTab.crData.forEach ( cr -> {
+			if (clusterId2Objects.get(cr.CID2) == null) {
+				clusterId2Objects.put(cr.CID2, new ArrayList<Integer>());
 			}
-			clusterId2Objects[cr.CID2] << cr.ID
-		}
+			clusterId2Objects.get(cr.CID2).add (cr.ID);
+		});
 		
-		crTab.crData.each { CRType cr ->
-			cr.CID_S = clusterId2Objects[cr.CID2].size()
-		}
+		crTab.crData.forEach ( cr -> {
+			cr.CID_S = clusterId2Objects.get(cr.CID2).size();
+		});
 
 	}
-
+	
 	public void updateData (boolean removed) throws OutOfMemoryError {
 		
 		// refresh mapping crId -> index
-		crId2Index.clear()
-		crTab.crData.eachWithIndex { CRType cr, int index -> crId2Index[cr.ID] = index }
+		crId2Index.clear();
 		
-		println System.currentTimeMillis()
+		int idx = 0;
+		for (Iterator<CRType> it = crTab.crData.iterator(); it.hasNext();) {
+			crId2Index.put(it.next().ID, idx++);
+		}
+		
+		System.out.println(System.currentTimeMillis());
+		
 		if (removed) {
 //			println "removed"
 //			println System.currentTimeMillis()
-			List id = crId2Index.keySet() as List
-			restrict(id)
+			Set<Integer> id = crId2Index.keySet();
+			restrict(id);
 
 //			println System.currentTimeMillis()
 
-			updateClusterId2Objects()
+			updateClusterId2Objects();
 						
 			// remove deleted CRs for each publication
-			crTab.pubData.each { PubType pub -> pub.crList.removeAll { CRType cr -> cr.removed /*!crTab.crData.contains(cr)*/ } }
-			
-			println "nachher"
-			crTab.pubData.each { pub -> if (pub.crList.size()==0) println pub }
+			crTab.pubData.forEach ( pub -> { pub.crList.removeIf ( cr -> { return cr.removed; }); });
 			
 			// remove pubs that have no CRs anymore
-//			crTab.pubData.removeAll { PubType pub -> pub.crList.size()==0 }
+			crTab.pubData.removeIf ( pub -> { return pub.crList.size()==0; });
+
+			
 			
 //			println System.currentTimeMillis()
 //			println "removed done"
@@ -140,71 +159,65 @@ class CRMatch {
 	 * Called when user deletes CRs
 	 * @param id
 	 */
-	public void restrict (List<Integer> id) {
-		[true, false].each { boolean tf ->
-			match[tf].keySet().removeAll { Integer it -> !id.contains(it) }
-			match[tf].each { Integer k, Map<Integer, Double> map ->
-				match[tf][k].keySet().removeAll { Integer it -> !id.contains(it) }
-			}
+	public void restrict (Set<Integer> id) {
+
+		for (boolean b: new boolean[] {true, false}) {
+			match.get(b).entrySet().removeIf(entry -> !id.contains(entry.getKey()) );
+			match.get(b).entrySet().forEach(entry -> {
+				entry.getValue().entrySet().removeIf(entry2 -> !id.contains(entry2.getKey()) );
+			});
 		}
 	}
 
+	public void setMapping (Integer id1, Integer id2, Double s, boolean isManual, boolean add) {
+		setMapping(id1, id2, s, isManual, add, null);
+	}
 
-	public void setMapping (Integer id1, Integer id2, Double s, boolean isManual, boolean add, Long timestamp=null) {
+	public void setMapping (Integer id1, Integer id2, Double s, boolean isManual, boolean add, Long timestamp) {
 
-		if (id1.equals(id2)) return
-			// swap if needed so that always holds id1<id2
-			if (id1.compareTo(id2)>0) {
-				(id1,id2) = [id2, id1]
-			}
-
-		if (match[isManual][id1] == null) {
-			match[isManual][id1] = [:]
+		if (id1.equals(id2)) return;
+		
+		// swap if needed so that always holds id1<id2
+		if (id1.compareTo(id2)>0) {
+			Integer temp = id1;
+			id1 = id2;
+			id2 = temp;
 		}
 
-		if (match[!isManual][id1] == null) {
-			match[!isManual][id1] = [:]
-		}
+		match.get( isManual).putIfAbsent(id1, new HashMap<Integer, Double>());
+		match.get(!isManual).putIfAbsent(id1, new HashMap<Integer, Double>());
 
 		// store old value for undo operation of manual mappings
 		if ((isManual) && (timestamp!=null)) {
-			if (timestampedPairs.get(timestamp)==null) {
-				timestampedPairs.put(timestamp, new ArrayList<Pair>())
-			}
-			timestampedPairs.get(timestamp).add(new Pair(id1, id2, match[isManual][id1][id2]))
-		}
-		
-		double v = 0d
-		if ((add) && (match[isManual][id1][id2] != null)) {
-			v = match[isManual][id1][id2]
+			timestampedPairs.putIfAbsent(timestamp, new ArrayList<Pair>());
+			timestampedPairs.get(timestamp).add(new Pair(id1, id2, (match.get(isManual)).get(id1).get(id2)));
 		}
 
-		match[isManual][id1][id2] = (s==null) ? null : s+v
-		
-		
-		
-		
+		// update value
+		double v = add ? match.get(isManual).get(id1).getOrDefault(id2, 0d) : 0d;
+		match.get(isManual).get(id1).put(id2, (s==null) ? null : s+v);
 	}
 
 
 
 	public Map getMapping (Integer id1, Boolean isManual) {
-		match[isManual][id1]?:[:]
+		return match.get(isManual).getOrDefault(id1, new HashMap<Integer, Double>());
 	}
 
 
 	public void clear () {
-		match[true] = [:]
-		match[false] = [:]
-		clusterId2Objects.clear()
+		match.put(false, new HashMap<Integer,Map<Integer,Double>>());		
+		match.put(true,  new HashMap<Integer,Map<Integer,Double>>());		
+		clusterId2Objects.clear();
 	}
 
+	
 	public int size (boolean isManual) {
-		(int) match[isManual].inject (0) { int res, Integer k, Map<Integer, Double> v -> res + v.size() }
+		return match.get(isManual).entrySet().stream().map ( entry -> entry.getValue().size()).reduce(0, (a,b) -> a+b);
 	}
 
 	public int getNoOfClusters () {
-		clusterId2Objects.keySet().size()
+		return clusterId2Objects.keySet().size();
 	}
 
 	/**
@@ -212,92 +225,105 @@ class CRMatch {
 	 * @param matchers  Array of matchers; each matcher has three components: [attribute, simfunc, threshold]
 	 * @param globalThreshold
 	 * @param useClustering
+	 * @throws Exception 
 	 */
 	
-	public void doBlocking () {
+	public void doBlocking () throws Exception {
 		
 		// standard blocking: year + first letter of last name
-		stat.setValue("${new Date()}: Start Blocking of ${crTab.crData.size()} objects", 0)
-		Map<String, ArrayList<Integer>> blocks = [:]	// block key -> list of indexes (not IDs)!
-		crTab.crData.eachWithIndex { CRType cr, Integer idx ->
-			if ((cr.RPY != null) && ((cr.AU_L?:"").length() > 0)) {
-				String blockkey = cr.RPY + ((cr.AU_L+"  ")[0..0]).toLowerCase()
-				if (blocks[blockkey]==null) blocks[blockkey] = new ArrayList<Integer>()
-				blocks[blockkey] << idx
+		stat.setValue(String.format("%1$s: Start Blocking of ${crTab.crData.size()} objects", new Date()), 0);
+		Map<String, ArrayList<Integer>> blocks = new HashMap<String, ArrayList<Integer>>();	// block key -> list of indexes (not IDs)!
+		int idx = 0;
+		for (CRType cr: crTab.crData) {
+			if ((cr.RPY != null) && (cr.AU_L != null) && (cr.AU_L.length() > 0)) {
+				String blockkey = cr.RPY + cr.AU_L.substring(0,1).toLowerCase();
+				blocks.putIfAbsent(blockkey, new ArrayList<Integer>());
+				blocks.get(blockkey).add(idx);
 			}
+			idx++;
 		}
-		println "${new Date()}: Blocking done (${blocks.size()} blocks)"
-//		println blocks
+
+		System.out.println(String.format("%1$s: Blocking done (%2$d blocks)", new Date(), blocks.size()));
 		
-		match[false] = [:]	// remove automatic match result, but preserve manual matching
+		match.put(false, new HashMap<Integer,Map<Integer,Double>>());		// remove automatic match result, but preserve manual matching
 		Levenshtein l = new Levenshtein();
-		long progMax = blocks.size()
-		long progCount = 0
-		double s, s2
+		long progMax = blocks.size();
+		AtomicLong progCount = new AtomicLong(0);
 		
-		String d = "${new Date()}: "
-		double threshold = 0.5
+		Date startdate = new Date();
+		double threshold = 0.5;
 
 		// TODO: handle missing values
 		// TODO: incorporate title (from scopus)
 		
 		// Matching: author lastname & journal name
-		blocks.each { String b, ArrayList<Integer> crlist ->
+		blocks.entrySet().stream().forEach( entry -> {
 			
-			progCount++
-			stat.setValue("${d}Matching in progress ...", ((progCount.doubleValue()/progMax.doubleValue()*100)).intValue())
+		
+			String b = entry.getKey();
+			ArrayList<Integer> crlist = entry.getValue();
+			
+			progCount.incrementAndGet();
+			stat.setValue(String.format("%1$s: Matching in progress ...", startdate), (int) ((100d*progCount.get())/progMax));
 			
 			// allX = List of all AU_L values;
+			List<String> allX = crlist.stream().map ( it -> crTab.crData.get(it).AU_L.toLowerCase() ).collect (Collectors.toList());
+
 			// compareY = List of compare string is in reverse order, i.e., pop() (takes last element) actually removes the "logical" first element
-			List allX = crlist.collect { Integer it -> crTab.crData[it].AU_L.toLowerCase() }
-			List compareY = crlist.collect { crTab.crData[it].AU_L.toLowerCase() }.reverse()
+			ArrayList<String> compareY = new ArrayList<String>(allX);
+			Collections.reverse(compareY);
 			
 			// ySize is used to re-adjust the index (correctIndex = ySize-yIdx-1)
-			int ySize = compareY.size()
+			int ySize = compareY.size();
 
-			
-			allX.eachWithIndex { x, xIndx ->
+			int xIndx = 0;
+			for (String x: allX) {
 				
-				compareY.pop()
-				l.batchCompareSet(compareY as String[], x).eachWithIndex { double s1, int yIndx ->
+				// TODO: compareY als array und dann copyof statt pop+transform
+				compareY.remove(0);
+				int yIndx = 0;
+				for (double s1: l.batchCompareSet(compareY.toArray(new String[compareY.size()]), x)) {
 					if (s1>=threshold) {
 
 						// the two CR to be compared
-						CRType[] comp_CR = [(CRType) crTab.crData[crlist[xIndx]], (CRType)crTab.crData[crlist[ySize-yIndx-1]]]
+						CRType[] comp_CR = new CRType[] { crTab.crData.get(crlist.get(xIndx)), crTab.crData.get(crlist.get(ySize-yIndx-1)) };
 						
 						// increasing sim + weight if data is available; weight for author is 2
-						double sim = 2*s1
-						double weight = 2
+						double sim = 2*s1;
+						double weight = 2;
 						
 						// compare Journal name (weight=1)
-						String[] comp_J = [comp_CR[0].J_N?:"", comp_CR[1].J_N?:""]
+						String[] comp_J = new String[] { comp_CR[0].J_N == null ? "" : comp_CR[0].J_N, comp_CR[1].J_N == null ? "" : comp_CR[1].J_N };
 						if ((comp_J[0].length()>0) && (comp_J[1].length()>0)) {
-							sim += 1.0* l.getSimilarity(comp_J[0].toLowerCase(), comp_J[1].toLowerCase())
-							weight += 1.0
+							sim += 1.0* l.getSimilarity(comp_J[0].toLowerCase(), comp_J[1].toLowerCase());
+							weight += 1.0;
 						}
 						
 						// compare title (weight=5)
 						// ignore if both titles are empty; set sim=0 if just one is emtpy; compute similarity otherwise
-						String[] comp_T = [comp_CR[0].TI?:"", comp_CR[1].TI?:""]
+						String[] comp_T = new String[] { comp_CR[0].TI == null ? "" : comp_CR[0].TI, comp_CR[1].TI == null ? "" : comp_CR[1].TI };
 						if ((comp_T[0].length()>0) || (comp_T[1].length()>0)) {
-							sim += 5.0 * (((comp_T[0].length()>0) && (comp_T[1].length()>0)) ? l.getSimilarity(comp_T[0].toLowerCase(), comp_T[1].toLowerCase()) : 0.0)
-							weight += 5.0
+							sim += 5.0 * (((comp_T[0].length()>0) && (comp_T[1].length()>0)) ? l.getSimilarity(comp_T[0].toLowerCase(), comp_T[1].toLowerCase()) : 0.0);
+							weight += 5.0;
 						}
 						
-						s = sim/weight		// weighted average of AU_L, J_N, and TI
+						double s = sim/weight;		// weighted average of AU_L, J_N, and TI
 						if (s>=threshold) {
-							setMapping(comp_CR[0].ID, comp_CR[1].ID, s, false, true)
+							setMapping(comp_CR[0].ID, comp_CR[1].ID, s, false, true);
 						}
 					}
+					yIndx++;
 				}
+			
+				xIndx++;
 			}
 		
-		}
+		});
 		
-		println "CRMatch> matchresult size is " + size(false)
-		stat.setValue("${d}Matching done", 0)
+		System.out.println("CRMatch> matchresult size is " + size(false));
+		stat.setValue(String.format("%1$s: Matching done", startdate), 0);
 		
-		updateClusterId(threshold, false, false, false, false)
+		updateClusterId(threshold, false, false, false, false);
 	}
 	
 
@@ -314,17 +340,20 @@ class CRMatch {
 	
 	public void updateClusterId (double threshold, boolean useClustering, boolean useVol, boolean usePag, boolean useDOI) throws Exception {
 		
-		stat.setValue ("${new Date()}: Prepare clustering ...", 0)
+		stat.setValue ("${new Date()}: Prepare clustering ...", 0);
 		
 		// initialize clustering; each objects forms its own cluster
 		// useClustering = true => re-use first cluster component
-		clusterId2Objects = [:]
-		crTab.crData.eachWithIndex { CRType it, Integer idx ->
-			crTab.crData[idx].CID2 = useClustering ? new CRCluster (it.CID2.c1, it.ID) : new CRCluster (it.ID, 1)
-			crTab.crData[idx].CID_S = 1
-			clusterId2Objects[crTab.crData[idx].CID2] = [it.ID]
-		}
-		clusterMatch( null, threshold, useVol, usePag, useDOI)	// null == all objects are considered for clustering
+		
+		// TODO: J8 check (groovy uses with index ...)
+		
+		clusterId2Objects = new HashMap<CRCluster, List<Integer>>();
+		crTab.crData.forEach ( it -> {
+			it.CID2 = useClustering ? new CRCluster (it.CID2.c1, it.ID) : new CRCluster (it.ID, 1);
+			it.CID_S = 1;
+			clusterId2Objects.put (it.CID2, new ArrayList<Integer>(Arrays.asList(it.ID)));
+		});
+		clusterMatch( null, threshold, useVol, usePag, useDOI);	// null == all objects are considered for clustering
 		
 		
 		
@@ -470,16 +499,16 @@ class CRMatch {
 	}
 	
 	
-	public matchUndo (double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
+	public void matchUndo (double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
 		
 		
-		if (timestampedPairs.keySet().size()==0) return
+		if (timestampedPairs.keySet().size()==0) return;
  
-		Long lastTimestamp = timestampedPairs.lastKey()
-		List<Pair> undoPairs = timestampedPairs.get(lastTimestamp)
+		Long lastTimestamp = timestampedPairs.lastKey();
+		List<Pair> undoPairs = timestampedPairs.get(lastTimestamp);
 		
 		// redo individual mapping pairs
-		undoPairs.each { Pair p -> setMapping(p.id1, p.id2, p.s, true, false)}
+		undoPairs.forEach (p -> setMapping(p.id1, p.id2, p.s, true, false));
 		
 		// get relevant cluster ids and remove
 		Collection<CRCluster> clusterIds = undoPairs.collect { Pair p -> crTab.crData[crId2Index[p.id1]].CID2 }
@@ -494,7 +523,7 @@ class CRMatch {
 	
 	public void merge () {
 		
-		stat.setValue ("Start merging ...", 0)
+		stat.setValue ("Start merging ...", 0);
 				
 		clusterId2Objects.eachWithIndex { cid, crlist, cidx ->
 			

@@ -28,23 +28,23 @@ public class CRType /* implements Comparable<CRType>*/ {
 	static Matcher Scopus_matchDOI = "" =~ ".*((DOI)|(doi))\\:?=?(10\\.[^/]+/ *[^;,]+).*"
 	
 	
-	int ID;
+	public int ID;
 	String CR;
 	String AU;
 	String AU_F;
-	String AU_L;
+	public String AU_L;
 	String AU_A;	// all Authors
-	String TI; 		// title
+	public String TI; 		// title
 	String J;
-	String J_N;
+	public String J_N;
 	String J_S;
 	public int N_CR = 1;
 	public Integer RPY;
 	String PAG;
 	String VOL;
 	String DOI;
-	CRCluster CID2;
-	int CID_S;
+	public CRCluster CID2;
+	public int CID_S;
 	public int VI = 1;
 	int CO = 0;
 	
@@ -58,7 +58,8 @@ public class CRType /* implements Comparable<CRType>*/ {
 //	String blockkey;
 	
 	int mergedTo = -1
-
+	public boolean removed = false;
+	
 	// Mapping of internal attribute names to labels
 	public static Map<String, String> attr = [
 		'ID'  : 'ID',
