@@ -373,6 +373,7 @@ public class CRMatch {
 	
 	private void clusterMatch (Set<Integer> id, double threshold, boolean useVol, boolean usePag, boolean useDOI) throws Exception {
 		
+		System.out.println("ClusterMatch with Threshold " + threshold);
 		Date startdate = new Date();
 		int mSize = (size(false)+size(true));
 		int count = 0;

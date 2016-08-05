@@ -44,13 +44,13 @@ class UIMatchPanelFactory {
 		Closure manualButtonAction = { int matchType -> 
 			
 			if (matchType == matchUndo) {
-				crMatch.matchUndo(uiMC.threshold, uiMC.useVol, uiMC.usePag, uiMC.useDOI)
+				crMatch.matchUndo(0.01d*uiMC.threshold, uiMC.useVol, uiMC.usePag, uiMC.useDOI)
 				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
 			} else {	// matchSame/Different/Extract
 				if (tab.getSelectedRowCount() == 0) {
 					JOptionPane.showMessageDialog(null, "No Cited References selected")
 				} else {
-					crMatch.matchManual (tab.getSelectedRows().collect { tab.convertRowIndexToModel (it) }, matchType, uiMC.threshold, uiMC.useVol, uiMC.usePag, uiMC.useDOI)
+					crMatch.matchManual (tab.getSelectedRows().collect { tab.convertRowIndexToModel (it) }, matchType, 0.01d*uiMC.threshold, uiMC.useVol, uiMC.usePag, uiMC.useDOI)
 					(tab.getModel() as AbstractTableModel).fireTableDataChanged()
 				}
 			}
@@ -65,7 +65,7 @@ class UIMatchPanelFactory {
 				
 				tr {
 					td (align:'left') {
-						framesPerSecond = slider(id:'threshSlider', minimum: 50, maximum:100,  value:75, 
+						framesPerSecond = slider(id:'threshSlider', minimum: 50, maximum:100,  value:bind ('threshold', source:uiMC, mutual:true),  
                         orientation: SwingConstants.HORIZONTAL, 
                         paintLabels:true,
                         paintTicks:true,

@@ -14,7 +14,7 @@ class UIBind {
 	
 	// Configuration of interactive matching
 	class UIMatchConfig {
-		double threshold = 0.75
+		int threshold = 75
 		boolean useVol = false
 		boolean usePag = false
 		boolean useDOI = false
