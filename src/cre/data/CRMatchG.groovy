@@ -14,7 +14,7 @@ import groovy.json.JsonBuilder
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class CRMatch {
+class CRMatchG {
 
 
 	class Pair {
@@ -76,7 +76,7 @@ class CRMatch {
 	
 	
 
-	public CRMatch (CRTable crTab, StatusBar stat) {
+	public CRMatchG(CRTable crTab, StatusBar stat) {
 		this.crTab = crTab
 		this.stat = stat
 		match = [:]

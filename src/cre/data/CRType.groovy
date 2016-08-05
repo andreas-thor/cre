@@ -40,9 +40,9 @@ public class CRType /* implements Comparable<CRType>*/ {
 	String J_S;
 	public int N_CR = 1;
 	public Integer RPY;
-	String PAG;
-	String VOL;
-	String DOI;
+	public String PAG;
+	public String VOL;
+	public String DOI;
 	public CRCluster CID2;
 	public int CID_S;
 	public int VI = 1;
@@ -57,7 +57,7 @@ public class CRType /* implements Comparable<CRType>*/ {
 
 //	String blockkey;
 	
-	int mergedTo = -1
+	public int mergedTo = -1
 	public boolean removed = false;
 	
 	// Mapping of internal attribute names to labels

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,12 +19,11 @@ import com.orsoncharts.util.json.JSONObject;
 
 import cre.ui.StatusBar;
 import cre.ui.UIMatchPanelFactory;
-import groovy.json.JsonBuilder;
 import groovy.transform.CompileStatic;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
 @CompileStatic
-class CRMatchJ {
+public class CRMatch {
 
 
 	class Pair {
@@ -57,7 +57,7 @@ class CRMatchJ {
 	
 	
 	private Map<Integer, Integer> crId2Index = new HashMap<Integer, Integer>();						// object Id -> index in crData list
-	public Map<CRCluster, List<Integer>> clusterId2Objects = new HashMap<CRCluster, List<Integer>>();		// clusterId->[object ids]
+	public Map<CRCluster, Set<Integer>> clusterId2Objects = new HashMap<CRCluster, Set<Integer>>();		// clusterId->[object ids]
 
 	public boolean hasMatches () {
 		return (match.get(true).size()>0) || (match.get(false).size()>0); 
@@ -91,7 +91,7 @@ class CRMatchJ {
 	
 	
 
-	public CRMatchJ (CRTable crTab, StatusBar stat) {
+	public CRMatch (CRTable crTab, StatusBar stat) {
 		this.crTab = crTab;
 		this.stat = stat;
 		match = new HashMap<Boolean, Map<Integer,Map<Integer,Double>>>();
@@ -106,7 +106,7 @@ class CRMatchJ {
 		clusterId2Objects.clear();
 		crTab.crData.forEach ( cr -> {
 			if (clusterId2Objects.get(cr.CID2) == null) {
-				clusterId2Objects.put(cr.CID2, new ArrayList<Integer>());
+				clusterId2Objects.put(cr.CID2, new HashSet<Integer>());
 			}
 			clusterId2Objects.get(cr.CID2).add (cr.ID);
 		});
@@ -347,11 +347,12 @@ class CRMatchJ {
 		
 		// TODO: J8 check (groovy uses with index ...)
 		
-		clusterId2Objects = new HashMap<CRCluster, List<Integer>>();
+		clusterId2Objects = new HashMap<CRCluster, Set<Integer>>();
 		crTab.crData.forEach ( it -> {
 			it.CID2 = useClustering ? new CRCluster (it.CID2.c1, it.ID) : new CRCluster (it.ID, 1);
 			it.CID_S = 1;
-			clusterId2Objects.put (it.CID2, new ArrayList<Integer>(Arrays.asList(it.ID)));
+			clusterId2Objects.put (it.CID2, new HashSet<Integer>());
+			clusterId2Objects.get (it.CID2).add(it.ID);
 		});
 		clusterMatch( null, threshold, useVol, usePag, useDOI);	// null == all objects are considered for clustering
 		
@@ -370,56 +371,64 @@ class CRMatchJ {
 	 */
 	
 	
-	private void clusterMatch (List<Integer> id, double threshold, boolean useVol, boolean usePag, boolean useDOI) throws Exception {
+	private void clusterMatch (Set<Integer> id, double threshold, boolean useVol, boolean usePag, boolean useDOI) throws Exception {
 		
-		String d = "${new Date()}: "
-		double mSize = (size(false)+size(true)).doubleValue()
-		int count = 0
+		Date startdate = new Date();
+		int mSize = (size(false)+size(true));
+		int count = 0;
 
 		if (id == null) {	// if no ids are given, use all ids with match pairs
-			id = new ArrayList<Integer>()
-			id.addAll(match[false].keySet())
-			id.addAll(match[true].keySet())
+			id = new HashSet<Integer>();
+			id.addAll(match.get(false).keySet());
+			id.addAll(match.get(true).keySet());
 		}
 		
 		// for all domain objects (id1)
-		id.each { Integer id1 ->
+		for (int id1: id) {
 			
 			if (Thread.interrupted()) throw new Exception();
-			stat.setValue (d + "Clustering with threshold ${threshold} in progress ...", Math.round ((double)(++count/mSize)*100d).intValue())
+			stat.setValue (String.format("%1$s: Clustering with threshold %2$f in progress ...", startdate, threshold), (int)Math.round (++count*100d/mSize));
 			
 			// for all matching range objects (id2 with id1<id2) 
-			Map<Integer, Double> tmpMap1 = match[false][id1]?:(Map<Integer, Double>)[:]
-			Map<Integer, Double> tmpMap2 = match[true][id1]?:(Map<Integer, Double>)[:]
-			(tmpMap1.keySet()+tmpMap2.keySet()).each { Integer id2 ->
+			Map<Integer, Double> tmpMap1 = match.get(false).get(id1) == null ? new HashMap<Integer, Double>() : match.get(false).get(id1);
+			Map<Integer, Double> tmpMap2 = match.get(true ).get(id1) == null ? new HashMap<Integer, Double>() : match.get(true ).get(id1);
+			
+			Set<Integer> allId2 = new HashSet<Integer>(tmpMap1.keySet());
+			allId2.addAll(tmpMap2.keySet());
+			allId2.forEach( id2 -> {
 	
-				double s = (tmpMap2[id2]?:tmpMap1[id2])?:-1d	// -1 if neither in automatic nor in manual (due to redo) 
+				double s = -1d;	// -1 if neither in automatic nor in manual (due to redo)
+				if (tmpMap2.get(id2) != null) {
+					s = tmpMap2.get(id2);
+				} else if (tmpMap1.get(id2) != null) {
+					s = tmpMap1.get(id2);
+				}
+
 				if (s>=threshold) {
 					
-					CRType cr1 = crTab.crData[crId2Index[id1]]
-					CRType cr2 = crTab.crData[crId2Index[id2]]
+					CRType cr1 = crTab.crData.get(crId2Index.get(id1));
+					CRType cr2 = crTab.crData.get(crId2Index.get(id2));
 					
-					CRCluster minId = (cr1.CID2.compareTo(cr2.CID2)<0) ? cr1.CID2 : cr2.CID2
-					CRCluster maxId = (cr1.CID2.compareTo(cr2.CID2)>0) ? cr1.CID2 : cr2.CID2
+					CRCluster minId = (cr1.CID2.compareTo(cr2.CID2)<0) ? cr1.CID2 : cr2.CID2;
+					CRCluster maxId = (cr1.CID2.compareTo(cr2.CID2)>0) ? cr1.CID2 : cr2.CID2;
 					
-					boolean vol = (!useVol) || (cr1.VOL?.equals (cr2.VOL)) // || (cr1.VOL.equals("")) || (cr2.VOL.equals(""))
-					boolean pag = (!usePag) || (cr1.PAG?.equals (cr2.PAG)) // || (cr1.PAG.equals("")) || (cr2.PAG.equals(""))
-					boolean doi = (!useDOI) || (cr1.DOI?.equalsIgnoreCase (cr2.DOI)) // || (cr1.DOI.equals("")) || (cr2.DOI.equals(""))
+					boolean vol = (!useVol) || ((cr1.VOL!=null) && (cr2.VOL!=null) && (cr1.VOL.equals (cr2.VOL))); // || (cr1.VOL.equals("")) || (cr2.VOL.equals(""))
+					boolean pag = (!usePag) || ((cr1.PAG!=null) && (cr2.PAG!=null) && (cr1.PAG.equals (cr2.PAG))); // || (cr1.PAG.equals("")) || (cr2.PAG.equals(""))
+					boolean doi = (!useDOI) || ((cr1.DOI!=null) && (cr2.DOI!=null) && (cr1.DOI.equalsIgnoreCase (cr2.DOI))); // || (cr1.DOI.equals("")) || (cr2.DOI.equals(""))
 	
 					// merge if different clusters and manual-same (s==2) or all criteria are true
 					if ((minId.compareTo(maxId)!=0) && ((s==2) || ((vol) && (pag) && (doi)))) {
-						clusterId2Objects[minId].addAll (clusterId2Objects[maxId])
-						clusterId2Objects[minId].unique()
-						int size = clusterId2Objects[minId].size()
-						clusterId2Objects[minId].each { crTab.crData[crId2Index[it]].CID_S = size }
-						clusterId2Objects[maxId].each { crTab.crData[crId2Index[it]].CID2 = minId }
-						clusterId2Objects.remove(maxId)
+						clusterId2Objects.get(minId).addAll (clusterId2Objects.get(maxId));
+						int size = clusterId2Objects.get(minId).size();
+						clusterId2Objects.get(minId).forEach( it -> { crTab.crData.get(crId2Index.get(it)).CID_S = size; });
+						clusterId2Objects.get(maxId).forEach( it -> { crTab.crData.get(crId2Index.get(it)).CID2 = minId; });
+						clusterId2Objects.remove(maxId);
 					}
 				}
-			}
+			});
 		}
 		
-		stat.setValue ("${new Date()}: Clustering done", 0, crTab.getInfoString())
+		stat.setValue (String.format("%1$s: Clustering done", new Date()), 0, crTab.getInfoString());
 	}
 	
 	
@@ -433,38 +442,40 @@ class CRMatchJ {
 	 * @param useVol
 	 * @param usePag
 	 * @param useDOI
+	 * @throws Exception 
 	 */
-	public void matchManual (List<Integer> idx, int matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
+	public void matchManual (List<Integer> idx, int matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) throws Exception {
 		
 		// TODO: Performanter machen
 		
 		
-		Long timestamp = System.currentTimeMillis()		// used to group together all individual mapping pairs of match operation
+		Long timestamp = System.currentTimeMillis();		// used to group together all individual mapping pairs of match operation
 		
-		List<Integer> crIds = idx.collect { Integer it -> crTab.crData[it].ID }
+		Set<Integer> crIds = idx.stream().map(it -> crTab.crData.get(it).ID ).collect(Collectors.toSet());
 		 
 		// manual-same is indicated by similarity = 2; different = -2
 		if ((matchType==UIMatchPanelFactory.matchSame) || (matchType==UIMatchPanelFactory.matchDifferent)) {
-			crIds.each { Integer id1 ->
-				crIds.each { Integer id2 ->
-					if (id1<id2) setMapping(id1, id2, ((matchType==UIMatchPanelFactory.matchSame) ? 2d : -2d), true, false, timestamp)
+			for (Integer id1: crIds) {
+				for (Integer id2: crIds) {
+					if (id1<id2) setMapping(id1, id2, ((matchType==UIMatchPanelFactory.matchSame) ? 2d : -2d), true, false, timestamp);
 				}
 			}
 		}
 		if (matchType==UIMatchPanelFactory.matchExtract) {
-			crIds.each { Integer id1 ->
-				clusterId2Objects[crTab.crData[crId2Index[id1]].CID2].each { Integer id2 ->
-					setMapping(id1, id2, -2d, true, false, timestamp)
+			for (Integer id1: crIds) {
+				for (Integer id2: clusterId2Objects.get(crTab.crData.get(crId2Index.get(id1)).CID2)) {
+					setMapping(id1, id2, -2d, true, false, timestamp);
 				}
 			}
 		}
 
 		
 		if (matchType==UIMatchPanelFactory.matchSame) {	// cluster using the existing cluster
-			clusterMatch(crIds, matchThreshold, useVol, usePag, useDOI)
+			clusterMatch(crIds, matchThreshold, useVol, usePag, useDOI);
 		} else { 	// re-initialize the clusters that may be subject to split and rerun clustering for all objects of the clusters
 			// find all relevant clusters
-			clusterMatch(reInitObjects (idx.collect { Integer it -> crTab.crData[it].CID2 }.unique()), matchThreshold, useVol, usePag, useDOI)
+			clusterMatch(reInitObjects (idx.stream().map ( it -> crTab.crData.get(it).CID2).collect(Collectors.toSet())), matchThreshold, useVol, usePag, useDOI);
+			
 		}
 		
 	}
@@ -475,31 +486,35 @@ class CRMatchJ {
 	 * @param clusterIds
 	 * @return list of object ids
 	 */
-	private List<Integer> reInitObjects (Collection<CRCluster> clusterIds) {
+	private Set<Integer> reInitObjects (Collection<CRCluster> clusterIds) {
 		
 //		println "Clusterids ${clusterIds}"
-		List<Integer> objects = []
-		clusterIds.each { CRCluster clid -> clusterId2Objects[clid].each { Integer it -> objects << it } }
-		objects.unique()
+		Set<Integer> objects = new HashSet<Integer>();
+		
+		clusterIds.stream().forEach( clid -> { clusterId2Objects.get(clid).stream().forEach( it -> { objects.add(it); }); });
 //		println "Objects ${objects}"
 		
 		// initialize clustering
-		objects.each { Integer it ->
-			int index = crId2Index[it]
+		objects.stream().forEach ( it -> {
+			int index = crId2Index.get(it);
 //				println "crId = ${it}, index = ${index}, cluster = ${crTab.crData[index].CID2}"
 			
-			crTab.crData[index].CID2 = new CRCluster (crTab.crData[index].CID2.c1, it)
-			crTab.crData[index].CID_S = 1
-			clusterId2Objects[crTab.crData[index].CID2] = [it]
+			crTab.crData.get(index).CID2 = new CRCluster (crTab.crData.get(index).CID2.c1, it);
+			crTab.crData.get(index).CID_S = 1;
+			
+			Set<Integer> tmp = new HashSet<Integer>();
+			tmp.add(it);
+			clusterId2Objects.put(crTab.crData.get(index).CID2, tmp);
+			
 //				println crTab.crData[index]
-		}
+		});
 		
 //			println clusterId2Objects
-		objects
+		return objects;
 	}
 	
 	
-	public void matchUndo (double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
+	public void matchUndo (double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) throws Exception {
 		
 		
 		if (timestampedPairs.keySet().size()==0) return;
@@ -511,12 +526,12 @@ class CRMatchJ {
 		undoPairs.forEach (p -> setMapping(p.id1, p.id2, p.s, true, false));
 		
 		// get relevant cluster ids and remove
-		Collection<CRCluster> clusterIds = undoPairs.collect { Pair p -> crTab.crData[crId2Index[p.id1]].CID2 }
-		clusterIds.addAll(undoPairs.collect { Pair p -> crTab.crData[crId2Index[p.id2]].CID2 })
+		Set<CRCluster> clusterIds = undoPairs.stream().map (p -> crTab.crData.get(crId2Index.get(p.id1)).CID2 ).collect(Collectors.toSet());
+		clusterIds.addAll(undoPairs.stream().map (p -> crTab.crData.get(crId2Index.get(p.id2)).CID2 ).collect(Collectors.toSet()));
 
 		// remove last undo/able operation and re/cluster
-		timestampedPairs.remove(lastTimestamp)
-		clusterMatch(reInitObjects (clusterIds.unique()), matchThreshold, useVol, usePag, useDOI)
+		timestampedPairs.remove(lastTimestamp);
+		clusterMatch(reInitObjects (clusterIds), matchThreshold, useVol, usePag, useDOI);
 		
 	}
 		
@@ -525,52 +540,60 @@ class CRMatchJ {
 		
 		stat.setValue ("Start merging ...", 0);
 				
-		clusterId2Objects.eachWithIndex { cid, crlist, cidx ->
+		double progressFactor = 100d / clusterId2Objects.keySet().size();
+		int cidx = 0;
+		for (Map.Entry<CRCluster, Set<Integer>> entry: clusterId2Objects.entrySet()) {
+//		clusterId2Objects.eachWithIndex { cid, crlist, cidx ->
 			
-			stat.setValue ("Merging in progress ...", ((cidx.doubleValue()/clusterId2Objects.keySet().size().doubleValue())*100).intValue())
+			stat.setValue ("Merging in progress ...", (int)(cidx*progressFactor));
 			
-			if (crlist.size()>1) {
+			if (entry.getValue().size()>1) {
 				
-				int max_N_CR = 0
-				int max_cr = 0
-				int sum_N_CR = 0
+				int max_N_CR = 0;
+				int max_cr = 0;
+				int sum_N_CR = 0;
 	
 				// sum all N_CR; find max
-				crlist.each { it ->
-					int idx = crId2Index[it]
-					sum_N_CR += crTab.crData[idx].N_CR
-					if (crTab.crData[idx].N_CR>max_N_CR) {
-						max_N_CR = crTab.crData[idx].N_CR
-						max_cr = idx
+				for (Integer it: entry.getValue()) {
+					int idx = crId2Index.get(it);
+					sum_N_CR += crTab.crData.get(idx).N_CR;
+					if (crTab.crData.get(idx).N_CR>max_N_CR) {
+						max_N_CR = crTab.crData.get(idx).N_CR;
+						max_cr = idx;
 					}
-				}
+				};
 				
 				// update cluster representative; invalidate all others (set mergedTo)
-				crlist.each {
-					int idx = crId2Index[it]
+				for (Integer it: entry.getValue()) {
+					int idx = crId2Index.get(it);
 					if (idx == max_cr) {
-						crTab.crData[idx].N_CR = sum_N_CR
-						crTab.crData[idx].CID_S = 1
+						crTab.crData.get(idx).N_CR = sum_N_CR;
+						crTab.crData.get(idx).CID_S = 1;
 					} else {
-						crTab.crData[idx].mergedTo = max_cr
+						crTab.crData.get(idx).mergedTo = max_cr;
 					}
-				}
+				};
 				
 			}
 			
-			
+			cidx++;
 		}
 		
 		// for all CRs that will eventually be removed: add the cluster representative to the crList of each publication
-		crTab.pubData.each { PubType pub ->
-			pub.crList.addAll (pub.crList.findAll { CRType it -> it.mergedTo >= 0 }.collect { CRType it -> crTab.crData[it.mergedTo] })
-			pub.crList.unique()	// in case, both merged CRs are in a list of the same publication
+		for (PubType pub: crTab.pubData) {
+			pub.crList.addAll (
+				pub.crList.stream()
+					.filter ( it -> it.mergedTo >= 0)
+					.map ( it -> crTab.crData.get(it.mergedTo))
+					.collect(Collectors.toList())
+			);
+			pub.crList = new ArrayList<CRType>(new HashSet<CRType>(pub.crList));	// in case, both merged CRs are in a list of the same publication
 		}
 		
 		// remove all invalidated CRs
-		crTab.crData.removeAll { CRType it -> it.mergedTo >= 0 }
-		crTab.updateData(true)
-		stat.setValue ("Merging done", 0, crTab.getInfoString())
+		crTab.crData.removeIf ( it -> { return (it.mergedTo >= 0); } );
+		crTab.updateData(true);
+		stat.setValue ("Merging done", 0, crTab.getInfoString()); 
 		
 	}
 	
