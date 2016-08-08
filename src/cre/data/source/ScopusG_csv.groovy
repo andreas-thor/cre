@@ -13,12 +13,12 @@ import cre.ui.StatusBar
 import groovy.transform.CompileStatic
 
 @CompileStatic
-public class Scopus_csv extends FileImportExport {
+public class ScopusG_csv extends FileImportExport {
 
 	CSVReader csv
 	String[] attributes = null
 	
-	public Scopus_csv(int[] yearRange, BufferedReader br) {
+	public ScopusG_csv(int[] yearRange, BufferedReader br) {
 		super (yearRange, br)
 
 		csv = new CSVReader(br)
@@ -38,6 +38,7 @@ public class Scopus_csv extends FileImportExport {
 		
 		if (attributes == null) return null
 		String[] line = csv.readNext()
+		
 		if (line == null) return null
 
 		HashMap<String, String> entries = [:]

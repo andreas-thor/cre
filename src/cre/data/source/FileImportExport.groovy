@@ -55,7 +55,7 @@ public abstract class FileImportExport {
 			FileImportExport parser = null
 			switch (source) {
 				case "WoS_txt": parser = new WoS_txt(yearRange, br); break
-				case "Scopus_csv": parser = new Scopus_csv(yearRange, br); break
+				case "Scopus_csv": parser = new ScopusG_csv(yearRange, br); break
 				default: throw new UnsupportedFileFormatException()
 			}
 			

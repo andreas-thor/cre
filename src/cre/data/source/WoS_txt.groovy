@@ -53,7 +53,7 @@ public class WoS_txt extends FileImportExport {
 			entries.get(tagBlock).add(line.substring(3)) 
 		}
 		
-		
+		if (entries.size() == 0) return null; 
 		return new PubType().parseWoS(entries, length, yearRange)
 	}
 	

@@ -66,7 +66,7 @@ public class PubType {
 	Integer PG	// Page Count
 	
 	Integer TC	// Times Cited
-	public List<CRType> crList = new ArrayList<CRType>()
+	public ArrayList<CRType> crList = new ArrayList<CRType>()
 	
 	String DI	// Digital Object Identifier (DOI)
 	String LI	// Link	(Scopus only)
@@ -122,7 +122,7 @@ public class PubType {
 		
 		TC = entries.get("TC")?.get(0)?.isInteger() ? entries.get("TC").get(0).toInteger() : null
 		if (entries.get("CR") != null) {
-			crList = entries.get("CR")?.collect { String it -> new CRType().parseWoS (it, yearRange) }?.findAll { CRType it -> it != null } as List
+			crList = entries.get("CR")?.collect { String it -> new CRType().parseWoS (it, yearRange) }?.findAll { CRType it -> it != null } as ArrayList
 		}
 
 		DI = entries.get("DI")?.join(" ")
@@ -187,7 +187,18 @@ public class PubType {
 	}
 	
 	
-	
+	public PubType parseScopus (String[] line, String[] attributes, int[] yearRange) {
+		HashMap<String, String> entries = new HashMap<String, String>();
+		
+		int length = 0;
+		for (int i=0; i<line.length; i++) {
+			entries.put(attributes[i], line[i]);
+			length += 1 + line[i].length();
+		}
+		
+		return parseScopus (entries, length, yearRange);
+	}
+		
 	public PubType parseScopus (HashMap<String, String> entries, int length, int[] yearRange) {
 		
 		this.length = length
@@ -237,7 +248,7 @@ public class PubType {
 		PG = entries.get('Page count')?.isInteger() ? entries.get('Page count').toInteger() : null
 		
 		TC = entries.get('Cited by')?.isInteger() ? entries.get('Cited by').toInteger() : null
-		crList = entries.get('References')?.split(";").collect { String it -> new CRType().parseScopus (it, yearRange) }.findAll { CRType it -> it != null } as List
+		crList = entries.get('References')?.split(";").collect { String it -> new CRType().parseScopus (it, yearRange) }.findAll { CRType it -> it != null } as ArrayList
 
 		DI = entries.get('DOI')
 		LI = entries.get('Link')
@@ -311,7 +322,7 @@ public class PubType {
 		EP = j.EP as Integer
 		PG = j.PG as Integer
 		TC = j.TC as Integer
-		crList = (j.CRLISTID as String[]).collect { crData[crId2Index[it as int]] }
+		crList = (j.CRLISTID as String[]).collect { crData[crId2Index[it as int]] } as ArrayList
 		DI = j.DI as String
 		LI = j.LI as String
 		AB = j.AB as String

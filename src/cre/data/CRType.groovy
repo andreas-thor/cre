@@ -29,7 +29,7 @@ public class CRType /* implements Comparable<CRType>*/ {
 	
 	
 	public int ID;
-	String CR;
+	public String CR;
 	String AU;
 	String AU_F;
 	public String AU_L;
