@@ -233,8 +233,10 @@ class CRMatchG {
 		Levenshtein l = new Levenshtein();
 		long progMax = blocks.size()
 		long progCount = 0
+		long testCount = 0
 		double s, s2
 		
+		Long stop1 = System.currentTimeMillis();
 		String d = "${new Date()}: "
 		double threshold = 0.5
 
@@ -287,12 +289,17 @@ class CRMatchG {
 						s = sim/weight		// weighted average of AU_L, J_N, and TI
 						if (s>=threshold) {
 							setMapping(comp_CR[0].ID, comp_CR[1].ID, s, false, true)
+							testCount++
 						}
 					}
 				}
 			}
 		
 		}
+		
+		Long stop2 = System.currentTimeMillis();
+		System.out.println("Match time is " + ((stop2-stop1)/100) + " deci-seconds");
+		System.out.println("TestCount == " + testCount);
 		
 		println "CRMatch> matchresult size is " + size(false)
 		stat.setValue("${d}Matching done", 0)

@@ -197,7 +197,7 @@ public class CRMatch {
 		double v = add ? match.get(isManual).get(id1).getOrDefault(id2, 0d) : 0d;
 		match.get(isManual).get(id1).put(id2, (s==null) ? null : s+v);
 	}
-
+ 
 
 
 	public Map getMapping (Integer id1, Boolean isManual) {
@@ -250,16 +250,21 @@ public class CRMatch {
 		long progMax = blocks.size();
 		AtomicLong progCount = new AtomicLong(0);
 		
+		AtomicLong testCount = new AtomicLong(0);
+		
+		
 		Date startdate = new Date();
+		Long stop1 = System.currentTimeMillis(); 
 		double threshold = 0.5;
 
 		// TODO: handle missing values
 		// TODO: incorporate title (from scopus)
 		
 		// Matching: author lastname & journal name
-		blocks.entrySet().stream().forEach( entry -> {
+		List<Pair> matchResult = blocks.entrySet().parallelStream().map( entry -> {
 			
-		
+			List<Pair> result = new ArrayList<Pair>();
+			
 			String b = entry.getKey();
 			ArrayList<Integer> crlist = entry.getValue();
 			
@@ -269,24 +274,21 @@ public class CRMatch {
 			// allX = List of all AU_L values;
 			List<String> allX = crlist.stream().map ( it -> crTab.crData.get(it).AU_L.toLowerCase() ).collect (Collectors.toList());
 
-			// compareY = List of compare string is in reverse order, i.e., pop() (takes last element) actually removes the "logical" first element
+			// compareY = List of compare string 
 			ArrayList<String> compareY = new ArrayList<String>(allX);
-			Collections.reverse(compareY);
 			
 			// ySize is used to re-adjust the index (correctIndex = ySize-yIdx-1)
-			int ySize = compareY.size();
-
 			int xIndx = 0;
 			for (String x: allX) {
 				
-				// TODO: compareY als array und dann copyof statt pop+transform
-				compareY.remove(0);
+				// TODO: compareY als array und dann copyof statt remove + transform
+				compareY.remove(0);	// remove first element
 				int yIndx = 0;
 				for (double s1: l.batchCompareSet(compareY.toArray(new String[compareY.size()]), x)) {
 					if (s1>=threshold) {
 
 						// the two CR to be compared
-						CRType[] comp_CR = new CRType[] { crTab.crData.get(crlist.get(xIndx)), crTab.crData.get(crlist.get(ySize-yIndx-1)) };
+						CRType[] comp_CR = new CRType[] { crTab.crData.get(crlist.get(xIndx)), crTab.crData.get(crlist.get(xIndx+yIndx+1/*ySize-yIndx-1*/)) };
 						
 						// increasing sim + weight if data is available; weight for author is 2
 						double sim = 2*s1;
@@ -309,7 +311,11 @@ public class CRMatch {
 						
 						double s = sim/weight;		// weighted average of AU_L, J_N, and TI
 						if (s>=threshold) {
-							setMapping(comp_CR[0].ID, comp_CR[1].ID, s, false, true);
+//							setMapping(comp_CR[0].ID, comp_CR[1].ID, s, false, true);
+							testCount.incrementAndGet();
+							
+							// cannot invoke setMapping in a parallel stream -> collect result ... 
+							result.add(new Pair (comp_CR[0].ID, comp_CR[1].ID, s));
 						}
 					}
 					yIndx++;
@@ -318,8 +324,17 @@ public class CRMatch {
 				xIndx++;
 			}
 		
-		});
+			return result;})
+		.flatMap(it -> it.stream())
+        .collect(Collectors.toList());
 		
+		// ... and invoke sequentially
+		matchResult.forEach(it -> { setMapping(it.id1, it.id2, it.s, false, true); });
+		
+		
+		Long stop2 = System.currentTimeMillis();
+		System.out.println("Match time is " + ((stop2-stop1)/100) + " deci-seconds");
+		System.out.println("TestCount == " + testCount);
 		System.out.println("CRMatch> matchresult size is " + size(false));
 		stat.setValue(String.format("%1$s: Matching done", startdate), 0);
 		

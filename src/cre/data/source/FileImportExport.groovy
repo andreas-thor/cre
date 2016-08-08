@@ -105,7 +105,11 @@ public abstract class FileImportExport {
 						cr.CID2 = new CRCluster (indexCount+1, 1)
 						cr.CID_S = 1
 						crTab.crData << cr
-						crTab.crMatch.clusterId2Objects[cr.CID2] = new HashSet<Integer>(Arrays.asList(indexCount+1));
+						
+						HashSet<Integer> tmp = new HashSet<Integer>();
+						tmp.add(indexCount+1);
+						crTab.crMatch.clusterId2Objects[cr.CID2] = tmp;
+//						crTab.crMatch.clusterId2Objects[cr.CID2] = [indexCount+1];
 						indexCount++
 					}
 					
