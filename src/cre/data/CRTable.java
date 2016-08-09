@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IntSummaryStatistics;
 import java.util.Iterator;
 import java.util.List;
@@ -59,6 +60,53 @@ public class CRTable {
 		showNull = true;
 		crMatch.clear();
 		pubData.clear();
+	}
+	
+	
+	
+	public void createCRList () {
+		
+		// TODO: initialize crDup  when "no init" mode  
+		HashMap<Character,  HashMap<String,Integer>> crDup = new HashMap<Character,  HashMap<String,Integer>>(); // first character -> (crString -> id )
+		int indexCount = 0;
+	
+		for (PubType pub: pubData) {
+				
+			int crPos = 0;
+			for (CRType cr: pub.crList) {
+					
+				// if CR already in database: increase N_CR by 1; else add new record
+				crDup.putIfAbsent(cr.CR.charAt(0), new HashMap<String,Integer>());
+				Integer id = crDup.get(cr.CR.charAt(0)).get(cr.CR);
+				if (id != null) {
+					crData.get(id).N_CR++;
+					pub.crList.set(crPos, crData.get(id));
+				} else {
+					crDup.get(cr.CR.charAt(0)).put (cr.CR, indexCount);
+					
+
+					
+					// todo: add new CR as separate function (make clusterId2Objects private again)
+					
+					cr.ID = indexCount+1;
+					cr.CID2 = new CRCluster (indexCount+1, 1);
+					cr.CID_S = 1;
+					crData.add (cr);
+					
+					HashSet<Integer> tmp = new HashSet<Integer>();
+					tmp.add(indexCount+1);
+					crMatch.clusterId2Objects.put(cr.CID2, tmp);
+//								crTab.crMatch.clusterId2Objects[cr.CID2] = [indexCount+1];
+					indexCount++;
+				}
+				crPos++;
+					
+			} 
+				
+//						this.noOfPubs++
+//					this.noOfPubs += parser.noOfPubs
+
+		};
 	}
 	
 	/**

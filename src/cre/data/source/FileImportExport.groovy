@@ -32,6 +32,7 @@ public abstract class FileImportExport {
 	 */
 	public static  void load (CRTable crTab, StatusBar stat, String source, File[] files, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError {
 		
+		long ts1 = System.currentTimeMillis();
 		crTab.abort = false	// can be changed by "wait dialog"
 		
 		String d = "${new Date()}: "
@@ -133,6 +134,9 @@ public abstract class FileImportExport {
 //
 //		println indexCount
 		
+		
+		long ts2 = System.currentTimeMillis();
+		System.out.println("Load time is " + ((ts2-ts1)/1000d) + " seconds");
 		
 		crTab.updateData(false)
 		stat.setValue("${new Date()}: Loading files done", 0, crTab.getInfoString())

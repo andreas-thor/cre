@@ -1,14 +1,12 @@
 package cre.data
 
 
-import java.util.List
-import java.util.regex.Matcher;
-
-import com.orsoncharts.util.json.JSONObject;
-
 import groovy.json.JsonBuilder
-import groovy.json.JsonOutput
 import groovy.transform.CompileStatic
+
+import java.util.regex.Matcher
+
+import com.orsoncharts.util.json.JSONObject
 
 
 /*
@@ -45,43 +43,122 @@ UT		UT		EID												Unique Article Identifier
 @CompileStatic
 public class PubType {
 
-	String PT	// Publication Type (WoS only)
+	public String PT	// Publication Type (WoS only)
 	
-	String[] AU	= [] // Authors; each author has format: "<lastname>, <initials_without_dots>"
-	String[] AF	= [] // Authors Full Name; format: "<lastname>, <firstnames>
-	List<String[]> C1 = [] // Authors with Affiliations / Adresses; format: "array ("<lastname>, <firstnames>]", "<affiliation>")
-	List<String> EM = [] // E-Mail Adressess
-	List<String> AA	// All affiliations	(Scopus only)
+	public List<String> AU	= [] // Authors; each author has format: "<lastname>, <initials_without_dots>"
+	public List<String> AF	= [] // Authors Full Name; format: "<lastname>, <firstnames>
+	public List<String[]> C1 = [] // Authors with Affiliations / Adresses; format: "array ("<lastname>, <firstnames>]", "<affiliation>")
+	public List<String> EM = [] // E-Mail Adressess
+	public List<String> AA	// All affiliations	(Scopus only)
 	
-	String TI 	// Title
-	Integer PY 	// Year
+	public String TI 	// Title
+	public Integer PY 	// Year
 	
-	String SO	// Source title
-	String VL	// Volume
-	String IS 	// Issue
-	String AR 	// Article Number
+	public String SO	// Source title
+	public String VL	// Volume
+	public String IS 	// Issue
+	public String AR 	// Article Number
 	
-	Integer BP	// Beginning Page / Page Start
-	Integer EP	// Ending Page / Page End
-	Integer PG	// Page Count
+	public Integer BP	// Beginning Page / Page Start
+	public Integer EP	// Ending Page / Page End
+	public Integer PG	// Page Count
 	
-	Integer TC	// Times Cited
+	public Integer TC	// Times Cited
 	public ArrayList<CRType> crList = new ArrayList<CRType>()
 	
-	String DI	// Digital Object Identifier (DOI)
-	String LI	// Link	(Scopus only)
-	String AB	// Abstract
-	String DE	// Author Keywords
+	public String DI	// Digital Object Identifier (DOI)
+	public String LI	// Link	(Scopus only)
+	public String AB	// Abstract
+	public String DE	// Author Keywords
 	
-	String DT	// Document Typs
-	String FS	// File Source	(Scopus only)
-	String UT	// Unique Article Identifier
+	public String DT	// Document Typs
+	public String FS	// File Source	(Scopus only)
+	public String UT	// Unique Article Identifier
 
 	
 	public int length	// approx. size for import status bar
 
 
-	static Matcher Scopus_matchEMail = "" =~ '\\s(\\S+@\\w+(\\.\\w+)+)\\W*'
+	
+	
+	public static PubType createWoS (List<String> it, int[] yearRange) {
+		
+		String currentTag = "";
+		String tagBlock = "";
+		String value = "";
+			
+		PubType pub = new PubType();
+		pub.FS = "WoS";
+		pub.length = 0;
+		List<String> C1 = new ArrayList<String>();
+		
+		for (String l: it) {
+			pub.length += 1 + l.length();
+			if (l.length()<2) continue;
+			currentTag = l.substring(0, 2);
+			if (currentTag.equals("ER")) continue;
+			if (currentTag.equals("EF")) continue;
+			tagBlock = currentTag.equals("  ") ? tagBlock : new String(currentTag);
+			value = l.substring(3);
+			
+			
+			switch (tagBlock) {
+			
+			case "PT": pub.PT = value; break;
+			
+			/* Concatenated Strings */
+			case "TI": pub.TI = (pub.TI==null) ? value : pub.TI+" "+value; break;
+			case "SO": pub.SO = (pub.SO==null) ? value : pub.SO+" "+value; break;
+			case "VL": pub.VL = (pub.VL==null) ? value : pub.VL+" "+value; break;
+			case "IS": pub.IS = (pub.IS==null) ? value : pub.IS+" "+value; break;
+			case "AR": pub.AR = (pub.AR==null) ? value : pub.AR+" "+value; break;
+			case "DI": pub.DI = (pub.DI==null) ? value : pub.DI+" "+value; break;
+			case "LI": pub.LI = (pub.LI==null) ? value : pub.LI+" "+value; break;
+			case "AB": pub.AB = (pub.AB==null) ? value : pub.AB+" "+value; break;
+			case "DE": pub.DE = (pub.DE==null) ? value : pub.DE+" "+value; break;
+			case "DT": pub.DT = (pub.DT==null) ? value : pub.DT+" "+value; break;
+			case "UT": pub.UT = (pub.UT==null) ? value : pub.UT+" "+value; break;
+			
+			/* Integer values */
+			case "PY": pub.PY = Integer.valueOf(value); break;
+			case "BP": pub.BP = Integer.valueOf(value); break;
+			case "EP": pub.EP = Integer.valueOf(value); break;
+			case "PG": pub.PG = Integer.valueOf(value); break;
+			case "TC": pub.TC = Integer.valueOf(value); break;
+			
+			/* Parse Cited References */
+			case "CR": CRType cr = new CRType().parseWoS(value, yearRange); if (cr!=null) pub.crList.add(cr); break;
+			
+			/* Authors */
+			case "AU": if (pub.AU==null) pub.AU=new ArrayList<String>(); pub.AU.add(value); break;
+			case "AF": if (pub.AF==null) pub.AF=new ArrayList<String>(); pub.AF.add(value); break;
+			case "EM": pub.EM = new ArrayList<String>(Arrays.asList(value.split("; "))); break;
+			
+			/* store C1 values in a separate list for further processing */
+			case "C1": C1.add(value); break;
+			}
+		}
+		
+		if (pub.PT==null) return null;
+		
+		pub.C1 = new ArrayList<String[]>();
+		pub.AA = new ArrayList<String>();
+		for (String corr: C1) {
+			int pos = corr.indexOf(']');
+			if (pos>0) {
+				String names = corr.substring(1, pos);
+				String affiliation = corr.substring (pos+2);
+				for (String name: names.split("; ")) {
+					String[] tmp = new String[2]; tmp[0] = name; tmp[1] = affiliation;
+					pub.C1.add (tmp);
+					pub.AA.add (affiliation);
+				}
+			}
+		}
+		
+		return pub;
+	}
+	
 	
 
 	public PubType parseWoS (HashMap<String, ArrayList<String>> entries, int length, int[] yearRange) {
@@ -201,6 +278,8 @@ public class PubType {
 		
 	public PubType parseScopus (HashMap<String, String> entries, int length, int[] yearRange) {
 		
+		Matcher Scopus_matchEMail = "" =~ '\\s(\\S+@\\w+(\\.\\w+)+)\\W*'
+		
 		this.length = length
 		
 		PT = "J" // TODO: what is the default Publication Type? (No value in scopus!)
@@ -226,9 +305,9 @@ public class PubType {
 				println "@@@"
 			}
 			
-			PubType.Scopus_matchEMail.reset(it)
-			if (PubType.Scopus_matchEMail.find()) {
-				String[] m = (String[]) PubType.Scopus_matchEMail[0]
+			Scopus_matchEMail.reset(it)
+			if (Scopus_matchEMail.find()) {
+				String[] m = (String[]) Scopus_matchEMail[0]
 				println m
 				EM << (m[1] as String)
 			}
@@ -307,8 +386,8 @@ public class PubType {
 	public PubType parseJSON (JSONObject j, List<CRType> crData, HashMap<Integer, Integer> crId2Index) {
 		
 		PT = j.PT as String
-		AU = j.AU as String[]
-		AF = j.AF as String[]
+		AU = j.AU as List<String>
+		AF = j.AF as List<String>
 		C1 = j.C1.collect { it as String[] }
 		EM = j.EM as List<String>
 		AA = j.AA as List<String>

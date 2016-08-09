@@ -11,21 +11,17 @@ import groovy.json.JsonOutput;
 import groovy.transform.CompileStatic
 
 @CompileStatic
-public class CRType /* implements Comparable<CRType>*/ {
+public class CRTypeG /* implements Comparable<CRType>*/ {
 
 	
-	static Matcher WoS_matchAuthor = "" =~ "([^ ]*)( )?(.*)?"
-	static List<Matcher> WoS_matchAuthorVon = ["(von )()", "(van )(der )?", "(van't )()"].collect { "" =~ "${it}([^ ]*)( )([^ ]*)(.*)" }
-	static Matcher WoS_matchPageVolumes = "" =~ "([PV])([0-9]+)"
-	static Matcher WoS_matchDOI = "" =~ ".*DOI (10\\.[^/]+/ *[^ ,]+).*"
+	static Matcher sWoS_matchAuthor = "" =~ "([^ ]*)( )?(.*)?"
+	static List<Matcher> sWoS_matchAuthorVon = ["(von )()", "(van )(der )?", "(van't )()"].collect { "" =~ "${it}([^ ]*)( )([^ ]*)(.*)" }
+	static Matcher sWoS_matchPageVolumes = "" =~ "([PV])([0-9]+)"
+	static Matcher sWoS_matchDOI = "" =~ ".*DOI (10\\.[^/]+/ *[^ ,]+).*"
+
 
 	
-	static Matcher Scopus_matchBlock = "" =~ "^([A-Y ]+)(\\: )(.*)"
-	static List<Matcher> Scopus_matchPAG  = ["" =~ "p\\. ([0-9]+)\$", "" =~ "p\\. ([0-9]+)[\\.;,]",  "" =~ "pp\\. ([0-9]+)\\-[0-9]+[\\.;,]", "" =~ "pp\\. ([0-9]+)\\-[0-9]+\$"]
-	static List<Matcher> Scopus_matchVOL  = ["" =~ "([0-9]+)", "" =~ "([0-9]+) \\([0-9]+\\)", "" =~ "([0-9]+) \\([0-9]+\\-[0-9]+\\)"]
-	static Matcher Scopus_matchAuthor = "" =~ "^([^,]+),([ A-Z\\-\\.]+\\.),(.*)"
-	static Matcher Scopus_matchYearTitle = "" =~ "(.*?)\\((\\d{4})\\)(.*)"
-	static Matcher Scopus_matchDOI = "" =~ ".*((DOI)|(doi))\\:?=?(10\\.[^/]+/ *[^;,]+).*"
+
 	
 	
 	public int ID;
@@ -88,6 +84,18 @@ public class CRType /* implements Comparable<CRType>*/ {
 	
 	public CRType parseWoS (String line, int[] yearRange) {
 		
+//		Matcher WoS_matchAuthor = (Matcher) (sWoS_matchAuthor.clone()) //  "" =~ "([^ ]*)( )?(.*)?"
+//		List<Matcher> WoS_matchAuthorVon = (List<Matcher>) (sWoS_matchAuthorVon.collect { it -> (Matcher) it.clone() }) // ["(von )()", "(van )(der )?", "(van't )()"].collect { "" =~ "${it}([^ ]*)( )([^ ]*)(.*)" }
+//		Matcher WoS_matchPageVolumes = (Matcher) (sWoS_matchPageVolumes.clone())  //"" =~ "([PV])([0-9]+)"
+//		Matcher WoS_matchDOI = (Matcher) (sWoS_matchDOI.clone()) // "" =~ ".*DOI (10\\.[^/]+/ *[^ ,]+).*"
+
+		
+		Matcher WoS_matchAuthor =  "" =~ "([^ ]*)( )?(.*)?"
+		List<Matcher> WoS_matchAuthorVon = ["(von )()", "(van )(der )?", "(van't )()"].collect { "" =~ "${it}([^ ]*)( )([^ ]*)(.*)" }
+		Matcher WoS_matchPageVolumes = "" =~ "([PV])([0-9]+)"
+		Matcher WoS_matchDOI = (Matcher) "" =~ ".*DOI (10\\.[^/]+/ *[^ ,]+).*"
+
+		 
 		CR = line // [3..-1] // .toUpperCase()
 		type = TYPE_WOS
 		
@@ -107,12 +115,14 @@ public class CRType /* implements Comparable<CRType>*/ {
 		
 		// process "difficult" last names starting with "von" etc.
 		if ((AU.length()>0) && (AU[0]=='v')) {
-			WoS_matchAuthorVon.each { Matcher matchVon ->
-				matchVon.reset(AU)
+			
+			for (Matcher matchVon: WoS_matchAuthorVon) {
+				matchVon.reset(AU);
 				if (matchVon.matches()) {
 					String[] m = (String[]) matchVon[0]
 					AU_L = (m[1] + (m[2]?:"") + m[ ((m[3] == "") ? 5 : 3) ]).replaceAll(" ","").replaceAll("\\-","")
 					AU_F = ((((m[3] == "") ? "" : m[5]) + m[6]).trim() as List)[0]?:""	// cast as List to avoid Index out of Bounds exception
+					break;
 				}
 			}
 		}
@@ -176,6 +186,13 @@ public class CRType /* implements Comparable<CRType>*/ {
 
 	
 	public CRType parseScopus (String line, int[] yearRange) {
+		
+		Matcher Scopus_matchBlock = "" =~ "^([A-Y ]+)(\\: )(.*)"
+		List<Matcher> Scopus_matchPAG  = ["" =~ "p\\. ([0-9]+)\$", "" =~ "p\\. ([0-9]+)[\\.;,]",  "" =~ "pp\\. ([0-9]+)\\-[0-9]+[\\.;,]", "" =~ "pp\\. ([0-9]+)\\-[0-9]+\$"]
+		List<Matcher> Scopus_matchVOL  = ["" =~ "([0-9]+)", "" =~ "([0-9]+) \\([0-9]+\\)", "" =~ "([0-9]+) \\([0-9]+\\-[0-9]+\\)"]
+		Matcher Scopus_matchAuthor = "" =~ "^([^,]+),([ A-Z\\-\\.]+\\.),(.*)"
+		Matcher Scopus_matchYearTitle = "" =~ "(.*?)\\((\\d{4})\\)(.*)"
+		Matcher Scopus_matchDOI = "" =~ ".*((DOI)|(doi))\\:?=?(10\\.[^/]+/ *[^;,]+).*"
 		
 		line = line.trim()
 		if (line.length() == 0) return null

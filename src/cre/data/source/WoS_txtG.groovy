@@ -1,26 +1,19 @@
 package cre.data.source
 
-import java.io.BufferedReader
-import java.io.BufferedWriter
-import java.io.File
-import java.util.List
-import java.util.regex.Matcher
-
+import groovy.transform.CompileStatic
 import cre.data.CRTable
-import cre.data.CRType
 import cre.data.PubType
 import cre.ui.StatusBar
-import groovy.transform.CompileStatic;
 
 @CompileStatic
-public class WoS_txt extends FileImportExport {
+public class WoS_txtG extends FileImportExport {
 
 	
 	
 //	static String[] tags = ["PT" ,"AU" ,"AF" ,"CA" ,"TI" ,"ED" ,"SO" ,"SE" ,"BS" ,"LA" ,"DT" ,"CT" ,"CY" ,"HO" ,"CL" ,"SP" ,"DE" ,"ID" ,"AB" ,"C1" ,"RP" ,"EM" ,"RI", "OI", "FU" ,"FX" ,"CR" ,"NR" ,"TC" ,"Z9" ,"PU" ,"PI" ,"PA" ,"SN" ,"BN" ,"J9" ,"JI" ,"PD" ,"PY" ,"VL" ,"IS" ,"PN" ,"SU" ,"SI" ,"BP" ,"EP" ,"AR" ,"PG" ,"DI" ,"WC", "SC" ,"GA" ,"UT"]
 	
 	
-	public WoS_txt(int[] yearRange, BufferedReader br) {
+	public WoS_txtG(int[] yearRange, BufferedReader br) {
 		super(yearRange, br)
 	}
 

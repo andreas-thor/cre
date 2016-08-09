@@ -2,7 +2,7 @@ package cre
 
 class Exceptions {
 
-	public class FileTooLargeException extends Exception {
+	static class FileTooLargeException extends Exception {
 		
 		int numberOfCRs
 
@@ -14,7 +14,13 @@ class Exceptions {
 		
 	}
 	
-	public class AbortedException extends Exception { }
+	static class AbortedException extends Exception { 
+		
+		public AbortedException () {
+			super();
+		}
+		
+	}
 	
 	public class UnsupportedFileFormatException extends Exception { }
 	
