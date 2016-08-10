@@ -327,7 +327,7 @@ mainFrame = sb.frame(
 			
 			separator()
 			
-			menuItem(text: "Retain Publication citing Selected Cited References...", mnemonic: 'C', actionPerformed: {
+			menuItem(text: "Retain Publications citing Selected Cited References...", mnemonic: 'C', actionPerformed: {
 				
 				if (tab.getSelectedRowCount() == 0) {
 					JOptionPane.showMessageDialog(null, "No Cited References selected");

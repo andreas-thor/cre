@@ -52,7 +52,7 @@ public class CRMatch {
 	
 	private CRTable crTab;
 	private StatusBar stat;
-	private Map <Boolean, Map<Integer, Map<Integer, Double>>> match = new HashMap<Boolean, Map<Integer, Map<Integer,Double>>>();
+	public Map <Boolean, Map<Integer, Map<Integer, Double>>> match = new HashMap<Boolean, Map<Integer, Map<Integer,Double>>>();
 	private TreeMap <Long, ArrayList<Pair>> timestampedPairs;
 	
 	

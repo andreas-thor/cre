@@ -20,7 +20,7 @@ import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 
 @CompileStatic
-public class CRE_json  {
+public class CRE_jsonG  {
 
 	
 	public static void load (File file, CRTable crTab, StatusBar stat) {
