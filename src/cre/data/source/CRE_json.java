@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
@@ -96,6 +97,8 @@ public class CRE_json {
 				stat.setValue(String.format("%1$s: Loading CRE file ...", startDate), 43, "");
 				parser = Json.createParser(zip);
 				PubType pub = null;
+				List<String> C1List = null;
+				int arrayLevel = 0;
 				String key = "";
 				while (parser.hasNext()) {
 					switch (parser.next()) {
@@ -103,36 +106,51 @@ public class CRE_json {
 					case END_OBJECT: 	crTab.pubData.add(pub); break;
 					case KEY_NAME:		key = parser.getString(); break;
 					case START_ARRAY:	
-						switch (key) {
-						case "AU":	pub.AU = new ArrayList<String>(); break;
-						case "AF":	pub.AF = new ArrayList<String>(); break;
-						case "C1":	pub.C1 = new ArrayList<String[]>(); break;	// TODO: J8 implement C1 (nested String[])
-						case "EM":	pub.EM = new ArrayList<String>(); break;
-						case "AA":	pub.AA = new ArrayList<String>(); break;
-						case "CRLISTID":	pub.crList = new ArrayList<CRType>(); break;
-						
+						arrayLevel++;
+						switch (arrayLevel) {
+						case 2:
+							switch (key) {
+							case "AU":	pub.AU = new ArrayList<String>(); break;
+							case "AF":	pub.AF = new ArrayList<String>(); break;
+							case "C1":	pub.C1 = new ArrayList<String[]>(); break;	// TODO: J8 implement C1 (nested String[])
+							case "EM":	pub.EM = new ArrayList<String>(); break;
+							case "AA":	pub.AA = new ArrayList<String>(); break;
+							case "CRLISTID":	pub.crList = new ArrayList<CRType>(); break;
+							}
+							break;
+						case 3:			C1List = new ArrayList<String>(); break;
 						}
 						break;
+					case END_ARRAY: 	
+						if (C1List != null) pub.C1.add((String[]) C1List.toArray(new String[C1List.size()])); 
+						arrayLevel--;
+						break;
 					case VALUE_STRING: 
-						switch (key) {
-						case "PT": 	pub.PT = parser.getString(); break;
-						case "AU":	pub.AU.add(parser.getString()); break;
-						case "AF":	pub.AF.add(parser.getString()); break;
-						case "EM":	pub.EM.add(parser.getString()); break;
-						case "AA":	pub.AA.add(parser.getString()); break;
-						case "TI": 	pub.TI = parser.getString(); break;
-						case "SO": 	pub.SO = parser.getString(); break;
-						case "VL": 	pub.VL = parser.getString(); break;
-						case "IS": 	pub.IS = parser.getString(); break;
-						case "AR": 	pub.AR = parser.getString(); break;
-						case "DI": 	pub.DI = parser.getString(); break;
-						case "LI": 	pub.LI = parser.getString(); break;
-						case "AB": 	pub.AB = parser.getString(); break;
-						case "DE": 	pub.DE = parser.getString(); break;
-						case "DT": 	pub.DT = parser.getString(); break;
-						case "FS": 	pub.FS = parser.getString(); break;
-						case "UT": 	pub.UT = parser.getString(); break;
-						default: System.out.println("PUBDATA.json >> Unknow Key with String Value: " + key); 
+						switch (arrayLevel) {
+						case 2:
+							switch (key) {
+							case "PT": 	pub.PT = parser.getString(); break;
+							case "AU":	pub.AU.add(parser.getString()); break;
+							case "AF":	pub.AF.add(parser.getString()); break;
+							case "EM":	pub.EM.add(parser.getString()); break;
+							case "AA":	pub.AA.add(parser.getString()); break;
+							case "TI": 	pub.TI = parser.getString(); break;
+							case "SO": 	pub.SO = parser.getString(); break;
+							case "VL": 	pub.VL = parser.getString(); break;
+							case "IS": 	pub.IS = parser.getString(); break;
+							case "AR": 	pub.AR = parser.getString(); break;
+							case "DI": 	pub.DI = parser.getString(); break;
+							case "LI": 	pub.LI = parser.getString(); break;
+							case "AB": 	pub.AB = parser.getString(); break;
+							case "DE": 	pub.DE = parser.getString(); break;
+							case "DT": 	pub.DT = parser.getString(); break;
+							case "FS": 	pub.FS = parser.getString(); break;
+							case "UT": 	pub.UT = parser.getString(); break;
+							default: System.out.println("PUBDATA.json >> Unknow Key with String Value: " + key); 
+							}
+							break;
+						case 3: 
+							C1List.add(parser.getString()); break;
 						}
 						break;
 					case VALUE_NUMBER:
@@ -146,42 +164,38 @@ public class CRE_json {
 						default: System.out.println("PUBDATA.json >> Unknow Key with Number Value: " + key); 
 						}
 						break;
-					default:break;  
 					}
 				}
 				stat.setValue(String.format("%1$s: Loading CRE file ...", startDate), 67, "");
 			}			
 			
 			
+			
 			if (entry.getName().equals("crmatch.json")) {
-
+				int level = 0;
 				stat.setValue(String.format("%1$s: Loading CRE file ...", startDate), 77, "");
 				parser = Json.createParser(zip);
-				PubType pub = null;
-				String key = "";
-				boolean match = false;
+				
+				boolean isManual = false;
+				int id1 = 0, id2 = 0;
+				
 				while (parser.hasNext()) {
 					switch (parser.next()) {
-					case START_OBJECT: 	pub = new PubType(); break; 
-					case END_OBJECT: 	crTab.pubData.add(pub); break;
+					case START_OBJECT: 	level++; break; 
+					case END_OBJECT: 	level--; break;
 					case KEY_NAME:		
-						key = parser.getString();
-						if (key.equalsIgnoreCase("MATCH_AUTO")) match = false; 
-						if (key.equalsIgnoreCase("MATCH_MANU")) match = true; 
-					break;
-					case START_ARRAY:	
-						switch (key) {
-						}
-						break;
-					case VALUE_STRING: 
-						switch (key) {
-						default: System.out.println("CRMATCH.json >> Unknow Key with String Value: " + key); 
+						String key = parser.getString();
+						switch (level) {
+						case 1: 
+							if (key.equalsIgnoreCase("MATCH_AUTO")) isManual = false; 
+							if (key.equalsIgnoreCase("MATCH_MANU")) isManual = true;
+							break;
+						case 2: id1 = Integer.valueOf(key); break;
+						case 3: id2 = Integer.valueOf(key); break;
 						}
 						break;
 					case VALUE_NUMBER:
-						switch (key) {
-						default: System.out.println("CRMATCH.json >> Unknow Key with Number Value: " + key); 
-						}
+						crTab.crMatch.setMapping(id1, id2, parser.getBigDecimal().doubleValue(), isManual, false);
 						break;
 					default:break;  
 					}
@@ -216,12 +230,8 @@ public class CRE_json {
 
 	public static void save (File file, CRTable crTab, StatusBar stat) throws IOException {
 		 
-		int blockSize = (crTab.crData.size() + crTab.pubData.size() + crTab.crMatch.match.get(true).size() + crTab.crMatch.match.get(false).size()) / 20;
-		int blockCount = 0;
 		int count = 0;
-		
-		Date startDate = new Date();
-		stat.setValue(String.format("%1$s: Saving CRE file ...", startDate), 0, "");
+		stat.initProgressbar(crTab.crData.size() + crTab.pubData.size() + crTab.crMatch.match.get(true).size() + crTab.crMatch.match.get(false).size(), "Saving CRE file ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -256,11 +266,7 @@ public class CRE_json {
 								jgen.write("type", it.type);			
 			jgen.writeEnd();
 			
-			count++;
-			if (blockCount*blockSize<count) {
-				stat.setValue(String.format("%1$s: Saving CRE file ...", startDate), 5*blockCount, "");
-				blockCount++;
-			}
+			stat.updateProgressbar(++count);
 		};
 		jgen.writeEnd();
 		jgen.flush();
@@ -310,17 +316,15 @@ public class CRE_json {
 			
 			jgen.writeEnd();
 			
-			count++;
-			if (blockCount*blockSize<count) {
-				stat.setValue(String.format("%1$s: Saving CRE file ...", startDate), 5*blockCount, "");
-				blockCount++;
-			}
-
+			stat.updateProgressbar(++count);
 		};
 		jgen.writeEnd();
 		jgen.flush();
 		zip.closeEntry();
 
+		/**
+		 * {"MATCH_MANU":{"A1":{"B1":sim1,"C1":sim2,...},"A2":{"B2":sim3,...}, "MATCH_AUTO":{"A3":{...
+		 */
 		 
 		zip.putNextEntry(new ZipEntry("crmatch.json"));
 		jgen = Json.createGenerator(zip);
@@ -328,18 +332,15 @@ public class CRE_json {
 		for (boolean loop: new boolean[] { false, true }) {
 			jgen.writeStartObject(loop?"MATCH_MANU":"MATCH_AUTO");
 			for (Entry<Integer, Map<Integer, Double>> it: crTab.crMatch.match.get(loop).entrySet()) {
-				jgen.writeStartObject(String.valueOf(it.getKey()));
-				for (Entry<Integer, Double> pair: it.getValue().entrySet()) {
-					jgen.write(String.valueOf(pair.getKey()), pair.getValue());
+				if (it.getValue().size()>0) {
+					jgen.writeStartObject(String.valueOf(it.getKey()));
+					for (Entry<Integer, Double> pair: it.getValue().entrySet()) {
+						jgen.write(String.valueOf(pair.getKey()), pair.getValue());
+					}
+					jgen.writeEnd();
 				}
-				jgen.writeEnd();
 				
-				count++;
-				if (blockCount*blockSize<count) {
-					stat.setValue(String.format("%1$s: Saving CRE file ...", startDate), 5*blockCount, "");
-					blockCount++;
-				}
-
+				stat.updateProgressbar(++count);
 			}
 			jgen.writeEnd();
 		}

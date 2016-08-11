@@ -1,10 +1,13 @@
 package cre.data.source;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -44,32 +47,22 @@ public class WoS_txt {
 		List<String> entry = new ArrayList<>();
 		
 		public WoS_Iterator(File f) throws IOException {
-			// TODO Auto-generated constructor stub
-			
 			br = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
 			computeNext();
 		}
-		
 		
 		public void close() throws IOException {
 			br.close();
 		}
 		
 		private void computeNext () throws IOException {
-			
 			entry = new ArrayList<>();
-			
 			String line;
 			while ((line = br.readLine()) != null) {
-				if ((line.startsWith("ER")) || (line.startsWith("EF"))) {
-					return;
-				}
+				if ((line.startsWith("ER")) || (line.startsWith("EF"))) return;
 				entry.add(line);
 			}
-			
 		}
-		
-		
 		
 		@Override
 		public boolean hasNext() {
@@ -92,12 +85,11 @@ public class WoS_txt {
 			return () -> this;
 		}
 		
-		
 	}
 	
 	
 	
-	public static void loadBulk (CRTable crTab, StatusBar stat, String source, File[] files, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
+	public static void load (File[] files, CRTable crTab, StatusBar stat, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 
 		
 		long ts1 = System.currentTimeMillis();
@@ -258,8 +250,127 @@ public class WoS_txt {
 		
 	}
 	
+	public static void save (File file, CRTable crTab, StatusBar stat) throws IOException {
+		
+		stat.initProgressbar(crTab.pubData.size(), "Saving WoS file ...");
+		int count = 0;
+		
+		// add txt extension if necessary
+		// TODO: Do I really need to adjust the file extension??
+		String file_name = file.toString();
+		if (!file_name.endsWith(".txt")) file_name += ".txt";
+				
+						
+		BufferedWriter bw = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
+		bw.write("FN Thomson Reuters Web of Science\u0153 modified by CRExplorer");
+		bw.newLine();
+		bw.write("VR 1.0");
+		bw.newLine();
+		
+		for (PubType pub: crTab.pubData) {
+			
+			writeTag(bw, "PT", pub.PT == null ? "J" : pub.PT);	// TODO: Is "J" the correct default for publication type?
+			writeTag(bw, "AU", pub.AU);
+			writeTag(bw, "AF", pub.AF);
+			if (pub.C1 != null) {
+				writeTag(bw, "C1", pub.C1.stream().map(it -> { return "[" + it[0] + "] " + it[1]; }).collect(Collectors.toList()));
+			}
+			
+			// TODO: J8 EM
+			
+			
+			ArrayList<String> linesTI = new ArrayList<String>();
+			String title = new String(pub.TI == null ? "" : pub.TI);
+			int maxLength = 70;
+			while (true) {
+				if (title.length()<=maxLength) { 
+					linesTI.add(title);
+					break;
+				}
+				
+				int pos = title.lastIndexOf(' ', maxLength);
+				if (pos > 0) {
+					linesTI.add (title.substring(0,  pos));
+					title = title.substring(pos+1);
+				} else {
+					linesTI.add (title.substring(0,  maxLength));
+					title = title.substring(maxLength);
+				}
+			} 
+			writeTag(bw, "TI", linesTI);
+			
+			if (pub.PY != null) writeTag(bw, "PY", pub.PY.toString());
+			writeTag(bw, "SO", pub.SO);
+			writeTag(bw, "VL", pub.VL);
+			writeTag(bw, "IS", pub.IS);
+			writeTag(bw, "AR", pub.AR);
+			if (pub.BP != null) writeTag(bw, "BP", pub.BP.toString());
+			if (pub.EP != null) writeTag(bw, "EP", pub.EP.toString());
+			if (pub.PG != null) writeTag(bw, "PG", pub.PG.toString());
+			if (pub.TC != null) writeTag(bw, "TC", pub.TC.toString());
+			
+			writeTag(bw, "CR", pub.crList.stream().map(it -> {
+
+				if (it.type == CRType.TYPE_WOS) return it.CR;
+				
+				String res = (it.AU_L != null) ? it.AU_L + " " : "";
+				if (it.AU_F != null) res += it.AU_F;
+				if (it.RPY != null) res += ", " + it.RPY;
+				if ((it.VOL!=null) || (it.PAG!=null)) {
+					if (it.J_N!=null) res += ", " + it.J_N; 
+					if (it.VOL!=null) res += ", V" + it.VOL;
+					if (it.PAG!=null) res += ", P" + it.PAG;
+				} else {
+					res += ", " + it.J;
+				}
+				if (it.DOI!=null) res += ", DOI " + it.DOI;
+				return res;
+			}).collect(Collectors.toList()));
+			
+			
+			writeTag(bw, "NR", String.valueOf(pub.crList.size()));
+			writeTag(bw, "DI", pub.DI);
+			writeTag(bw, "AB", pub.AB);
+			writeTag(bw, "DE", pub.DE);
+			writeTag(bw, "DT", pub.DT);
+			writeTag(bw, "UT", pub.UT);
+			
+			bw.write("ER");
+			bw.newLine();
+			bw.newLine();
+		
+			stat.updateProgressbar(++count);
+		
+		}
+		bw.write("EF"); 
+		bw.newLine();
+		bw.close();
+		stat.setValue(String.format("$1%s: Saving WoS file done", new Date()), 0, crTab.getInfoString());
+
+			
+	}
 	
-	public static CRType parseWoS (String line, int[] yearRange) {
+	
+	private static void writeTag (BufferedWriter bw, String tag, String v) throws IOException {
+		if (v == null) return;
+		bw.write(tag+" ");
+		bw.write(v);
+		bw.newLine();
+	}
+	
+	private static void writeTag (BufferedWriter bw, String tag, List<String> values) throws IOException {
+		if (values == null) return;
+		if (values.size()==0) return;
+		int pos = 0;
+		for (String v: values) {
+			bw.write((pos==0) ? tag+" " : "   ");
+			bw.write(v);
+			bw.newLine();
+			pos++;
+		}
+	}
+	
+	private static CRType parseWoS (String line, int[] yearRange) {
 
 		CRType cr = new CRType();
 		cr.CR = line; // [3..-1] // .toUpperCase()

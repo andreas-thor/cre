@@ -22,7 +22,11 @@ class StatusBar {
 	private JProgressBar sbpb
 	private JLabel sbinfo
 	
-
+	private int blockSize;
+	private int blockCount;
+	private Date date;
+	private String label;
+	
 	public StatusBar() {
 		
 		SwingBuilder sb = new SwingBuilder()
@@ -44,6 +48,26 @@ class StatusBar {
 		sblabel.text = "   ${label}       "
 		sbpb.setValue(value)
 		if (info != null) sbinfo.text = "       ${info}   "
+	}
+	
+	
+	
+	public void initProgressbar (int maxSize, String label) {
+		
+		this.blockSize = maxSize/20;
+		this.blockCount = 0;
+		this.date = new Date();
+		this.label = label;
+		this.setValue(String.format("%1\$s: %2\$s", date, label), 0, "");
+		
+		
+	}
+	
+	public void updateProgressbar (int count) {
+		if (blockCount*blockSize<count) {
+			this.setValue(String.format("%1\$s: %2\$s", date, label), 5*blockCount, "");
+			blockCount++;
+		}
 	}
 	
 	

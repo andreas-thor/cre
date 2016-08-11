@@ -115,7 +115,7 @@ Closure doImportFiles = { String source, String dlgTitle, boolean multipleFiles,
 				
 				try { 
 					switch (source) {
-						case "WoS_txt": WoS_txt.loadBulk(crTable, stat, source, dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange()); break;
+						case "WoS_txt": WoS_txt.load(dlg.getSelectedFiles(), crTable, stat, uisetting.getMaxCR(), uisetting.getYearRange()); break;
 						case "Scopus_csv": Scopus_csv.loadBulk(crTable, stat, source, dlg.getSelectedFiles(), uisetting.getMaxCR(), uisetting.getYearRange()); break;
 						case "CRE_csv": CRE_csv.load (dlg.getSelectedFile(), crTable, stat); break;
 						case "CRE_json": CRE_json.load (dlg.getSelectedFile(), crTable, stat); break;
