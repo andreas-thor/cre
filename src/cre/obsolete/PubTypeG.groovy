@@ -1,4 +1,4 @@
-package cre.data
+package cre.obsolete
 
 
 import groovy.json.JsonBuilder
@@ -41,7 +41,7 @@ UT		UT		EID												Unique Article Identifier
 
 
 @CompileStatic
-public class PubType {
+public class PubTypeG {
 
 	public String PT	// Publication Type (WoS only)
 	

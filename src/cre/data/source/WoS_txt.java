@@ -278,7 +278,7 @@ public class WoS_txt {
 			
 			// TODO: J8 EM
 			
-			
+			// make sure TI value is split into lines up to 70 characters (=maxLength)
 			ArrayList<String> linesTI = new ArrayList<String>();
 			String title = new String(pub.TI == null ? "" : pub.TI);
 			int maxLength = 70;
@@ -313,6 +313,7 @@ public class WoS_txt {
 
 				if (it.type == CRType.TYPE_WOS) return it.CR;
 				
+				/* Generate CR-String in WoS format */
 				String res = (it.AU_L != null) ? it.AU_L + " " : "";
 				if (it.AU_F != null) res += it.AU_F;
 				if (it.RPY != null) res += ", " + it.RPY;

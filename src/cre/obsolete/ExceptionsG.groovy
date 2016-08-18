@@ -1,6 +1,6 @@
-package cre
+package cre.obsolete
 
-class Exceptions {
+class ExceptionsG {
 
 	static class FileTooLargeException extends Exception {
 		

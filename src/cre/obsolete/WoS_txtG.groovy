@@ -1,4 +1,4 @@
-package cre.data.source
+package cre.obsolete
 
 import groovy.transform.CompileStatic
 import cre.data.CRTable

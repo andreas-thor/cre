@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -21,6 +23,7 @@ import cre.ui.StatusBar;
 
 public class Scopus_csv  {
 
+	static Pattern sScopus_matchEMail = Pattern.compile ("\\s(\\S+@\\w+(\\.\\w+)+)\\W*");
 	
 	public static void loadBulk (CRTable crTab, StatusBar stat, String source, File[] files, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 		
@@ -54,6 +57,11 @@ public class Scopus_csv  {
 			if (attributes[0].startsWith("\uFEFF")) attributes[0] = attributes[0].substring(1);
 			
 
+			HashMap<String, Integer> attribute2Index = new HashMap<String, Integer>();
+			for (int i=0; i<attributes.length; i++) {
+				attribute2Index.put(attributes[i], i);
+			}
+
 			
 			int stepSize = 5;
 			int modulo = content.size()*stepSize/100;
@@ -66,7 +74,78 @@ public class Scopus_csv  {
 				if (crTab.abort) return null;
 				if ((maxCR>0) && (countCR.get()>=maxCR)) return null;
 				
-				PubType pub = new PubType().parseScopus(it, attributes, yearRange);
+				PubType pub = new PubType(); // .parseScopus(it, attributes, yearRange);
+				
+				/* BEGIN */
+				
+				pub.PT = "J"; // TODO: what is the default Publication Type? (No value in scopus!)
+						
+				// Scopus Authors: Lastname1 I1., Lastname2 I2.I2. ...
+				pub.AU = it[attribute2Index.get("Authors")].split("\\., ").map ( name -> { 
+					name = name.replaceAll("\\.", ""); 
+					int pos = name.lastIndexOf(" ");
+					return (pos>0) ? name.substring(0, pos) + "," + name.substring (pos) : name;
+				}).collect (Collectors.toArray());
+				
+				pub.AF = pub.AU;		// there are no full names in Scopus 
+
+						// Authors with affiliations: "<lastname>, <initials with dots>, affiliation"
+						C1 = []
+						EM = []
+						entries.get('Authors with affiliations')?.split("; ").each {String it ->
+							String[] split = it.split(", ", 3)
+							if (split.length == 3) {
+								C1 << ([(split[0]+", "+split[1].replaceAll("\\.", "")), split[2]] as String[])
+							}
+							
+							if (it.contains("@")) {
+								println "@@@"
+							}
+							
+							Scopus_matchEMail.reset(it)
+							if (Scopus_matchEMail.find()) {
+								String[] m = (String[]) Scopus_matchEMail[0]
+								println m
+								EM << (m[1] as String)
+							}
+						}
+						AA = entries.get('Affiliations').split("; ") as List
+						
+						TI = entries.get('Title')
+						PY = entries.get('Year')?.isInteger() ? entries.get('Year').toInteger() : null
+
+						SO = entries.get('Source title')
+						VL = entries.get('Volume')
+						IS = entries.get('Issue')
+						AR = entries.get('Art. No.')
+						
+						BP = entries.get('Page start')?.isInteger() ? entries.get('Page start').toInteger() : null
+						EP = entries.get('Page end')?.isInteger() ? entries.get('Page end').toInteger() : null
+						PG = entries.get('Page count')?.isInteger() ? entries.get('Page count').toInteger() : null
+						
+						TC = entries.get('Cited by')?.isInteger() ? entries.get('Cited by').toInteger() : null
+						crList = entries.get('References')?.split(";").collect { String it -> new CRType().parseScopus (it, yearRange) }.findAll { CRType it -> it != null } as ArrayList
+
+						DI = entries.get('DOI')
+						LI = entries.get('Link')
+						AB = entries.get('Abstract')
+						DE = entries.get('Author Keywords')  
+						
+						DT = entries.get('Document Type')
+						FS = entries.get('Source')
+						UT = entries.get('EID')
+						
+						this
+				
+				
+				/* END */
+				
+				
+				
+				
+				
+				
+				
 				countPub.incrementAndGet();
 				countCR.addAndGet(pub.crList.size());
 				

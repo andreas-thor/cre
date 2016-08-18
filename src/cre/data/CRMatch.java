@@ -1,9 +1,7 @@
 package cre.data;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,14 +13,10 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import com.orsoncharts.util.json.JSONObject;
-
+import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 import cre.ui.StatusBar;
 import cre.ui.UIMatchPanelFactory;
-import groovy.transform.CompileStatic;
-import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
-@CompileStatic
 public class CRMatch {
 
 
@@ -61,32 +55,6 @@ public class CRMatch {
 
 	public boolean hasMatches () {
 		return (match.get(true).size()>0) || (match.get(false).size()>0); 
-	}
-	
-	public JSONObject getJSON() {
-		
-		// TODO: J8 implement
-		return null;
-		
-//		JsonBuilder jb = new JsonBuilder()
-//		
-//		jb (
-//			MATCH_AUTO: match[false].collect { Integer key, Map<Integer, Double> val -> val.collect { Integer k, Double v -> [key, k, v]}  },
-//			MATCH_MANU: match[true].collect { Integer key, Map<Integer, Double> val -> val.collect { Integer k, Double v -> [key, k, v]}  }
-//		) as JSONObject
-		
-		
-	}
-	
-	public void parseJSON (JSONObject j) {
-
-		// TODO: J8 implement
-
-//		j.MATCH_AUTO.each { it.each { triple -> List l = triple as List; setMapping (l[0] as int, l[1] as int, l[2] as double, false, false) } }   
-//		j.MATCH_MANU.each { it.each { triple -> List l = triple as List; setMapping (l[0] as int, l[1] as int, l[2] as double, true, false) } }   
-//		
-//		updateData (false)	// updates crId2Index
-//		updateClusterId2Objects()	// updates clusterId2Objects
 	}
 	
 	

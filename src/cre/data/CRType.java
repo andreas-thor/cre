@@ -218,16 +218,18 @@ public class CRType {
 
 	
 	
-	public CRType parseJSON (JSONObject j) {
-		// TODO: J8 to implement
-		return null;
-		
-	}
-	
-	public JSONObject getJSON () {
-		// TODO: J8 to implement
-		return null;
-
-		
-	}
 }
+
+//public CRType parseJSON (JSONObject j) {
+//	// TODO: J8 to implement
+//	return null;
+//	
+//}
+//
+//public JSONObject getJSON () {
+//	// TODO: J8 to implement
+//	return null;
+//
+//	
+//}
+
