@@ -161,14 +161,14 @@ public class WoS_txt {
 					case "UT": pub.UT = (pub.UT==null) ? value : pub.UT+" "+value; break;
 					
 					/* Integer values */
-					case "PY": pub.PY = Integer.valueOf(value); break;
-					case "BP": pub.BP = Integer.valueOf(value); break;
-					case "EP": pub.EP = Integer.valueOf(value); break;
-					case "PG": pub.PG = Integer.valueOf(value); break;
-					case "TC": pub.TC = Integer.valueOf(value); break;
+					case "PY": try { pub.PY = Integer.valueOf(value); } catch (NumberFormatException e) { }; break;
+					case "BP": try { pub.BP = Integer.valueOf(value); } catch (NumberFormatException e) { }; break;
+					case "EP": try { pub.EP = Integer.valueOf(value); } catch (NumberFormatException e) { }; break;
+					case "PG": try { pub.PG = Integer.valueOf(value); } catch (NumberFormatException e) { }; break;
+					case "TC": try { pub.TC = Integer.valueOf(value); } catch (NumberFormatException e) { }; break;
 					
 					/* Parse Cited References */
-					case "CR": CRType cr = /*new CRType().*/parseWoS(value, yearRange); if (cr!=null) pub.crList.add(cr); break;
+					case "CR": CRType cr = /*new CRType().*/parseCR(value, yearRange); if (cr!=null) pub.crList.add(cr); break;
 					
 					/* Authors */
 					case "AU": if (pub.AU==null) pub.AU=new ArrayList<String>(); pub.AU.add(value); break;
@@ -276,7 +276,9 @@ public class WoS_txt {
 				writeTag(bw, "C1", pub.C1.stream().map(it -> { return "[" + it[0] + "] " + it[1]; }).collect(Collectors.toList()));
 			}
 			
-			// TODO: J8 EM
+			if (pub.EM != null) {
+				writeTag (bw, "EM", pub.EM.stream().distinct().collect(Collectors.joining("; ")));
+			}
 			
 			// make sure TI value is split into lines up to 70 characters (=maxLength)
 			ArrayList<String> linesTI = new ArrayList<String>();
@@ -325,7 +327,9 @@ public class WoS_txt {
 					res += ", " + it.J;
 				}
 				if (it.DOI!=null) res += ", DOI " + it.DOI;
+				
 				return res;
+				
 			}).collect(Collectors.toList()));
 			
 			
@@ -371,7 +375,7 @@ public class WoS_txt {
 		}
 	}
 	
-	private static CRType parseWoS (String line, int[] yearRange) {
+	private static CRType parseCR (String line, int[] yearRange) {
 
 		CRType cr = new CRType();
 		cr.CR = line; // [3..-1] // .toUpperCase()
