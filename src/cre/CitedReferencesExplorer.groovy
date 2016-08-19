@@ -168,7 +168,7 @@ ChartPanel chpan = UIChartPanelFactory.create(crTable, tab,
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., DEVELOPMENT Version 2016/08/02)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., DEVELOPMENT Version 2016/08/19)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -266,7 +266,7 @@ mainFrame = sb.frame(
 		
 		menu(text: "Data", mnemonic: 'D') {
 			
-			menuItem(id:'infoDlg', text: "Info", mnemonic: 'I', actionPerformed: {
+			menuItem(id:'infoDlg', text: "Info", mnemonic: 'I', accelerator: KeyStroke.getKeyStroke("ctrl I"), actionPerformed: {
 				UIDialogFactory.createInfoDlg(mainFrame, crTable.getInfo()).visible = true
 			})
 

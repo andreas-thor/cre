@@ -194,6 +194,9 @@ public class WoS_txt {
 							pub.C1.add (new String[] { name, affiliation });
 							pub.AA.add (affiliation);
 						}
+					} else {
+						pub.C1.add (new String[] { "", corr });
+						pub.AA.add (corr);
 					}
 				}
 				
@@ -246,7 +249,7 @@ public class WoS_txt {
 		System.out.println("Memory usage " + ((ms2-ms1)/1024d/1024d) + " MBytes");
 
 		crTab.updateData(false);
-		stat.setValue(String.format("$1%s: Loading WoS files done", startDate), 0, crTab.getInfoString());		
+		stat.setValue(String.format("%1$s: Loading WoS files done", startDate), 0, crTab.getInfoString());		
 		
 	}
 	
@@ -350,7 +353,7 @@ public class WoS_txt {
 		bw.write("EF"); 
 		bw.newLine();
 		bw.close();
-		stat.setValue(String.format("$1%s: Saving WoS file done", new Date()), 0, crTab.getInfoString());
+		stat.setValue(String.format("%1$s: Saving WoS file done", new Date()), 0, crTab.getInfoString());
 
 			
 	}

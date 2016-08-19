@@ -70,7 +70,7 @@ class UIDialogFactory {
 						}
 						tr {
 							td (align:'center') {
-								defBtn = button(preferredSize:[100, 25], text:'Ok', actionPerformed: { infoDlg.dispose() })
+								defBtn = button(preferredSize:[100, 25], text:'Ok', selected:true, actionPerformed: { infoDlg.dispose() })
 							}
 						}
 					}

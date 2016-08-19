@@ -213,7 +213,7 @@ public class Scopus_csv  {
 		System.out.println("Load time is " + ((ts2-ts1)/1000d) + " seconds");
 
 		crTab.updateData(false);
-		stat.setValue(String.format("$1%s: Loading Scopus files done", startDate), 0, crTab.getInfoString());
+		stat.setValue(String.format("%1$s: Loading Scopus files done", startDate), 0, crTab.getInfoString());
 	}
 	
 	
@@ -280,7 +280,6 @@ public class Scopus_csv  {
 		
 		// process Journal names
 		String[] split = res.J_N.split(" ");
-		// TODO: J8 check if reduce corrent (concatenates first characters)
 		res.J_S = (split.length==1) ? split[0] : Arrays.stream (split).reduce("",  (x,y) -> x + ((y.length()>0) ? y.substring(0,1) : "") );
 
 		
@@ -397,7 +396,7 @@ public class Scopus_csv  {
 			
 		csv.close();
 
-		stat.setValue(String.format("$1%s: Saving Scopus file done", new Date()), 0, crTab.getInfoString());
+		stat.setValue(String.format("%1$s: Saving Scopus file done", new Date()), 0, crTab.getInfoString());
 	}
 	
 	

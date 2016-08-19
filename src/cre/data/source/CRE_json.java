@@ -112,7 +112,7 @@ public class CRE_json {
 							switch (key) {
 							case "AU":	pub.AU = new ArrayList<String>(); break;
 							case "AF":	pub.AF = new ArrayList<String>(); break;
-							case "C1":	pub.C1 = new ArrayList<String[]>(); break;	// TODO: J8 implement C1 (nested String[])
+							case "C1":	pub.C1 = new ArrayList<String[]>(); break;	
 							case "EM":	pub.EM = new ArrayList<String>(); break;
 							case "AA":	pub.AA = new ArrayList<String>(); break;
 							case "CRLISTID":	pub.crList = new ArrayList<CRType>(); break;
@@ -122,7 +122,7 @@ public class CRE_json {
 						}
 						break;
 					case END_ARRAY: 	
-						if (C1List != null) pub.C1.add((String[]) C1List.toArray(new String[C1List.size()])); 
+						if ((arrayLevel == 3) && (C1List != null)) pub.C1.add((String[]) C1List.toArray(new String[C1List.size()])); 
 						arrayLevel--;
 						break;
 					case VALUE_STRING: 
@@ -283,10 +283,8 @@ public class CRE_json {
 			if (it.AU!=null) {	jgen.writeStartArray("AU"); for (String x:it.AU) jgen.write(x); jgen.writeEnd(); }
 			if (it.AF!=null) {	jgen.writeStartArray("AF"); for (String x:it.AF) jgen.write(x); jgen.writeEnd(); }
 			if (it.C1!=null) {
-				System.out.println(it.C1);
 				jgen.writeStartArray("C1");
 				for (String[] y:it.C1) {
-					System.out.println(y);
 					jgen.writeStartArray();
 					for (String x:y) jgen.write(x); 
 					jgen.writeEnd();
