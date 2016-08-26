@@ -402,7 +402,7 @@ public class CRTable {
 	 */
 	public List<Integer> getMaxRangeNCR () {
 		IntSummaryStatistics stats = crData.stream().map((CRType it) -> it.N_CR).mapToInt(Integer::intValue).summaryStatistics();
-		return Arrays.asList (stats.getMin(), stats.getMax());
+		return new ArrayList<Integer>(Arrays.asList (stats.getMin(), stats.getMax()));
 	}
 	
 
