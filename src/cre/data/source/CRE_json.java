@@ -3,14 +3,17 @@ package cre.data.source;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -31,23 +34,27 @@ public class CRE_json {
 		
 		
 		crTab.abort = false;	// can be changed by "wait dialog"
-		Date startDate = new Date();
-		stat.setValue(String.format("%1$s: Loading CRE file ...", startDate), 0, "");
+		stat.setValue("Loading CRE file ...", "");
 		
 		
 		crTab.init();
 		
-		ZipInputStream zip = new ZipInputStream(new FileInputStream(file));
+//		ZipInputStream zip = new ZipInputStream(new FileInputStream(file));
 		ZipEntry entry = null;
 
-		JsonParser parser;
+		ZipFile zipFile = new ZipFile(file);
+		Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
 		
-		while ( (entry = zip.getNextEntry()) != null ) {
-
+		JsonParser parser;
+//		while ( (entry = zip.getNextEntry()) != null ) {
+		while ( zipEntries.hasMoreElements()) {
+ 
+			entry = zipEntries.nextElement();
 			if (entry.getName().equals("crdata.json")) {
 
-				stat.setValue(String.format("%1$s: Loading CRE file ...", startDate), 10, "");
-				parser = Json.createParser(zip);
+				System.out.println("entry size is " + entry.getSize());
+				stat.initProgressbar(entry.getSize(), "Loading CRE file crdata ...");
+				parser = Json.createParser(zipFile.getInputStream(entry) /*zip*/);
 				CRType cr = null;
 				String key = "";
 				while (parser.hasNext()) {
@@ -87,15 +94,17 @@ public class CRE_json {
 						break;
 					default:break;  
 					}
+				
+					stat.updateProgressbar(parser.getLocation().getStreamOffset());
 				}
 				crTab.updateData(true);
-				stat.setValue(String.format("%1$s: Loading CRE file ...", startDate), 33, "");
+				stat.setValue("Loading CRE file crdata done");
 			}
 			
 			if (entry.getName().equals("pubdata.json")) {
 
-				stat.setValue(String.format("%1$s: Loading CRE file ...", startDate), 43, "");
-				parser = Json.createParser(zip);
+				stat.initProgressbar(entry.getSize(), "Loading CRE file pubdata ...");
+				parser = Json.createParser(zipFile.getInputStream(entry) /*zip*/);
 				PubType pub = null;
 				List<String> C1List = null;
 				int arrayLevel = 0;
@@ -164,17 +173,20 @@ public class CRE_json {
 						default: System.out.println("PUBDATA.json >> Unknow Key with Number Value: " + key); 
 						}
 						break;
+					default:
+						break;
 					}
+					stat.updateProgressbar(parser.getLocation().getStreamOffset());
 				}
-				stat.setValue(String.format("%1$s: Loading CRE file ...", startDate), 67, "");
+				stat.setValue("Loading CRE file pubdata done");
 			}			
 			
 			
 			
 			if (entry.getName().equals("crmatch.json")) {
 				int level = 0;
-				stat.setValue(String.format("%1$s: Loading CRE file ...", startDate), 77, "");
-				parser = Json.createParser(zip);
+				stat.initProgressbar(entry.getSize(), "Loading CRE file crmatch ...");
+				parser = Json.createParser(zipFile.getInputStream(entry) /*zip*/);
 				
 				boolean isManual = false;
 				int id1 = 0, id2 = 0;
@@ -199,12 +211,13 @@ public class CRE_json {
 						break;
 					default:break;  
 					}
+					stat.updateProgressbar(parser.getLocation().getStreamOffset());
 				}
-				stat.setValue(String.format("%1$s: Loading CRE file ...", startDate), 100, "");
+				stat.setValue("Loading CRE file crmatch done");
 			}
 			
 		}
-		zip.close();
+		zipFile.close();
 
 		
 				
@@ -221,9 +234,7 @@ public class CRE_json {
 				
 		
 		
-		stat.setValue(String.format("%1$s: Loading CRE file ...", startDate), 90, "");
-		
-		stat.setValue(String.format("%1$s: Loading CRE file done", new Date()), 0, crTab.getInfoString());
+		stat.setValue("Loading CRE file done", crTab.getInfoString());
 	}
 
 
@@ -349,7 +360,7 @@ public class CRE_json {
 		
 		zip.flush();
 		zip.close();
-		stat.setValue(String.format("%1$s: Saving CRE file done", new Date()), 0, crTab.getInfoString());
+		stat.setValue("Saving CRE file done", crTab.getInfoString());
 
 		
 	}

@@ -412,7 +412,7 @@ public class CRMatch {
 			});
 		}
 		
-		stat.setValue (String.format("%1$s: Clustering done", new Date()), 0, crTab.getInfoString());
+		stat.setValue ("Clustering done", crTab.getInfoString());
 	}
 	
 	
@@ -577,7 +577,7 @@ public class CRMatch {
 		// remove all invalidated CRs
 		crTab.crData.removeIf ( it -> { return (it.mergedTo >= 0); } );
 		crTab.updateData(true);
-		stat.setValue ("Merging done", 0, crTab.getInfoString()); 
+		stat.setValue ("Merging done", crTab.getInfoString()); 
 		
 	}
 	

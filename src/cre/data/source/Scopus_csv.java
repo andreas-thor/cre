@@ -61,7 +61,7 @@ public class Scopus_csv  {
 		crTab.abort = false;	// can be changed by "wait dialog"
 		
 		Date startDate = new Date();
-		stat.setValue(String.format("%1$s: Loading Scopus files ...", startDate), 0, "");
+		stat.setValue(String.format("%1$s: Loading Scopus files ...", startDate), "");
 		
 		crTab.init();
 		
@@ -213,7 +213,7 @@ public class Scopus_csv  {
 		System.out.println("Load time is " + ((ts2-ts1)/1000d) + " seconds");
 
 		crTab.updateData(false);
-		stat.setValue(String.format("%1$s: Loading Scopus files done", startDate), 0, crTab.getInfoString());
+		stat.setValue(String.format("%1$s: Loading Scopus files done", startDate), crTab.getInfoString());
 	}
 	
 	
@@ -333,7 +333,8 @@ public class Scopus_csv  {
 			row.add ((pub.AU == null) ? "" :
 				pub.AU.stream().map ( a -> {
 					String[] split = a.split(", ", 2);
-					return (split.length==2) ? split[0] + ", " + split[1].replaceAll("([A-Z])", "$1.") : a; 
+					String res = (split.length==2) ? split[0] + ", " + split[1].replaceAll("([A-Z])", "$1.") : a; 
+					return  res;
 				}).collect (Collectors.joining(", "))
 			);
 
@@ -355,7 +356,8 @@ public class Scopus_csv  {
 			row.add ((pub.C1 == null) ? "" :
 				pub.C1.stream().map(it -> {
 					String[] split = it[0].split(", ", 2);
-					return (split.length==2) ? (split[0] + ", " + split[1].replaceAll("([A-Z])", "$1.") + ", " + it[1]) : (it[0] + ", " + it[1]);
+					String res = (split.length==2) ? (split[0] + ", " + split[1].replaceAll("([A-Z])", "$1.") + ", " + it[1]) : (it[0] + ", " + it[1]);
+					return res;
 				}).collect(Collectors.joining("; "))
 			);
 				
@@ -396,7 +398,7 @@ public class Scopus_csv  {
 			
 		csv.close();
 
-		stat.setValue(String.format("%1$s: Saving Scopus file done", new Date()), 0, crTab.getInfoString());
+		stat.setValue(String.format("%1$s: Saving Scopus file done", new Date()), crTab.getInfoString());
 	}
 	
 	

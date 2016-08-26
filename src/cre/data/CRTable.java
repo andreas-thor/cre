@@ -224,7 +224,7 @@ public class CRTable {
 				.toArray() }
 		);
 		
-		stat.setValue("", 0, getInfoString());
+		stat.setValue("", getInfoString());
 	}
 		
 	

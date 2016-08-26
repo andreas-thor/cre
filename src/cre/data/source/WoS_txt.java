@@ -97,8 +97,7 @@ public class WoS_txt {
 		
 		crTab.abort = false;	// can be changed by "wait dialog"
 		
-		Date startDate = new Date();
-		stat.setValue(String.format("%1$s: Loading WoS files ...", startDate), 0, "");
+
 		
 		crTab.init();
 		
@@ -109,14 +108,9 @@ public class WoS_txt {
 			int fileNr = idx+1;
 			WoS_Iterator wosIt = new WoS_Iterator(files[idx]);
 			
+			stat.initProgressbar(files[idx].length(), String.format("Loading WoS file %1$d of %2$d ...", (idx+1), files.length));
 			
-			long stepSize = files[idx].length()/20;
-			AtomicLong countPub = new AtomicLong(0);
-			
-			AtomicLong countSteps = new AtomicLong(0);
 			AtomicLong countSize = new AtomicLong(0);
-			
-
 			
 			crTab.pubData.addAll(StreamSupport.stream(wosIt.getIterable().spliterator(), true).map ( it -> {
 			
@@ -200,16 +194,8 @@ public class WoS_txt {
 					}
 				}
 				
-				countPub.incrementAndGet();
-				countSize.addAndGet(pub.length);
-				
+				stat.updateProgressbar(countSize.addAndGet(pub.length));
 				countCR.addAndGet(pub.crList.size());
-				
-				// update status bar
-				if (countSteps.get()*stepSize < countSize.get() ) {
-					stat.setValue (String.format("%1$s: Loading WoS file %2$d of %3$d", startDate, fileNr, files.length), (int)(5*countSteps.get()));
-					countSteps.incrementAndGet();
-				}
 				
 				return pub;
 			}).filter ( it -> it != null).collect (Collectors.toList()));	// remove null values (abort)
@@ -220,14 +206,14 @@ public class WoS_txt {
 			if (crTab.abort) {
 				crTab.init();
 				crTab.updateData(false);
-				stat.setValue(String.format("%1$s: Loading WoS files aborted (due to user request)", startDate), 0);
+				stat.setValue("Loading WoS files aborted (due to user request)", 0);
 				crTab.abort = false;
 				throw new AbortedException();
 			}
 
 			// Check for maximal number of CRs
 			if ((maxCR>0) && (countCR.get()>=maxCR)) {
-				stat.setValue(String.format("$1%s: Loading WoS files aborted (due to maximal number of CRs)", startDate), 0);
+				stat.setValue("Loading WoS files aborted (due to maximal number of CRs)", 0);
 				crTab.createCRList();
 				crTab.updateData(false);
 				throw new FileTooLargeException ((int) countCR.get());
@@ -249,7 +235,7 @@ public class WoS_txt {
 		System.out.println("Memory usage " + ((ms2-ms1)/1024d/1024d) + " MBytes");
 
 		crTab.updateData(false);
-		stat.setValue(String.format("%1$s: Loading WoS files done", startDate), 0, crTab.getInfoString());		
+		stat.setValue("Loading WoS files done", crTab.getInfoString());		
 		
 	}
 	
@@ -353,7 +339,7 @@ public class WoS_txt {
 		bw.write("EF"); 
 		bw.newLine();
 		bw.close();
-		stat.setValue(String.format("%1$s: Saving WoS file done", new Date()), 0, crTab.getInfoString());
+		stat.setValue("Saving WoS file done", crTab.getInfoString());
 
 			
 	}

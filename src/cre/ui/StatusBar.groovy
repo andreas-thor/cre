@@ -22,8 +22,8 @@ class StatusBar {
 	private JProgressBar sbpb
 	private JLabel sbinfo
 	
-	private int blockSize;
-	private int blockCount;
+	private long blockSize;
+	private long blockCount;
 	private Date date;
 	private String label;
 	
@@ -44,28 +44,36 @@ class StatusBar {
 
 		
 	@CompileStatic
-	public void setValue (String label, int value, String info=null) {
-		sblabel.text = "   ${label}       "
-		sbpb.setValue(value)
+	public void setValue (String label, long value, String info=null) {
+		setValue(label, value, info, new Date());
+	}
+
+	public void setValue (String label, String info=null) {
+		setValue(label, 0L, info, new Date());
+	}
+
+		
+	public void setValue (String label, long value, String info, Date d) {
+		sblabel.text = String.format("   %1\$s: %2\$s       ", d, label);
+		sbpb.setValue((int)value)
 		if (info != null) sbinfo.text = "       ${info}   "
 	}
 	
 	
-	
-	public void initProgressbar (int maxSize, String label) {
+	public void initProgressbar (long maxSize, String label) {
 		
 		this.blockSize = maxSize/20;
 		this.blockCount = 0;
 		this.date = new Date();
 		this.label = label;
-		this.setValue(String.format("%1\$s: %2\$s", date, label), 0, "");
+		this.setValue(label, 0, "", this.date);
 		
 		
 	}
 	
-	public void updateProgressbar (int count) {
+	public void updateProgressbar (long count) {
 		if (blockCount*blockSize<count) {
-			this.setValue(String.format("%1\$s: %2\$s", date, label), 5*blockCount, "");
+			this.setValue(label, 5*blockCount, "", date);
 			blockCount++;
 		}
 	}

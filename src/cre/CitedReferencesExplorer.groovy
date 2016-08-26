@@ -168,7 +168,7 @@ ChartPanel chpan = UIChartPanelFactory.create(crTable, tab,
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., DEVELOPMENT Version 2016/08/19)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., DEVELOPMENT Version 2016/08/26)",  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -273,7 +273,7 @@ mainFrame = sb.frame(
 			checkBoxMenuItem (id:'showNull', text: "Show CRs without Year", actionPerformed: { 
 				crTable.setShowNull(sb.showNull.selected)
 				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
-				crTable.stat.setValue("", 0, crTable.getInfoString())
+				crTable.stat.setValue("", crTable.getInfoString())
 			})
 			
 			menuItem(text: "Filter by Cited Reference Year ...", mnemonic: 'Y', actionPerformed: {
