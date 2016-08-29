@@ -168,7 +168,7 @@ ChartPanel chpan = UIChartPanelFactory.create(crTable, tab,
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., DEVELOPMENT Version 2016/08/26)",  
+	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., DEVELOPMENT Version 2016/08/29)", // 1.6.8  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -311,18 +311,47 @@ mainFrame = sb.frame(
 				
 						
 			menuItem(text: "Remove by Cited Reference Year ...", mnemonic: 'Y', actionPerformed: {
-				UIDialogFactory.createIntRangeDlg(mainFrame, uibind.uiRanges[0], "Remove by Cited Reference Year", "Cited Reference Years", crTable.getMaxRangeYear(), { min, max -> crTable.removeByYear(min, max) }).visible = true
-				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
+				UIDialogFactory.createIntRangeDlg(mainFrame, uibind.uiRanges[0], "Remove by Cited Reference Year", "Cited Reference Years", crTable.getMaxRangeYear(), { min, max -> 
+					long n =  crTable.getNumberByYear(min, max);
+					if (n == 0) {
+						JOptionPane.showMessageDialog(null, String.format ("No Cited References with Cited Reference Year between %1\$d and %2\$d.", min, max));
+					} else {
+						if (JOptionPane.showConfirmDialog (null, String.format("Would you like to remove all %1\$d Cited References with Cited Reference Year between %2\$d and %3\$d?", n, min, max), "Warning", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+							crTable.removeByYear(min, max);
+							(tab.getModel() as AbstractTableModel).fireTableDataChanged();
+						}
+					}
+				}).visible = true
 			})
 			
 			menuItem(text: "Remove by Number of Cited References...", mnemonic: 'N', actionPerformed: {
-				UIDialogFactory.createIntRangeDlg(mainFrame, uibind.uiRanges[1], "Remove by Number of cited references", "Number of Cited References", crTable.getMaxRangeNCR(), { min, max -> crTable.removeByNCR(min, max) }).visible = true
-				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
+				UIDialogFactory.createIntRangeDlg(mainFrame, uibind.uiRanges[1], "Remove by Number of cited references", "Number of Cited References", crTable.getMaxRangeNCR(), { min, max -> 
+					
+					long n =  crTable.getNumberByNCR(min, max);
+					if (n == 0) {
+						JOptionPane.showMessageDialog(null, String.format ("No Cited References with Number of Cited References between %1\$d and %2\$d.", min, max));
+					} else {
+						if (JOptionPane.showConfirmDialog (null, String.format("Would you like to remove all %1\$d Cited References with Number of Cited References between %2\$d and %3\$d?", n, min, max), "Warning", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+							crTable.removeByNCR(min, max);
+							(tab.getModel() as AbstractTableModel).fireTableDataChanged();
+						}
+					}
+				}).visible = true
 			})
 
 			menuItem(text: "Remove by Percent in Year...", mnemonic: 'P', actionPerformed: {
-				UIDialogFactory.createThresholdDlg(mainFrame, "Remove by Percent in Year", "Percent in Year", { comp, threshold -> crTable.removeByPercentYear (comp, threshold) }).visible = true
-				(tab.getModel() as AbstractTableModel).fireTableDataChanged()
+				UIDialogFactory.createThresholdDlg(mainFrame, "Remove by Percent in Year", "Percent in Year", { comp, threshold -> 
+					
+					long n =  crTable.getNumberByPercentYear (comp, threshold);
+					if (n == 0) {
+						JOptionPane.showMessageDialog(null, String.format ("No Cited References with Percent in Year %1\$s %2\$.1f%%", comp, 100*threshold));
+					} else {
+						if (JOptionPane.showConfirmDialog (null, String.format("Would you like to remove all %1\$d Cited References with Percent in Year %2\$s %3\$.1f%%", n, comp, 100*threshold), "Warning", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+							crTable.removeByPercentYear (comp, threshold);
+							(tab.getModel() as AbstractTableModel).fireTableDataChanged();
+						}
+					}
+				}).visible = true
 			})
 			
 			separator()
@@ -332,7 +361,7 @@ mainFrame = sb.frame(
 				if (tab.getSelectedRowCount() == 0) {
 					JOptionPane.showMessageDialog(null, "No Cited References selected");
 				} else {
-					if (JOptionPane.showConfirmDialog (null, "Would you like to remove all citing publications that do not cite one of the selected ${tab.getSelectedRowCount()} Cited References?", "Warning", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+					if (JOptionPane.showConfirmDialog (null, "Would you like to remove all citing publications that do not cite any of the selected ${tab.getSelectedRowCount()} Cited References?", "Warning", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 						crTable.removeByCR (tab.getSelectedRows().collect { tab.convertRowIndexToModel (it) })
 						(tab.getModel() as AbstractTableModel).fireTableDataChanged()
 					}

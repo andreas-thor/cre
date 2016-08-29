@@ -41,7 +41,8 @@
 	<jar href="lib/orsoncharts-1.4-eval-nofx.jar"/>
 	<jar href="lib/orsonpdf-1.6-eval.jar"/>
 	<jar href="lib/servlet.jar"/>
-	<jar href="lib/swtgraphics2d.jar"/>    
+	<jar href="lib/swtgraphics2d.jar"/>
+	<jar href="lib/javax.json-1.0.jar"/>    
   </resources>
 
   <application-desc main-class="cre.CitedReferencesExplorer"/>

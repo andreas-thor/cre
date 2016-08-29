@@ -274,9 +274,13 @@ public class Scopus_csv  {
 
 
 		// check if year available and in the given year range
-		if (res.RPY == null) return null;
-		if (((res.RPY < yearRange[0]) && (yearRange[0]!=0)) || ((res.RPY > yearRange[1]) && (yearRange[1]!=0))) return null;
-		
+//		if (res.RPY == null) return null;
+		if (res.RPY != null) {
+			if (((res.RPY < yearRange[0]) && (yearRange[0]!=0)) || ((res.RPY > yearRange[1]) && (yearRange[1]!=0))) return null;
+		} else {
+			if ((yearRange[0]!=0) || (yearRange[1]!=0)) return null;
+		}
+
 		
 		// process Journal names
 		String[] split = res.J_N.split(" ");

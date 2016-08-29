@@ -327,6 +327,7 @@ public class CRTable {
 	}
 	
 	
+	
 	public int getNumberWithoutYear () {
 		return (int) crData.stream().filter( (CRType it) -> it.RPY == null).count();  
 	}
@@ -336,26 +337,57 @@ public class CRTable {
 		updateData(true);
 	}
 
+	
+	
 
 	/**
-	 * Remove publications based on year range (from <= x <= to)	
+	 * Count / Remove publications based on year range (from <= x <= to)	
+	 * Property "removed" is set for cascading deletions (e.g., Citing Publications) 
 	 * @param from
 	 * @param to
 	 */
+	
+	public long getNumberByYear (int from, int to) {
+		return crData.stream().filter( cr -> ((cr.RPY!=null) && (from <= cr.RPY) && (cr.RPY <= to))).count();
+	}
+	
 	public void removeByYear (int from, int to) {
-		crData.removeIf( (CRType cr) -> { cr.removed = ((from <= cr.RPY) && (cr.RPY <= to)); return cr.removed; });
+		crData.removeIf( (CRType cr) -> { cr.removed = ((cr.RPY!=null) && (from <= cr.RPY) && (cr.RPY <= to)); return cr.removed; });
 		updateData(true);
 	}
-
+	
 	
 	/**
-	 * Remove publications based on NCR range (from <= N_CR <= to)
+	 * Count / Remove publications based on NCR range (from <= N_CR <= to)
 	 * @param from
 	 * @param to
 	 */
+	
+	public long getNumberByNCR (int from, int to) {
+		return crData.stream().filter(cr -> ((from <= cr.N_CR) && (cr.N_CR <= to))).count();
+	}
+	
 	public void removeByNCR(int from, int to) {
 		crData.removeIf ( (CRType cr) -> { cr.removed = ((from <= cr.N_CR) && (cr.N_CR <= to)); return cr.removed; });
 		updateData(true);
+	}
+	
+	/**
+	 * Count / Remove publiations based on PERC_YR
+	 * @param comp Comparator (<, <=, =, >=, or >)
+	 * @param threshold
+	 * @return
+	 */
+	
+	public long getNumberByPercentYear (String comp, double threshold) {
+		switch (comp) {
+			case "<" : return crData.stream().filter( cr -> cr.PERC_YR <  threshold ).count(); 
+			case "<=": return crData.stream().filter( cr -> cr.PERC_YR <= threshold ).count();
+			case "=" : return crData.stream().filter( cr -> cr.PERC_YR == threshold ).count();
+			case ">=": return crData.stream().filter( cr -> cr.PERC_YR >= threshold ).count();
+			case ">" : return crData.stream().filter( cr -> cr.PERC_YR >  threshold ).count();
+		}
+		return 0;
 	}
 	
 	public void removeByPercentYear (String comp, double threshold) {
@@ -391,7 +423,7 @@ public class CRTable {
 	 * @return [min, max]
 	 */
 	public List<Integer> getMaxRangeYear () {
-		IntSummaryStatistics stats = crData.stream().map((CRType it) -> it.RPY).mapToInt(Integer::intValue).summaryStatistics();
+		IntSummaryStatistics stats = crData.stream().filter (cr -> cr.RPY != null).map((CRType it) -> it.RPY).mapToInt(Integer::intValue).summaryStatistics();
 		return new ArrayList<Integer> (Arrays.asList (stats.getMin(), stats.getMax()));
 	}
 	

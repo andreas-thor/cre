@@ -369,18 +369,24 @@ public class WoS_txt {
 		CRType cr = new CRType();
 		cr.CR = line; // [3..-1] // .toUpperCase()
 		cr.type = CRType.TYPE_WOS;
+		cr.RPY = null;
 		String[] crsplit = cr.CR.split (",", 3);
 		
-		String yearS = crsplit.length > 1 ? crsplit[1].trim() : "";
-		try {
-			
-			int year = Integer.parseInt(yearS);
-			if (((year < yearRange[0]) && (yearRange[0]!=0)) || ((year > yearRange[1]) && (yearRange[1]!=0))) return null;
-			cr.RPY = year;
-		} catch (NumberFormatException e) {
-			return null;
+		
+		int yearPos = 1;
+		while ((cr.RPY == null) && (yearPos >= 0)) {
+			String yearS = crsplit.length > 1 ? crsplit[yearPos].trim() : "";
+			if (yearS.length() <= 4) {
+				try {
+					int year = Integer.parseInt(yearS);
+					if (((year < yearRange[0]) && (yearRange[0]!=0)) || ((year > yearRange[1]) && (yearRange[1]!=0))) return null;
+					cr.RPY = year;
+				} catch (NumberFormatException e) { }
+			}
+			yearPos--;
 		}
 
+		if ((cr.RPY == null) && ((yearRange[0]!=0) || (yearRange[1]!=0))) return null;
 		
 		cr.AU = crsplit[0].trim();
 		
