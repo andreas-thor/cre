@@ -52,17 +52,17 @@
 				Leydesdorff’s homepage</a>.
 		</p>
 		<p>
-			The CRExplorer uses data from Web of Science (Thomson Reuters) as
-			input. Publication sets have to be downloaded including the
-			references cited. The program focusses on the analysis of the cited
-			references, in particular on the referenced publication years. Over
-			time, "citation classics" of a field become more pronounced. When the
-			aggregated citations are plotted along the time axis, one obtains a
-			"spectrogram" with peaks. CRExplorer visualizes this spectrogram,
-			cleans the cited references (so-called "disambiguation"), and uses a
-			smoothing algorithm to suppress the noise. The method Reference
-			Publication Year Spectroscopy (RPYS) was developed by Werner Marx who
-			used it for the first time in the <a
+			The CRExplorer uses data from Web of Science (Thomson Reuters) or
+			Scopus (Elsevier) as input. Publication sets have to be downloaded
+			including the references cited. The program focusses on the analysis
+			of the cited references, in particular on the referenced publication
+			years. Over time, "citation classics" of a field become more
+			pronounced. When the aggregated citations are plotted along the time
+			axis, one obtains a "spectrogram" with peaks. CRExplorer visualizes
+			this spectrogram, cleans the cited references (so-called
+			"disambiguation"), and uses a smoothing algorithm to suppress the
+			noise. The method Reference Publication Year Spectroscopy (RPYS) was
+			developed by Werner Marx who used it for the first time in the <a
 				href="http://www.rmets.org/sites/default/files/hisnews1003.pdf">field
 				of meteorology (see his study on page 11)</a>.
 		</p>
@@ -137,9 +137,13 @@
 					Running JAR-Packaged Software</a>. Here you can also set the heap space
 				size if you are processing large files.</li>
 		</ol>
-		
-		<p>CRExplorer version 1.6.7 was released on July 5, 2016. This version includes the following new features and improvements
-		(see <a href="http://arxiv.org/abs/1607.01266">New features of CRExplorer</a> for a detailed description):</p>
+
+		<p>
+			CRExplorer version 1.6.7 was released on July 5, 2016. This version
+			includes the following new features and improvements (see <a
+				href="http://arxiv.org/abs/1607.01266">New features of
+				CRExplorer</a> for a detailed description):
+		</p>
 		<ul>
 			<li><b>Scopus</b>: Using “File” – “Import” – “Scopus”,
 				CRExplorer reads files from Scopus. The file format “CSV” (including
@@ -158,24 +162,27 @@
 				include all data including matching results and manual matching
 				corrections. The files can be opened by using “File” – “Open”.</li>
 		</ul>
-		
 
-		<p>CRExplorer version 1.6.8 was released on August 29, 2016. This version includes the following new features and improvements:
-		</p>
+
+		<p>CRExplorer version 1.6.8 was released on August 29, 2016. This
+			version includes the following new features and improvements:</p>
 		<ul>
-			<li><b>Co-Citation</b>: If the user marks at least one cited reference in the table and selects 
-			“Data” – “Retain Publications Citing Selected Cited References”, all cited 
-			references which are co-cited with the marked cited reference in 
-			citing publications are kept (all other cited references are dropped). 
-			See <a href="http://arxiv.org/">Which early works are cited most frequently in climate change research literature? 
-			A bibliometric approach based on Reference Publication Year Spectroscopy</a> for a first use case.</li>
-			<li><b>Performance</b>: Performance improvements (e.g., for data clustering) using 
-			multiple threads on multi-core machines.</li>
+			<li><b>Co-Citation</b>: If the user marks at least one cited
+				reference in the table and selects “Data” – “Retain Publications
+				Citing Selected Cited References”, all cited references which are
+				co-cited with the marked cited reference in citing publications are
+				kept (all other cited references are dropped). See <a
+				href="http://arxiv.org/abs/1608.07960">Which early works are
+					cited most frequently in climate change research literature? A
+					bibliometric approach based on Reference Publication Year
+					Spectroscopy</a> for a first use case.</li>
+			<li><b>Performance</b>: Performance improvements (e.g., for data
+				clustering) using multiple threads on multi-core machines.</li>
 			<li><b>Java 8</b>: CRExplorer requires a Java 8 run-time.</li>
-			
+
 		</ul>
-		
-		
+
+
 	</div>
 
 
@@ -183,12 +190,18 @@
 		<h1>Guide and Datasets</h1>
 
 		<ul>
-			<li><a href="http://arxiv.org/abs/1601.01199">Introducing CitedReferencesExplorer (CRExplorer): A program for
-			Reference Publication Year Spectroscopy with Cited References
-			Disambiguation</a><br />by Andreas Thor, Werner Marx, Loet Leydesdorff,
-			and Lutz Bornmann<br /><br /></li>
-			<li><a href="http://www1.hft-leipzig.de/thor/crexplorer/CRE-Instructions.pdf">Analysing cited references via the CRExplorer: A practically oriented short guide</a><br />by Werner Marx<br/><br/></li>
-			<li><a href="http://arxiv.org/abs/1607.01266">New features of CitedReferencesExplorer (CRExplorer)</a><br/>by Andreas Thor, Werner Marx, Loet Leydesdorff, and Lutz Bornmann</li>
+			<li><a href="http://arxiv.org/abs/1601.01199">Introducing
+					CitedReferencesExplorer (CRExplorer): A program for Reference
+					Publication Year Spectroscopy with Cited References Disambiguation</a><br />by
+				Andreas Thor, Werner Marx, Loet Leydesdorff, and Lutz Bornmann<br />
+				<br /></li>
+			<li><a
+				href="http://www1.hft-leipzig.de/thor/crexplorer/CRE-Instructions.pdf">Analysing
+					cited references via the CRExplorer: A practically oriented short
+					guide</a><br />by Werner Marx<br /> <br /></li>
+			<li><a href="http://arxiv.org/abs/1607.01266">New features
+					of CitedReferencesExplorer (CRExplorer)</a><br />by Andreas Thor,
+				Werner Marx, Loet Leydesdorff, and Lutz Bornmann</li>
 		</ul>
 
 		<p>Datasets:</p>
@@ -209,29 +222,41 @@
 			<li><a href="http://arxiv.org/abs/1307.8239">Detecting the
 					historical roots of research fields by reference publication year
 					spectroscopy (RPYS)</a> <br />by Werner Marx, Lutz Bornmann, Andreas
-				Barth, and Loet Leydesdorff<br /><br /></li>
+				Barth, and Loet Leydesdorff<br /> <br /></li>
 			<li><a href="http://arxiv.org/abs/1410.3461">Philosophy of
 					science viewed through the lense of "References Publication Years
-					spectrosopy" (RPYS)</a><br />by K. Brad Wray and Lutz Bornmann<br /><br /></li>
+					spectrosopy" (RPYS)</a><br />by K. Brad Wray and Lutz Bornmann<br />
+				<br /></li>
 			<li><a href="http://arxiv.org/abs/1311.5665">Tracing the
 					origin of a scientific legend by Reference Publication Year
 					Spectroscopy (RPYS): the legend of the Darwin finches </a><br />by
-				Werner Marx and Lutz Bornmann<br /><br /></li>
+				Werner Marx and Lutz Bornmann<br /> <br /></li>
 			<li><a href="http://arxiv.org/abs/1309.5706">Referenced
 					Publication Years Spectroscopy applied to iMetrics: Scientometrics,
 					Journal of Informetrics, and a relevant subset of JASIST </a><br />by
 				Loet Leydesdorff, Lutz Bornmann, Werner Marx, and Sta&#353;a
-				Milojevic<br /><br /></li>
+				Milojevic<br /> <br /></li>
 			<li><a href="https://dx.doi.org/10.6084/m9.figshare.1422015">Identifying
 					seminal works most important for research fields: Software for the
 					Reference Publication Year Spectroscopy (RPYS) </a><br />by Lutz
-				Bornmann, Andreas Thor, Werner Marx, and Loet Leydesdorff<br /><br /></li>
+				Bornmann, Andreas Thor, Werner Marx, and Loet Leydesdorff<br /> <br /></li>
 			<li><a href="http://arxiv.org/abs/1402.4223">On the origins
 					and the historical roots of the Higgs boson research from a
 					bibliometric perspective </a><br />by Andreas Barth, Werner Marx, Lutz
-				Bornmann, and Ruediger Mutz<br /><br /></li>
-			<li><a href="http://arxiv.org/abs/1601.00288">Identification of long-term concept-symbols among citations: Can documents be clustered in terms of common intellectual histories?</a><br />by Jordan A. Comins and Loet Leydesdorff<br /><br /></li>
-			<li><a href="http://arxiv.org/abs/1601.00141">Detecting the historical roots of tribology research: a bibliometric analysis</a><br />by Bakthavachalam Elango, Lutz Bornmann, and Govindaraju Kannan<br /><br /></li>
+				Bornmann, and Ruediger Mutz<br /> <br /></li>
+			<li><a href="http://arxiv.org/abs/1601.00288">Identification
+					of long-term concept-symbols among citations: Can documents be
+					clustered in terms of common intellectual histories?</a><br />by
+				Jordan A. Comins and Loet Leydesdorff<br /> <br /></li>
+			<li><a href="http://arxiv.org/abs/1601.00141">Detecting the
+					historical roots of tribology research: a bibliometric analysis</a><br />by
+				Bakthavachalam Elango, Lutz Bornmann, and Govindaraju Kannan<br />
+				<br /></li>
+			<li><a href="http://arxiv.org/abs/1608.07960">Which early
+					works are cited most frequently in climate change research
+					literature? A bibliometric approach based on Reference Publication
+					Year Spectroscopy</a> <br />by Werner Marx, Robin Haunschild, Andreas
+				Thor, and Lutz Bornmann<br /> <br /></li>
 		</ul>
 	</div>
 
