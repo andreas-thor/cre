@@ -563,7 +563,7 @@ public class CRMatch {
 			cidx++;
 		}
 		
-		// for all CRs that will eventually be removed: add the cluster representative to the crList of each publication
+		// for all CRs that will eventually be removed: add the cluster representative to the crList of each publication and remove to-be-removed CRs
 		for (PubType pub: crTab.pubData) {
 			pub.crList.addAll (
 				pub.crList.stream()
@@ -572,6 +572,7 @@ public class CRMatch {
 					.collect(Collectors.toList())
 			);
 			pub.crList = new ArrayList<CRType>(new HashSet<CRType>(pub.crList));	// in case, both merged CRs are in a list of the same publication
+			pub.crList.removeIf(it -> { return (it.mergedTo >= 0); });				// remove CRs that will be removed
 		}
 		
 		// remove all invalidated CRs

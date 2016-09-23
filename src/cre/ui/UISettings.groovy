@@ -212,6 +212,9 @@ class UISettings {
 	
 	public JDialog createSettingsDlg (JFrame f /*, byte[] colVal, byte[] lineVal, byte[] seriesSize, int maxCR, int[] yearRange, Closure action*/) {
 
+		
+		String[] attrNames = ["ID","CR","RPY","N_CR","PERC_YR","PERC_ALL","AU","AU_L","AU_F","AU_A","TI","J","J_N","J_S","VOL","PAG","DOI","CID2","CID_S"];
+		
 		SwingBuilder sb = new SwingBuilder()
 		JButton defBtn
 		JDialog setDlg = sb.dialog(modal:true, title: "Settings")
@@ -227,15 +230,13 @@ class UISettings {
 								tableLayout(cellpadding:0) {
 									tr { td (align:'left') { sb.panel (border: BorderFactory.createTitledBorder("Show Columns in Table")) {
 										tableLayout (id: 'columns', cellpadding: 0 ) {
-											Iterator attIt = CRType.attr.iterator()
-											Map.Entry<String,String> entry
+											Iterator attIt = attrNames.iterator()
 											int idx = 0
 											while (attIt.hasNext()) {
 												tr {
 													(0..2).each { 
 														if (attIt.hasNext()) {											
-															entry = (Map.Entry) attIt.next()
-															td { checkBox(text: entry.getValue(), selected: attributes[idx]==1) }
+															td { checkBox(text: CRType.attr.get(attIt.next()), selected: attributes[idx]==1) }
 															idx++
 														}
 													}

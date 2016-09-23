@@ -17,7 +17,7 @@
 		
 		
 	<!-- Specify if release or test deployment -->	
-	<property name="deployRELEASE.dir" value="www1_thor/crexplorer/"/>
+	<property name="xxxdeploy.dir" value="www1_thor/crexplorer/"/>
 	<property name="deploy.dir" value="www1_thor/citationtest/"/>
 	
 	<!-- Specify if running from home or from HfTL -->	
