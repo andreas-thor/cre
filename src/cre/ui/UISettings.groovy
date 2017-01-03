@@ -108,12 +108,15 @@ class UISettings {
 		
 		//  adjust visibile attribute columns
 		attributes.eachWithIndex { byte v, int idx ->
-			tab.getTableHeader().getColumnModel().getColumn(idx+2).with { // 2 = offset to ignore first two columns (VI, CO)
-				setMaxWidth((v==1) ? 800 : 0)
-				setMinWidth((v==1) ?  30 : 0)
-				setWidth((v==1) ? tab.getWidth() : 0)
-				setPreferredWidth((v==1) ? tab.getWidth() : 0)
-				setResizable(v==1)
+			
+			if ((idx+2) < tab.getColumnModel().getColumnCount()) {
+				tab.getTableHeader().getColumnModel().getColumn(idx+2).with { // 2 = offset to ignore first two columns (VI, CO)
+					setMaxWidth((v==1) ? 800 : 0)
+					setMinWidth((v==1) ?  30 : 0)
+					setWidth((v==1) ? tab.getWidth() : 0)
+					setPreferredWidth((v==1) ? tab.getWidth() : 0)
+					setResizable(v==1)
+				}
 			}
 		}
 	}

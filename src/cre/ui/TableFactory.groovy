@@ -34,8 +34,8 @@ import cre.data.*
 class TableFactory {
 
 	private static String clickedCol 
-	
-	public static final Map<String, Integer> columns = ['VI':0, 'CO':1, 'RPY':4, 'N_CR':5, 'PERC_YR':6, 'PERC_ALL':7, 'PYEAR_PERC':22]
+
+		public static final Map<String, Integer> columns = ['VI':0, 'CO':1, 'RPY':4, 'N_CR':5, 'PERC_YR':6, 'PERC_ALL':7, 'PYEAR_PERC':22  ]
 	private static DecimalFormat formatter = new DecimalFormat( "##0.0000%" )
 	
 	private static JTable init(CRTable crTable) {
@@ -45,7 +45,7 @@ class TableFactory {
 				// first two columns are ALWAYS invisible; used to specify what rows are displayed (VI) and what background color they have (CO)
 				propertyColumn(header:'VI', 					propertyName:'VI', 			type: Integer, maxWidth:0 , minWidth:0, preferredWidth:0, editable: false)
 				propertyColumn(header:'CO', 					propertyName:'CO', 			type: Integer, maxWidth:0 , minWidth:0, preferredWidth:0, editable: false)
-	
+				
 				propertyColumn(header:CRType.attr.ID,  			propertyName:'ID', 			type: Integer, 	editable: false)
 				propertyColumn(header:CRType.attr.CR,  			propertyName:'CR', 			type: String, 	editable: false)
 				propertyColumn(header:CRType.attr.RPY, 			propertyName:'RPY',			type: Integer, 	editable: false)
@@ -68,6 +68,12 @@ class TableFactory {
 				
 				propertyColumn(header:CRType.attr.N_PYEARS, 	propertyName:'N_PYEARS', 	type: Integer, 	editable: false)
 				propertyColumn(header:CRType.attr.PYEAR_PERC, 	propertyName:'PYEAR_PERC', 	type: Double, 	editable: false)
+
+				propertyColumn(header:CRType.attr.N_PCT50, 		propertyName:'N_PCT50', 	type: Integer, 	editable: false)
+				propertyColumn(header:CRType.attr.N_PCT75, 		propertyName:'N_PCT75', 	type: Integer, 	editable: false)
+				propertyColumn(header:CRType.attr.N_PCT90, 		propertyName:'N_PCT90', 	type: Integer, 	editable: false)
+
+				propertyColumn(header:CRType.attr.N_PYEARS2, 	propertyName:'N_PYEARS2',	type: Integer, 	editable: false)
 				
 				
 			}
@@ -81,6 +87,7 @@ class TableFactory {
 	
 	
 
+	
 	
 	
 	@CompileStatic

@@ -37,6 +37,10 @@ public class CRType {
 	
 	public int N_PYEARS = 0;	
 	public Double PYEAR_PERC;
+	public int N_PCT50 = 0;
+	public int N_PCT75 = 0;
+	public int N_PCT90 = 0;
+	public int N_PYEARS2 = 0;	
 
 	public ArrayList<PubType> pubList;
 	
@@ -66,8 +70,12 @@ public class CRType {
 		aMap.put("DOI", "DOI");
 		aMap.put("CID2", "ClusterID");
 		aMap.put("CID_S", "Cluster Size");
-		aMap.put("N_PYEARS", "Number of Reference Years");
-		aMap.put("PYEAR_PERC", "Percent of maximal Number of Reference Years");
+		aMap.put("N_PYEARS", "N_PYEARS");
+		aMap.put("PYEAR_PERC", "PYEAR_PERC");
+		aMap.put("N_PCT50","N_PCT50");
+		aMap.put("N_PCT75","N_PCT75");
+		aMap.put("N_PCT90","N_PCT90");
+		aMap.put("N_PYEARS2","N_PYEARS2");
         attr = Collections.unmodifiableMap(aMap);
     }
 			

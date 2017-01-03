@@ -172,22 +172,36 @@ public class CRTable {
 		// compute N_PYEARS
 		int maxPubYear = pubData.stream().mapToInt(pub -> (pub.PY==null)?0:pub.PY).max().getAsInt();
 		
-//		Map<Integer, Frequency> mapPY2RPYFreq = new HashMap<Integer, Frequency>();
-//		pubData.stream().forEach(pub -> {
-//			if (mapPY2RPYFreq.get(pub.PY) == null) mapPY2RPYFreq.put(pub.PY, new Frequency());
-//			Frequency f = mapPY2RPYFreq.get(pub.PY);
-//			pub.crList.stream().forEach(cr -> { if (cr.RPY!=null) f.addValue(cr.RPY); } );
-//		});
+		Map<Integer, Frequency> mapPY2CRFreq = new HashMap<Integer, Frequency>();
+		pubData.stream().forEach(pub -> {
+			if (mapPY2CRFreq.get(pub.PY) == null) mapPY2CRFreq.put(pub.PY, new Frequency());
+			Frequency f = mapPY2CRFreq.get(pub.PY);
+			pub.crList.stream().forEach(cr -> { f.addValue(cr.ID); } );
+		});
 		
-		crData.stream().forEach( (CRType cr) -> {
+		crData.parallelStream().forEach( (CRType cr) -> {
 			cr.N_PYEARS = (int) cr.pubList.stream().map(pub -> pub.PY).distinct().count();
 			cr.PYEAR_PERC = (cr.RPY==null) ? null : ((double)cr.N_PYEARS) / (maxPubYear-cr.RPY+1);
+			cr.N_PCT50 = 0;
+			cr.N_PCT75 = 0;
+			cr.N_PCT90 = 0;
+			cr.N_PYEARS2 = 0;
 			
-//			Map<Integer, Integer> cr_CitingsPubsPerYear = new HashMap<Integer, Integer>();
-//			cr.pubList.stream().forEach(pub -> {
-//				cr_CitingsPubsPerYear.compute(pub.PY, (k, v) -> (v==null) ? 1 : v+1); 
-//				
-//			});
+			if (cr.RPY!=null) {
+				for (int y=cr.RPY; y<=maxPubYear; y++) {
+					Frequency f = mapPY2CRFreq.get(y);
+					if (f==null) continue;
+					if (f.getCount(cr.ID)==0) continue; 
+					cr.N_PYEARS2++;
+					double perc = f.getCumPct(cr.ID);
+					if (perc>0.5) cr.N_PCT50++;
+					if (perc>0.75) cr.N_PCT75++;
+					if (perc>0.9) cr.N_PCT90++;
+					
+					
+				}
+				
+			}
 		});
 		
 		
