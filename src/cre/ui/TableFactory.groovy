@@ -35,7 +35,7 @@ class TableFactory {
 
 	private static String clickedCol 
 	
-	public static final Map<String, Integer> columns = ['VI':0, 'CO':1, 'RPY':4, 'N_CR':5, 'PERC_YR':6, 'PERC_ALL':7]
+	public static final Map<String, Integer> columns = ['VI':0, 'CO':1, 'RPY':4, 'N_CR':5, 'PERC_YR':6, 'PERC_ALL':7, 'PYEAR_PERC':22]
 	private static DecimalFormat formatter = new DecimalFormat( "##0.0000%" )
 	
 	private static JTable init(CRTable crTable) {
@@ -65,6 +65,10 @@ class TableFactory {
 				propertyColumn(header:CRType.attr.DOI, 			propertyName:'DOI', 		type: String, 	editable: false)
 				propertyColumn(header:CRType.attr.CID2, 		propertyName:'CID2', 		type: CRCluster,editable: false)
 				propertyColumn(header:CRType.attr.CID_S, 		propertyName:'CID_S', 		type: Integer, 	editable: false)
+				
+				propertyColumn(header:CRType.attr.N_PYEARS, 	propertyName:'N_PYEARS', 	type: Integer, 	editable: false)
+				propertyColumn(header:CRType.attr.PYEAR_PERC, 	propertyName:'PYEAR_PERC', 	type: Double, 	editable: false)
+				
 				
 			}
 		}
@@ -118,7 +122,7 @@ class TableFactory {
 			@Override
 			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
 			{
-				if (((column==columns['PERC_YR']) || (column==columns['PERC_ALL'])) && (value instanceof Double)) {
+				if (((column==columns['PERC_YR']) || (column==columns['PERC_ALL']) || (column==columns['PYEAR_PERC'])) && (value instanceof Double)) {
 					value = formatter.format((Number)value)
 				}
 				

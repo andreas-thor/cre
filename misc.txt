@@ -1,4 +1,15 @@
 
+Menu File
+* Save und Save As
+* Export > CSV (Cited References)
+* Export > CSV (Citing Publications)
+* Export > CSV (Cited References + Citing Publications)
+
+
+Menu Indicators
+
+
+
 parseLine für CR global, da unabhängig von Scopus, WoS etc.!!!
 
 Scopus

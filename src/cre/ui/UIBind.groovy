@@ -21,12 +21,12 @@ class UIBind {
 	}
 	@Bindable UIMatchConfig uiMatchConfig = new UIMatchConfig()
 	
-	// Range configuration: [Remove Year, Remove NCR, Filter Year]
+	// Range configuration: [Remove Year, Remove NCR, Filter Year, Retain Citing Publication Year]
 	class UIRange {
 		String from = ''
 		String to = ''
 	}
-	@Bindable UIRange[] uiRanges = [new UIRange(), new UIRange(), new UIRange()]
+	@Bindable UIRange[] uiRanges = [new UIRange(), new UIRange(), new UIRange(), new UIRange()]
 	
 	
 	

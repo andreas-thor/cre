@@ -90,7 +90,7 @@ Closure doExportFile = { String source, String dlgTitle, FileFilter filter ->
 /* Workflow for loading / importing files */
 Closure doImportFiles = { String source, String dlgTitle, boolean multipleFiles, FileFilter filter ->
 	
-	if (crTable.crData.size()>0) {
+	if (crTable.getSize()>0) {
 		int answer = JOptionPane.showConfirmDialog (null, "Save changes before opening another file?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION)
 		if (answer == JOptionPane.CANCEL_OPTION) return
 		if (answer == JOptionPane.YES_OPTION) { 
@@ -367,6 +367,23 @@ mainFrame = sb.frame(
 					}
 				}
 			})
+			
+			
+			menuItem(text: "Retain Publications within Citing Publication Year ...", mnemonic: 'Y', actionPerformed: {
+				UIDialogFactory.createIntRangeDlg(mainFrame, uibind.uiRanges[3], "Retain Publications within Citing Publication Year", "Citing Publication Years", crTable.getMaxRangeCitingYear(), { min, max ->
+					long n =  crTable.getNumberOfPubs() - crTable.getNumberOfPubsByCitingYear(min, max);
+					if (n == 0) {
+						JOptionPane.showMessageDialog(null, String.format ("All Citing Publication Years are between %1\$d and %2\$d.", min, max));
+					} else {
+						if (JOptionPane.showConfirmDialog (null, String.format("Would you like to remove all %1\$d citing publications with publication year lower than %2\$d or higher than %3\$d?", n, min, max), "Warning", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+							crTable.removeByCitingYear(min, max);
+							(tab.getModel() as AbstractTableModel).fireTableDataChanged();
+						}
+					}
+				}).visible = true
+			})
+			
+			
 
 		}
 		
@@ -388,7 +405,7 @@ mainFrame = sb.frame(
 			
 			menuItem(text: "Merge Clustered Cited References...", mnemonic: 'M', actionPerformed: {
 				
-				long toDelete = crTable.crData.size()-crTable.crMatch.getNoOfClusters()
+				long toDelete = crTable.getSize()-crTable.crMatch.getNoOfClusters()
 				if (toDelete == 0) {
 					JOptionPane.showMessageDialog(null, "No Clusters to merge!");
 				} else {

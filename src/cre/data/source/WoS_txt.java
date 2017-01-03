@@ -415,7 +415,7 @@ public class WoS_txt {
 			
 		// process all journals
 		cr.J = crsplit.length > 2 ? crsplit[2].trim() : "";
-		cr.J_N = cr.J.split(",")[0];
+		cr.J_N = cr.J.equals(",") ? "" : cr.J.split(",")[0];	// 1994er problem (Mail Robin) --> if (CR.J == ",") -> split.size()==0
 		String[] split = cr.J_N.split(" ");
 		if (split.length==1) {
 			cr.J_S = split[0]; 

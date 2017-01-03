@@ -50,7 +50,7 @@ public class CRMatch {
 	private TreeMap <Long, ArrayList<Pair>> timestampedPairs;
 	
 	
-	public Map<Integer, Integer> crId2Index = new HashMap<Integer, Integer>();						// object Id -> index in crData list
+	private Map<Integer, Integer> crId2Index = new HashMap<Integer, Integer>();						// object Id -> index in crData list
 	public Map<CRCluster, Set<Integer>> clusterId2Objects = new HashMap<CRCluster, Set<Integer>>();		// clusterId->[object ids]
 
 	public boolean hasMatches () {

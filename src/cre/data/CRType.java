@@ -1,5 +1,6 @@
 package cre.data;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -29,11 +30,16 @@ public class CRType {
 	
 	public static byte TYPE_WOS = 1;
 	public static byte TYPE_SCOPUS = 2;
-	public byte type = 0 ;	
+	public byte type = 0;	
 	
 	public Double PERC_YR;
 	public Double PERC_ALL;
+	
+	public int N_PYEARS = 0;	
+	public Double PYEAR_PERC;
 
+	public ArrayList<PubType> pubList;
+	
 	public int mergedTo = -1;
 	public boolean removed = false;
 	
@@ -60,6 +66,8 @@ public class CRType {
 		aMap.put("DOI", "DOI");
 		aMap.put("CID2", "ClusterID");
 		aMap.put("CID_S", "Cluster Size");
+		aMap.put("N_PYEARS", "Number of Reference Years");
+		aMap.put("PYEAR_PERC", "Percent of maximal Number of Reference Years");
         attr = Collections.unmodifiableMap(aMap);
     }
 			

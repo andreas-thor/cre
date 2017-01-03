@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,6 +45,9 @@ public class CRE_json {
 
 		ZipFile zipFile = new ZipFile(file);
 		Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
+		
+		Map<Integer, CRType> mapId2CR = new HashMap<Integer, CRType>();
+		
 		
 		JsonParser parser;
 //		while ( (entry = zip.getNextEntry()) != null ) {
@@ -82,7 +86,7 @@ public class CRE_json {
 						break;
 					case VALUE_NUMBER:
 						switch (key) {
-						case "ID": 		cr.ID = parser.getInt(); break;
+						case "ID": 		cr.ID = parser.getInt(); mapId2CR.put(cr.ID, cr); break;
 						case "N_CR": 	cr.N_CR = parser.getInt(); break;
 						case "RPY": 	cr.RPY = parser.getInt(); break;
 						case "CID_S": 	cr.CID_S = parser.getInt(); break;
@@ -97,7 +101,7 @@ public class CRE_json {
 				
 					stat.updateProgressbar(parser.getLocation().getStreamOffset());
 				}
-				crTab.updateData(true);
+//				crTab.updateData(true);
 				stat.setValue("Loading CRE file crdata done");
 			}
 			
@@ -169,7 +173,8 @@ public class CRE_json {
 						case "EP": 	pub.EP = parser.getInt(); break;
 						case "PG": 	pub.PG = parser.getInt(); break;
 						case "TC": 	pub.TC = parser.getInt(); break;
-						case "CRLISTID":	pub.crList.add(crTab.crData.get(crTab.crMatch.crId2Index.get(parser.getInt()))); break;
+						case "CRLISTID":	pub.crList.add(mapId2CR.get(parser.getInt())); break;
+						// local mapping: case "CRLISTID":	crTab.crData.get(crTab.crMatch.crId2Index.get(parser.getInt()))); break;
 						default: System.out.println("PUBDATA.json >> Unknow Key with Number Value: " + key); 
 						}
 						break;
@@ -233,7 +238,8 @@ public class CRE_json {
 //		crTab.crMatch.parseJSON(slurper.parseText(data.get("crmatch.json").toString()) as JSONObject)
 				
 		
-		
+		crTab.updateData(true);
+
 		stat.setValue("Loading CRE file done", crTab.getInfoString());
 	}
 
@@ -242,7 +248,7 @@ public class CRE_json {
 	public static void save (File file, CRTable crTab, StatusBar stat) throws IOException {
 		 
 		int count = 0;
-		stat.initProgressbar(crTab.crData.size() + crTab.pubData.size() + crTab.crMatch.match.get(true).size() + crTab.crMatch.match.get(false).size(), "Saving CRE file ...");
+		stat.initProgressbar(crTab.getSize() + crTab.pubData.size() + crTab.crMatch.match.get(true).size() + crTab.crMatch.match.get(false).size(), "Saving CRE file ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
