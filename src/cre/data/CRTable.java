@@ -1,5 +1,6 @@
 package cre.data;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,6 +42,7 @@ public class CRTable {
 	public StatusBar stat;	// status bar to indicate current information / progress
 	
 	private int medianRange;
+	public File creFile;
 	
 	
 	/**
@@ -61,6 +63,7 @@ public class CRTable {
 		showNull = true;
 		crMatch.clear();
 		pubData.clear();
+		creFile = null;
 	}
 	
 	

@@ -26,6 +26,9 @@ import cre.ui.UIMatchPanelFactory
 import cre.ui.UISettings
 
 
+final String WINDOWTITLE = "CRExplorer (CitedReferencesExplorer by Andreas Thor et al., DEVELOPMENT Version 2017/01/05)";
+
+
 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 Locale.setDefault(new Locale("en"))
 
@@ -66,7 +69,9 @@ Closure doExportFile = { String source, String dlgTitle, FileFilter filter ->
 								case "CRE_json": CRE_json.save(dlg.getSelectedFile(), crTable, stat); break;
 								case "WoS_txt": WoS_txt.save(dlg.getSelectedFile(), crTable, stat); break;
 								case "Scopus_csv": Scopus_csv.save(dlg.getSelectedFile(), crTable, stat); break;
-								case "CRE_csv": CRE_csv.save(dlg.getSelectedFile(), crTable, stat); break;
+								case "CRE_csv_CR": CRE_csv.saveCR(dlg.getSelectedFile(), crTable, stat); break;
+								case "CRE_csv_Pub": CRE_csv.savePub(dlg.getSelectedFile(), crTable, stat); break;
+								case "CRE_csv_CR_Pub": CRE_csv.saveCRPub(dlg.getSelectedFile(), crTable, stat); break;
 								case "CRE_csv_Graph": CRE_csv.saveGraph(dlg.getSelectedFile(), crTable, stat); break;
 								case "CRE_csv_Ruediger": CRE_csv.saveRuediger(dlg.getSelectedFile(), crTable, stat); break;
 								default: JOptionPane.showMessageDialog(null, "Unknown file format." );
@@ -168,7 +173,7 @@ ChartPanel chpan = UIChartPanelFactory.create(crTable, tab,
 
 
 mainFrame = sb.frame(
-	title:"CRExplorer (CitedReferencesExplorer by Andreas Thor et al., DEVELOPMENT Version 2017/01/03)", // 1.6.8  
+	title: WINDOWTITLE,  
 	size:[800,600],
 	windowClosing: { sb.menuExit.doClick() },
 	defaultCloseOperation:JFrame.DO_NOTHING_ON_CLOSE  // WindowConstants.EXIT_ON_CLOSE
@@ -176,7 +181,23 @@ mainFrame = sb.frame(
 		
 	menuBar{ 
 		menu(text: "File", mnemonic: 'F') {
-			
+
+			menuItem(text: "Open...", mnemonic: 'O', accelerator: KeyStroke.getKeyStroke("ctrl O"), actionPerformed: {
+				doImportFiles (
+					"CRE_json", "Open CRE file", false,
+					[getDescription: {"CRE files (*.cre)"}, accept:{File f -> f ==~ /.*?\.cre/ || f.isDirectory() }] as FileFilter);
+				
+				if (crTable.creFile != null) {
+					mainFrame.title = WINDOWTITLE + " - " + crTable.creFile.toString();
+				}
+				
+				if (crTable.crMatch.hasMatches()) {
+					matchpan.visible = true
+					matchpan.updateClustering()
+				}
+				
+			})
+
 			menu(text: "Import") {
 				menuItem(text: "Web of Science...", mnemonic: 'W', actionPerformed: {
 					doImportFiles (
@@ -190,60 +211,77 @@ mainFrame = sb.frame(
 				})
 			}
 			
-			menuItem(text: "Open...", mnemonic: 'O', accelerator: KeyStroke.getKeyStroke("ctrl O"), actionPerformed: {
-				doImportFiles (
-					"CRE_json", "Open CRE file", false, 
-					[getDescription: {"CRE files (*.cre)"}, accept:{File f -> f ==~ /.*?\.cre/ || f.isDirectory() }] as FileFilter)
-				
-				if (crTable.crMatch.hasMatches()) {
-					matchpan.visible = true
-					matchpan.updateClustering()
-				}
-				
-			})
-
-//			menuItem(text: "DEPRECATED Open CSV ...", actionPerformed: {
-//				doImportFiles (
-//					"CRE_csv", "Open CSV file", false,
-//					[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
-//			})
 
 			separator()
 			
+			menuItem(id: "menuSaveCRE", text: "Save", accelerator: KeyStroke.getKeyStroke("ctrl S"), actionPerformed: {
+				
+				if (crTable.creFile != null) {
+					CRE_json.save(crTable.creFile, crTable, stat); 
+				} else {
+					doExportFile (
+						"CRE_json", "Save CRE file",
+						[getDescription: {"CRE files (*.cre)"}, accept:{File f -> f ==~ /.*\.cre/ || f.isDirectory() }] as FileFilter);
+				}
+				
+				if (crTable.creFile != null) { 
+					mainFrame.title = WINDOWTITLE + " - " + crTable.creFile.toString();
+				}
+			})
+
+			menuItem(id: "menuSaveCRE", text: "Save As...", actionPerformed: {
+				doExportFile (
+					"CRE_json", "Save CRE file",
+					[getDescription: {"CRE files (*.cre)"}, accept:{File f -> f ==~ /.*\.cre/ || f.isDirectory() }] as FileFilter);
+				
+				if (crTable.creFile != null) {
+					mainFrame.title = WINDOWTITLE + " - " + crTable.creFile.toString();
+				}
+			})
+
 			
 			menu(text: "Export") {
-				menuItem(id: "menuSaveWoS", text: "Web of Science...", mnemonic: 'W', actionPerformed: {
+				menuItem(id: "menuSaveWoS", text: "Web of Science...", actionPerformed: {
 					doExportFile (
 						"WoS_txt", "Export Web of Science file",
 						[getDescription: {"TXT files (*.txt)"}, accept:{File f -> f ==~ /.*\.txt/ || f.isDirectory() }] as FileFilter)
 				})
-				menuItem(id: "menuSaveScopus", text: "Scopus...", mnemonic: 'S', actionPerformed: {
+				menuItem(id: "menuSaveScopus", text: "Scopus...", actionPerformed: {
 					doExportFile (
 						"Scopus_csv", "Export Scopus file",
 						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
 				})
 				
 				separator()
-				
-				menuItem(id: "menuSaveRuediger", text: "Ruediger...", mnemonic: 'R', accelerator: KeyStroke.getKeyStroke("ctrl R"), actionPerformed: {
+
+				menuItem(id: "menuSaveCSVCR", text: "CSV (Cited References)...", actionPerformed: {
 					doExportFile (
-						"CRE_csv_Ruediger", "Export CRE file for Ruediger",
+						"CRE_csv_CR", "Export CSV file (Cited References)",
 						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
 				})
+
+				menuItem(id: "menuSaveCSVCR", text: "CSV (Citing Publications)...", actionPerformed: {
+					doExportFile (
+						"CRE_csv_Pub", "Export CSV file (Citing Publications)",
+						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
+				})
+
+				menuItem(id: "menuSaveCSVCR", text: "CSV (Cited References + Citing Publications)...", actionPerformed: {
+					doExportFile (
+						"CRE_csv_CR_Pub", "Export CSV file (Cited References + Citing Publications)",
+						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
+				})
+				
+//				separator()
+//
+//				menuItem(id: "menuSaveRuediger", text: "Ruediger...", actionPerformed: {
+//					doExportFile (
+//						"CRE_csv_Ruediger", "Export CRE file for Ruediger",
+//						[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
+//				})
 			}
 			
-			menuItem(id: "menuSaveCRE", text: "Save...", mnemonic: 'S', accelerator: KeyStroke.getKeyStroke("ctrl S"), actionPerformed: {
-				doExportFile (
-					"CRE_json", "Export CRE file",
-					[getDescription: {"CRE files (*.cre)"}, accept:{File f -> f ==~ /.*\.cre/ || f.isDirectory() }] as FileFilter)
-			})
 			
-//			menuItem(id: "menuSaveCSV", text: "DEPERCATED Save...", actionPerformed: {
-//				doExportFile (
-//					"CRE_csv", "Export CRE file",
-//					[getDescription: {"CSV files (*.csv)"}, accept:{File f -> f ==~ /.*\.csv/ || f.isDirectory() }] as FileFilter)
-//			})
-
 			separator()
 			
 			menuItem(id:'settingsDlg', text: "Settings...", mnemonic: 'T', actionPerformed: {

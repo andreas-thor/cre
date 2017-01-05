@@ -1,13 +1,10 @@
 package cre.data.source;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +12,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.json.Json;
@@ -240,6 +236,7 @@ public class CRE_json {
 		
 		crTab.updateData(true);
 
+		crTab.creFile = file;
 		stat.setValue("Loading CRE file done", crTab.getInfoString());
 	}
 
@@ -366,6 +363,8 @@ public class CRE_json {
 		
 		zip.flush();
 		zip.close();
+		
+		crTab.creFile = file;
 		stat.setValue("Saving CRE file done", crTab.getInfoString());
 
 		
