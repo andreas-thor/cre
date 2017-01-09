@@ -3,8 +3,10 @@ package cre.data;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
+
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 public class CRType {
 
@@ -25,12 +27,9 @@ public class CRType {
 	public String DOI;
 	public CRCluster CID2;
 	public int CID_S;
-	public int VI = 1;
-	public int CO = 0;
 	
-	public static byte TYPE_WOS = 1;
-	public static byte TYPE_SCOPUS = 2;
-	public byte type = 0;	
+	public int VI = 1;	// visible
+	public int CO = 0;	// background color
 	
 	public Double PERC_YR;
 	public Double PERC_ALL;
@@ -41,6 +40,12 @@ public class CRType {
 	public int N_PCT75 = 0;
 	public int N_PCT90 = 0;
 	public int N_PYEARS2 = 0;	
+	
+	
+	public static byte TYPE_WOS = 1;
+	public static byte TYPE_SCOPUS = 2;
+	public byte type = 0;	
+	
 
 	public ArrayList<PubType> pubList;
 	
@@ -79,6 +84,8 @@ public class CRType {
         attr = Collections.unmodifiableMap(aMap);
     }
 			
+    
+  
 	
 }
 

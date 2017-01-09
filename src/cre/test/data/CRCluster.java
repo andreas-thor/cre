@@ -1,4 +1,4 @@
-package cre.data;
+package cre.test.data;
 
 import java.io.Serializable;
 import java.util.Observable;

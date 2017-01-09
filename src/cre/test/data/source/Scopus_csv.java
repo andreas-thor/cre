@@ -1,4 +1,4 @@
-package cre.data.source;
+package cre.test.data.source;
  
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
-import cre.Exceptions.AbortedException;
-import cre.Exceptions.FileTooLargeException;
-import cre.Exceptions.UnsupportedFileFormatException;
-import cre.data.CRTable;
-import cre.data.CRType;
-import cre.data.PubType;
-import cre.ui.StatusBar;
+import cre.test.Exceptions.AbortedException;
+import cre.test.Exceptions.FileTooLargeException;
+import cre.test.Exceptions.UnsupportedFileFormatException;
+import cre.test.data.CRTable;
+import cre.test.data.CRType;
+import cre.test.data.PubType;
+import cre.test.ui.StatusBar;
 
 public class Scopus_csv  {
 
@@ -227,19 +227,19 @@ public class Scopus_csv  {
 		
 		CRType res = new CRType();
 		res.type = CRType.TYPE_SCOPUS;
-		res.CR = line;
+		res.setCR(line);
 		
 		// parse all authors (but save first author only in AU_L, AU_F, AU; all authors go to AU_A)
 		boolean firstAuthor = true;
 		Matcher Scopus_matchAuthor = sScopus_matchAuthor.matcher(line);
 		while (Scopus_matchAuthor.matches()) {
 			if (firstAuthor) {
-				res.AU_L = Scopus_matchAuthor.group(1);
-				res.AU_F = (Scopus_matchAuthor.group(2).trim()).substring(0,  1);
-				res.AU = Scopus_matchAuthor.group(1) + "," + Scopus_matchAuthor.group(2);
-				res.AU_A = Scopus_matchAuthor.group(1) + "," + Scopus_matchAuthor.group(2);
+				res.setAU_L(Scopus_matchAuthor.group(1));
+				res.setAU_F((Scopus_matchAuthor.group(2).trim()).substring(0,  1));
+				res.setAU(Scopus_matchAuthor.group(1) + "," + Scopus_matchAuthor.group(2));
+				res.setAU_A(Scopus_matchAuthor.group(1) + "," + Scopus_matchAuthor.group(2));
 			} else {
-				res.AU_A += "; " + Scopus_matchAuthor.group(1) + "," + Scopus_matchAuthor.group(2);
+				res.setAU_A(res.getAU_A() + "; " + Scopus_matchAuthor.group(1) + "," + Scopus_matchAuthor.group(2));
 			}
 			firstAuthor = false;
 			line = Scopus_matchAuthor.group(3).trim();
@@ -247,70 +247,70 @@ public class Scopus_csv  {
 		}
 		
 		// find publication year and title
-		res.J_N = "";
-		res.J = "";
-		res.TI = "";
+		res.setJ_N("");
+		res.setJ("");
+		res.setTI("");
 		Matcher Scopus_matchYearTitle = sScopus_matchYearTitle.matcher(line);
 		if (Scopus_matchYearTitle.matches()) {
 			if (Scopus_matchYearTitle.group(1).length() == 0) {
-				try { res.RPY = Integer.valueOf (Scopus_matchYearTitle.group(2)); } catch (NumberFormatException e) {}
+				try { res.setRPY(Integer.valueOf (Scopus_matchYearTitle.group(2))); } catch (NumberFormatException e) {}
 				int pos = Scopus_matchYearTitle.group(3).indexOf(", ,");
 				if (pos>=0) {
-					res.TI = Scopus_matchYearTitle.group(3).substring(0, pos);
-					res.J_N = "";
-					res.J = Scopus_matchYearTitle.group(3).substring (pos+3).trim();
+					res.setTI(Scopus_matchYearTitle.group(3).substring(0, pos));
+					res.setJ_N("");
+					res.setJ(Scopus_matchYearTitle.group(3).substring (pos+3).trim());
 				} else {
 					String[] crsplit = Scopus_matchYearTitle.group(3).split (",", 2);
-					res.J_N = crsplit[0].trim();
-					res.J = Scopus_matchYearTitle.group(3).trim();
+					res.setJ_N(crsplit[0].trim());
+					res.setJ(Scopus_matchYearTitle.group(3).trim());
 				}
 				
 			} else {
-				res.TI = Scopus_matchYearTitle.group(1);
-				try { res.RPY = Integer.valueOf (Scopus_matchYearTitle.group(2)); } catch (NumberFormatException e) {}
+				res.setTI(Scopus_matchYearTitle.group(1));
+				try { res.setRPY(Integer.valueOf (Scopus_matchYearTitle.group(2))); } catch (NumberFormatException e) {}
 				String[] crsplit = Scopus_matchYearTitle.group(3).split (",", 2);
-				res.J_N = crsplit[0].trim();
-				res.J = Scopus_matchYearTitle.group(3).trim();
+				res.setJ_N(crsplit[0].trim());
+				res.setJ(Scopus_matchYearTitle.group(3).trim());
 			}
 		}
 
 
 		// check if year available and in the given year range
 //		if (res.RPY == null) return null;
-		if (res.RPY != null) {
-			if (((res.RPY < yearRange[0]) && (yearRange[0]!=0)) || ((res.RPY > yearRange[1]) && (yearRange[1]!=0))) return null;
+		if (res.getRPY() != null) {
+			if (((res.getRPY() < yearRange[0]) && (yearRange[0]!=0)) || ((res.getRPY() > yearRange[1]) && (yearRange[1]!=0))) return null;
 		} else {
 			if ((yearRange[0]!=0) || (yearRange[1]!=0)) return null;
 		}
 
 		
 		// process Journal names
-		String[] split = res.J_N.split(" ");
-		res.J_S = (split.length==1) ? split[0] : Arrays.stream (split).reduce("",  (x,y) -> x + ((y.length()>0) ? y.substring(0,1) : "") );
+		String[] split = res.getJ_N().split(" ");
+		res.setJ_S((split.length==1) ? split[0] : Arrays.stream (split).reduce("",  (x,y) -> x + ((y.length()>0) ? y.substring(0,1) : "") ));
 
 		
-		Matcher Scopus_matchDOI = sScopus_matchDOI.matcher (res.J.replaceAll(" ",""));
+		Matcher Scopus_matchDOI = sScopus_matchDOI.matcher (res.getJ().replaceAll(" ",""));
 		if (Scopus_matchDOI.matches()) {
-			res.DOI = Scopus_matchDOI.group(4);
+			res.setDOI(Scopus_matchDOI.group(4));
 		}
 		
-		if ((res.J.toLowerCase().indexOf("doi")>=0) && (res.DOI == null)) {
+		if ((res.getJ().toLowerCase().indexOf("doi")>=0) && (res.getDOI() == null)) {
 			// TODO: J8 improve DOI identification
-			System.out.println ("DOI could not been identified in: " + res.J);
+			System.out.println ("DOI could not been identified in: " + res.getJ());
 		}
 		
 		
-		for (String it: res.J.split (",")) {
+		for (String it: res.getJ().split (",")) {
 			
 			String s = it.trim();
 			for (Pattern p: sScopus_matchPAG) {
 				Matcher matchP = p.matcher(s.trim());
-				if (matchP.matches()) res.PAG = matchP.group(1);
+				if (matchP.matches()) res.setPAG(matchP.group(1));
 			}
 			
 			for (Pattern p: sScopus_matchVOL) {
 				Matcher matchV = p.matcher(s.trim());
-				if (matchV.matches()) res.VOL =  matchV.group(1);
+				if (matchV.matches()) res.setVOL(matchV.group(1));
 			}
 		}
 		
@@ -372,22 +372,22 @@ public class Scopus_csv  {
 
 			row.add (pub.crList.stream().map ( cr -> { 
 				
-				if (cr.type == CRType.TYPE_SCOPUS) return cr.CR;
+				if (cr.type == CRType.TYPE_SCOPUS) return cr.getCR();
 				
 				/* generate CR string in Scopus format */
 				String res = "";
-				if (cr.AU_A == null) {
-					if (cr.AU_L != null) res += cr.AU_L + ", " + cr.AU_F.replaceAll("([A-Z])", "$1."); 
+				if (cr.getAU_A() == null) {
+					if (cr.getAU_L() != null) res += cr.getAU_L() + ", " + cr.getAU_F().replaceAll("([A-Z])", "$1."); 
 				} else {
-					res += cr.AU_A.replaceAll(";", ",");
+					res += cr.getAU_A().replaceAll(";", ",");
 				}
 				res += ",";
-				if (cr.TI != null)	res += cr.TI;
-				if (cr.RPY != null) res += " (" + cr.RPY + ") ";
-				if (cr.J_N != null) res += cr.J_N;
-				if (cr.VOL != null) res += ", " + cr.VOL;
-				if (cr.PAG != null) res += ", pp." + cr.PAG;
-				if (cr.DOI != null) res += ", DOI " + cr.DOI;
+				if (cr.getTI() != null)	res += cr.getTI();
+				if (cr.getRPY() != null) res += " (" + cr.getRPY() + ") ";
+				if (cr.getJ_N() != null) res += cr.getJ_N();
+				if (cr.getVOL() != null) res += ", " + cr.getVOL();
+				if (cr.getPAG() != null) res += ", pp." + cr.getPAG();
+				if (cr.getDOI() != null) res += ", DOI " + cr.getDOI();
 
 				return res;
 			} ).collect (Collectors.joining ("; ")));

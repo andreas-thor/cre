@@ -1,4 +1,4 @@
-package cre.data;
+package cre.test.data;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 
 import org.jfree.data.xy.DefaultXYDataset;
 
-import cre.ui.StatusBar;
+import cre.test.ui.StatusBar;
 import groovy.beans.Bindable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,7 +23,7 @@ public class CRTable {
 
 	 
 	public @Bindable DefaultXYDataset ds  = new DefaultXYDataset();
-	public @Bindable ObservableList<CRType> crData = FXCollections.observableArrayList(); // new   new ArrayList<CRType>();	// all CR data
+	public ObservableList<CRType> crData = FXCollections.observableArrayList(); // new   new ArrayList<CRType>();	// all CR data
 	public List<PubType> pubData = new ArrayList<PubType>();	// all Publication data
 	
 	public boolean duringUpdate = false;
@@ -76,26 +76,26 @@ public class CRTable {
 			for (CRType cr: pub.crList) {
 					
 				// if CR already in database: increase N_CR by 1; else add new record
-				crDup.putIfAbsent(cr.CR.charAt(0), new HashMap<String,Integer>());
-				Integer id = crDup.get(cr.CR.charAt(0)).get(cr.CR);
+				crDup.putIfAbsent(cr.getCR().charAt(0), new HashMap<String,Integer>());
+				Integer id = crDup.get(cr.getCR().charAt(0)).get(cr.getCR());
 				if (id != null) {
-					crData.get(id).N_CR++;
+					crData.get(id).setN_CR(crData.get(id).getN_CR() + 1);
 					pub.crList.set(crPos, crData.get(id));
 				} else {
-					crDup.get(cr.CR.charAt(0)).put (cr.CR, indexCount);
+					crDup.get(cr.getCR().charAt(0)).put (cr.getCR(), indexCount);
 					
 
 					
 					// todo: add new CR as separate function (make clusterId2Objects private again)
 					
-					cr.ID = indexCount+1;
-					cr.CID2 = new CRCluster (indexCount+1, 1);
-					cr.CID_S = 1;
+					cr.setID(indexCount+1);
+					cr.setCID2(new CRCluster (indexCount+1, 1));
+					cr.setCID_S(1);
 					crData.add (cr);
 					
 					HashSet<Integer> tmp = new HashSet<Integer>();
 					tmp.add(indexCount+1);
-					crMatch.clusterId2Objects.put(cr.CID2, tmp);
+					crMatch.clusterId2Objects.put(cr.getCID2(), tmp);
 //								crTab.crMatch.clusterId2Objects[cr.CID2] = [indexCount+1];
 					indexCount++;
 				}
@@ -131,9 +131,9 @@ public class CRTable {
 		crPerYear = new HashMap<Integer, Integer>();
 		sumPerYear = new HashMap<Integer, Integer>();
 		crData.stream().forEach( it -> {
-			if (it.RPY != null) {
-				crPerYear.compute(it.RPY, (k, v) -> (v == null) ? 1 : v+1);
-				sumPerYear.compute(it.RPY, (k, v) -> (v == null) ? it.N_CR : v+it.N_CR);
+			if (it.getRPY() != null) {
+				crPerYear.compute(it.getRPY(), (k, v) -> (v == null) ? 1 : v+1);
+				sumPerYear.compute(it.getRPY(), (k, v) -> (v == null) ? it.getN_CR() : v+it.getN_CR());
 			}
 		});
 
@@ -153,10 +153,10 @@ public class CRTable {
 		// compute PERC_YR and PERC_ALL
 		int sum = sumPerYear.values().stream().mapToInt(Integer::intValue).sum(); 
 		crData.stream().forEach ( it -> {
-			if (it.RPY != null) {
-				it.PERC_YR  = ((double)it.N_CR)/sumPerYear.get(it.RPY);
+			if (it.getRPY() != null) {
+				it.setPERC_YR(((double)it.getN_CR())/sumPerYear.get(it.getRPY()));
 			}
-			it.PERC_ALL = ((double)it.N_CR)/sum;
+			it.setPERC_ALL(((double)it.getN_CR())/sum);
 		});
 
 		System.out.println("c" + System.currentTimeMillis());
@@ -208,6 +208,41 @@ public class CRTable {
 		
 		System.out.println("d" + System.currentTimeMillis());
 		
+		/*
+		crData.parallelStream().forEach( (CRType cr) -> {
+			cr.propID = new SimpleIntegerProperty (cr.ID).asObject();
+			cr.propCR = new SimpleStringProperty (cr.CR);
+			cr.propAU = new SimpleStringProperty (cr.AU);
+			cr.propAU_F = new SimpleStringProperty (cr.AU_F); 
+			cr.propAU_L = new SimpleStringProperty (cr.AU_L);
+			cr.propAU_A = new SimpleStringProperty (cr.AU_A);	
+			cr.propTI = new SimpleStringProperty (cr.TI); 		
+			cr.propJ = new SimpleStringProperty (cr.J);
+			cr.propJ_N = new SimpleStringProperty (cr.J_N);
+			cr.propJ_S = new SimpleStringProperty (cr.J_S);
+			cr.propN_CR = new SimpleIntegerProperty (cr.N_CR).asObject();
+			cr.propRPY = new SimpleIntegerProperty (cr.RPY).asObject();
+			cr.propPAG = new SimpleStringProperty (cr.PAG);
+			cr.propVOL = new SimpleStringProperty (cr.VOL);
+			
+			
+			cr.propDOI = new SimpleStringProperty (cr.DOI);
+			cr.propCID_S = new SimpleIntegerProperty (cr.CID_S).asObject();
+			cr.propVI = new SimpleIntegerProperty (cr.VI).asObject();	
+			cr.propCO = new SimpleIntegerProperty (cr.CO).asObject();	
+			cr.propPERC_YR = new SimpleDoubleProperty (cr.PERC_YR).asObject();
+			
+			// DIE PROPERTIES ALS Werte???
+			
+			cr.propPERC_ALL = new SimpleDoubleProperty (cr.PERC_ALL).asObject();
+			cr.propN_PYEARS = new SimpleIntegerProperty (cr.N_PYEARS).asObject();	
+			cr.propPYEAR_PERC = new SimpleDoubleProperty (cr.PYEAR_PERC).asObject();
+			cr.propN_PCT50 = new SimpleIntegerProperty (cr.N_PCT50).asObject();
+			cr.propN_PCT75 = new SimpleIntegerProperty (cr.N_PCT75).asObject();
+			cr.propN_PCT90 = new SimpleIntegerProperty (cr.N_PCT90).asObject();
+			cr.propN_PYEARS2 = new SimpleIntegerProperty (cr.N_PYEARS2).asObject();	
+		});
+		*/
 		
 		generateChart();
 		duringUpdate = false;
@@ -300,7 +335,7 @@ public class CRTable {
 		List<Integer> years = getMaxRangeYear();
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		result.put("Number of Cited References", crData.size());
-		result.put("Number of Cited References (shown)", (int) crData.stream().filter( (CRType it) -> it.VI == 1).count()); 
+		result.put("Number of Cited References (shown)", (int) crData.stream().filter( (CRType it) -> it.getVI() == 1).count()); 
 		result.put("Number of Cited References Clusters", crMatch.getNoOfClusters());
 		result.put("Number of different Cited References Years", crPerYear.size()); 
 		result.put("Minimal Cited References Year", years.get(0));
@@ -315,7 +350,7 @@ public class CRTable {
 		List<Integer> years = getMaxRangeYear();
 		return String.format("%1$d CRs (%2$d shown), %3$d clusters, %4$d-%5$d ",
 			crData.size(),
-			crData.stream().filter ( (CRType it) -> it.VI==1).count(),
+			crData.stream().filter ( (CRType it) -> it.getVI()==1).count(),
 			crMatch.getNoOfClusters(), 
 			years.get(0), 
 			years.get(1));
@@ -362,7 +397,7 @@ public class CRTable {
 			
 			// if crList of publications does not contain any of the CRs 
 			if (!pub.crList.stream().anyMatch ( cr -> { return selCR.contains (cr); } )) {
-				pub.crList.forEach ( cr -> { cr.N_CR--; } );	// remove number of CRs by 1
+				pub.crList.forEach ( cr -> { cr.setN_CR(cr.getN_CR() - 1); } );	// remove number of CRs by 1
 				return true;	// delete pub
 			} else {
 				return false;
@@ -370,7 +405,7 @@ public class CRTable {
 		});
 		
 		// remove all CRs that are not referenced anymore
-		crData.removeIf (  it -> { it.removed = (it.N_CR < 1); return it.removed; });
+		crData.removeIf (  it -> { it.removed = (it.getN_CR() < 1); return it.removed; });
 		updateData(true);
 	}
 	
@@ -380,11 +415,11 @@ public class CRTable {
 	
 	
 	public int getNumberWithoutYear () {
-		return (int) crData.stream().filter( (CRType it) -> it.RPY == null).count();  
+		return (int) crData.stream().filter( (CRType it) -> it.getRPY() == null).count();  
 	}
 	
 	public void removeWithoutYear () {
-		crData.removeIf( (CRType cr) -> { cr.removed = (cr.RPY == null); return cr.removed; });
+		crData.removeIf( (CRType cr) -> { cr.removed = (cr.getRPY() == null); return cr.removed; });
 		updateData(true);
 	}
 
@@ -399,11 +434,11 @@ public class CRTable {
 	 */
 	
 	public long getNumberByYear (int from, int to) {
-		return crData.stream().filter( cr -> ((cr.RPY!=null) && (from <= cr.RPY) && (cr.RPY <= to))).count();
+		return crData.stream().filter( cr -> ((cr.getRPY()!=null) && (from <= cr.getRPY()) && (cr.getRPY() <= to))).count();
 	}
 	
 	public void removeByYear (int from, int to) {
-		crData.removeIf( (CRType cr) -> { cr.removed = ((cr.RPY!=null) && (from <= cr.RPY) && (cr.RPY <= to)); return cr.removed; });
+		crData.removeIf( (CRType cr) -> { cr.removed = ((cr.getRPY()!=null) && (from <= cr.getRPY()) && (cr.getRPY() <= to)); return cr.removed; });
 		updateData(true);
 	}
 
@@ -425,7 +460,7 @@ public class CRTable {
 		pubData.removeIf  ( (PubType pub) -> {
 		
 			if ((pub.PY==null) || (from > pub.PY) || (pub.PY > to)) {
-				pub.crList.forEach ( cr -> { cr.N_CR--; } );	// remove number of CRs by 1
+				pub.crList.forEach ( cr -> { cr.setN_CR(cr.getN_CR() - 1); } );	// remove number of CRs by 1
 				return true;	// delete pub
 			} else {
 				return false;
@@ -433,7 +468,7 @@ public class CRTable {
 		});
 		
 		// remove all CRs that are not referenced anymore
-		crData.removeIf (  it -> { it.removed = (it.N_CR < 1); return it.removed; });
+		crData.removeIf (  it -> { it.removed = (it.getN_CR() < 1); return it.removed; });
 		updateData(true);				
 	}
 	
@@ -445,11 +480,11 @@ public class CRTable {
 	 */
 	
 	public long getNumberByNCR (int from, int to) {
-		return crData.stream().filter(cr -> ((from <= cr.N_CR) && (cr.N_CR <= to))).count();
+		return crData.stream().filter(cr -> ((from <= cr.getN_CR()) && (cr.getN_CR() <= to))).count();
 	}
 	
 	public void removeByNCR(int from, int to) {
-		crData.removeIf ( (CRType cr) -> { cr.removed = ((from <= cr.N_CR) && (cr.N_CR <= to)); return cr.removed; });
+		crData.removeIf ( (CRType cr) -> { cr.removed = ((from <= cr.getN_CR()) && (cr.getN_CR() <= to)); return cr.removed; });
 		updateData(true);
 	}
 	
@@ -462,22 +497,22 @@ public class CRTable {
 	
 	public long getNumberByPercentYear (String comp, double threshold) {
 		switch (comp) {
-			case "<" : return crData.stream().filter( cr -> cr.PERC_YR <  threshold ).count(); 
-			case "<=": return crData.stream().filter( cr -> cr.PERC_YR <= threshold ).count();
-			case "=" : return crData.stream().filter( cr -> cr.PERC_YR == threshold ).count();
-			case ">=": return crData.stream().filter( cr -> cr.PERC_YR >= threshold ).count();
-			case ">" : return crData.stream().filter( cr -> cr.PERC_YR >  threshold ).count();
+			case "<" : return crData.stream().filter( cr -> cr.getPERC_YR() <  threshold ).count(); 
+			case "<=": return crData.stream().filter( cr -> cr.getPERC_YR() <= threshold ).count();
+			case "=" : return crData.stream().filter( cr -> cr.getPERC_YR() == threshold ).count();
+			case ">=": return crData.stream().filter( cr -> cr.getPERC_YR() >= threshold ).count();
+			case ">" : return crData.stream().filter( cr -> cr.getPERC_YR() >  threshold ).count();
 		}
 		return 0;
 	}
 	
 	public void removeByPercentYear (String comp, double threshold) {
 		switch (comp) {
-			case "<" : crData.removeIf ( (CRType it) -> { it.removed = (it.PERC_YR <  threshold); return it.removed; }); break;
-			case "<=": crData.removeIf ( (CRType it) -> { it.removed = (it.PERC_YR <= threshold); return it.removed; }); break;
-			case "=" : crData.removeIf ( (CRType it) -> { it.removed = (it.PERC_YR == threshold); return it.removed; }); break;
-			case ">=": crData.removeIf ( (CRType it) -> { it.removed = (it.PERC_YR >= threshold); return it.removed; }); break;
-			case ">" : crData.removeIf ( (CRType it) -> { it.removed = (it.PERC_YR >  threshold); return it.removed; }); break;
+			case "<" : crData.removeIf ( (CRType it) -> { it.removed = (it.getPERC_YR() <  threshold); return it.removed; }); break;
+			case "<=": crData.removeIf ( (CRType it) -> { it.removed = (it.getPERC_YR() <= threshold); return it.removed; }); break;
+			case "=" : crData.removeIf ( (CRType it) -> { it.removed = (it.getPERC_YR() == threshold); return it.removed; }); break;
+			case ">=": crData.removeIf ( (CRType it) -> { it.removed = (it.getPERC_YR() >= threshold); return it.removed; }); break;
+			case ">" : crData.removeIf ( (CRType it) -> { it.removed = (it.getPERC_YR() >  threshold); return it.removed; }); break;
 		}
 		updateData(true);
 	}
@@ -490,13 +525,13 @@ public class CRTable {
 	 * @param to
 	 */
 	public void filterByYear (double from, double to) {
-		crData.stream().forEach ( it -> { it.VI = ((it.RPY!=null) && (from<=it.RPY) && (to>=it.RPY)) || ((it.RPY==null) && (this.showNull)) ? 1 : 0; });
+		crData.stream().forEach ( it -> { it.setVI(((it.getRPY()!=null) && (from<=it.getRPY()) && (to>=it.getRPY())) || ((it.getRPY()==null) && (this.showNull)) ? 1 : 0); });
 	}
 	
 	
 	public void setShowNull (boolean showNull) {
 		this.showNull = showNull;
-		crData.stream().forEach ( it -> { if (it.RPY == null) it.VI = showNull ? 1 : 0;  });
+		crData.stream().forEach ( it -> { if (it.getRPY() == null) it.setVI(showNull ? 1 : 0);  });
 	}
 	
 	/**
@@ -504,7 +539,7 @@ public class CRTable {
 	 * @return [min, max]
 	 */
 	public List<Integer> getMaxRangeYear () {
-		IntSummaryStatistics stats = crData.stream().filter (cr -> cr.RPY != null).map((CRType it) -> it.RPY).mapToInt(Integer::intValue).summaryStatistics();
+		IntSummaryStatistics stats = crData.stream().filter (cr -> cr.getRPY() != null).map((CRType it) -> it.getRPY()).mapToInt(Integer::intValue).summaryStatistics();
 		return new ArrayList<Integer> (Arrays.asList (stats.getMin(), stats.getMax()));
 	}
 	
@@ -521,7 +556,7 @@ public class CRTable {
 	 * @return [min, max]
 	 */
 	public List<Integer> getMaxRangeNCR () {
-		IntSummaryStatistics stats = crData.stream().map((CRType it) -> it.N_CR).mapToInt(Integer::intValue).summaryStatistics();
+		IntSummaryStatistics stats = crData.stream().map((CRType it) -> it.getN_CR()).mapToInt(Integer::intValue).summaryStatistics();
 		return new ArrayList<Integer>(Arrays.asList (stats.getMin(), stats.getMax()));
 	}
 	

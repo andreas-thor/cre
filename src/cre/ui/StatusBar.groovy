@@ -13,7 +13,7 @@ import javax.swing.border.BevelBorder
  *
  */
 
-class StatusBar {
+class StatusBar { 
 
 	
 		

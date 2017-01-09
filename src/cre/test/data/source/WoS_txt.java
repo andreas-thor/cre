@@ -1,4 +1,4 @@
-package cre.data.source;
+package cre.test.data.source;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -18,13 +18,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import cre.Exceptions.AbortedException;
-import cre.Exceptions.FileTooLargeException;
-import cre.Exceptions.UnsupportedFileFormatException;
-import cre.data.CRTable;
-import cre.data.CRType;
-import cre.data.PubType;
-import cre.ui.StatusBar;
+import cre.test.Exceptions.AbortedException;
+import cre.test.Exceptions.FileTooLargeException;
+import cre.test.Exceptions.UnsupportedFileFormatException;
+import cre.test.data.CRTable;
+import cre.test.data.CRType;
+import cre.test.data.PubType;
+import cre.test.ui.StatusBar;
 
 public class WoS_txt {
 
@@ -299,20 +299,20 @@ public class WoS_txt {
 			
 			writeTag(bw, "CR", pub.crList.stream().map(it -> {
 
-				if (it.type == CRType.TYPE_WOS) return it.CR;
+				if (it.type == CRType.TYPE_WOS) return it.getCR();
 				
 				/* Generate CR-String in WoS format */
-				String res = (it.AU_L != null) ? it.AU_L + " " : "";
-				if (it.AU_F != null) res += it.AU_F;
-				if (it.RPY != null) res += ", " + it.RPY;
-				if ((it.VOL!=null) || (it.PAG!=null)) {
-					if (it.J_N!=null) res += ", " + it.J_N; 
-					if (it.VOL!=null) res += ", V" + it.VOL;
-					if (it.PAG!=null) res += ", P" + it.PAG;
+				String res = (it.getAU_L() != null) ? it.getAU_L() + " " : "";
+				if (it.getAU_F() != null) res += it.getAU_F();
+				if (it.getRPY() != null) res += ", " + it.getRPY();
+				if ((it.getVOL()!=null) || (it.getPAG()!=null)) {
+					if (it.getJ_N()!=null) res += ", " + it.getJ_N(); 
+					if (it.getVOL()!=null) res += ", V" + it.getVOL();
+					if (it.getPAG()!=null) res += ", P" + it.getPAG();
 				} else {
-					res += ", " + it.J;
+					res += ", " + it.getJ();
 				}
-				if (it.DOI!=null) res += ", DOI " + it.DOI;
+				if (it.getDOI()!=null) res += ", DOI " + it.getDOI();
 				
 				return res;
 				
@@ -364,77 +364,77 @@ public class WoS_txt {
 	private static CRType parseCR (String line, int[] yearRange) {
 
 		CRType cr = new CRType();
-		cr.CR = line; // [3..-1] // .toUpperCase()
+		cr.setCR(line); // [3..-1] // .toUpperCase()
 		cr.type = CRType.TYPE_WOS;
-		cr.RPY = null;
-		String[] crsplit = cr.CR.split (",", 3);
+		cr.setRPY(null);
+		String[] crsplit = cr.getCR().split (",", 3);
 		
 		
 		int yearPos = 1;
-		while ((cr.RPY == null) && (yearPos >= 0)) {
+		while ((cr.getRPY() == null) && (yearPos >= 0)) {
 			String yearS = crsplit.length > 1 ? crsplit[yearPos].trim() : "";
 			if (yearS.length() <= 4) {
 				try {
 					int year = Integer.parseInt(yearS);
 					if (((year < yearRange[0]) && (yearRange[0]!=0)) || ((year > yearRange[1]) && (yearRange[1]!=0))) return null;
-					cr.RPY = year;
+					cr.setRPY(year);
 				} catch (NumberFormatException e) { }
 			}
 			yearPos--;
 		}
 
-		if ((cr.RPY == null) && ((yearRange[0]!=0) || (yearRange[1]!=0))) return null;
+		if ((cr.getRPY() == null) && ((yearRange[0]!=0) || (yearRange[1]!=0))) return null;
 		
-		cr.AU = crsplit[0].trim();
+		cr.setAU(crsplit[0].trim());
 		
 		// process "difficult" last names starting with "von" etc.
-		if ((cr.AU.length()>0) && (cr.AU.charAt(0)=='v')) {
+		if ((cr.getAU().length()>0) && (cr.getAU().charAt(0)=='v')) {
 			
 			for (Pattern p: sWoS_matchAuthorVon) {
-				Matcher matchVon = p.matcher(cr.AU);
+				Matcher matchVon = p.matcher(cr.getAU());
 				if (matchVon.matches()) {
-					cr.AU_L = (matchVon.group(1) + (matchVon.group(2)==null?"":matchVon.group(2)) + matchVon.group( ((matchVon.group(3).equals("")) ? 5 : 3) )).replaceAll(" ","").replaceAll("\\-","");
+					cr.setAU_L((matchVon.group(1) + (matchVon.group(2)==null?"":matchVon.group(2)) + matchVon.group( ((matchVon.group(3).equals("")) ? 5 : 3) )).replaceAll(" ","").replaceAll("\\-",""));
 					String tmp = ((((matchVon.group(3).equals("")) ? "" : matchVon.group(5)) + matchVon.group(6)).trim());
-					cr.AU_F = tmp.equals("") ? "" : tmp.substring(0,1);	// cast as List to avoid Index out of Bounds exception
+					cr.setAU_F(tmp.equals("") ? "" : tmp.substring(0,1));	// cast as List to avoid Index out of Bounds exception
 					break;
 				}
 			}
 		}
 		
 		// process all other authors
-		if (cr.AU_L == null) {
-			Matcher WoS_matchAuthor = sWoS_matchAuthor.matcher(cr.AU);
+		if (cr.getAU_L() == null) {
+			Matcher WoS_matchAuthor = sWoS_matchAuthor.matcher(cr.getAU());
 			if (WoS_matchAuthor.matches()) {
-				cr.AU_L = WoS_matchAuthor.group(1).replaceAll("\\-","");
-				cr.AU_F = (WoS_matchAuthor.group(3) == null ? " " : WoS_matchAuthor.group(3) + " ").substring(0, 1);
+				cr.setAU_L(WoS_matchAuthor.group(1).replaceAll("\\-",""));
+				cr.setAU_F((WoS_matchAuthor.group(3) == null ? " " : WoS_matchAuthor.group(3) + " ").substring(0, 1));
 			}
 		}
 			
 		// process all journals
-		cr.J = crsplit.length > 2 ? crsplit[2].trim() : "";
-		cr.J_N = cr.J.equals(",") ? "" : cr.J.split(",")[0];	// 1994er problem (Mail Robin) --> if (CR.J == ",") -> split.size()==0
-		String[] split = cr.J_N.split(" ");
+		cr.setJ(crsplit.length > 2 ? crsplit[2].trim() : "");
+		cr.setJ_N(cr.getJ().equals(",") ? "" : cr.getJ().split(",")[0]);	// 1994er problem (Mail Robin) --> if (CR.J == ",") -> split.size()==0
+		String[] split = cr.getJ_N().split(" ");
 		if (split.length==1) {
-			cr.J_S = split[0]; 
+			cr.setJ_S(split[0]); 
 		} else {
-			cr.J_S = "";
+			cr.setJ_S("");
 			for (String s: split) {
-				if (s.length()>0) cr.J_S += s.charAt(0);
+				if (s.length()>0) cr.setJ_S(cr.getJ_S() + s.charAt(0));
 			}
 		}
 		
 		
 		// find Volume, Pages and DOI
-		for (String it: cr.J.split(",")) {
+		for (String it: cr.getJ().split(",")) {
 			Matcher WoS_matchPageVolumes = sWoS_matchPageVolumes.matcher(it.trim());
 			if (WoS_matchPageVolumes.matches()) {
-				if (WoS_matchPageVolumes.group(1).equals("P")) cr.PAG = WoS_matchPageVolumes.group(2);
-				if (WoS_matchPageVolumes.group(1).equals("V")) cr.VOL = WoS_matchPageVolumes.group(2);
+				if (WoS_matchPageVolumes.group(1).equals("P")) cr.setPAG(WoS_matchPageVolumes.group(2));
+				if (WoS_matchPageVolumes.group(1).equals("V")) cr.setVOL(WoS_matchPageVolumes.group(2));
 			}
 			
 			Matcher WoS_matchDOI = sWoS_matchDOI.matcher(it.trim());
 			if (WoS_matchDOI.matches()) {
-				cr.DOI = WoS_matchDOI.group(1).replaceAll("  ","").toUpperCase();
+				cr.setDOI(WoS_matchDOI.group(1).replaceAll("  ","").toUpperCase());
 			}
 		}
 		

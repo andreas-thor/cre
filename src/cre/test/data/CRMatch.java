@@ -1,4 +1,4 @@
-package cre.data;
+package cre.test.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,8 +14,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
-import cre.ui.StatusBar;
-import cre.ui.UIMatchPanelFactory;
+import cre.test.ui.StatusBar;
+import cre.test.ui.UIMatchPanelFactory;
 
 public class CRMatch {
 
@@ -73,14 +73,14 @@ public class CRMatch {
 		
 		clusterId2Objects.clear();
 		crTab.crData.forEach ( cr -> {
-			if (clusterId2Objects.get(cr.CID2) == null) {
-				clusterId2Objects.put(cr.CID2, new HashSet<Integer>());
+			if (clusterId2Objects.get(cr.getCID2()) == null) {
+				clusterId2Objects.put(cr.getCID2(), new HashSet<Integer>());
 			}
-			clusterId2Objects.get(cr.CID2).add (cr.ID);
+			clusterId2Objects.get(cr.getCID2()).add (cr.getID());
 		});
 		
 		crTab.crData.forEach ( cr -> {
-			cr.CID_S = clusterId2Objects.get(cr.CID2).size();
+			cr.setCID_S(clusterId2Objects.get(cr.getCID2()).size());
 		});
 
 	}
@@ -92,7 +92,7 @@ public class CRMatch {
 		
 		int idx = 0;
 		for (Iterator<CRType> it = crTab.crData.iterator(); it.hasNext();) {
-			crId2Index.put(it.next().ID, idx++);
+			crId2Index.put(it.next().getID(), idx++);
 		}
 		
 		System.out.println(System.currentTimeMillis());
@@ -203,8 +203,8 @@ public class CRMatch {
 		Map<String, ArrayList<Integer>> blocks = new HashMap<String, ArrayList<Integer>>();	// block key -> list of indexes (not IDs)!
 		int idx = 0;
 		for (CRType cr: crTab.crData) {
-			if ((cr.RPY != null) && (cr.AU_L != null) && (cr.AU_L.length() > 0)) {
-				String blockkey = cr.RPY + cr.AU_L.substring(0,1).toLowerCase();
+			if ((cr.getRPY() != null) && (cr.getAU_L() != null) && (cr.getAU_L().length() > 0)) {
+				String blockkey = cr.getRPY() + cr.getAU_L().substring(0,1).toLowerCase();
 				blocks.putIfAbsent(blockkey, new ArrayList<Integer>());
 				blocks.get(blockkey).add(idx);
 			}
@@ -239,7 +239,7 @@ public class CRMatch {
 			stat.setValue(String.format("%1$s: Matching in progress ...", startdate), (int) ((100d*progCount.get())/progMax));
 			
 			// allX = List of all AU_L values;
-			List<String> allX = crlist.stream().map ( it -> crTab.crData.get(it).AU_L.toLowerCase() ).collect (Collectors.toList());
+			List<String> allX = crlist.stream().map ( it -> crTab.crData.get(it).getAU_L().toLowerCase() ).collect (Collectors.toList());
 
 			// compareY = List of compare string 
 			ArrayList<String> compareY = new ArrayList<String>(allX);
@@ -262,7 +262,7 @@ public class CRMatch {
 						double weight = 2;
 						
 						// compare Journal name (weight=1)
-						String[] comp_J = new String[] { comp_CR[0].J_N == null ? "" : comp_CR[0].J_N, comp_CR[1].J_N == null ? "" : comp_CR[1].J_N };
+						String[] comp_J = new String[] { comp_CR[0].getJ_N() == null ? "" : comp_CR[0].getJ_N(), comp_CR[1].getJ_N() == null ? "" : comp_CR[1].getJ_N() };
 						if ((comp_J[0].length()>0) && (comp_J[1].length()>0)) {
 							sim += 1.0* l.getSimilarity(comp_J[0].toLowerCase(), comp_J[1].toLowerCase());
 							weight += 1.0;
@@ -270,7 +270,7 @@ public class CRMatch {
 						
 						// compare title (weight=5)
 						// ignore if both titles are empty; set sim=0 if just one is emtpy; compute similarity otherwise
-						String[] comp_T = new String[] { comp_CR[0].TI == null ? "" : comp_CR[0].TI, comp_CR[1].TI == null ? "" : comp_CR[1].TI };
+						String[] comp_T = new String[] { comp_CR[0].getTI() == null ? "" : comp_CR[0].getTI(), comp_CR[1].getTI() == null ? "" : comp_CR[1].getTI() };
 						if ((comp_T[0].length()>0) || (comp_T[1].length()>0)) {
 							sim += 5.0 * (((comp_T[0].length()>0) && (comp_T[1].length()>0)) ? l.getSimilarity(comp_T[0].toLowerCase(), comp_T[1].toLowerCase()) : 0.0);
 							weight += 5.0;
@@ -282,7 +282,7 @@ public class CRMatch {
 							testCount.incrementAndGet();
 							
 							// cannot invoke setMapping in a parallel stream -> collect result ... 
-							result.add(new Pair (comp_CR[0].ID, comp_CR[1].ID, s));
+							result.add(new Pair (comp_CR[0].getID(), comp_CR[1].getID(), s));
 						}
 					}
 					yIndx++;
@@ -331,10 +331,10 @@ public class CRMatch {
 		
 		clusterId2Objects = new HashMap<CRCluster, Set<Integer>>();
 		crTab.crData.forEach ( it -> {
-			it.CID2 = useClustering ? new CRCluster (it.CID2.c1, it.ID) : new CRCluster (it.ID, 1);
-			it.CID_S = 1;
-			clusterId2Objects.put (it.CID2, new HashSet<Integer>());
-			clusterId2Objects.get (it.CID2).add(it.ID);
+			it.setCID2(useClustering ? new CRCluster (it.getCID2().c1, it.getID()) : new CRCluster (it.getID(), 1));
+			it.setCID_S(1);
+			clusterId2Objects.put (it.getCID2(), new HashSet<Integer>());
+			clusterId2Objects.get (it.getCID2()).add(it.getID());
 		});
 		clusterMatch( null, threshold, useVol, usePag, useDOI);	// null == all objects are considered for clustering
 		
@@ -392,19 +392,19 @@ public class CRMatch {
 					CRType cr1 = crTab.crData.get(crId2Index.get(id1));
 					CRType cr2 = crTab.crData.get(crId2Index.get(id2));
 					
-					CRCluster minId = (cr1.CID2.compareTo(cr2.CID2)<0) ? cr1.CID2 : cr2.CID2;
-					CRCluster maxId = (cr1.CID2.compareTo(cr2.CID2)>0) ? cr1.CID2 : cr2.CID2;
+					CRCluster minId = (cr1.getCID2().compareTo(cr2.getCID2())<0) ? cr1.getCID2() : cr2.getCID2();
+					CRCluster maxId = (cr1.getCID2().compareTo(cr2.getCID2())>0) ? cr1.getCID2() : cr2.getCID2();
 					
-					boolean vol = (!useVol) || ((cr1.VOL!=null) && (cr2.VOL!=null) && (cr1.VOL.equals (cr2.VOL))); // || (cr1.VOL.equals("")) || (cr2.VOL.equals(""))
-					boolean pag = (!usePag) || ((cr1.PAG!=null) && (cr2.PAG!=null) && (cr1.PAG.equals (cr2.PAG))); // || (cr1.PAG.equals("")) || (cr2.PAG.equals(""))
-					boolean doi = (!useDOI) || ((cr1.DOI!=null) && (cr2.DOI!=null) && (cr1.DOI.equalsIgnoreCase (cr2.DOI))); // || (cr1.DOI.equals("")) || (cr2.DOI.equals(""))
+					boolean vol = (!useVol) || ((cr1.getVOL()!=null) && (cr2.getVOL()!=null) && (cr1.getVOL().equals (cr2.getVOL()))); // || (cr1.VOL.equals("")) || (cr2.VOL.equals(""))
+					boolean pag = (!usePag) || ((cr1.getPAG()!=null) && (cr2.getPAG()!=null) && (cr1.getPAG().equals (cr2.getPAG()))); // || (cr1.PAG.equals("")) || (cr2.PAG.equals(""))
+					boolean doi = (!useDOI) || ((cr1.getDOI()!=null) && (cr2.getDOI()!=null) && (cr1.getDOI().equalsIgnoreCase (cr2.getDOI()))); // || (cr1.DOI.equals("")) || (cr2.DOI.equals(""))
 	
 					// merge if different clusters and manual-same (s==2) or all criteria are true
 					if ((minId.compareTo(maxId)!=0) && ((s==2) || ((vol) && (pag) && (doi)))) {
 						clusterId2Objects.get(minId).addAll (clusterId2Objects.get(maxId));
 						int size = clusterId2Objects.get(minId).size();
-						clusterId2Objects.get(minId).forEach( it -> { crTab.crData.get(crId2Index.get(it)).CID_S = size; });
-						clusterId2Objects.get(maxId).forEach( it -> { crTab.crData.get(crId2Index.get(it)).CID2 = minId; });
+						clusterId2Objects.get(minId).forEach( it -> { crTab.crData.get(crId2Index.get(it)).setCID_S(size); });
+						clusterId2Objects.get(maxId).forEach( it -> { crTab.crData.get(crId2Index.get(it)).setCID2(minId); });
 						clusterId2Objects.remove(maxId);
 					}
 				}
@@ -434,7 +434,7 @@ public class CRMatch {
 		
 		Long timestamp = System.currentTimeMillis();		// used to group together all individual mapping pairs of match operation
 		
-		Set<Integer> crIds = idx.stream().map(it -> crTab.crData.get(it).ID ).collect(Collectors.toSet());
+		Set<Integer> crIds = idx.stream().map(it -> crTab.crData.get(it).getID() ).collect(Collectors.toSet());
 		 
 		// manual-same is indicated by similarity = 2; different = -2
 		if ((matchType==UIMatchPanelFactory.matchSame) || (matchType==UIMatchPanelFactory.matchDifferent)) {
@@ -446,7 +446,7 @@ public class CRMatch {
 		}
 		if (matchType==UIMatchPanelFactory.matchExtract) {
 			for (Integer id1: crIds) {
-				for (Integer id2: clusterId2Objects.get(crTab.crData.get(crId2Index.get(id1)).CID2)) {
+				for (Integer id2: clusterId2Objects.get(crTab.crData.get(crId2Index.get(id1)).getCID2())) {
 					setMapping(id1, id2, -2d, true, false, timestamp);
 				}
 			}
@@ -457,7 +457,7 @@ public class CRMatch {
 			clusterMatch(crIds, matchThreshold, useVol, usePag, useDOI);
 		} else { 	// re-initialize the clusters that may be subject to split and rerun clustering for all objects of the clusters
 			// find all relevant clusters
-			clusterMatch(reInitObjects (idx.stream().map ( it -> crTab.crData.get(it).CID2).collect(Collectors.toSet())), matchThreshold, useVol, usePag, useDOI);
+			clusterMatch(reInitObjects (idx.stream().map ( it -> crTab.crData.get(it).getCID2()).collect(Collectors.toSet())), matchThreshold, useVol, usePag, useDOI);
 			
 		}
 		
@@ -482,12 +482,12 @@ public class CRMatch {
 			int index = crId2Index.get(it);
 //				println "crId = ${it}, index = ${index}, cluster = ${crTab.crData[index].CID2}"
 			
-			crTab.crData.get(index).CID2 = new CRCluster (crTab.crData.get(index).CID2.c1, it);
-			crTab.crData.get(index).CID_S = 1;
+			crTab.crData.get(index).setCID2(new CRCluster (crTab.crData.get(index).getCID2().c1, it));
+			crTab.crData.get(index).setCID_S(1);
 			
 			Set<Integer> tmp = new HashSet<Integer>();
 			tmp.add(it);
-			clusterId2Objects.put(crTab.crData.get(index).CID2, tmp);
+			clusterId2Objects.put(crTab.crData.get(index).getCID2(), tmp);
 			
 //				println crTab.crData[index]
 		});
@@ -509,8 +509,8 @@ public class CRMatch {
 		undoPairs.forEach (p -> setMapping(p.id1, p.id2, p.s, true, false));
 		
 		// get relevant cluster ids and remove
-		Set<CRCluster> clusterIds = undoPairs.stream().map (p -> crTab.crData.get(crId2Index.get(p.id1)).CID2 ).collect(Collectors.toSet());
-		clusterIds.addAll(undoPairs.stream().map (p -> crTab.crData.get(crId2Index.get(p.id2)).CID2 ).collect(Collectors.toSet()));
+		Set<CRCluster> clusterIds = undoPairs.stream().map (p -> crTab.crData.get(crId2Index.get(p.id1)).getCID2() ).collect(Collectors.toSet());
+		clusterIds.addAll(undoPairs.stream().map (p -> crTab.crData.get(crId2Index.get(p.id2)).getCID2() ).collect(Collectors.toSet()));
 
 		// remove last undo/able operation and re/cluster
 		timestampedPairs.remove(lastTimestamp);
@@ -539,9 +539,9 @@ public class CRMatch {
 				// sum all N_CR; find max
 				for (Integer it: entry.getValue()) {
 					int idx = crId2Index.get(it);
-					sum_N_CR += crTab.crData.get(idx).N_CR;
-					if (crTab.crData.get(idx).N_CR>max_N_CR) {
-						max_N_CR = crTab.crData.get(idx).N_CR;
+					sum_N_CR += crTab.crData.get(idx).getN_CR();
+					if (crTab.crData.get(idx).getN_CR()>max_N_CR) {
+						max_N_CR = crTab.crData.get(idx).getN_CR();
 						max_cr = idx;
 					}
 				};
@@ -550,8 +550,8 @@ public class CRMatch {
 				for (Integer it: entry.getValue()) {
 					int idx = crId2Index.get(it);
 					if (idx == max_cr) {
-						crTab.crData.get(idx).N_CR = sum_N_CR;
-						crTab.crData.get(idx).CID_S = 1;
+						crTab.crData.get(idx).setN_CR(sum_N_CR);
+						crTab.crData.get(idx).setCID_S(1);
 					} else {
 						crTab.crData.get(idx).mergedTo = max_cr;
 					}

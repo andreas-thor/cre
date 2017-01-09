@@ -34,7 +34,7 @@ Locale.setDefault(new Locale("en"))
 
 
 SwingBuilder sb = new groovy.swing.SwingBuilder()
-StatusBar stat = new StatusBar()
+StatusBar stat = new StatusBar();
 CRTable crTable = new CRTable(stat)
 JTable tab = TableFactory.create(crTable)
 UISettings uisetting
