@@ -1,5 +1,7 @@
 package cre.test;
 
+import java.util.Locale;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,6 +19,8 @@ public class CitedReferencesExplorer extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
+
+		Locale.setDefault(new Locale("en"));
 
 		CitedReferencesExplorer.stage = stage;
 		Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));

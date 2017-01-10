@@ -20,25 +20,42 @@
 <GridPane fx:id="mainPane" prefHeight="600" prefWidth="800" xmlns:fx="http://javafx.com/fxml" fx:controller="cre.test.Main">
 	<MenuBar GridPane.hgrow="always" maxWidth="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="0">
 		<menus>
-			<Menu text="File">
+			<Menu text="_File">
 				<items>
-					<MenuItem text="Open..." accelerator="Ctrl+O" onAction="#OnMenuOpen" />
+					<MenuItem text="_Open..." mnemonicParsing="true" accelerator="Ctrl+O" onAction="#OnMenuOpen" />
 					<Menu text="Import">
 						<MenuItem text="Web of Science..." onAction="#OnMenuImportWoS"/>
 						<MenuItem text="Scopus..." />
 					</Menu>
 					<SeparatorMenuItem />
-					<MenuItem text="Save" />
-					<MenuItem text="Save As..." />
+					<MenuItem text="_Save" />
+					<MenuItem text="Save _As..." />
 					<SeparatorMenuItem />
-					<MenuItem text="Exit" />
+					<MenuItem text="E_xit" />
 				</items>
 			</Menu>
-			<Menu text="Data">
+			<Menu text="_Data"  >
 				<items>
-					<CheckMenuItem text="Show CRs Without Years" onAction="#OnMenuDataShowCRswoYears" selected="true" />
-					<MenuItem text="Filter by Cited Reference Year" onAction="#OnMenuDataFilterByRPY"/>
-					<MenuItem text="Paste" />
+					<MenuItem text="Info" onAction="#OnMenuDataInfo" accelerator="Shortcut+I" />
+					<CheckMenuItem text="Show Cited References w/o Years" onAction="#OnMenuDataShowCRswoYears" selected="true" />
+					<MenuItem text="Filter by Cited Reference Year..." onAction="#OnMenuDataFilterByRPY"/>
+					
+					<SeparatorMenuItem />
+					
+					<MenuItem text="Remove Selected Cited Reference..." onAction="#OnMenuDataRemoveSelected" />
+					<MenuItem text="Remove Cited References w/o Year..." onAction="#OnMenuDataRemovewoYears"/>
+					<MenuItem text="Remove by Cited Reference Year..." onAction="#OnMenuDataRemoveByRPY" />
+					<MenuItem text="Remove by Number of Cited References..." onAction="#OnMenuDataRemoveByNCR" />
+					<MenuItem text="Remove by Percent in Year..." disable="true" />
+
+					<SeparatorMenuItem />
+
+					<MenuItem text="Retain Publications citing Selected Cited References..." disable="true" />
+					<MenuItem text="Retain Publications within Citing Publication Year..." onAction="#OnMenuDataRetainByRPY" />
+
+					
+					
+					
 				</items>
 			</Menu>
 			<Menu text="Help">

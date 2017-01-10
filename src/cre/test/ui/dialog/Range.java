@@ -1,8 +1,5 @@
 package cre.test.ui.dialog;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonType;
@@ -12,17 +9,17 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
-public class Range extends Dialog<Integer[]> {
+public class Range extends Dialog<int[]> {
 
 	
-	public Range(Integer from, Integer to, int[] maxRange) {
+	public Range(String title, String header, int[] range, int[] maxRange) {
 		super();
 		
-		setTitle("Filter Cited References");
-		setHeaderText("Select Range of Cited References Years");
+		setTitle(title);
+		setHeaderText(header);
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		
-		TextField[] tf = new TextField[] { new TextField(from.toString()), new TextField(to.toString()) }; 
+		TextField[] tf = new TextField[] { new TextField(String.valueOf(range[0])), new TextField(String.valueOf(range[1])) }; 
 		CheckBox[] cb = new CheckBox[] { new CheckBox("Minimum"), new CheckBox("Maximum") }; 
 
 		cb[0].setOnAction((event) -> {
@@ -38,12 +35,8 @@ public class Range extends Dialog<Integer[]> {
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(20, 20, 20, 20));
-		grid.add(new Label("From:"), 0, 0);
-		grid.add(tf[0], 1, 0);
-		grid.add(cb[0], 2, 0);
-		grid.add(new Label("To:"), 0, 1);
-		grid.add(tf[1], 1, 1);
-		grid.add(cb[1], 2, 1);
+		grid.addRow(0, new Label("From:"), tf[0], cb[0]);
+		grid.addRow(1, new Label("To:"  ), tf[1], cb[1]);
 		getDialogPane().setContent(grid);
 		
 		// Request focus on first field by default.
@@ -51,7 +44,7 @@ public class Range extends Dialog<Integer[]> {
 
 		setResultConverter(dialogButton -> {
 		    if (dialogButton == ButtonType.OK) {
-		        return new Integer[] {Integer.parseInt(tf[0].getText()), Integer.parseInt(tf[1].getText()) };
+		        return new int[] {Integer.parseInt(tf[0].getText()), Integer.parseInt(tf[1].getText()) };
 		    }
 		    return null;
 		});		

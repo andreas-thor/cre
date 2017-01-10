@@ -17,6 +17,7 @@ import org.jfree.chart.event.PlotChangeListener;
 import org.jfree.chart.fx.ChartViewer;
 import org.jfree.chart.fx.interaction.ChartMouseEventFX;
 import org.jfree.chart.fx.interaction.ChartMouseListenerFX;
+import org.jfree.chart.labels.CustomXYToolTipGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -67,12 +68,22 @@ public class ChartPanelFactory {
 		rend.setSeriesStroke(1, new BasicStroke(strokeSize));
 		
 		// tooltip = CR year with sum of all NCR of this year
-		rend.setToolTipGenerator(new XYToolTipGenerator() {
+		
+		rend.setSeriesToolTipGenerator(0, new XYToolTipGenerator() {
 			@Override
 			public String generateToolTip(XYDataset dataset, int series, int item) {
 				return crTable.getTooltip(dataset.getX(series, item).intValue());
 			}
 		});
+		
+		
+		
+//		rend.setToolTipGenerator(new XYToolTipGenerator() {
+//			@Override
+//			public String generateToolTip(XYDataset dataset, int series, int item) {
+//				return crTable.getTooltip(dataset.getX(series, item).intValue());
+//			}
+//		});
 		
 		// update table when zoom changes in chart
 		plot.addChangeListener(new PlotChangeListener() {

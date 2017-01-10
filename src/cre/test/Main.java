@@ -2,52 +2,42 @@ package cre.test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
-import cre.test.Exceptions.AbortedException;
-import cre.test.Exceptions.FileTooLargeException;
-import cre.test.Exceptions.UnsupportedFileFormatException;
+import org.jfree.chart.fx.ChartViewer;
+
 import cre.test.data.CRCluster;
 import cre.test.data.CRTable;
 import cre.test.data.CRType;
 import cre.test.data.source.CRE_json;
 import cre.test.ui.ChartPanelFactory;
 import cre.test.ui.StatusBar;
+import cre.test.ui.dialog.ConfirmAlert;
+import cre.test.ui.dialog.Info;
+import cre.test.ui.dialog.Range;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
-import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import javafx.util.Pair;
-
-import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.fx.ChartViewer;
-import org.jfree.data.Range;
-
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
 
 public class Main {
 
@@ -122,31 +112,19 @@ public class Main {
 	@FXML public void initialize() {
 	
 		
-		colAU.setComparator(new Comparator<String>() {
-			
-			@Override
-			public int compare(String o1, String o2) {
-				return o1.compareToIgnoreCase(o2);
-			}
-		});
-		
-		stat = new StatusBar(new EventStatusBar() {
-			@Override
-			public void onUpdate(String label, Double value, String info) {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
+		colAU.setComparator((o1, o2) -> { return o1.compareToIgnoreCase(o2); });
+
+		stat = new StatusBar((label, value, info) -> {
+				Platform.runLater( () -> {
 						sblabel.setText(label);
 						sbpb.setProgress(value);
 						if (info!= null) {
 							sbinfo.setText(info);
 						}
-						
 					}
-				});
-				
+				);
 			}
-		}); 
+		); 
 				
 
 		crTable = new CRTable(stat, new EventCRFilter() {
@@ -164,7 +142,7 @@ public class Main {
 					public void run() {
 						tableView.setItems(FXCollections.observableArrayList(crTable.crData.stream().filter(cr -> cr.getVI()).collect(Collectors.toList())));
 						if ((yearMin!=null) && (yearMax!=null)) {
-							Range dAxisRange = chart.getChart().getXYPlot().getDomainAxis().getRange();
+							org.jfree.data.Range dAxisRange = chart.getChart().getXYPlot().getDomainAxis().getRange();
 							if ((((int)Math.ceil (dAxisRange.getLowerBound())) != yearMin.intValue()) || (((int)Math.floor(dAxisRange.getUpperBound())) != yearMax.intValue())) { 
 								
 								System.out.println("Adjusting");
@@ -242,11 +220,13 @@ public class Main {
 //		colN_PYEARS2.setCellValueFactory(cellData -> cellData.getValue().propN_PYEARS2);
 		
 		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+
 		chart = ChartPanelFactory.create(crTable, tableView, colRPY, colN_CR);
 		chartPane.add(chart, 0, 0);
 		
 
-		
 		
 	}
 	
@@ -285,7 +265,7 @@ public class Main {
 //    						uisetting.setLastDirectory((multipleFiles ? dlg.getSelectedFiles()[0] : dlg.getSelectedFile()).getParentFile() )
 				 
 					 crTable.filterByYear();
-
+					 Platform.runLater(() -> { OnMenuDataInfo(); });
 				}
 			};
 			
@@ -302,7 +282,6 @@ public class Main {
 	@FXML public void OnMenuOpen() throws IOException {
 //		stat.initProgressbar(100, "hjhj");
 		 openFile("CRE_json", "Open CRE File", false, null);
-		
 	}
 
 	@FXML public void OnMenuImportWoS(ActionEvent event) {
@@ -311,19 +290,115 @@ public class Main {
 		tableView.sort();
 		
 	}
+	
 
+	
+
+	
+	/**
+	 * DATA Menu
+	 */
+	
+	@FXML public void OnMenuDataInfo() {
+		new Info(crTable.getInfo()).showAndWait();	
+	}
+	
+	
 	@FXML public void OnMenuDataShowCRswoYears(ActionEvent event) {
 		crTable.setShowNull(((CheckMenuItem)event.getSource()).isSelected());
 	}
 
+	
 	@FXML public void OnMenuDataFilterByRPY(ActionEvent event) {
-//		crTable.filterByYear(2000, 3000);
-		
-		
-		Optional<Integer[]> result = new cre.test.ui.dialog.Range(0, 2016, crTable.getMaxRangeCitingYear()).showAndWait();
-		result.ifPresent( range -> { crTable.filterByYear(range[0], range[1]); });
-		
-		
+		new Range("Filter Cited References", "Select Range of Cited References Years", new int[] {0, 2016}, crTable.getMaxRangeYear())
+			.showAndWait()
+			.ifPresent( range -> { 
+				crTable.filterByYear(range[0], range[1]); 
+			}
+		);
 	}
+	
+	
+	@FXML public void OnMenuDataRemoveSelected() {
+		
+		List<CRType> toDelete = tableView.getSelectionModel().getSelectedItems();
+		int n = toDelete.size();
+		new ConfirmAlert("Remove Cited References", n==0, new String[] {"No Cited References selected.", String.format("Would you like to remove all %d selected Cited References?", n)})
+			.showAndWait()
+			.ifPresent( confirmed -> {
+				if (confirmed) crTable.remove(toDelete);
+			}
+		);
+	}
+
+	
+	@FXML public void OnMenuDataRemovewoYears() {
+		
+		int n = crTable.getNumberWithoutYear();
+		new ConfirmAlert("Remove Cited References", n==0, new String[] {"No Cited References w/o Year.", String.format("Would you like to remove all %d Cited References w/o Year?", n)})
+			.showAndWait()
+			.ifPresent( confirmed -> {
+				if (confirmed) crTable.removeWithoutYear();
+			}
+		);
+	}
+
+	
+	@FXML public void OnMenuDataRemoveByRPY() {
+		
+		final String header = "Remove Cited References";  
+		new Range(header, "Select Range of Cited References Years", new int[] {0, 2016}, crTable.getMaxRangeYear())
+			.showAndWait()
+			.ifPresent( range -> { 
+				long n =  crTable.getNumberByYear(range);
+				new ConfirmAlert(header, n==0, new String[] {String.format ("No Cited References with Cited Reference Year between %d and %d.", range[0], range[1]), String.format("Would you like to remove all %1$d Cited References w/o Year?", n, range[0], range[1])})
+					.showAndWait()
+					.ifPresent( confirmed -> {
+						if (confirmed) crTable.removeByYear(range[0], range[1]);
+					}
+				);
+			}
+		);
+	}
+
+	@FXML public void OnMenuDataRemoveByNCR() {
+
+		final String header = "Remove Cited References";  
+		new Range(header, "Select Number of Cited References", new int[] {0, 2016}, crTable.getMaxRangeNCR())
+			.showAndWait()
+			.ifPresent( range -> { 
+				long n =  crTable.getNumberByNCR(range);
+				new ConfirmAlert(header, n==0, new String[] {String.format ("No Cited References with Number of Cited References between %d and %d.", range[0], range[1]), String.format("Would you like to remove all %d Cited References with Number of Cited References between %d and %d?", n, range[0], range[1])})
+					.showAndWait()
+					.ifPresent( confirmed -> {
+						if (confirmed) crTable.removeByNCR(range);
+					}
+				);
+			}
+		);
+
+		
+
+	}
+
+	@FXML public void OnMenuDataRetainByRPY() {
+		
+		new Range("Retain Publications", "Select Range of Citing Publication Years", new int[] {0, 2016}, crTable.getMaxRangeCitingYear())
+			.showAndWait()
+			.ifPresent( range -> { 
+				long n =  crTable.getNumberOfPubs() - crTable.getNumberOfPubsByCitingYear(range);
+				new ConfirmAlert("Remove Publications", n==0, new String[] {String.format ("All Citing Publication Years are between between %d and %d.", range[0], range[1]), String.format("Would you like to remove all %d citing publications with publication year lower than %d or higher than %d?", n, range[0], range[1])})
+					.showAndWait()
+					.ifPresent( confirmed -> {
+						if (confirmed) crTable.removeByCitingYear(range);
+					}
+				);
+			}
+		);
+			
+	}
+
+	
+	
 	
 }
