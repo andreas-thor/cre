@@ -86,7 +86,7 @@ public class CRE_json {
 						case "N_CR": 	cr.setN_CR(parser.getInt()); break;
 						case "RPY": 	cr.setRPY(parser.getInt()); break;
 						case "CID_S": 	cr.setCID_S(parser.getInt()); break;
-						case "VI": 		cr.setVI(parser.getInt()); break;
+						case "VI": 		cr.setVI(parser.getInt()==1); break;
 						case "CO": 		cr.setCO(parser.getInt()); break;
 						case "type": 	cr.type = (byte) parser.getInt(); break;
 						default: System.out.println("CRDATA.json >> Unknow Key with Number Value: " + key); 
@@ -275,7 +275,7 @@ public class CRE_json {
 			if (it.getDOI()!=null) 	jgen.write("DOI", it.getDOI());
 			if (it.getCID2()!=null) 	jgen.write("CID2", it.getCID2().toString());
 								jgen.write("CID_S", it.getCID_S());
-								jgen.write("VI", it.getVI());
+								jgen.write("VI", it.getVI()?1:0);
 								jgen.write("CO", it.getCO());
 								jgen.write("type", it.type);			
 			jgen.writeEnd();

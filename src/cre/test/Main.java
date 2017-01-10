@@ -2,8 +2,11 @@ package cre.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
@@ -19,26 +22,40 @@ import cre.test.ui.ChartPanelFactory;
 import cre.test.ui.StatusBar;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.util.Pair;
+
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.fx.ChartViewer;
+import org.jfree.data.Range;
+
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 
 public class Main {
 
 	StatusBar stat;
 	CRTable crTable;
+	ChartViewer chart;
+	
+	FilteredList<CRType> x;
 	
 	@FXML Text actiontarget;
 	@FXML Label lab;
@@ -85,7 +102,7 @@ public class Main {
 	@FXML TableColumn<CRType, Integer> colN_PYEARS2;
 //	@FXML SwingNode swingChart;
 //	@FXML ChartViewer chartViewer;
-	@FXML Pane chartPane;
+	@FXML GridPane chartPane;
 	
 	
 	
@@ -94,25 +111,32 @@ public class Main {
 		
 	}
 	
-	public interface onUpdateStatusBar {
+	public interface EventStatusBar {
 		public void onUpdate (String label, Double value, String info); 
+	}
+	
+	public interface EventCRFilter {
+		public void onUpdate (Integer yearMin, Integer yearMax);
 	}
 	
 	@FXML public void initialize() {
 	
 		
-		
-		
-		stat = new StatusBar(sblabel, sbpb, sbinfo, new onUpdateStatusBar() {
+		colAU.setComparator(new Comparator<String>() {
 			
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareToIgnoreCase(o2);
+			}
+		});
+		
+		stat = new StatusBar(new EventStatusBar() {
 			@Override
 			public void onUpdate(String label, Double value, String info) {
 				Platform.runLater(new Runnable() {
-					
 					@Override
 					public void run() {
 						sblabel.setText(label);
-						System.out.println(value);
 						sbpb.setProgress(value);
 						if (info!= null) {
 							sbinfo.setText(info);
@@ -124,46 +148,63 @@ public class Main {
 			}
 		}); 
 				
-		
-//			@Override
-//			public Void apply(Object[] t) {
-//				Platform.runLater(new Runnable() {
-//					
+
+		crTable = new CRTable(stat, new EventCRFilter() {
+			@Override
+			public void onUpdate(Integer yearMin, Integer yearMax) {
+				// no lambda function because we always need a new (copy of the) predicate
+//				x.setPredicate(new Predicate<CRType>() {
 //					@Override
-//					public void run() {
-//						sblabel.setText((String)t[0]);
-//						System.out.println(t[1]);
-//						sbpb.setProgress((Double)t[1]);
-//						if (t[2]!= null) {
-//							sbinfo.setText((String)t[2]);
-//						}
-//						
+//					public boolean test(CRType t) {
+//						return t.getVI();
 //					}
 //				});
-//				return null;			
-//				
-//			}
-//		});
-		crTable = new CRTable(stat);
-		
-		FilteredList<CRType> x = new FilteredList<CRType>(crTable.crData);
-		x.setPredicate(new Predicate<CRType>() {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						tableView.setItems(FXCollections.observableArrayList(crTable.crData.stream().filter(cr -> cr.getVI()).collect(Collectors.toList())));
+						if ((yearMin!=null) && (yearMax!=null)) {
+							Range dAxisRange = chart.getChart().getXYPlot().getDomainAxis().getRange();
+							if ((((int)Math.ceil (dAxisRange.getLowerBound())) != yearMin.intValue()) || (((int)Math.floor(dAxisRange.getUpperBound())) != yearMax.intValue())) { 
+								
+								System.out.println("Adjusting");
+								System.out.println("Axis = " + dAxisRange.toString());
+								System.out.println("Year = " + yearMin + ", " + yearMax);
+								crTable.duringUpdate = true;
+								chart.getChart().getXYPlot().getDomainAxis().setRange(yearMin, yearMax);
+								crTable.duringUpdate = false;
 
+							}
+						}
+					}
+				});
+			}
+		});
+		
+		
+/*		
+		x = new FilteredList<CRType>(crTable.crDataObserved);
+//		x.setPredicate(t -> t.getVI());
+		
+//		x = new FilteredList<>(crTable.crData, t -> ! t.getVI());
+		
+//		FilteredList<Item> list = new FilteredList<>(baseList, t -> ! t.filteredProperty().get());
+		
+		
+		x.setPredicate(new Predicate<CRType>() {
 			@Override
 			public boolean test(CRType t) {
-				return t.getVI()==1;
+				return t.getVI();
 			}
 		});
 		SortedList<CRType> y = new SortedList<CRType>(x);
-		
-		
+//		
 		y.comparatorProperty().bind(tableView.comparatorProperty());
 		tableView.setItems(y);
+		*/
 		
-		
-		
-		colVI.setCellValueFactory(cellData -> cellData.getValue().getVIProp());
-		colCO.setCellValueFactory(cellData -> cellData.getValue().getCOProp());
+//		colVI.setCellValueFactory(cellData -> cellData.getValue().getVIProp());
+//		colCO.setCellValueFactory(cellData -> cellData.getValue().getCOProp());
 		colID.setCellValueFactory(cellData -> cellData.getValue().getIDProp());
 		
 		
@@ -201,12 +242,10 @@ public class Main {
 //		colN_PYEARS2.setCellValueFactory(cellData -> cellData.getValue().propN_PYEARS2);
 		
 		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-
-		chartPane.getChildren().add(ChartPanelFactory.create(crTable, tableView, colRPY, colN_CR));
+		chart = ChartPanelFactory.create(crTable, tableView, colRPY, colN_CR);
+		chartPane.add(chart, 0, 0);
 		
-//		chartViewer.setChart(ChartPanelFactory.create(crTable, tableView, colRPY, colN_CR));
-//		swingChart.setContent(ChartPanelFactory.create(crTable, tableView, colRPY, colN_CR));
+
 		
 		
 	}
@@ -244,7 +283,10 @@ public class Main {
 //    						UIDialogFactory.createInfoDlg(mainFrame, crTable.getInfo()).visible = true
 //    						(tab.getModel() as AbstractTableModel).fireTableDataChanged()
 //    						uisetting.setLastDirectory((multipleFiles ? dlg.getSelectedFiles()[0] : dlg.getSelectedFile()).getParentFile() )
-				 }
+				 
+					 crTable.filterByYear();
+
+				}
 			};
 			
 			Thread t = new Thread(runnable);
@@ -260,6 +302,27 @@ public class Main {
 	@FXML public void OnMenuOpen() throws IOException {
 //		stat.initProgressbar(100, "hjhj");
 		 openFile("CRE_json", "Open CRE File", false, null);
+		
+	}
+
+	@FXML public void OnMenuImportWoS(ActionEvent event) {
+		
+		crTable.crData.get(0).setRPY(999);
+		tableView.sort();
+		
+	}
+
+	@FXML public void OnMenuDataShowCRswoYears(ActionEvent event) {
+		crTable.setShowNull(((CheckMenuItem)event.getSource()).isSelected());
+	}
+
+	@FXML public void OnMenuDataFilterByRPY(ActionEvent event) {
+//		crTable.filterByYear(2000, 3000);
+		
+		
+		Optional<Integer[]> result = new cre.test.ui.dialog.Range(0, 2016, crTable.getMaxRangeCitingYear()).showAndWait();
+		result.ifPresent( range -> { crTable.filterByYear(range[0], range[1]); });
+		
 		
 	}
 	

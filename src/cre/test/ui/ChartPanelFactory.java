@@ -6,7 +6,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -27,8 +26,6 @@ import org.jfree.data.xy.XYDataset;
 import cre.test.data.CRTable;
 import cre.test.data.CRType;
 import javafx.application.Platform;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
@@ -83,37 +80,13 @@ public class ChartPanelFactory {
 			@Override
 			public void plotChanged(PlotChangeEvent pcevent) {
 				if (! crTable.duringUpdate) {	// ignore updates during data update
-					crTable.filterByYear (dAxis.getLowerBound(), dAxis.getUpperBound());
-					
-					crTable.crData.get(0).setRPY(9999);
-					Platform.runLater(new Runnable() {
-						
-						@Override
-						public void run() {
-							
-							((FilteredList<CRType>) (((SortedList<CRType>) tab.getItems()).getSource())).setPredicate(new Predicate<CRType>() {
-
-								@Override
-								public boolean test(CRType t) {
-									return t.getVI()==1;
-								}
-							});
-							
-							tab.refresh();
-						}
-					});
-							
-					
+					crTable.filterByYear ((int)Math.ceil(dAxis.getLowerBound()), (int)Math.floor(dAxis.getUpperBound()));
 				}
-				
 			}
 		});
 		
 
 		ChartViewer chView = new ChartViewer(chart);
-		
-//		ChartPanel chpan = new ChartPanel(chart);
-//
 		chView.addChartMouseListener(new ChartMouseListenerFX() {
 			
 			@Override

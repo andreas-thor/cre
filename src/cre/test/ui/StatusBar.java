@@ -1,33 +1,22 @@
 package cre.test.ui;
 
 import java.util.Date;
-import java.util.function.Function;
 
-import cre.test.Main.onUpdateStatusBar;
-import javafx.application.Platform;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
+import cre.test.Main.EventStatusBar;
 
 public class StatusBar {
 
-	private Label sblabel;
-	private ProgressBar sbpb;
-	private Label sbinfo;
-	
 	private long maxSize;
 	private long blockSize;
 	private long blockCount;
 	private Date date;
 	private String label;
-	private onUpdateStatusBar onUpdate;
+	private EventStatusBar onUpdate;
 	
 
 	
-	public StatusBar(Label sblabel, ProgressBar sbpb, Label sbinfo, onUpdateStatusBar onUpdate) {
+	public StatusBar(EventStatusBar onUpdate) {
 		super();
-		this.sblabel = sblabel;
-		this.sbpb = sbpb;
-		this.sbinfo = sbinfo;
 		this.onUpdate = onUpdate;
 		initProgressbar(1, "CRE started");
 	}
@@ -48,32 +37,7 @@ public class StatusBar {
 
 		
 	public void setValue (String label, long value, String info, Date d) {
-		
-//		Runnable runnable = new Runnable() {
-//			@Override
-//			public void run() {
-
 		this.onUpdate.onUpdate(String.format("   %1$s: %2$s       ", d, label), 1.0*value/maxSize, info==null?null:String.format("       %s   ", info));
-		
-//		Platform.runLater(new Runnable() {
-//			
-//			@Override
-//			public void run() {
-//				sblabel.setText(String.format("   %1$s: %2$s       ", d, label));
-////				sbpb.setProgress(value);
-//				sbpb.setProgress(1.0*value/maxSize);
-//				if (info != null) {
-//					sbinfo.setText(String.format("       %s   ", info));
-//				}
-//				
-//			}
-//		});
-		
-//			}
-//		};
-//		
-//		Thread t = new Thread(runnable);
-//		t.start();
 	}
 	
 	

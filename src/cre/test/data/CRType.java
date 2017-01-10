@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -32,7 +33,7 @@ public class CRType {
 	private CRCluster CID2;
 	private SimpleIntegerProperty CID_S;
 	
-	private SimpleIntegerProperty VI;	// visible
+	private SimpleBooleanProperty VI;	// visible
 	private SimpleIntegerProperty CO;	// background color
 	
 	private SimpleDoubleProperty PERC_YR;
@@ -107,7 +108,7 @@ public class CRType {
 		PERC_YR = new SimpleDoubleProperty();
 		PERC_ALL = new SimpleDoubleProperty();
 		
-		VI = new SimpleIntegerProperty(1);
+		VI = new SimpleBooleanProperty(true);
 		CO = new SimpleIntegerProperty(0);
 		
 	}
@@ -345,13 +346,13 @@ public class CRType {
 	}
 	
 	
-	public int getVI() {
+	public boolean getVI() {
 		return VI.get();
 	}
-	public SimpleIntegerProperty getVIProp() {
+	public SimpleBooleanProperty getVIProp() {
 		return VI;
 	}
-	public void setVI(int vI) {
+	public void setVI(boolean vI) {
 		VI.set(vI);
 	}
 	

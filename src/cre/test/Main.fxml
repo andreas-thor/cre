@@ -13,6 +13,8 @@
 <?import javafx.embed.swing.SwingNode?>
 <?import javafx.scene.Group?>
 <?import org.jfree.chart.fx.ChartViewer?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.CheckMenuItem?>
 
 
 <GridPane fx:id="mainPane" prefHeight="600" prefWidth="800" xmlns:fx="http://javafx.com/fxml" fx:controller="cre.test.Main">
@@ -22,7 +24,7 @@
 				<items>
 					<MenuItem text="Open..." accelerator="Ctrl+O" onAction="#OnMenuOpen" />
 					<Menu text="Import">
-						<MenuItem text="Web of Science..." />
+						<MenuItem text="Web of Science..." onAction="#OnMenuImportWoS"/>
 						<MenuItem text="Scopus..." />
 					</Menu>
 					<SeparatorMenuItem />
@@ -32,10 +34,10 @@
 					<MenuItem text="Exit" />
 				</items>
 			</Menu>
-			<Menu text="Edit">
+			<Menu text="Data">
 				<items>
-					<MenuItem text="Copy" />
-					<MenuItem text="Cut" />
+					<CheckMenuItem text="Show CRs Without Years" onAction="#OnMenuDataShowCRswoYears" selected="true" />
+					<MenuItem text="Filter by Cited Reference Year" onAction="#OnMenuDataFilterByRPY"/>
 					<MenuItem text="Paste" />
 				</items>
 			</Menu>
@@ -54,9 +56,15 @@
 	<SplitPane GridPane.vgrow="always" maxHeight="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="1">
 		<items>
 			<GridPane>
-				<Pane fx:id="chartPane" GridPane.vgrow="always" GridPane.Hgrow="always" minWidth="100" maxWidth="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="0">
-					<!--  <SwingNode fx:id="swingChart" /> -->
-				</Pane>
+				<GridPane fx:id="chartPane" GridPane.vgrow="always" GridPane.Hgrow="always" minWidth="100" maxWidth="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="0">
+					<columnConstraints>
+						<ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+					</columnConstraints>
+					<rowConstraints>
+						<RowConstraints vgrow="ALWAYS" minHeight="10.0" prefHeight="100.0"  />
+					</rowConstraints>
+					<!-- ChartViewer will added dynamically here -->
+				</GridPane>
 			</GridPane>
 
 			<GridPane>
@@ -70,17 +78,17 @@
 
 					<columns>
 
-
+<!-- 
 						<TableColumn fx:id="colVI" text="VI" visible="false" />
 						<TableColumn fx:id="colCO" text="CO" visible="false" />
-
+-->
 						<TableColumn fx:id="colID" text="ID" />
 						<TableColumn fx:id="colCR" text="CR" />
 						<TableColumn fx:id="colRPY" text="RPY" />
 						<TableColumn fx:id="colN_CR" text="N_CR" />
 						<TableColumn fx:id="colPERC_YR" text="PERC_YR" />
 						<TableColumn fx:id="colPERC_ALL" text="PERC_ALL" />
-						<TableColumn fx:id="colAU" text="AU" />
+						<TableColumn fx:id="colAU" text="AU"  />
 						<TableColumn fx:id="colAU_L" text="AU_L" />
 						<TableColumn fx:id="colAU_F" text="AU_F" />
 						<TableColumn fx:id="colAU_A" text="AU_A" />

@@ -14,6 +14,7 @@ import java.util.stream.IntStream;
 
 import org.jfree.data.xy.DefaultXYDataset;
 
+import cre.test.Main.EventCRFilter;
 import cre.test.ui.StatusBar;
 import groovy.beans.Bindable;
 import javafx.collections.FXCollections;
@@ -21,9 +22,19 @@ import javafx.collections.ObservableList;
 
 public class CRTable {
 
+	
+	
+	
 	 
 	public @Bindable DefaultXYDataset ds  = new DefaultXYDataset();
-	public ObservableList<CRType> crData = FXCollections.observableArrayList(); // new   new ArrayList<CRType>();	// all CR data
+	
+	public ArrayList<CRType> crData = new ArrayList<CRType>(); 
+	public ObservableList<CRType> crDataObserved = FXCollections.observableArrayList(crData); // new   new ArrayList<CRType>();	// all CR data
+	
+	
+	// this is automatic but too time consuming for filters
+	// public ObservableList<CRType> crData = FXCollections.observableArrayList( item -> new Observable[] { item.getVIProp() });
+	
 	public List<PubType> pubData = new ArrayList<PubType>();	// all Publication data
 	
 	public boolean duringUpdate = false;
@@ -37,6 +48,9 @@ public class CRTable {
 	public CRMatch crMatch;
 	public StatusBar stat;	// status bar to indicate current information / progress
 	
+	private EventCRFilter eventFilter;
+	
+	
 	private int medianRange;
 	public File creFile;
 	
@@ -44,8 +58,9 @@ public class CRTable {
 	/**
 	 * @param stat status panel
 	 */
-	public CRTable (StatusBar stat) {
+	public CRTable (StatusBar stat, EventCRFilter eventFilter) {
 		this.stat = stat;
+		this.eventFilter = eventFilter;
 		this.crMatch = new CRMatch(this, stat);
 	}
 	
@@ -335,7 +350,7 @@ public class CRTable {
 		List<Integer> years = getMaxRangeYear();
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		result.put("Number of Cited References", crData.size());
-		result.put("Number of Cited References (shown)", (int) crData.stream().filter( (CRType it) -> it.getVI() == 1).count()); 
+		result.put("Number of Cited References (shown)", (int) crData.stream().filter( (CRType it) -> it.getVI()).count()); 
 		result.put("Number of Cited References Clusters", crMatch.getNoOfClusters());
 		result.put("Number of different Cited References Years", crPerYear.size()); 
 		result.put("Minimal Cited References Year", years.get(0));
@@ -350,7 +365,7 @@ public class CRTable {
 		List<Integer> years = getMaxRangeYear();
 		return String.format("%1$d CRs (%2$d shown), %3$d clusters, %4$d-%5$d ",
 			crData.size(),
-			crData.stream().filter ( (CRType it) -> it.getVI()==1).count(),
+			crData.stream().filter ( (CRType it) -> it.getVI()).count(),
 			crMatch.getNoOfClusters(), 
 			years.get(0), 
 			years.get(1));
@@ -524,14 +539,23 @@ public class CRTable {
 	 * @param from
 	 * @param to
 	 */
-	public void filterByYear (double from, double to) {
-		crData.stream().forEach ( it -> { it.setVI(((it.getRPY()!=null) && (from<=it.getRPY()) && (to>=it.getRPY())) || ((it.getRPY()==null) && (this.showNull)) ? 1 : 0); });
+	public void filterByYear (int from, int to) {
+		crData.stream().forEach ( it -> { it.setVI(((it.getRPY()!=null) && (from<=it.getRPY()) && (to>=it.getRPY())) || ((it.getRPY()==null) && (this.showNull))); });
+		eventFilter.onUpdate(from, to);
+	}
+	
+	
+	public void filterByYear () {
+		List<Integer> range = this.getMaxRangeYear();
+		filterByYear (range.get(0), range.get(1));
 	}
 	
 	
 	public void setShowNull (boolean showNull) {
 		this.showNull = showNull;
-		crData.stream().forEach ( it -> { if (it.getRPY() == null) it.setVI(showNull ? 1 : 0);  });
+		crData.stream().forEach ( it -> { if (it.getRPY() == null) it.setVI(showNull);  });
+		eventFilter.onUpdate(null, null);
+
 	}
 	
 	/**
@@ -544,9 +568,9 @@ public class CRTable {
 	}
 	
 	
-	public List<Integer> getMaxRangeCitingYear () {
+	public int[] getMaxRangeCitingYear () {
 		IntSummaryStatistics stats = pubData.stream().filter (pub -> pub.PY != null).map((PubType it) -> it.PY).mapToInt(Integer::intValue).summaryStatistics();
-		return new ArrayList<Integer> (Arrays.asList (stats.getMin(), stats.getMax()));
+		return new int[] { stats.getMin(), stats.getMax() };
 	}
 
 	
