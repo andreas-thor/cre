@@ -5,26 +5,21 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.print.attribute.standard.DialogTypeSelection;
-import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
-
-import org.jfree.chart.fx.ChartViewer;
 
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
-import cre.test.data.CRCluster;
 import cre.test.data.CRTable;
 import cre.test.data.CRType;
 import cre.test.data.source.CRE_json;
 import cre.test.data.source.Scopus_csv;
 import cre.test.data.source.WoS_txt;
 import cre.test.ui.CRChart;
+import cre.test.ui.CRTableView;
 import cre.test.ui.StatusBar;
 import cre.test.ui.UserSettings;
 import cre.test.ui.dialog.ConfirmAlert;
@@ -33,33 +28,23 @@ import cre.test.ui.dialog.Range;
 import cre.test.ui.dialog.Settings;
 import cre.test.ui.dialog.Threshold;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 public class Main {
 
@@ -76,9 +61,9 @@ public class Main {
 	@FXML ProgressBar sbpb;
 	@FXML Label sbinfo;
 	@FXML ScrollPane scrollTab;
-	@FXML TableView<CRType> tableView;
+	@FXML CRTableView tableView;
 
-
+/*
 	@FXML TableColumn<CRType, Number> colVI;
 	@FXML TableColumn<CRType, Number> colCO;
 	@FXML TableColumn<CRType, Number> colID;
@@ -104,17 +89,18 @@ public class Main {
 	@FXML TableColumn<CRType, CRCluster> colCID2;
 	@FXML TableColumn<CRType, Number> colCID_S;
 	
-	
-	/* TODO */
 	@FXML TableColumn<CRType, Integer> colN_PYEARS;
 	@FXML TableColumn<CRType, Double> colPYEAR_PERC;
 	@FXML TableColumn<CRType, Integer> colN_PCT50;
 	@FXML TableColumn<CRType, Integer> colN_PCT75;
 	@FXML TableColumn<CRType, Integer> colN_PCT90;
 	@FXML TableColumn<CRType, Integer> colN_PYEARS2;
+	*/
+	
 //	@FXML SwingNode swingChart;
 //	@FXML ChartViewer chartViewer;
 	@FXML GridPane chartPane;
+	@FXML GridPane tablePane;
 	
 	
 	
@@ -131,8 +117,7 @@ public class Main {
 	
 	@FXML public void initialize() {
 	
-		
-		colAU.setComparator((o1, o2) -> { return o1.compareToIgnoreCase(o2); });
+//		colAU.setComparator((o1, o2) -> { return o1.compareToIgnoreCase(o2); });
 
 		stat = new StatusBar(sblabel, sbpb, sbinfo);
 				
@@ -175,32 +160,34 @@ public class Main {
 		
 //		colVI.setCellValueFactory(cellData -> cellData.getValue().getVIProp());
 //		colCO.setCellValueFactory(cellData -> cellData.getValue().getCOProp());
-		colID.setCellValueFactory(cellData -> cellData.getValue().getIDProp());
-		
-		
-		colCR.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCR()));
-		colRPY.setCellValueFactory(cellData -> cellData.getValue().getRPYProp());
-		colN_CR.setCellValueFactory(cellData -> cellData.getValue().getN_CRProp());
-		 
-		colPERC_YR.setCellValueFactory(cellData -> cellData.getValue().getPERC_YRProp());
-		colPERC_ALL.setCellValueFactory(cellData -> cellData.getValue().getPERC_ALLProp());
-		
-		colAU.setCellValueFactory(cellData -> cellData.getValue().getAUProp());
-		colAU_L.setCellValueFactory(cellData -> cellData.getValue().getAU_LProp());
-		colAU_F.setCellValueFactory(cellData -> cellData.getValue().getAU_FProp());
-		colAU_A.setCellValueFactory(cellData -> cellData.getValue().getAU_AProp());
-		colTI.setCellValueFactory(cellData -> cellData.getValue().getTIProp());
-		colJ.setCellValueFactory(cellData -> cellData.getValue().getJProp());
-		colJ_N.setCellValueFactory(cellData -> cellData.getValue().getJ_NProp());
-		colJ_S.setCellValueFactory(cellData -> cellData.getValue().getJ_SProp());
-		
-		
-		colVOL.setCellValueFactory(cellData -> cellData.getValue().getVOLProp());
-		colPAG.setCellValueFactory(cellData -> cellData.getValue().getPAGProp());
-		colDOI.setCellValueFactory(cellData -> cellData.getValue().getDOIProp());	
-
-		colCID2.setCellValueFactory(cellData -> cellData.getValue().getCID2());
-		colCID_S.setCellValueFactory(cellData -> cellData.getValue().getCID_SProp());
+//		colID.setCellValueFactory(cellData -> cellData.getValue().getIDProp());
+//		
+//		
+//		colID.visibleProperty().bindBidirectional(UserSettings.get().columnVisible[0]);
+//		
+//		colCR.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCR()));
+//		colRPY.setCellValueFactory(cellData -> cellData.getValue().getRPYProp());
+//		colN_CR.setCellValueFactory(cellData -> cellData.getValue().getN_CRProp());
+//		 
+//		colPERC_YR.setCellValueFactory(cellData -> cellData.getValue().getPERC_YRProp());
+//		colPERC_ALL.setCellValueFactory(cellData -> cellData.getValue().getPERC_ALLProp());
+//		
+//		colAU.setCellValueFactory(cellData -> cellData.getValue().getAUProp());
+//		colAU_L.setCellValueFactory(cellData -> cellData.getValue().getAU_LProp());
+//		colAU_F.setCellValueFactory(cellData -> cellData.getValue().getAU_FProp());
+//		colAU_A.setCellValueFactory(cellData -> cellData.getValue().getAU_AProp());
+//		colTI.setCellValueFactory(cellData -> cellData.getValue().getTIProp());
+//		colJ.setCellValueFactory(cellData -> cellData.getValue().getJProp());
+//		colJ_N.setCellValueFactory(cellData -> cellData.getValue().getJ_NProp());
+//		colJ_S.setCellValueFactory(cellData -> cellData.getValue().getJ_SProp());
+//		
+//		
+//		colVOL.setCellValueFactory(cellData -> cellData.getValue().getVOLProp());
+//		colPAG.setCellValueFactory(cellData -> cellData.getValue().getPAGProp());
+//		colDOI.setCellValueFactory(cellData -> cellData.getValue().getDOIProp());	
+//
+//		colCID2.setCellValueFactory(cellData -> cellData.getValue().getCID2());
+//		colCID_S.setCellValueFactory(cellData -> cellData.getValue().getCID_SProp());
 		
 //		colN_PYEARS.setCellValueFactory(cellData -> cellData.getValue().propN_PYEARS);
 //		colPYEAR_PERC.setCellValueFactory(cellData -> cellData.getValue().propPYEAR_PERC);
@@ -211,11 +198,15 @@ public class Main {
 //		colN_PCT90.setCellValueFactory(cellData -> cellData.getValue().propN_PCT90);
 //		colN_PYEARS2.setCellValueFactory(cellData -> cellData.getValue().propN_PYEARS2);
 		
-		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		tableView = new CRTableView();
+		
+		tablePane.add (tableView, 0, 0);
+		tableView.setMinHeight(100);
+		tableView.setMinWidth(100);
+		tablePane.setVgrow(tableView, Priority.ALWAYS);
+		tablePane.setHgrow(tableView, Priority.ALWAYS);
 
-
-		crChart = new CRChart(crTable, tableView, colRPY, colN_CR);
+		crChart = new CRChart(crTable, tableView);
 		chartPane.add(crChart.getViewer(), 0, 0);
 		
 
@@ -231,6 +222,12 @@ public class Main {
     	
     	FileChooser fileChooser = new FileChooser();
     	fileChooser.setTitle(title);
+    	
+    	// set initial directory
+    	if (UserSettings.get().lastFileDir.exists()) {
+    		fileChooser.setInitialDirectory(UserSettings.get().lastFileDir);
+    	}
+    	
     	final List<File> files = new ArrayList<File>();
     	if (multipleFiles) {
     		List<File> selFiles = fileChooser.showOpenMultipleDialog(CitedReferencesExplorer.stage);
@@ -243,12 +240,15 @@ public class Main {
     	
     	if (files.size()>0) {
     		
+    		// save last directory to be used as initial directory
+    		UserSettings.get().lastFileDir = files.get(0).getParentFile();
+    		
 			Runnable runnable = new Runnable() {
 				public void run() {
 					try { 
 						switch (source) {
 							case "CRE_json": CRE_json.load (files.get(0), crTable, stat); break;
-							case "WoS_txt": WoS_txt.load(files, crTable, stat, 10, new int[] { 0, 0 }); break;
+							case "WoS_txt": WoS_txt.load(files, crTable, stat, 0, new int[] { 0, 0 }); break;
 							case "Scopus_csv": Scopus_csv.load(files, crTable, stat, 0, new int[] { 0, 0 }); break;
 					}
 						

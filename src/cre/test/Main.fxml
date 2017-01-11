@@ -82,9 +82,9 @@
 				</GridPane>
 			</GridPane>
 
-			<GridPane>
+			<GridPane fx:id="tablePane">
 
-
+<!-- 
 				<TableView fx:id="tableView" GridPane.columnIndex="0" minWidth="100" maxWidth="Infinity" maxHeight="Infinity" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" GridPane.rowIndex="0">
 
 					<columnResizePolicy>
@@ -93,10 +93,10 @@
 
 					<columns>
 
-<!-- 
+
 						<TableColumn fx:id="colVI" text="VI" visible="false" />
 						<TableColumn fx:id="colCO" text="CO" visible="false" />
--->
+
 						<TableColumn fx:id="colID" text="ID" />
 						<TableColumn fx:id="colCR" text="CR" />
 						<TableColumn fx:id="colRPY" text="RPY" />
@@ -132,7 +132,7 @@
 					</columns>
 
 				</TableView>
-
+-->
 			</GridPane>
 
 			<!-- <ScrollPane fx:id="scrollTab" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"> <content> <Pane prefHeight="382.0" prefWidth="386.0"> 

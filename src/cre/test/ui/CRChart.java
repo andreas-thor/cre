@@ -35,7 +35,7 @@ public class CRChart {
 	private ChartViewer chView;
 	private CRTable crTable;
 	
-	public CRChart (CRTable crTable, TableView<CRType> tab, TableColumn<CRType, Number> colRPY, TableColumn<CRType, Number> colN_CR) {
+	public CRChart (CRTable crTable, CRTableView tab) {
 
 		this.crTable = crTable;
 		
@@ -124,11 +124,11 @@ public class CRChart {
 					Platform.runLater( new Runnable() {
 						@Override
 						public void run() {
-							colRPY.setSortType(TableColumn.SortType.ASCENDING);
-							colN_CR.setSortType(TableColumn.SortType.DESCENDING);
+							tab.getColumnByName("RPY").setSortType(TableColumn.SortType.ASCENDING);
+							tab.getColumnByName("N_CR").setSortType(TableColumn.SortType.DESCENDING);
 							tab.getSortOrder().clear();
-							tab.getSortOrder().add(colRPY);
-							tab.getSortOrder().add(colN_CR);
+							tab.getSortOrder().add(tab.getColumnByName("RPY"));
+							tab.getSortOrder().add(tab.getColumnByName("N_CR"));
 							Optional<CRType> first = tab.getItems().stream().filter(cr -> cr.getRPY() == year).findFirst();
 							tab.getSelectionModel().select(first.get());
 							tab.scrollTo(first.get());

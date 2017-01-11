@@ -123,37 +123,7 @@ public class CRType {
 	public int mergedTo = -1;
 	public boolean removed = false;
 	
-	// Mapping of internal attribute names to labels
-	public static final Map<String, String> attr;
-    static {
-        Map<String, String> aMap = new HashMap<String, String>();
-		aMap.put("ID", "ID");
-		aMap.put("CR", "Cited Reference");
-		aMap.put("RPY", "Cited Reference Year");
-		aMap.put("N_CR", "Number of Cited References");
-		aMap.put("PERC_YR", "Percent in Year");
-		aMap.put("PERC_ALL", "Percent over all Years");
-		aMap.put("AU", "Author");
-		aMap.put("AU_L", "Last Name");
-		aMap.put("AU_F", "First Name Initial");
-		aMap.put("AU_A", "Authors");
-		aMap.put("TI", "Title");
-		aMap.put("J", "Source");
-		aMap.put("J_N", "Source Title");
-		aMap.put("J_S", "Title Short");
-		aMap.put("VOL", "Volume");
-		aMap.put("PAG", "Page");
-		aMap.put("DOI", "DOI");
-		aMap.put("CID2", "ClusterID");
-		aMap.put("CID_S", "Cluster Size");
-		aMap.put("N_PYEARS", "N_PYEARS");
-		aMap.put("PYEAR_PERC", "PYEAR_PERC");
-		aMap.put("N_PCT50","N_PCT50");
-		aMap.put("N_PCT75","N_PCT75");
-		aMap.put("N_PCT90","N_PCT90");
-		aMap.put("N_PYEARS2","N_PYEARS2");
-        attr = Collections.unmodifiableMap(aMap);
-    }
+
     
     
 	public int getID() {
