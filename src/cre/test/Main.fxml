@@ -22,14 +22,16 @@
 		<menus>
 			<Menu text="_File">
 				<items>
-					<MenuItem text="_Open..." mnemonicParsing="true" accelerator="Ctrl+O" onAction="#OnMenuOpen" />
+					<MenuItem text="Open..." accelerator="Shortcut+O" onAction="#OnMenuFileOpen" />
 					<Menu text="Import">
-						<MenuItem text="Web of Science..." onAction="#OnMenuImportWoS"/>
-						<MenuItem text="Scopus..." />
+						<MenuItem text="Web of Science..." onAction="#OnMenuFileImportWoS"/>
+						<MenuItem text="Scopus..." onAction="#OnMenuFileImportScopus"/>
 					</Menu>
 					<SeparatorMenuItem />
-					<MenuItem text="_Save" />
+					<MenuItem text="Save" accelerator="Shortcut+S" />
 					<MenuItem text="Save _As..." />
+					<SeparatorMenuItem />
+					<MenuItem text="Settings..." onAction="#OnMenuFileSettings"/>
 					<SeparatorMenuItem />
 					<MenuItem text="E_xit" />
 				</items>
@@ -46,16 +48,12 @@
 					<MenuItem text="Remove Cited References w/o Year..." onAction="#OnMenuDataRemovewoYears"/>
 					<MenuItem text="Remove by Cited Reference Year..." onAction="#OnMenuDataRemoveByRPY" />
 					<MenuItem text="Remove by Number of Cited References..." onAction="#OnMenuDataRemoveByNCR" />
-					<MenuItem text="Remove by Percent in Year..." disable="true" />
+					<MenuItem text="Remove by Percent in Year..." onAction="#OnMenuDataRemoveByPERC_YEAR" />
 
 					<SeparatorMenuItem />
 
-					<MenuItem text="Retain Publications citing Selected Cited References..." disable="true" />
+					<MenuItem text="Retain Publications citing Selected Cited References..." onAction="#OnMenuDataRetainSelected" />
 					<MenuItem text="Retain Publications within Citing Publication Year..." onAction="#OnMenuDataRetainByRPY" />
-
-					
-					
-					
 				</items>
 			</Menu>
 			<Menu text="Help">

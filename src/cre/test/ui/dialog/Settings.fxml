@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.CheckBox?>
+
+
+
+<TabPane xmlns:fx="http://javafx.com/fxml" >
+ <tabs>
+        <Tab text="Table" closable="false">
+            <content>
+            <GridPane >
+            	
+            </GridPane>
+            </content>
+        </Tab>
+        <Tab text="Chart"  closable="false">
+            <content>
+            </content>
+        </Tab>
+        <Tab text="Import" closable="false">
+            <content>
+            </content>
+        </Tab>
+    </tabs>
+</TabPane>
+ 

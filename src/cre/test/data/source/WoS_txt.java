@@ -88,7 +88,7 @@ public class WoS_txt {
 	
 	
 	
-	public static void load (File[] files, CRTable crTab, StatusBar stat, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
+	public static void load (List<File> files, CRTable crTab, StatusBar stat, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 
 		
 		long ts1 = System.currentTimeMillis();
@@ -102,11 +102,12 @@ public class WoS_txt {
 		
 		AtomicLong countCR = new AtomicLong(0);
 		
-		for (int idx=0; idx<files.length; idx++) {
+		int idx = 0;
+		for (File file: files) {
 			
-			WoS_Iterator wosIt = new WoS_Iterator(files[idx]);
+			WoS_Iterator wosIt = new WoS_Iterator(file);
 			
-			stat.initProgressbar(files[idx].length(), String.format("Loading WoS file %1$d of %2$d ...", (idx+1), files.length));
+			stat.initProgressbar(file.length(), String.format("Loading WoS file %1$d of %2$d ...", (++idx), files.size()));
 			
 			AtomicLong countSize = new AtomicLong(0);
 			

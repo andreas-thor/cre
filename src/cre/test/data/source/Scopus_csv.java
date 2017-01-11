@@ -56,7 +56,7 @@ public class Scopus_csv  {
 
 	
 	
-	public static void load (File[] files, CRTable crTab, StatusBar stat, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
+	public static void load (List<File> files, CRTable crTab, StatusBar stat, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 		
 		long ts1 = System.currentTimeMillis();
 		
@@ -68,11 +68,11 @@ public class Scopus_csv  {
 		crTab.init();
 		
 		AtomicLong countCR = new AtomicLong(0);
-		
-		for (int idx=0; idx<files.length; idx++) {
+		int idx=0;
+		for (File file: files) {
 
 
-			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(files[idx]), "UTF-8"));
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 			CSVReader csv = new CSVReader(br);
 			List<String[]> content = csv.readAll(); 
 			csv.close();
@@ -98,7 +98,7 @@ public class Scopus_csv  {
 			int modulo = content.size()*stepSize/100;
 			AtomicLong countPub = new AtomicLong(0);
 
-			int fileNr = idx+1;
+			int fileNr = ++idx;
 			crTab.pubData.addAll(content.parallelStream().map ( (String[] it) -> {
 			
 				/* if user abort or maximum number of CRs reached --> do no process anymore */
@@ -181,7 +181,7 @@ public class Scopus_csv  {
 				
 				// update status bar
 				if ((countPub.get()%modulo) == 0) {
-					stat.setValue (String.format("%1$s: Loading Scopus file %2$d of %3$d", startDate, fileNr, files.length), (int)countPub.get()*stepSize/modulo);
+					stat.setValue (String.format("%1$s: Loading Scopus file %2$d of %3$d", startDate, fileNr, files.size()), (int)countPub.get()*stepSize/modulo);
 				}
 				
 				return pub;

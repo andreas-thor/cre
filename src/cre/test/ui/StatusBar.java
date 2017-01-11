@@ -2,24 +2,32 @@ package cre.test.ui;
 
 import java.util.Date;
 
-import cre.test.Main.EventStatusBar;
+import javafx.application.Platform;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 
 public class StatusBar {
 
+	private Label sblabel;
+	private ProgressBar sbpb;
+	private Label sbinfo;
+	
 	private long maxSize;
 	private long blockSize;
 	private long blockCount;
 	private Date date;
 	private String label;
-	private EventStatusBar onUpdate;
 	
 
-	
-	public StatusBar(EventStatusBar onUpdate) {
+
+	public StatusBar(Label sblabel, ProgressBar sbpb, Label sbinfo) {
 		super();
-		this.onUpdate = onUpdate;
+		this.sblabel = sblabel;
+		this.sbpb = sbpb;
+		this.sbinfo = sbinfo;
 		initProgressbar(1, "CRE started");
 	}
+
 	
 
 	public void setValue (String label, long value) {
@@ -37,7 +45,13 @@ public class StatusBar {
 
 		
 	public void setValue (String label, long value, String info, Date d) {
-		this.onUpdate.onUpdate(String.format("   %1$s: %2$s       ", d, label), 1.0*value/maxSize, info==null?null:String.format("       %s   ", info));
+		Platform.runLater( () -> {
+			sblabel.setText(String.format("   %1$s: %2$s       ", d, label));
+			sbpb.setProgress(1.0*value/maxSize);
+			if (info!= null) {
+				sbinfo.setText(String.format("       %s   ", info));
+			}
+		});		
 	}
 	
 	

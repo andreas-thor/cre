@@ -1,7 +1,10 @@
 package cre.test.ui.dialog;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
@@ -12,14 +15,20 @@ import javafx.scene.layout.GridPane;
 public class Range extends Dialog<int[]> {
 
 	
-	public Range(String title, String header, int[] range, int[] maxRange) {
+	public Range(String title, String header, SimpleIntegerProperty[] range, int[] maxRange) {
 		super();
+
+		// initialize property if not set
+		if ((range[0].get()==-1) && (range[1].get()==-1)) {
+			range[0].set(maxRange[0]);
+			range[1].set(maxRange[1]);
+		}
 		
 		setTitle(title);
 		setHeaderText(header);
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		
-		TextField[] tf = new TextField[] { new TextField(String.valueOf(range[0])), new TextField(String.valueOf(range[1])) }; 
+		TextField[] tf = new TextField[] { new TextField(String.valueOf(range[0].get())), new TextField(String.valueOf(range[1].get())) }; 
 		CheckBox[] cb = new CheckBox[] { new CheckBox("Minimum"), new CheckBox("Maximum") }; 
 
 		cb[0].setOnAction((event) -> {
@@ -44,9 +53,24 @@ public class Range extends Dialog<int[]> {
 
 		setResultConverter(dialogButton -> {
 		    if (dialogButton == ButtonType.OK) {
-		        return new int[] {Integer.parseInt(tf[0].getText()), Integer.parseInt(tf[1].getText()) };
+		        try {
+		        	int[] result = new int[] {Integer.parseInt(tf[0].getText()), Integer.parseInt(tf[1].getText())};
+		        	if (result[0] <= result[1]) {
+		        		range[0].set(result[0]);
+		        		range[1].set(result[1]);
+		        		return result;	// VALID RANGE
+		        	}
+		        } catch (NumberFormatException e) { }
+		        
+		        // INVALID range
+		        Alert alert = new Alert(AlertType.ERROR);
+		        alert.setTitle("Error");
+		        alert.setHeaderText("Invalid Range");
+		        alert.setContentText(String.format("The range from %s to %s is not valid!", tf[0].getText(), tf[1].getText()));
+		        alert.showAndWait();
+		        return null; 
 		    }
-		    return null;
+		    return null;	// CANCEL
 		});		
 	}
 	

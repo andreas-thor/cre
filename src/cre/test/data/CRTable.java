@@ -412,12 +412,10 @@ public class CRTable {
 	 * Remove all citing publications, that do not reference any of the given CRs (idx)
 	 * @param idx list of CR indexes
 	 */
-	public void removeByCR (List<Integer> idx) {
+	public void removeByCR (List<CRType> selCR) {
 
 		
-		List<CRType> selCR = idx.stream().map ( it -> crData.get(it.intValue()) ).collect(Collectors.toList());
-		
-		pubData.removeIf ( (PubType pub) -> {
+		pubData.removeIf ( pub -> {
 			
 			// if crList of publications does not contain any of the CRs 
 			if (!pub.crList.stream().anyMatch ( cr -> { return selCR.contains (cr); } )) {
@@ -573,7 +571,7 @@ public class CRTable {
 	 */
 	public int[] getMaxRangeYear () {
 		IntSummaryStatistics stats = crData.stream().filter (cr -> cr.getRPY() != null).map((CRType it) -> it.getRPY()).mapToInt(Integer::intValue).summaryStatistics();
-		return new int[] { stats.getMin(), stats.getMax() };
+		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
 	}
 	
 	

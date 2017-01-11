@@ -17,7 +17,6 @@ import org.jfree.chart.event.PlotChangeListener;
 import org.jfree.chart.fx.ChartViewer;
 import org.jfree.chart.fx.interaction.ChartMouseEventFX;
 import org.jfree.chart.fx.interaction.ChartMouseListenerFX;
-import org.jfree.chart.labels.CustomXYToolTipGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -30,13 +29,17 @@ import javafx.application.Platform;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-public class ChartPanelFactory {
+public class CRChart {
 
+	private JFreeChart chart;
+	private ChartViewer chView;
+	private CRTable crTable;
 	
-	
-	public static ChartViewer create(CRTable crTable, TableView<CRType> tab, TableColumn<CRType, Number> colRPY, TableColumn<CRType, Number> colN_CR) {
+	public CRChart (CRTable crTable, TableView<CRType> tab, TableColumn<CRType, Number> colRPY, TableColumn<CRType, Number> colN_CR) {
 
-		JFreeChart chart = ChartFactory.createXYLineChart("", "Cited Reference Year", "Cited References", crTable.ds);
+		this.crTable = crTable;
+		
+		chart = ChartFactory.createXYLineChart("", "Cited Reference Year", "Cited References", crTable.ds);
 
 		chart.getLegend().setFrame(BlockBorder.NONE);
 		
@@ -96,8 +99,10 @@ public class ChartPanelFactory {
 			}
 		});
 		
+		
+		
 
-		ChartViewer chView = new ChartViewer(chart);
+		chView = new ChartViewer(chart);
 		chView.addChartMouseListener(new ChartMouseListenerFX() {
 			
 			@Override
@@ -133,8 +138,30 @@ public class ChartPanelFactory {
 				
 			}
 		});
-
-		return chView;
-
 	}
+
+
+	public ChartViewer getViewer() {
+		return chView;
+	}
+
+
+	public void adjustDomainRange(Integer yearMin, Integer yearMax) {
+		if ((yearMin!=null) && (yearMax!=null)) {
+			org.jfree.data.Range dAxisRange = chart.getXYPlot().getDomainAxis().getRange();
+			if ((((int)Math.ceil (dAxisRange.getLowerBound())) != yearMin.intValue()) || (((int)Math.floor(dAxisRange.getUpperBound())) != yearMax.intValue())) { 
+				System.out.println("Adjusting");
+				System.out.println("Axis = " + dAxisRange.toString());
+				System.out.println("Year = " + yearMin + ", " + yearMax);
+				crTable.duringUpdate = true;
+				if (yearMin==yearMax) {
+					chart.getXYPlot().getDomainAxis().setRange(yearMin-0.5, yearMax+0.5);
+				} else {
+					chart.getXYPlot().getDomainAxis().setRange(yearMin, yearMax);
+				}
+				crTable.duringUpdate = false;
+			}
+		}
+	}
+	
 }
