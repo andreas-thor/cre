@@ -7,8 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.swing.filechooser.FileFilter;
-
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
@@ -39,9 +37,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
@@ -151,12 +147,19 @@ public class Main {
 			((Button) exit.getDialogPane().lookupButton(ButtonType.CANCEL)).setDefaultButton (true);
 			exit.showAndWait().ifPresent(button -> {
 				
-			});;
-			
-			
-			UserSettings.get().saveUserPrefs(CitedReferencesExplorer.stage.getWidth(), CitedReferencesExplorer.stage.getHeight(), CitedReferencesExplorer.stage.getX(), CitedReferencesExplorer.stage.getY()); 
-			
-//			CitedReferencesExplorer.stage.show();
+				if (button != ButtonType.CANCEL) {
+					if (button == ButtonType.YES) {
+						try {
+							saveFile(ExportFormat.CRE_JSON);
+						} catch (Exception e) {
+							Platform.runLater( () -> { new ExceptionStacktrace("Error during file export!", e).showAndWait(); });
+							return;
+						}
+					}
+					UserSettings.get().saveUserPrefs(CitedReferencesExplorer.stage.getWidth(), CitedReferencesExplorer.stage.getHeight(), CitedReferencesExplorer.stage.getX(), CitedReferencesExplorer.stage.getY());
+					CitedReferencesExplorer.stage.close();
+				}
+			});
 		});
 
 
