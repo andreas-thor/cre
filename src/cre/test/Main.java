@@ -22,6 +22,7 @@ import cre.test.ui.CRChart;
 import cre.test.ui.CRTableView;
 import cre.test.ui.StatusBar;
 import cre.test.ui.UserSettings;
+import cre.test.ui.UserSettings.RangeType;
 import cre.test.ui.dialog.ConfirmAlert;
 import cre.test.ui.dialog.Info;
 import cre.test.ui.dialog.Range;
@@ -29,7 +30,6 @@ import cre.test.ui.dialog.Settings;
 import cre.test.ui.dialog.Threshold;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -38,12 +38,9 @@ import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 
 public class Main {
@@ -52,9 +49,7 @@ public class Main {
 	CRTable crTable;
 	CRChart crChart;
 	
-	FilteredList<CRType> x;
 	
-	@FXML Text actiontarget;
 	@FXML Label lab;
 	@FXML GridPane mainPane;
 	@FXML Label sblabel;
@@ -63,42 +58,6 @@ public class Main {
 	@FXML ScrollPane scrollTab;
 	@FXML CRTableView tableView;
 
-/*
-	@FXML TableColumn<CRType, Number> colVI;
-	@FXML TableColumn<CRType, Number> colCO;
-	@FXML TableColumn<CRType, Number> colID;
-	@FXML TableColumn<CRType, String> colCR;
-	@FXML TableColumn<CRType, Number> colRPY;
-	@FXML TableColumn<CRType, Number> colN_CR;
-	
-	@FXML TableColumn<CRType, Number> colPERC_YR;
-	@FXML TableColumn<CRType, Number> colPERC_ALL;
-	
-	@FXML TableColumn<CRType, String> colAU;
-	@FXML TableColumn<CRType, String> colAU_L;
-	@FXML TableColumn<CRType, String> colAU_F;
-	@FXML TableColumn<CRType, String> colAU_A;
-	@FXML TableColumn<CRType, String> colTI;
-	@FXML TableColumn<CRType, String> colJ;
-	@FXML TableColumn<CRType, String> colJ_N;
-	@FXML TableColumn<CRType, String> colJ_S;
-	@FXML TableColumn<CRType, String> colVOL;
-	@FXML TableColumn<CRType, String> colPAG;
-	@FXML TableColumn<CRType, String> colDOI;
-	
-	@FXML TableColumn<CRType, CRCluster> colCID2;
-	@FXML TableColumn<CRType, Number> colCID_S;
-	
-	@FXML TableColumn<CRType, Integer> colN_PYEARS;
-	@FXML TableColumn<CRType, Double> colPYEAR_PERC;
-	@FXML TableColumn<CRType, Integer> colN_PCT50;
-	@FXML TableColumn<CRType, Integer> colN_PCT75;
-	@FXML TableColumn<CRType, Integer> colN_PCT90;
-	@FXML TableColumn<CRType, Integer> colN_PYEARS2;
-	*/
-	
-//	@FXML SwingNode swingChart;
-//	@FXML ChartViewer chartViewer;
 	@FXML GridPane chartPane;
 	@FXML GridPane tablePane;
 	
@@ -117,8 +76,6 @@ public class Main {
 	
 	@FXML public void initialize() {
 	
-//		colAU.setComparator((o1, o2) -> { return o1.compareToIgnoreCase(o2); });
-
 		stat = new StatusBar(sblabel, sbpb, sbinfo);
 				
 
@@ -137,74 +94,10 @@ public class Main {
 		});
 		
 		
-/*		
-		x = new FilteredList<CRType>(crTable.crDataObserved);
-//		x.setPredicate(t -> t.getVI());
-		
-//		x = new FilteredList<>(crTable.crData, t -> ! t.getVI());
-		
-//		FilteredList<Item> list = new FilteredList<>(baseList, t -> ! t.filteredProperty().get());
-		
-		
-		x.setPredicate(new Predicate<CRType>() {
-			@Override
-			public boolean test(CRType t) {
-				return t.getVI();
-			}
-		});
-		SortedList<CRType> y = new SortedList<CRType>(x);
-//		
-		y.comparatorProperty().bind(tableView.comparatorProperty());
-		tableView.setItems(y);
-		*/
-		
-//		colVI.setCellValueFactory(cellData -> cellData.getValue().getVIProp());
-//		colCO.setCellValueFactory(cellData -> cellData.getValue().getCOProp());
-//		colID.setCellValueFactory(cellData -> cellData.getValue().getIDProp());
-//		
-//		
-//		colID.visibleProperty().bindBidirectional(UserSettings.get().columnVisible[0]);
-//		
-//		colCR.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCR()));
-//		colRPY.setCellValueFactory(cellData -> cellData.getValue().getRPYProp());
-//		colN_CR.setCellValueFactory(cellData -> cellData.getValue().getN_CRProp());
-//		 
-//		colPERC_YR.setCellValueFactory(cellData -> cellData.getValue().getPERC_YRProp());
-//		colPERC_ALL.setCellValueFactory(cellData -> cellData.getValue().getPERC_ALLProp());
-//		
-//		colAU.setCellValueFactory(cellData -> cellData.getValue().getAUProp());
-//		colAU_L.setCellValueFactory(cellData -> cellData.getValue().getAU_LProp());
-//		colAU_F.setCellValueFactory(cellData -> cellData.getValue().getAU_FProp());
-//		colAU_A.setCellValueFactory(cellData -> cellData.getValue().getAU_AProp());
-//		colTI.setCellValueFactory(cellData -> cellData.getValue().getTIProp());
-//		colJ.setCellValueFactory(cellData -> cellData.getValue().getJProp());
-//		colJ_N.setCellValueFactory(cellData -> cellData.getValue().getJ_NProp());
-//		colJ_S.setCellValueFactory(cellData -> cellData.getValue().getJ_SProp());
-//		
-//		
-//		colVOL.setCellValueFactory(cellData -> cellData.getValue().getVOLProp());
-//		colPAG.setCellValueFactory(cellData -> cellData.getValue().getPAGProp());
-//		colDOI.setCellValueFactory(cellData -> cellData.getValue().getDOIProp());	
-//
-//		colCID2.setCellValueFactory(cellData -> cellData.getValue().getCID2());
-//		colCID_S.setCellValueFactory(cellData -> cellData.getValue().getCID_SProp());
-		
-//		colN_PYEARS.setCellValueFactory(cellData -> cellData.getValue().propN_PYEARS);
-//		colPYEAR_PERC.setCellValueFactory(cellData -> cellData.getValue().propPYEAR_PERC);
-		
-		
-//		colN_PCT50.setCellValueFactory(cellData -> cellData.getValue().propN_PCT50);
-//		colN_PCT75.setCellValueFactory(cellData -> cellData.getValue().propN_PCT75);
-//		colN_PCT90.setCellValueFactory(cellData -> cellData.getValue().propN_PCT90);
-//		colN_PYEARS2.setCellValueFactory(cellData -> cellData.getValue().propN_PYEARS2);
-		
 		tableView = new CRTableView();
 		
 		tablePane.add (tableView, 0, 0);
-		tableView.setMinHeight(100);
-		tableView.setMinWidth(100);
-		tablePane.setVgrow(tableView, Priority.ALWAYS);
-		tablePane.setHgrow(tableView, Priority.ALWAYS);
+		
 
 		crChart = new CRChart(crTable, tableView);
 		chartPane.add(crChart.getViewer(), 0, 0);
@@ -213,9 +106,6 @@ public class Main {
 		
 	}
 	
-    @FXML protected void handleAboutAction(ActionEvent event) {
-        actiontarget.setText("Sign in button pressed");
-    }
 
     
     private void openFile (String source, String title, boolean multipleFiles, FileFilter filter) throws IOException {
@@ -224,8 +114,8 @@ public class Main {
     	fileChooser.setTitle(title);
     	
     	// set initial directory
-    	if (UserSettings.get().lastFileDir.exists()) {
-    		fileChooser.setInitialDirectory(UserSettings.get().lastFileDir);
+    	if (UserSettings.get().getLastFileDir().exists()) {
+    		fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
     	}
     	
     	final List<File> files = new ArrayList<File>();
@@ -241,41 +131,33 @@ public class Main {
     	if (files.size()>0) {
     		
     		// save last directory to be used as initial directory
-    		UserSettings.get().lastFileDir = files.get(0).getParentFile();
+    		UserSettings.get().setLastFileDir(files.get(0).getParentFile());
     		
 			Runnable runnable = new Runnable() {
 				public void run() {
 					try { 
 						switch (source) {
 							case "CRE_json": CRE_json.load (files.get(0), crTable, stat); break;
-							case "WoS_txt": WoS_txt.load(files, crTable, stat, 0, new int[] { 0, 0 }); break;
-							case "Scopus_csv": Scopus_csv.load(files, crTable, stat, 0, new int[] { 0, 0 }); break;
+							case "WoS_txt": WoS_txt.load(files, crTable, stat, UserSettings.get().getMaxCR(), UserSettings.get().getRange(RangeType.ImportYearRange)); break;
+							case "Scopus_csv": Scopus_csv.load(files, crTable, stat, UserSettings.get().getMaxCR(), UserSettings.get().getRange(RangeType.ImportYearRange)); break;
 					}
 						
 					} catch (FileTooLargeException e1) {
 						Platform.runLater( () -> {
-							Alert alert = new Alert(AlertType.ERROR, String.format("You try to import too many cited references. Import was aborted after loading %d Cited References. You can change the maximum number in the File > Settings > Miscellaneous menu. ", e1.numberOfCRs)); 
-							alert.setHeaderText("Error during file import!");
-							alert.showAndWait();
+							new ConfirmAlert("Error during file import!", true, new String[] {String.format("You try to import too many cited references. Import was aborted after loading %d Cited References. You can change the maximum number in the File > Settings > Import menu. ", e1.numberOfCRs)}).showAndWait();
 						});
 					} catch (UnsupportedFileFormatException e4) {
 						Platform.runLater( () -> {
-							Alert alert = new Alert(AlertType.ERROR, "Unsupported File Format."); 
-							alert.setHeaderText("Error during file import!");
-							alert.showAndWait();
+							new ConfirmAlert("Error during file import!", true, new String[] {"Unsupported File Format."}).showAndWait();
 						});
 					} catch (AbortedException e2) {
 						Platform.runLater( () -> {
-							Alert alert = new Alert(AlertType.ERROR, "File Import aborted."); 
-							alert.setHeaderText("Error during file import!");
-							alert.showAndWait();
+							new ConfirmAlert("Error during file import!", true, new String[] {"File Import aborted."}).showAndWait();
 						});
 					} catch (OutOfMemoryError mem) {
 						crTable.init();
 						Platform.runLater( () -> {
-							Alert alert = new Alert(AlertType.ERROR, "Out of Memory Error."); 
-							alert.setHeaderText("Error during file import!");
-							alert.showAndWait();
+							new ConfirmAlert("Error during file import!", true, new String[] {"Out of Memory Error."}).showAndWait();
 						});
 					} catch (Exception e3) {
 						Platform.runLater( () -> {
@@ -343,10 +225,46 @@ public class Main {
 		 openFile("Scopus_csv", "Import Scopus Files", true, null);
 	}
 	
-	@FXML public void OnMenuFileSettings() throws IOException {
-		
 
-		new Settings().showAndWait();
+	@FXML public void OnMenuFileSave() {
+		
+	}
+
+
+
+	@FXML public void OnMenuFileSaveAs() {
+		
+		
+	}
+
+	@FXML public void OnMenuFileExportWoS() {}
+
+
+
+	@FXML public void OnMenuFileExportScopus() {}
+
+
+
+	@FXML public void OnMenuFileExportCSVCR() {}
+
+
+
+	@FXML public void OnMenuFileExportCSVPub() {}
+
+
+
+	@FXML public void OnMenuFileExportCSVAll() {}
+	
+	
+	
+	
+	@FXML public void OnMenuFileSettings() throws IOException {
+		new Settings()
+			.showAndWait()
+			.ifPresent( noOfErrors -> {
+				// TODO: Apply settings changes
+			}
+		);
 	}
 	
 
@@ -366,7 +284,7 @@ public class Main {
 
 	
 	@FXML public void OnMenuDataFilterByRPY(ActionEvent event) {
-		new Range("Filter Cited References", "Select Range of Cited References Years", UserSettings.get().filterByRPYRange, crTable.getMaxRangeYear())
+		new Range("Filter Cited References", "Select Range of Cited References Years", UserSettings.RangeType.FilterByRPYRange, crTable.getMaxRangeYear())
 			.showAndWait()
 			.ifPresent( range -> { 
 				crTable.filterByYear(range[0], range[1]); 
@@ -403,7 +321,7 @@ public class Main {
 	@FXML public void OnMenuDataRemoveByRPY() {
 		
 		final String header = "Remove Cited References";  
-		new Range(header, "Select Range of Cited References Years", UserSettings.get().removeByRPYRange, crTable.getMaxRangeYear())
+		new Range(header, "Select Range of Cited References Years", UserSettings.RangeType.RemoveByRPYRange, crTable.getMaxRangeYear())
 			.showAndWait()
 			.ifPresent( range -> { 
 				long n =  crTable.getNumberByYear(range);
@@ -421,7 +339,7 @@ public class Main {
 	@FXML public void OnMenuDataRemoveByNCR() {
 
 		final String header = "Remove Cited References";  
-		new Range(header, "Select Number of Cited References", UserSettings.get().removeByNCRRange, crTable.getMaxRangeNCR())
+		new Range(header, "Select Number of Cited References", UserSettings.RangeType.RemoveByNCRRange, crTable.getMaxRangeNCR())
 			.showAndWait()
 			.ifPresent( range -> { 
 				long n =  crTable.getNumberByNCR(range);
@@ -471,7 +389,7 @@ public class Main {
 	
 	@FXML public void OnMenuDataRetainByRPY() {
 		
-		new Range("Retain Publications", "Select Range of Citing Publication Years", UserSettings.get().retainByRPYRange, crTable.getMaxRangeCitingYear())
+		new Range("Retain Publications", "Select Range of Citing Publication Years", UserSettings.RangeType.RetainByRPYRange, crTable.getMaxRangeCitingYear())
 			.showAndWait()
 			.ifPresent( range -> { 
 				long n =  crTable.getNumberOfPubs() - crTable.getNumberOfPubsByCitingYear(range);
@@ -484,6 +402,12 @@ public class Main {
 			}
 		);
 	}
+
+
+
+	
+
+
 
 
 

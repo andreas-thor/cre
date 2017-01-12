@@ -28,12 +28,21 @@
 						<MenuItem text="Scopus..." onAction="#OnMenuFileImportScopus"/>
 					</Menu>
 					<SeparatorMenuItem />
-					<MenuItem text="Save" accelerator="Shortcut+S" />
-					<MenuItem text="Save _As..." />
+					<MenuItem text="Save" accelerator="Shortcut+S" onAction="#OnMenuFileSave"/>
+					<MenuItem text="Save As..." onAction="#OnMenuFileSaveAs"/>
+					<Menu text="Export">
+						<MenuItem text="Web of Science..." onAction="#OnMenuFileExportWoS"/>
+						<MenuItem text="Scopus..." onAction="#OnMenuFileExportScopus"/>
+						<SeparatorMenuItem />
+						<MenuItem text="CSV (Cited References)..." onAction="#OnMenuFileExportCSVCR"/>
+						<MenuItem text="CSV (Citing Publications)..." onAction="#OnMenuFileExportCSVPub"/>
+						<MenuItem text="CSV (Cited References + Citing Publications)..." onAction="#OnMenuFileExportCSVAll"/>
+					</Menu>
+					
 					<SeparatorMenuItem />
 					<MenuItem text="Settings..." onAction="#OnMenuFileSettings"/>
 					<SeparatorMenuItem />
-					<MenuItem text="E_xit" />
+					<MenuItem text="Exit" accelerator="Alt+F4" />
 				</items>
 			</Menu>
 			<Menu text="_Data"  >

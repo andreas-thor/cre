@@ -88,7 +88,7 @@ class UIChartPanelFactory {
 			// update table when zoom changes in chart
 			addChangeListener([plotChanged: { PlotChangeEvent pcevent ->
 				if (! crTable.duringUpdate) {	// ignore updates during data update
-					((XYPlot)pcevent.getPlot()).getDomainAxis().with { crTable.filterByYear (getLowerBound(), getUpperBound()) }
+					((XYPlot)pcevent.getPlot()).getDomainAxis().with { crTable.filterByYear ((int)getLowerBound(), (int)getUpperBound()) }
 					((AbstractTableModel)tab.getModel()).fireTableDataChanged()	// automatically triggers UI refresh
 //					crTable.stat.setValue("", crTable.getInfoString())
 //					sb.tmodel.fireTableDataChanged()

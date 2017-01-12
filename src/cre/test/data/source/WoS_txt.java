@@ -25,6 +25,7 @@ import cre.test.data.CRTable;
 import cre.test.data.CRType;
 import cre.test.data.PubType;
 import cre.test.ui.StatusBar;
+import cre.test.ui.UserSettings;
 
 public class WoS_txt {
 
@@ -90,7 +91,6 @@ public class WoS_txt {
 	
 	public static void load (List<File> files, CRTable crTab, StatusBar stat, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 
-		
 		long ts1 = System.currentTimeMillis();
 		long ms1 = Runtime.getRuntime().totalMemory();
 		

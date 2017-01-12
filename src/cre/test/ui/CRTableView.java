@@ -7,12 +7,13 @@ import java.util.Map.Entry;
 
 import cre.test.data.CRCluster;
 import cre.test.data.CRType;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.fxml.FXML;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.util.Pair;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.util.Callback;
 
 public class CRTableView extends TableView<CRType> {
 
@@ -50,8 +51,33 @@ public class CRTableView extends TableView<CRType> {
 	
 	private TableColumn<CRType, ?>[] columns;
 	
+	
+	
+	
+	@SuppressWarnings("unchecked")
 	public CRTableView() {
 	
+		
+		setMinHeight(100);
+		setMinWidth(100);
+		GridPane.setVgrow(this, Priority.ALWAYS);
+		GridPane.setHgrow(this, Priority.ALWAYS);
+		
+		Callback<TableColumn<CRType, Number>, TableCell<CRType, Number>> doubleNumberFormat = column -> { 
+			return new TableCell<CRType, Number>() {
+		        @Override
+		        protected void updateItem(Number value , boolean empty) {
+		            super.updateItem(value, empty);
+
+		            if ((value == null) || empty) {
+		                setText(null);
+//		                setStyle("");
+		            } else {
+		            	setText (UserSettings.get().getFormat().format(value.doubleValue()));
+		            }
+		        }
+			}; 
+		};
 
 		columns = new TableColumn[CRTableView.attr.size()];
 
@@ -70,9 +96,11 @@ public class CRTableView extends TableView<CRType> {
 
 		columns[ 4] = new TableColumn<CRType, Number>("PERC_YR");
 		((TableColumn<CRType, Number>) columns[ 4]).setCellValueFactory(cellData -> cellData.getValue().getPERC_YRProp());
+		((TableColumn<CRType, Number>) columns[ 4]).setCellFactory(doubleNumberFormat); 
 
 		columns[ 5] = new TableColumn<CRType, Number>("PERC_ALL");
 		((TableColumn<CRType, Number>) columns[ 5]).setCellValueFactory(cellData -> cellData.getValue().getPERC_ALLProp());
+		((TableColumn<CRType, Number>) columns[ 5]).setCellFactory(doubleNumberFormat); 
 
 		columns[ 6] = new TableColumn<CRType, String>("AU");
 		((TableColumn<CRType, String>) columns[ 6]).setCellValueFactory(cellData -> cellData.getValue().getAUProp());
@@ -133,7 +161,7 @@ public class CRTableView extends TableView<CRType> {
 //		columns[24] = new TableColumn<CRType, Integer>(); //N_PYEARS2;		
 		
 		for (int idx=0; idx<CRTableView.attr.size(); idx++) {
-			columns[idx].visibleProperty().bindBidirectional(UserSettings.get().columnVisible[idx]);
+			columns[idx].visibleProperty().bindBidirectional(UserSettings.get().getColumnVisibleProperty(idx));
 		}
 		
 		getColumns().addAll(columns);
@@ -148,7 +176,7 @@ public class CRTableView extends TableView<CRType> {
 	public TableColumn<CRType, ?> getColumnByName (String name) {
 		
 		int idx = 0;
-		for (Entry<String, Pair<String, Class>> e: CRTableView.attr.entrySet()) {
+		for (Entry<String, String> e: CRTableView.attr.entrySet()) {
 			if (name.equalsIgnoreCase(e.getKey())) return columns[idx];
 			idx++;
 		}

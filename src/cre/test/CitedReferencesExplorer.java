@@ -2,6 +2,7 @@ package cre.test;
 
 import java.util.Locale;
 
+import cre.test.ui.UserSettings;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,6 +24,12 @@ public class CitedReferencesExplorer extends Application {
 		Locale.setDefault(new Locale("en"));
 
 		CitedReferencesExplorer.stage = stage;
+		
+		
+		stage.setOnCloseRequest(event -> {
+		   UserSettings.get().saveUserPrefs();
+		});
+		
 		Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
 	    
         Scene scene = new Scene(root, 800, 600);

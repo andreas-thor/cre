@@ -1,7 +1,8 @@
 package cre.test.ui.dialog;
 
+import cre.test.ui.UserSettings;
+import cre.test.ui.UserSettings.RangeType;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -15,20 +16,21 @@ import javafx.scene.layout.GridPane;
 public class Range extends Dialog<int[]> {
 
 	
-	public Range(String title, String header, SimpleIntegerProperty[] range, int[] maxRange) {
+	public Range(String title, String header, RangeType r, int[] maxRange) {
 		super();
 
+		int[] range = UserSettings.get().getRange(r);
+		
 		// initialize property if not set
-		if ((range[0].get()==-1) && (range[1].get()==-1)) {
-			range[0].set(maxRange[0]);
-			range[1].set(maxRange[1]);
+		if ((range[0]==-1) && (range[1]==-1)) {
+			UserSettings.get().setRange(r, maxRange);
 		}
 		
 		setTitle(title);
 		setHeaderText(header);
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		
-		TextField[] tf = new TextField[] { new TextField(String.valueOf(range[0].get())), new TextField(String.valueOf(range[1].get())) }; 
+		TextField[] tf = new TextField[] { new TextField(String.valueOf(range[0])), new TextField(String.valueOf(range[1])) }; 
 		CheckBox[] cb = new CheckBox[] { new CheckBox("Minimum"), new CheckBox("Maximum") }; 
 
 		cb[0].setOnAction((event) -> {
@@ -53,15 +55,10 @@ public class Range extends Dialog<int[]> {
 
 		setResultConverter(dialogButton -> {
 		    if (dialogButton == ButtonType.OK) {
-		        try {
-		        	int[] result = new int[] {Integer.parseInt(tf[0].getText()), Integer.parseInt(tf[1].getText())};
-		        	if (result[0] <= result[1]) {
-		        		range[0].set(result[0]);
-		        		range[1].set(result[1]);
-		        		return result;	// VALID RANGE
-		        	}
-		        } catch (NumberFormatException e) { }
-		        
+		    	
+		    	if (UserSettings.get().setRange(r, new String[] { tf[0].getText(), tf[1].getText()}) == 0) {
+		    		return UserSettings.get().getRange(r);
+		    	}
 		        // INVALID range
 		        Alert alert = new Alert(AlertType.ERROR);
 		        alert.setTitle("Error");
