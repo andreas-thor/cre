@@ -18,6 +18,7 @@ import javax.json.Json;
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 
+import cre.test.Exceptions.AbortedException;
 import cre.test.data.CRCluster;
 import cre.test.data.CRTable;
 import cre.test.data.CRType;
@@ -27,11 +28,11 @@ import cre.test.ui.StatusBar;
 public class CRE_json {
 
 	
-	public static void load (File file, CRTable crTab, StatusBar stat) throws IOException {
+	public static void load (File file, CRTable crTab) throws IOException, AbortedException {
 		
 		
 		crTab.abort = false;	// can be changed by "wait dialog"
-		stat.setValue("Loading CRE file ...", "");
+		StatusBar.get().setValue("Loading CRE file ...", "");
 		
 		
 		crTab.init();
@@ -53,11 +54,13 @@ public class CRE_json {
 			if (entry.getName().equals("crdata.json")) {
 
 				System.out.println("entry size is " + entry.getSize());
-				stat.initProgressbar(entry.getSize(), "Loading CRE file crdata ...");
+				StatusBar.get().initProgressbar(entry.getSize(), "Loading CRE file crdata ...");
 				parser = Json.createParser(zipFile.getInputStream(entry) /*zip*/);
 				CRType cr = null;
 				String key = "";
-				while (parser.hasNext()) {
+				while (!crTab.abort && parser.hasNext()) {
+					
+					
 					switch (parser.next()) {
 					case START_OBJECT: 	cr = new CRType(); break; 
 					case END_OBJECT: 	crTab.crData.add(cr); break;
@@ -95,21 +98,22 @@ public class CRE_json {
 					default:break;  
 					}
 				
-					stat.updateProgressbar(parser.getLocation().getStreamOffset());
+					StatusBar.get().updateProgressbar(parser.getLocation().getStreamOffset());
 				}
 //				crTab.updateData(true);
-				stat.setValue("Loading CRE file crdata done");
+				StatusBar.get().setValue("Loading CRE file crdata done");
 			}
 			
 			if (entry.getName().equals("pubdata.json")) {
 
-				stat.initProgressbar(entry.getSize(), "Loading CRE file pubdata ...");
+				StatusBar.get().initProgressbar(entry.getSize(), "Loading CRE file pubdata ...");
 				parser = Json.createParser(zipFile.getInputStream(entry) /*zip*/);
 				PubType pub = null;
 				List<String> C1List = null;
 				int arrayLevel = 0;
 				String key = "";
-				while (parser.hasNext()) {
+				while (!crTab.abort && parser.hasNext()) {
+					
 					switch (parser.next()) {
 					case START_OBJECT: 	pub = new PubType(); break; 
 					case END_OBJECT: 	crTab.pubData.add(pub); break;
@@ -177,22 +181,22 @@ public class CRE_json {
 					default:
 						break;
 					}
-					stat.updateProgressbar(parser.getLocation().getStreamOffset());
+					StatusBar.get().updateProgressbar(parser.getLocation().getStreamOffset());
 				}
-				stat.setValue("Loading CRE file pubdata done");
+				StatusBar.get().setValue("Loading CRE file pubdata done");
 			}			
 			
 			
 			
 			if (entry.getName().equals("crmatch.json")) {
 				int level = 0;
-				stat.initProgressbar(entry.getSize(), "Loading CRE file crmatch ...");
+				StatusBar.get().initProgressbar(entry.getSize(), "Loading CRE file crmatch ...");
 				parser = Json.createParser(zipFile.getInputStream(entry) /*zip*/);
 				
 				boolean isManual = false;
 				int id1 = 0, id2 = 0;
 				
-				while (parser.hasNext()) {
+				while (!crTab.abort && parser.hasNext()) {
 					switch (parser.next()) {
 					case START_OBJECT: 	level++; break; 
 					case END_OBJECT: 	level--; break;
@@ -212,9 +216,9 @@ public class CRE_json {
 						break;
 					default:break;  
 					}
-					stat.updateProgressbar(parser.getLocation().getStreamOffset());
+					StatusBar.get().updateProgressbar(parser.getLocation().getStreamOffset());
 				}
-				stat.setValue("Loading CRE file crmatch done");
+				StatusBar.get().setValue("Loading CRE file crmatch done");
 			}
 			
 		}
@@ -234,18 +238,26 @@ public class CRE_json {
 //		crTab.crMatch.parseJSON(slurper.parseText(data.get("crmatch.json").toString()) as JSONObject)
 				
 		
+		// Check for abort by user
+		if (crTab.abort) {
+			crTab.init();
+			crTab.updateData(false);
+			StatusBar.get().setValue("Loading CRE file aborted (due to user request)", 0);
+			throw new AbortedException();
+		}
+		
 		crTab.updateData(true);
 
 		crTab.creFile = file;
-		stat.setValue("Loading CRE file done", crTab.getInfoString());
+		StatusBar.get().setValue("Loading CRE file done", crTab.getInfoString());
 	}
 
 
 
-	public static void save (File file, CRTable crTab, StatusBar stat) throws IOException {
+	public static void save (File file, CRTable crTab) throws IOException {
 		 
 		int count = 0;
-		stat.initProgressbar(crTab.getSize() + crTab.pubData.size() + crTab.crMatch.match.get(true).size() + crTab.crMatch.match.get(false).size(), "Saving CRE file ...");
+		StatusBar.get().initProgressbar(crTab.getSize() + crTab.pubData.size() + crTab.crMatch.match.get(true).size() + crTab.crMatch.match.get(false).size(), "Saving CRE file ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -280,7 +292,7 @@ public class CRE_json {
 								jgen.write("type", it.type);			
 			jgen.writeEnd();
 			
-			stat.updateProgressbar(++count);
+			StatusBar.get().updateProgressbar(++count);
 		};
 		jgen.writeEnd();
 		jgen.flush();
@@ -328,7 +340,7 @@ public class CRE_json {
 			
 			jgen.writeEnd();
 			
-			stat.updateProgressbar(++count);
+			StatusBar.get().updateProgressbar(++count);
 		};
 		jgen.writeEnd();
 		jgen.flush();
@@ -352,7 +364,7 @@ public class CRE_json {
 					jgen.writeEnd();
 				}
 				
-				stat.updateProgressbar(++count);
+				StatusBar.get().updateProgressbar(++count);
 			}
 			jgen.writeEnd();
 		}
@@ -365,7 +377,7 @@ public class CRE_json {
 		zip.close();
 		
 		crTab.creFile = file;
-		stat.setValue("Saving CRE file done", crTab.getInfoString());
+		StatusBar.get().setValue("Saving CRE file done", crTab.getInfoString());
 
 		
 	}

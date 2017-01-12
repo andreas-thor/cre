@@ -3,11 +3,18 @@ package cre.test.ui;
 import java.util.Date;
 
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
 
-public class StatusBar {
+public class StatusBar extends GridPane {
 
+	private static StatusBar stat = null;
+	
+	private Label sbdate;
 	private Label sblabel;
 	private ProgressBar sbpb;
 	private Label sbinfo;
@@ -20,11 +27,43 @@ public class StatusBar {
 	
 
 
-	public StatusBar(Label sblabel, ProgressBar sbpb, Label sbinfo) {
+	public static StatusBar get() {
+		if (stat == null) {
+			stat  = new StatusBar();
+		}
+		return stat;
+	}
+	
+	
+	
+	private StatusBar() {
 		super();
-		this.sblabel = sblabel;
-		this.sbpb = sbpb;
-		this.sbinfo = sbinfo;
+		
+		GridPane.setColumnIndex(this,  0);
+		GridPane.setRowIndex(this,  0);
+		GridPane.setHgrow(this, Priority.ALWAYS);
+		setPadding(new Insets(5, 10, 5, 10));
+
+		this.sbdate = new Label();
+		this.sbdate.setPadding(new Insets (0, 10, 0, 0));
+		this.sbdate.setTextFill(Color.GRAY);
+		add(this.sbdate, 0, 0);
+		
+		this.sblabel = new Label();
+		this.sblabel.setPadding(new Insets (0, 10, 0, 0));
+		add(this.sblabel, 1, 0);
+		
+		this.sbpb = new ProgressBar(0);
+		GridPane.setHgrow(this.sbpb, Priority.ALWAYS);
+		this.sbpb.setMaxWidth(999999);
+		this.sbpb.setPadding(new Insets (0, 10, 0, 0));
+		add(this.sbpb, 2, 0);
+		
+		this.sbinfo = new Label();
+		this.sbinfo.setPadding(new Insets (0, 0, 0, 0));
+
+		add(this.sbinfo, 3, 0);
+		
 		initProgressbar(1, "CRE started");
 	}
 
@@ -46,10 +85,11 @@ public class StatusBar {
 		
 	public void setValue (String label, long value, String info, Date d) {
 		Platform.runLater( () -> {
-			sblabel.setText(String.format("   %1$s: %2$s       ", d, label));
+			sbdate.setText(d.toString());
+			sblabel.setText(label);
 			sbpb.setProgress(1.0*value/maxSize);
 			if (info!= null) {
-				sbinfo.setText(String.format("       %s   ", info));
+				sbinfo.setText(info);
 			}
 		});		
 	}

@@ -89,7 +89,7 @@ public class WoS_txt {
 	
 	
 	
-	public static void load (List<File> files, CRTable crTab, StatusBar stat, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
+	public static void load (List<File> files, CRTable crTab, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 
 		long ts1 = System.currentTimeMillis();
 		long ms1 = Runtime.getRuntime().totalMemory();
@@ -107,7 +107,7 @@ public class WoS_txt {
 			
 			WoS_Iterator wosIt = new WoS_Iterator(file);
 			
-			stat.initProgressbar(file.length(), String.format("Loading WoS file %1$d of %2$d ...", (++idx), files.size()));
+			StatusBar.get().initProgressbar(file.length(), String.format("Loading WoS file %1$d of %2$d ...", (++idx), files.size()));
 			
 			AtomicLong countSize = new AtomicLong(0);
 			
@@ -193,7 +193,7 @@ public class WoS_txt {
 					}
 				}
 				
-				stat.updateProgressbar(countSize.addAndGet(pub.length));
+				StatusBar.get().updateProgressbar(countSize.addAndGet(pub.length));
 				countCR.addAndGet(pub.crList.size());
 				
 				return pub;
@@ -205,14 +205,13 @@ public class WoS_txt {
 			if (crTab.abort) {
 				crTab.init();
 				crTab.updateData(false);
-				stat.setValue("Loading WoS files aborted (due to user request)", 0);
-				crTab.abort = false;
+				StatusBar.get().setValue("Loading WoS files aborted (due to user request)", 0);
 				throw new AbortedException();
 			}
 
 			// Check for maximal number of CRs
 			if ((maxCR>0) && (countCR.get()>=maxCR)) {
-				stat.setValue("Loading WoS files aborted (due to maximal number of CRs)", 0);
+				StatusBar.get().setValue("Loading WoS files aborted (due to maximal number of CRs)", 0);
 				crTab.createCRList();
 				crTab.updateData(false);
 				throw new FileTooLargeException ((int) countCR.get());
@@ -234,13 +233,13 @@ public class WoS_txt {
 		System.out.println("Memory usage " + ((ms2-ms1)/1024d/1024d) + " MBytes");
 
 		crTab.updateData(false);
-		stat.setValue("Loading WoS files done", crTab.getInfoString());		
+		StatusBar.get().setValue("Loading WoS files done", crTab.getInfoString());		
 		
 	}
 	
-	public static void save (File file, CRTable crTab, StatusBar stat) throws IOException {
+	public static void save (File file, CRTable crTab) throws IOException {
 		
-		stat.initProgressbar(crTab.pubData.size(), "Saving WoS file ...");
+		StatusBar.get().initProgressbar(crTab.pubData.size(), "Saving WoS file ...");
 		int count = 0;
 		
 		// add txt extension if necessary
@@ -331,13 +330,13 @@ public class WoS_txt {
 			bw.newLine();
 			bw.newLine();
 		
-			stat.updateProgressbar(++count);
+			StatusBar.get().updateProgressbar(++count);
 		
 		}
 		bw.write("EF"); 
 		bw.newLine();
 		bw.close();
-		stat.setValue("Saving WoS file done", crTab.getInfoString());
+		StatusBar.get().setValue("Saving WoS file done", crTab.getInfoString());
 
 			
 	}

@@ -46,7 +46,6 @@ public class CRTable {
 	private Map<Integer, Integer> NCRperYearMedian = new HashMap<Integer, Integer>();	// year -> median of sumPerYear[year-range] ... sumPerYear[year+range]   
 	
 	public CRMatch crMatch;
-	public StatusBar stat;	// status bar to indicate current information / progress
 	
 	private EventCRFilter eventFilter;
 	
@@ -58,10 +57,9 @@ public class CRTable {
 	/**
 	 * @param stat status panel
 	 */
-	public CRTable (StatusBar stat, EventCRFilter eventFilter) {
-		this.stat = stat;
+	public CRTable (EventCRFilter eventFilter) {
 		this.eventFilter = eventFilter;
-		this.crMatch = new CRMatch(this, stat);
+		this.crMatch = new CRMatch(this);
 	}
 	
 	
@@ -74,7 +72,7 @@ public class CRTable {
 		crData = new ArrayList<CRType>();
 		showNull = true;
 //		crMatch.clear();
-		crMatch = new CRMatch(this, stat);
+		crMatch = new CRMatch(this);
 //		pubData.clear();
 		pubData = new ArrayList<PubType>();
 		creFile = null;
@@ -325,7 +323,7 @@ public class CRTable {
 				.toArray() }
 		);
 		
-		stat.setValue("", getInfoString());
+		StatusBar.get().setValue("", getInfoString());
 	}
 		
 	

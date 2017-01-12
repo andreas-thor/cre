@@ -82,9 +82,9 @@ public class CRE_csv {
 	 * Save CR table to CSV file
 	 * @param file
 	 */
-	public static void saveCR (File file, CRTable crTab, StatusBar stat) throws IOException {
+	public static void saveCR (File file, CRTable crTab) throws IOException {
 
-		stat.initProgressbar(crTab.crData.size(), "Saving CSV file (Cited References) ...");
+		StatusBar.get().initProgressbar(crTab.crData.size(), "Saving CSV file (Cited References) ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -95,19 +95,19 @@ public class CRE_csv {
 		
 		int count = 0;
 		for (CRType cr : crTab.crData) {
-			stat.updateProgressbar(++count);
+			StatusBar.get().updateProgressbar(++count);
 			HashMap<String, String> exportCR = getCRExport(cr);
 			csv.writeNext(Arrays.stream(csvColumnsCR).map (attr -> exportCR.get(attr)).toArray(String[]::new)); 
 		}
 		
 		csv.close();
-		stat.setValue("Saving CSV file (Cited References) done", crTab.getInfoString());
+		StatusBar.get().setValue("Saving CSV file (Cited References) done", crTab.getInfoString());
 	}
 
 	
-	public static void savePub (File file, CRTable crTab, StatusBar stat) throws IOException {
+	public static void savePub (File file, CRTable crTab) throws IOException {
 
-		stat.initProgressbar(crTab.pubData.size(), "Saving CSV file (Citing Publications) ...");
+		StatusBar.get().initProgressbar(crTab.pubData.size(), "Saving CSV file (Citing Publications) ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -118,20 +118,20 @@ public class CRE_csv {
 		
 		int count = 0;
 		for (PubType pub: crTab.pubData) {
-			stat.updateProgressbar(++count);
+			StatusBar.get().updateProgressbar(++count);
 			HashMap<String, String> exportPub = getPubExport(pub, count);
 			csv.writeNext(Arrays.stream(csvColumnsPub).map (attr -> exportPub.get(attr)).toArray(String[]::new)); 
 		}
 		
 		csv.close();
-		stat.setValue("Saving CSV file (Citing Publications) done", crTab.getInfoString());
+		StatusBar.get().setValue("Saving CSV file (Citing Publications) done", crTab.getInfoString());
 	}
 	
 	
 	
-	public static void saveCRPub (File file, CRTable crTab, StatusBar stat) throws IOException {
+	public static void saveCRPub (File file, CRTable crTab) throws IOException {
 
-		stat.initProgressbar(crTab.pubData.size(), "Saving CSV file (Cited References + Citing Publications) ...");
+		StatusBar.get().initProgressbar(crTab.pubData.size(), "Saving CSV file (Cited References + Citing Publications) ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -142,7 +142,7 @@ public class CRE_csv {
 		
 		int count = 0;
 		for (PubType pub: crTab.pubData) {
-			stat.updateProgressbar(++count);
+			StatusBar.get().updateProgressbar(++count);
 			HashMap<String, String> exportPub = getPubExport(pub, count);
 			
 			for (CRType cr: pub.crList) {
@@ -156,7 +156,7 @@ public class CRE_csv {
 		}
 		
 		csv.close();
-		stat.setValue("Saving CSV file (Cited References + Citing Publications) done", crTab.getInfoString());
+		StatusBar.get().setValue("Saving CSV file (Cited References + Citing Publications) done", crTab.getInfoString());
 	}
 
 	
@@ -167,9 +167,9 @@ public class CRE_csv {
 	 * @throws IOException 
 	 */
 	
-	public static void saveGraph (File file, CRTable crTab, StatusBar stat) throws IOException {
+	public static void saveGraph (File file, CRTable crTab) throws IOException {
 
-		stat.setValue("Saving Graph as CSV file ...");
+		StatusBar.get().setValue("Saving Graph as CSV file ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -183,7 +183,7 @@ public class CRE_csv {
 		});
 				
 		csv.close();
-		stat.setValue("Saving Graph as CSV file done", crTab.getInfoString());
+		StatusBar.get().setValue("Saving Graph as CSV file done", crTab.getInfoString());
 	}
 	
 }

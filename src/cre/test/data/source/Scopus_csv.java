@@ -56,14 +56,14 @@ public class Scopus_csv  {
 
 	
 	
-	public static void load (List<File> files, CRTable crTab, StatusBar stat, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
+	public static void load (List<File> files, CRTable crTab, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 		
 		long ts1 = System.currentTimeMillis();
 		
 		crTab.abort = false;	// can be changed by "wait dialog"
 		
 		Date startDate = new Date();
-		stat.setValue(String.format("%1$s: Loading Scopus files ...", startDate), "");
+		StatusBar.get().setValue(String.format("%1$s: Loading Scopus files ...", startDate), "");
 		
 		crTab.init();
 		
@@ -181,7 +181,7 @@ public class Scopus_csv  {
 				
 				// update status bar
 				if ((countPub.get()%modulo) == 0) {
-					stat.setValue (String.format("%1$s: Loading Scopus file %2$d of %3$d", startDate, fileNr, files.size()), (int)countPub.get()*stepSize/modulo);
+					StatusBar.get().setValue (String.format("%1$s: Loading Scopus file %2$d of %3$d", startDate, fileNr, files.size()), (int)countPub.get()*stepSize/modulo);
 				}
 				
 				return pub;
@@ -191,14 +191,13 @@ public class Scopus_csv  {
 			if (crTab.abort) {
 				crTab.init();
 				crTab.updateData(false);
-				stat.setValue(String.format("%1$s: Loading Scopus files aborted (due to user request)", startDate), 0);
-				crTab.abort = false;
+				StatusBar.get().setValue(String.format("%1$s: Loading Scopus files aborted (due to user request)", startDate), 0);
 				throw new AbortedException();
 			}
 
 			// Check for maximal number of CRs
 			if ((maxCR>0) && (countCR.get()>=maxCR)) {
-				stat.setValue(String.format("$1%s: Loading Scopus files aborted (due to maximal number of CRs)", startDate), 0);
+				StatusBar.get().setValue(String.format("$1%s: Loading Scopus files aborted (due to maximal number of CRs)", startDate), 0);
 				crTab.createCRList();
 				crTab.updateData(false);
 				throw new FileTooLargeException ((int) countCR.get());
@@ -215,7 +214,7 @@ public class Scopus_csv  {
 		System.out.println("Load time is " + ((ts2-ts1)/1000d) + " seconds");
 
 		crTab.updateData(false);
-		stat.setValue(String.format("%1$s: Loading Scopus files done", startDate), crTab.getInfoString());
+		StatusBar.get().setValue(String.format("%1$s: Loading Scopus files done", startDate), crTab.getInfoString());
 	}
 	
 	
@@ -320,9 +319,9 @@ public class Scopus_csv  {
 
 
 
-	public static void save (File file, CRTable crTab, StatusBar stat) throws IOException {
+	public static void save (File file, CRTable crTab) throws IOException {
 		
-		stat.initProgressbar(crTab.pubData.size(), "Saving Scopus file ...");
+		StatusBar.get().initProgressbar(crTab.pubData.size(), "Saving Scopus file ...");
 		int count = 0;
 
 		// add csv extension if necessary
@@ -398,13 +397,13 @@ public class Scopus_csv  {
 					
 			csv.writeNext ((String[]) row.toArray(new String[row.size()]));
 		
-			stat.updateProgressbar(++count);
+			StatusBar.get().updateProgressbar(++count);
 		}
 					
 			
 		csv.close();
 
-		stat.setValue(String.format("%1$s: Saving Scopus file done", new Date()), crTab.getInfoString());
+		StatusBar.get().setValue(String.format("%1$s: Saving Scopus file done", new Date()), crTab.getInfoString());
 	}
 	
 	

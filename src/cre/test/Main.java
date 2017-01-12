@@ -2,9 +2,8 @@ package cre.test;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +14,7 @@ import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRTable;
 import cre.test.data.CRType;
+import cre.test.data.source.CRE_csv;
 import cre.test.data.source.CRE_json;
 import cre.test.data.source.Scopus_csv;
 import cre.test.data.source.WoS_txt;
@@ -24,42 +24,78 @@ import cre.test.ui.StatusBar;
 import cre.test.ui.UserSettings;
 import cre.test.ui.UserSettings.RangeType;
 import cre.test.ui.dialog.ConfirmAlert;
+import cre.test.ui.dialog.ExceptionStacktrace;
 import cre.test.ui.dialog.Info;
 import cre.test.ui.dialog.Range;
 import cre.test.ui.dialog.Settings;
 import cre.test.ui.dialog.Threshold;
+import cre.test.ui.dialog.Wait;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.WindowEvent;
 
 public class Main {
 
-	StatusBar stat;
+	
+	public static enum ImportFormat { 
+		CRE_JSON ("Open CRE File", false, new ExtensionFilter("Cited References Explorer", Arrays.asList(new String[]{"*.cre"}))), 
+		WOS_TXT ("Import Web of Science Files", true, new ExtensionFilter("Web of Science", Arrays.asList(new String[]{"*.txt"}))),
+		SCOPUS_CSV ("Import Scopus Files", true, new ExtensionFilter("Scopus", Arrays.asList(new String[]{"*.csv"})));
+		
+		public final String label;
+		public boolean multiple;
+		public ExtensionFilter filter;
+		ImportFormat(String label, boolean multiple, ExtensionFilter filter) {
+			this.label = label;
+			this.multiple = multiple;
+			this.filter = filter;
+		}
+	};
+	
+	public static enum ExportFormat { 
+		CRE_JSON ("Save CRE File", new ExtensionFilter("Cited References Explorer", Arrays.asList(new String[]{"*.cre"}))), 
+		WOS_TXT ("Export Web of Science File", new ExtensionFilter("Web of Science", Arrays.asList(new String[]{"*.txt"}))),
+		SCOPUS_CSV ("Export Scopus File", new ExtensionFilter("Scopus", Arrays.asList(new String[]{"*.csv"}))),
+		CRE_CSV_CR ("Export Cited References", new ExtensionFilter("Cited References Explorer", Arrays.asList(new String[]{"*.csv"}))),
+		CRE_CSV_PUB ("Export Citing Publications", new ExtensionFilter("Cited References Explorer", Arrays.asList(new String[]{"*.csv"}))),
+		CRE_CSV_CR_PUB ("Export Cited References + Citing Publications", new ExtensionFilter("Cited References Explorer", Arrays.asList(new String[]{"*.csv"}))),
+		CRE_CSV_GRAPH ("Export Graph", new ExtensionFilter("Cited References Explorer", Arrays.asList(new String[]{"*.csv"})));
+		
+		public final String label;
+		public ExtensionFilter filter;
+		ExportFormat(String label, ExtensionFilter filter) {
+			this.label = label;
+			this.filter = filter;
+		}
+	};
+	
+	
 	CRTable crTable;
 	CRChart crChart;
 	
 	
 	@FXML Label lab;
 	@FXML GridPane mainPane;
-	@FXML Label sblabel;
-	@FXML ProgressBar sbpb;
-	@FXML Label sbinfo;
 	@FXML ScrollPane scrollTab;
 	@FXML CRTableView tableView;
 
 	@FXML GridPane chartPane;
 	@FXML GridPane tablePane;
+	@FXML GridPane statPane;
 	
 	
 	
@@ -76,10 +112,10 @@ public class Main {
 	
 	@FXML public void initialize() {
 	
-		stat = new StatusBar(sblabel, sbpb, sbinfo);
+		statPane.add(StatusBar.get(), 0, 0);
 				
 
-		crTable = new CRTable(stat, new EventCRFilter() {
+		crTable = new CRTable(new EventCRFilter() {
 			@Override
 			public void onUpdate(Integer yearMin, Integer yearMax) {
 
@@ -102,24 +138,43 @@ public class Main {
 		crChart = new CRChart(crTable, tableView);
 		chartPane.add(crChart.getViewer(), 0, 0);
 		
+		// save user settings when exit
+		CitedReferencesExplorer.stage.setOnCloseRequest(event -> {  
+			
+			event.consume();
+			Alert exit = new Alert(AlertType.CONFIRMATION);
+			exit.setTitle ("Warning");
+			exit.setHeaderText("Save before exit?");
+			exit.getDialogPane().getButtonTypes().clear();
+			exit.getDialogPane().getButtonTypes().addAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+			((Button) exit.getDialogPane().lookupButton(ButtonType.YES)).setDefaultButton (false);
+			((Button) exit.getDialogPane().lookupButton(ButtonType.CANCEL)).setDefaultButton (true);
+			exit.showAndWait().ifPresent(button -> {
+				
+			});;
+			
+			
+			UserSettings.get().saveUserPrefs(CitedReferencesExplorer.stage.getWidth(), CitedReferencesExplorer.stage.getHeight(), CitedReferencesExplorer.stage.getX(), CitedReferencesExplorer.stage.getY()); 
+			
+//			CitedReferencesExplorer.stage.show();
+		});
+
 
 		
 	}
 	
 
     
-    private void openFile (String source, String title, boolean multipleFiles, FileFilter filter) throws IOException {
+    private void openFile (ImportFormat source) throws IOException {
     	
     	FileChooser fileChooser = new FileChooser();
-    	fileChooser.setTitle(title);
-    	
-    	// set initial directory
-    	if (UserSettings.get().getLastFileDir().exists()) {
-    		fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
-    	}
+    	fileChooser.setTitle(source.label);
+   		fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
+    	fileChooser.getExtensionFilters().add(source.filter); 
+    	fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[]{"*.*"})));
     	
     	final List<File> files = new ArrayList<File>();
-    	if (multipleFiles) {
+    	if (source.multiple) {
     		List<File> selFiles = fileChooser.showOpenMultipleDialog(CitedReferencesExplorer.stage);
     		if (selFiles != null) files.addAll(selFiles);
     	} else {
@@ -127,86 +182,73 @@ public class Main {
     		if (selFile != null) files.add(selFile);
     	}
     	
-    	
     	if (files.size()>0) {
-    		
-    		// save last directory to be used as initial directory
-    		UserSettings.get().setLastFileDir(files.get(0).getParentFile());
-    		
-			Runnable runnable = new Runnable() {
-				public void run() {
-					try { 
-						switch (source) {
-							case "CRE_json": CRE_json.load (files.get(0), crTable, stat); break;
-							case "WoS_txt": WoS_txt.load(files, crTable, stat, UserSettings.get().getMaxCR(), UserSettings.get().getRange(RangeType.ImportYearRange)); break;
-							case "Scopus_csv": Scopus_csv.load(files, crTable, stat, UserSettings.get().getMaxCR(), UserSettings.get().getRange(RangeType.ImportYearRange)); break;
-					}
-						
-					} catch (FileTooLargeException e1) {
-						Platform.runLater( () -> {
-							new ConfirmAlert("Error during file import!", true, new String[] {String.format("You try to import too many cited references. Import was aborted after loading %d Cited References. You can change the maximum number in the File > Settings > Import menu. ", e1.numberOfCRs)}).showAndWait();
-						});
-					} catch (UnsupportedFileFormatException e4) {
-						Platform.runLater( () -> {
-							new ConfirmAlert("Error during file import!", true, new String[] {"Unsupported File Format."}).showAndWait();
-						});
-					} catch (AbortedException e2) {
-						Platform.runLater( () -> {
-							new ConfirmAlert("Error during file import!", true, new String[] {"File Import aborted."}).showAndWait();
-						});
-					} catch (OutOfMemoryError mem) {
-						crTable.init();
-						Platform.runLater( () -> {
-							new ConfirmAlert("Error during file import!", true, new String[] {"Out of Memory Error."}).showAndWait();
-						});
-					} catch (Exception e3) {
-						Platform.runLater( () -> {
-
-							Alert alert = new Alert(AlertType.ERROR, "Exception while loading file!");
-	
-							StringWriter sw = new StringWriter();
-							PrintWriter pw = new PrintWriter(sw);
-							e3.printStackTrace(pw);
-	
-							TextArea textArea = new TextArea(sw.toString());
-							textArea.setEditable(false);
-							textArea.setWrapText(true);
-	
-							textArea.setMaxWidth(Double.MAX_VALUE);
-							textArea.setMaxHeight(Double.MAX_VALUE);
-							GridPane.setVgrow(textArea, Priority.ALWAYS);
-							GridPane.setHgrow(textArea, Priority.ALWAYS);
-	
-							GridPane expContent = new GridPane();
-							expContent.setMaxWidth(Double.MAX_VALUE);
-							expContent.add(new Label("The exception stacktrace was:"), 0, 0);
-							expContent.add(textArea, 0, 1);
-	
-							// Set expandable Exception into the dialog pane.
-							alert.getDialogPane().setExpandableContent(expContent);
-	
-							alert.showAndWait();
-						});
-					}
-					
-//    						sb.showNull.selected = true
-//    						UIDialogFactory.createInfoDlg(mainFrame, crTable.getInfo()).visible = true
-//    						(tab.getModel() as AbstractTableModel).fireTableDataChanged()
-//    						uisetting.setLastDirectory((multipleFiles ? dlg.getSelectedFiles()[0] : dlg.getSelectedFile()).getParentFile() )
-				 
-					 crTable.filterByYear();
-					 Platform.runLater(() -> { OnMenuDataInfo(); });
+    		UserSettings.get().setLastFileDir(files.get(0).getParentFile());	// save last directory to be used as initial directory
+    		Wait wait = new Wait();
+    		new Thread( () -> {
+				try { 
+					switch (source) {
+						case CRE_JSON: CRE_json.load (files.get(0), crTable); break;
+						case WOS_TXT: WoS_txt.load(files, crTable, UserSettings.get().getMaxCR(), UserSettings.get().getRange(RangeType.ImportYearRange)); break;
+						case SCOPUS_CSV: Scopus_csv.load(files, crTable, UserSettings.get().getMaxCR(), UserSettings.get().getRange(RangeType.ImportYearRange)); break;
+					}	
+				} catch (FileTooLargeException e1) {
+					Platform.runLater( () -> { new ConfirmAlert("Error during file import!", true, new String[] {String.format("You try to import too many cited references. Import was aborted after loading %d Cited References. You can change the maximum number in the File > Settings > Import menu. ", e1.numberOfCRs)}).showAndWait(); });
+				} catch (UnsupportedFileFormatException e4) {
+					Platform.runLater( () -> { new ConfirmAlert("Error during file import!", true, new String[] {"Unsupported File Format."}).showAndWait(); });
+				} catch (AbortedException e2) {
+					Platform.runLater( () -> { new ConfirmAlert("Error during file import!", true, new String[] {"File Import aborted."}).showAndWait(); }); 
+				} catch (OutOfMemoryError mem) {
+					crTable.init();
+					Platform.runLater( () -> { new ConfirmAlert("Error during file import!", true, new String[] {"Out of Memory Error."}).showAndWait(); });							
+				} catch (Exception e3) {
+					Platform.runLater( () -> { new ExceptionStacktrace("Error during file import!", e3).showAndWait(); });
 				}
-			};
-			
-			Thread t = new Thread(runnable);
-			t.start();
-//    				wait.visible = true
+				
+				crTable.filterByYear();
+				Platform.runLater(() -> { 
+					wait.close(); 
+					if (!crTable.abort) {
+						OnMenuDataInfo(); 
+					}
+				});
+			}).start();
+    		
+    		wait.showAndWait().ifPresent(cancel -> { crTable.abort=cancel; }); 
 		
 		}
-    	
-    		
     }
+    
+    
+    private void saveFile (ExportFormat source) throws IOException {
+
+    	FileChooser fileChooser = new FileChooser();
+    	fileChooser.setTitle(source.label);
+   		fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
+    	fileChooser.getExtensionFilters().add(source.filter); 
+    	fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[]{"*.*"})));
+
+   		File selFile = fileChooser.showSaveDialog(CitedReferencesExplorer.stage);
+   		if (selFile != null) {
+   			
+   			new Thread( () -> {
+   				try {
+		   			switch (source) {
+			   			case CRE_JSON: CRE_json.save(selFile, crTable); break;
+						case WOS_TXT: WoS_txt.save(selFile, crTable); break;
+						case SCOPUS_CSV: Scopus_csv.save(selFile, crTable); break;
+						case CRE_CSV_CR: CRE_csv.saveCR(selFile, crTable); break;
+						case CRE_CSV_PUB: CRE_csv.savePub(selFile, crTable); break;
+						case CRE_CSV_CR_PUB: CRE_csv.saveCRPub(selFile, crTable); break;
+						case CRE_CSV_GRAPH: CRE_csv.saveGraph(selFile, crTable); break;
+		   			}
+   				} catch (Exception e) {
+					Platform.runLater( () -> { new ExceptionStacktrace("Error during file export!", e).showAndWait(); });
+				}
+   			}).start();
+   		}
+    }
+    
     
     
     /*
@@ -214,46 +256,44 @@ public class Main {
      */
     
 	@FXML public void OnMenuFileOpen() throws IOException {
-		 openFile("CRE_json", "Open CRE File", false, null);
+		 openFile(ImportFormat.CRE_JSON);
 	}
 
 	@FXML public void OnMenuFileImportWoS(ActionEvent event) throws IOException {
-		 openFile("WoS_txt", "Import Web of Science Files", true, null);
+		 openFile(ImportFormat.WOS_TXT);
 	}
 
 	@FXML public void OnMenuFileImportScopus(ActionEvent event) throws IOException {
-		 openFile("Scopus_csv", "Import Scopus Files", true, null);
-	}
-	
-
-	@FXML public void OnMenuFileSave() {
-		
+		 openFile(ImportFormat.SCOPUS_CSV);
 	}
 
-
-
-	@FXML public void OnMenuFileSaveAs() {
-		
-		
+	@FXML public void OnMenuFileSave() throws IOException {
+		saveFile(ExportFormat.CRE_JSON);
 	}
 
-	@FXML public void OnMenuFileExportWoS() {}
+	@FXML public void OnMenuFileSaveAs() throws IOException {
+		saveFile(ExportFormat.CRE_JSON);
+	}
 
+	@FXML public void OnMenuFileExportWoS() throws IOException {
+		saveFile(ExportFormat.WOS_TXT);
+	}
 
+	@FXML public void OnMenuFileExportScopus() throws IOException {
+		saveFile(ExportFormat.SCOPUS_CSV);
+	}
 
-	@FXML public void OnMenuFileExportScopus() {}
+	@FXML public void OnMenuFileExportCSVCR() throws IOException {
+		saveFile(ExportFormat.CRE_CSV_CR);
+	}
 
+	@FXML public void OnMenuFileExportCSVPub() throws IOException {
+		saveFile(ExportFormat.CRE_CSV_PUB);
+	}
 
-
-	@FXML public void OnMenuFileExportCSVCR() {}
-
-
-
-	@FXML public void OnMenuFileExportCSVPub() {}
-
-
-
-	@FXML public void OnMenuFileExportCSVAll() {}
+	@FXML public void OnMenuFileExportCSVAll() throws IOException {
+		saveFile(ExportFormat.CRE_CSV_CR_PUB);
+	}
 	
 	
 	
@@ -267,6 +307,10 @@ public class Main {
 		);
 	}
 	
+	@FXML public void OnMenuFileExit() {
+		CitedReferencesExplorer.stage.fireEvent(new WindowEvent(CitedReferencesExplorer.stage, WindowEvent.WINDOW_CLOSE_REQUEST));
+	}
+
 
 	
 	/*
@@ -402,6 +446,9 @@ public class Main {
 			}
 		);
 	}
+
+
+
 
 
 

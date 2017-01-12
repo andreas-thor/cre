@@ -42,7 +42,7 @@
 					<SeparatorMenuItem />
 					<MenuItem text="Settings..." onAction="#OnMenuFileSettings"/>
 					<SeparatorMenuItem />
-					<MenuItem text="Exit" accelerator="Alt+F4" />
+					<MenuItem text="Exit" onAction="#OnMenuFileExit"/>
 				</items>
 			</Menu>
 			<Menu text="_Data"  >
@@ -92,70 +92,22 @@
 			</GridPane>
 
 			<GridPane fx:id="tablePane">
+				<!-- here comes the list of columns dynamically -->
 
-<!-- 
-				<TableView fx:id="tableView" GridPane.columnIndex="0" minWidth="100" maxWidth="Infinity" maxHeight="Infinity" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" GridPane.rowIndex="0">
-
-					<columnResizePolicy>
-						<TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-					</columnResizePolicy>
-
-					<columns>
-
-
-						<TableColumn fx:id="colVI" text="VI" visible="false" />
-						<TableColumn fx:id="colCO" text="CO" visible="false" />
-
-						<TableColumn fx:id="colID" text="ID" />
-						<TableColumn fx:id="colCR" text="CR" />
-						<TableColumn fx:id="colRPY" text="RPY" />
-						<TableColumn fx:id="colN_CR" text="N_CR" />
-						<TableColumn fx:id="colPERC_YR" text="PERC_YR" />
-						<TableColumn fx:id="colPERC_ALL" text="PERC_ALL" />
-						<TableColumn fx:id="colAU" text="AU"  />
-						<TableColumn fx:id="colAU_L" text="AU_L" />
-						<TableColumn fx:id="colAU_F" text="AU_F" />
-						<TableColumn fx:id="colAU_A" text="AU_A" />
-						<TableColumn fx:id="colTI" text="TI" />
-						<TableColumn fx:id="colJ" text="J" />
-						<TableColumn fx:id="colJ_N" text="J_N" />
-						<TableColumn fx:id="colJ_S" text="J_S" />
-						<TableColumn fx:id="colVOL" text="VOL" />
-						<TableColumn fx:id="colPAG" text="PAG" />
-						<TableColumn fx:id="colDOI" text="DOI" />
-						<TableColumn fx:id="colCID2" text="CID2" />
-						<TableColumn fx:id="colCID_S" text="CID_S" />
-
-						<TableColumn fx:id="colN_PYEARS" text="N_PYEARS" />
-						<TableColumn fx:id="colPYEAR_PERC" text="PYEAR_PERC" />
-
-						<TableColumn fx:id="colN_PCT50" text="N_PCT50" />
-						<TableColumn fx:id="colN_PCT75" text="N_PCT75" />
-						<TableColumn fx:id="colN_PCT90" text="N_PCT90" />
-
-						<TableColumn fx:id="colN_PYEARS2" text="N_PYEARS2" />
-
-
-
-
-					</columns>
-
-				</TableView>
--->
 			</GridPane>
-
-			<!-- <ScrollPane fx:id="scrollTab" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"> <content> <Pane prefHeight="382.0" prefWidth="386.0"> 
-				<children> <Label layoutX="14.0" layoutY="14.0" text="Element 1" /> <Label layoutX="14.0" layoutY="170.0" text="Element 2" /> <Label layoutX="14.0" layoutY="352.0" text="Element 3" /> </children> </Pane> 
-				</content> </ScrollPane> -->
-
 
 		</items>
 	</SplitPane>
 
-	<GridPane hgap="20" GridPane.columnIndex="0" GridPane.rowIndex="2">
-		<Label fx:id="sblabel" text="Left" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-		<ProgressBar fx:id="sbpb" GridPane.hgrow="always" maxWidth="Infinity" progress="0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-		<Label fx:id="sbinfo" text="Right" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+	<GridPane fx:id="statPane" hgap="20" GridPane.columnIndex="0" GridPane.rowIndex="2">
+	<!-- 
+		<GridPane GridPane.hgrow="always" maxWidth="Infinity" hgap="20" GridPane.columnIndex="0" GridPane.rowIndex="0">
+			<Label fx:id="sblabel" text="Left" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+			<ProgressBar fx:id="sbpb" GridPane.hgrow="always" maxWidth="Infinity" progress="0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+			<Label fx:id="sbinfo" text="Right" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+		</GridPane>
+		
+		-->
 	</GridPane>
 
 

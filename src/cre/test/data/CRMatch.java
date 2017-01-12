@@ -45,7 +45,6 @@ public class CRMatch {
 	}
 	
 	private CRTable crTab;
-	private StatusBar stat;
 	public Map <Boolean, Map<Integer, Map<Integer, Double>>> match = new HashMap<Boolean, Map<Integer, Map<Integer,Double>>>();
 	private TreeMap <Long, ArrayList<Pair>> timestampedPairs;
 	
@@ -59,9 +58,8 @@ public class CRMatch {
 	
 	
 
-	public CRMatch (CRTable crTab, StatusBar stat) {
+	public CRMatch (CRTable crTab) {
 		this.crTab = crTab;
-		this.stat = stat;
 		match = new HashMap<Boolean, Map<Integer,Map<Integer,Double>>>();
 		match.put(false, new HashMap<Integer,Map<Integer,Double>>());		// automatic match result
 		match.put(true,  new HashMap<Integer,Map<Integer,Double>>());		// manual match result
@@ -199,7 +197,7 @@ public class CRMatch {
 	public void doBlocking () throws Exception {
 		
 		// standard blocking: year + first letter of last name
-		stat.setValue(String.format("%1$s: Start Blocking of ${crTab.crData.size()} objects", new Date()), 0);
+		StatusBar.get().setValue(String.format("%1$s: Start Blocking of ${crTab.crData.size()} objects", new Date()), 0);
 		Map<String, ArrayList<Integer>> blocks = new HashMap<String, ArrayList<Integer>>();	// block key -> list of indexes (not IDs)!
 		int idx = 0;
 		for (CRType cr: crTab.crData) {
@@ -236,7 +234,7 @@ public class CRMatch {
 			ArrayList<Integer> crlist = entry.getValue();
 			
 			progCount.incrementAndGet();
-			stat.setValue(String.format("%1$s: Matching in progress ...", startdate), (int) ((100d*progCount.get())/progMax));
+			StatusBar.get().setValue(String.format("%1$s: Matching in progress ...", startdate), (int) ((100d*progCount.get())/progMax));
 			
 			// allX = List of all AU_L values;
 			List<String> allX = crlist.stream().map ( it -> crTab.crData.get(it).getAU_L().toLowerCase() ).collect (Collectors.toList());
@@ -303,7 +301,7 @@ public class CRMatch {
 		System.out.println("Match time is " + ((stop2-stop1)/100) + " deci-seconds");
 		System.out.println("TestCount == " + testCount);
 		System.out.println("CRMatch> matchresult size is " + size(false));
-		stat.setValue(String.format("%1$s: Matching done", startdate), 0);
+		StatusBar.get().setValue(String.format("%1$s: Matching done", startdate), 0);
 		
 		updateClusterId(threshold, false, false, false, false);
 	}
@@ -322,7 +320,7 @@ public class CRMatch {
 	
 	public void updateClusterId (double threshold, boolean useClustering, boolean useVol, boolean usePag, boolean useDOI) throws Exception {
 		
-		stat.setValue ("${new Date()}: Prepare clustering ...", 0);
+		StatusBar.get().setValue ("${new Date()}: Prepare clustering ...", 0);
 		
 		// initialize clustering; each objects forms its own cluster
 		// useClustering = true => re-use first cluster component
@@ -370,7 +368,7 @@ public class CRMatch {
 		for (int id1: id) {
 			
 			if (Thread.interrupted()) throw new Exception();
-			stat.setValue (String.format("%1$s: Clustering with threshold %2$f in progress ...", startdate, threshold), (int)Math.round (++count*100d/mSize));
+			StatusBar.get().setValue (String.format("%1$s: Clustering with threshold %2$f in progress ...", startdate, threshold), (int)Math.round (++count*100d/mSize));
 			
 			// for all matching range objects (id2 with id1<id2) 
 			Map<Integer, Double> tmpMap1 = match.get(false).get(id1) == null ? new HashMap<Integer, Double>() : match.get(false).get(id1);
@@ -411,7 +409,7 @@ public class CRMatch {
 			});
 		}
 		
-		stat.setValue ("Clustering done", crTab.getInfoString());
+		StatusBar.get().setValue ("Clustering done", crTab.getInfoString());
 	}
 	
 	
@@ -521,14 +519,14 @@ public class CRMatch {
 	
 	public void merge () {
 		
-		stat.setValue ("Start merging ...", 0);
+		StatusBar.get().setValue ("Start merging ...", 0);
 				
 		double progressFactor = 100d / clusterId2Objects.keySet().size();
 		int cidx = 0;
 		for (Map.Entry<CRCluster, Set<Integer>> entry: clusterId2Objects.entrySet()) {
 //		clusterId2Objects.eachWithIndex { cid, crlist, cidx ->
 			
-			stat.setValue ("Merging in progress ...", (int)(cidx*progressFactor));
+			StatusBar.get().setValue ("Merging in progress ...", (int)(cidx*progressFactor));
 			
 			if (entry.getValue().size()>1) {
 				
@@ -577,7 +575,7 @@ public class CRMatch {
 		// remove all invalidated CRs
 		crTab.crData.removeIf ( it -> { return (it.mergedTo >= 0); } );
 		crTab.updateData(true);
-		stat.setValue ("Merging done", crTab.getInfoString()); 
+		StatusBar.get().setValue ("Merging done", crTab.getInfoString()); 
 		
 	}
 	

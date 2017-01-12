@@ -35,7 +35,8 @@ public class UserSettings {
 
 	// import restrictions
 	private int maxCR = 0;
-
+	private double[] window = new double[] {800, 600, 0, 0};
+	
 	/**
 	 * Singleton pattern
 	 * 
@@ -65,7 +66,7 @@ public class UserSettings {
 			columnVisible[i].set(userPrefs.getBoolean("columnVisible" + i, true));
 		}
 
-		lastFileDir = new File(userPrefs.get("lastFileDir", ""));
+		setLastFileDir(new File(userPrefs.get("lastFileDir", "")));
 		setFormatDigits(userPrefs.getInt("formatDigits", formatDigits));
 
 		for (int i = 0; i < chartLine.length; i++) {
@@ -77,10 +78,16 @@ public class UserSettings {
 		medianRange = userPrefs.getInt("medianRange", medianRange);
 		maxCR = userPrefs.getInt("maxCR", maxCR);
 		
+		window = new double[] {
+				userPrefs.getDouble("WindowWidth", 800), 
+				userPrefs.getDouble("WindowHeight", 600),
+				userPrefs.getDouble("WindowX", 100), 
+				userPrefs.getDouble("WindowY", 100)
+		};
 		
 	}
 
-	public void saveUserPrefs() {
+	public void saveUserPrefs(double windowWidth, double windowHeight, double windowX, double windowY) {
 
 		for (RangeType r : RangeType.values()) {
 			userPrefs.putInt(r.toString() + "0", getRange(r)[0]);
@@ -102,8 +109,27 @@ public class UserSettings {
 		}
 		userPrefs.putInt("medianRange", medianRange);
 		userPrefs.putInt("maxCR", maxCR);
+		
+		userPrefs.putDouble("WindowWidth", windowWidth);
+		userPrefs.putDouble("WindowHeight", windowHeight);
+		userPrefs.putDouble("WindowX", windowX); 
+		userPrefs.putDouble("WindowY", windowY);
 	}
 
+	public double getWindowWidth () {
+		return window[0];
+	}
+	public double getWindowHeight () {
+		return window[1];
+	}
+	public double getWindowX () {
+		return window[2];
+	}
+	public double getWindowY () {
+		return window[3];
+	}
+	
+	
 	public String getFormatDigits() {
 		return String.valueOf(formatDigits);
 	}
@@ -155,6 +181,9 @@ public class UserSettings {
 
 	public void setLastFileDir(File lastFileDir) {
 		this.lastFileDir = lastFileDir;
+		if (!this.lastFileDir.exists()) {
+			this.lastFileDir = new File(System.getProperty("user.dir"));
+		}
 	}
 
 	public SimpleBooleanProperty getColumnVisibleProperty(int idx) {
