@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.jfree.chart.fx.ChartViewer;
+
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
@@ -40,9 +42,12 @@ import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.WindowEvent;
+import netscape.javascript.JSObject;
 
 public class Main {
 
@@ -93,13 +98,20 @@ public class Main {
 	@FXML GridPane tablePane;
 	@FXML GridPane statPane;
 	
-	
+	private ChartViewer chView;
+	private WebView browser;
 	
 	@FXML public void updateTable () {
 		
 		
 	}
 	
+	public class ChartCallBack  {
+		
+		public void callMe(double min, double max) {
+			System.out.println("Called me!: " + min + "/" + max);
+		}
+	}
 
 	
 	public interface EventCRFilter {
@@ -132,7 +144,21 @@ public class Main {
 		
 
 		crChart = new CRChart(crTable, tableView);
-		chartPane.add(crChart.getViewer(), 0, 0);
+		chView = crChart.getViewer();
+		chartPane.add(chView, 0, 0);
+		chView.setVisible(UserSettings.get().getChartEngine()==0);
+		
+		browser = new WebView();
+		WebEngine webEngine = browser.getEngine();
+		JSObject jsobj = (JSObject) webEngine.executeScript("window");
+		jsobj.setMember("java", new ChartCallBack());
+		webEngine.load("file:///E:/Dev/CRE/src/cre/test/ui/highcharts/CRChart.html");
+		
+		
+		chartPane.add(browser, 0, 0);
+		browser.setVisible(UserSettings.get().getChartEngine()==1);
+		
+		
 		
 		// save user settings when exit
 		CitedReferencesExplorer.stage.setOnCloseRequest(event -> {  
@@ -162,6 +188,7 @@ public class Main {
 			});
 		});
 
+		
 
 		
 	}
@@ -305,6 +332,12 @@ public class Main {
 		new Settings()
 			.showAndWait()
 			.ifPresent( noOfErrors -> {
+				
+				chView.setVisible(UserSettings.get().getChartEngine()==0);
+				browser.setVisible(UserSettings.get().getChartEngine()==1);
+
+				
+				
 				// TODO: Apply settings changes
 			}
 		);

@@ -36,6 +36,8 @@ public class UserSettings {
 	// import restrictions
 	private int maxCR = 0;
 	private double[] window = new double[] {800, 600, 0, 0};
+
+	private int chartEngine;
 	
 	/**
 	 * Singleton pattern
@@ -77,6 +79,7 @@ public class UserSettings {
 		}
 		medianRange = userPrefs.getInt("medianRange", medianRange);
 		maxCR = userPrefs.getInt("maxCR", maxCR);
+		chartEngine = userPrefs.getInt("chartEngine", 0);
 		
 		window = new double[] {
 				userPrefs.getDouble("WindowWidth", 800), 
@@ -109,6 +112,7 @@ public class UserSettings {
 		}
 		userPrefs.putInt("medianRange", medianRange);
 		userPrefs.putInt("maxCR", maxCR);
+		userPrefs.putInt("chartEngine", chartEngine);
 		
 		userPrefs.putDouble("WindowWidth", windowWidth);
 		userPrefs.putDouble("WindowHeight", windowHeight);
@@ -272,6 +276,13 @@ public class UserSettings {
 		}
 	}
 
+	public int getChartEngine() {
+		return this.chartEngine;
+	}
+
+	public void setChartEngine (int chartEngine) {
+		this.chartEngine = chartEngine;
+	}
 
 
 

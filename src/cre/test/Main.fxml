@@ -91,6 +91,7 @@
 				</GridPane>
 			</GridPane>
 
+
 			<GridPane fx:id="tablePane">
 				<!-- here comes the list of columns dynamically -->
 

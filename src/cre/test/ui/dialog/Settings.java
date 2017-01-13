@@ -14,11 +14,13 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -33,6 +35,7 @@ public class Settings extends Dialog<Integer> {
 	private final TextField[] tfLine = new TextField[2];
 	private final TextField tfMedian = new TextField();
 	private final TextField[] tfImport = new TextField[3];
+	private final RadioButton[] rbChart = new RadioButton[2];
 	
 	public Settings() throws IOException {
 		// TODO Auto-generated constructor stub
@@ -51,6 +54,7 @@ public class Settings extends Dialog<Integer> {
 		VBox tabChart = new VBox(10);
 		tabChart.setPadding (new Insets(20, 20, 20, 20));
 		tabChart.getChildren().add(new TitledPane("Chart Layout", createChartLayoutPane()));
+		tabChart.getChildren().add(new TitledPane("Chart Engine", createChartEnginePane()));
 		tpane.getTabs().add(new Tab("Chart", tabChart));
 
 		VBox tabImport = new VBox(10);
@@ -77,6 +81,8 @@ public class Settings extends Dialog<Integer> {
 		    	noOfErrors += UserSettings.get().setMedianRange(tfMedian.getText());
 		    	noOfErrors += UserSettings.get().setMaxCR(tfImport[0].getText());
 		    	noOfErrors += UserSettings.get().setRange(UserSettings.RangeType.ImportYearRange, new String[] { tfImport[1].getText(), tfImport[2].getText()} );
+		    	UserSettings.get().setChartEngine(rbChart[0].isSelected() ? 0 : 1);
+		    	
 		    	
 		    	if (noOfErrors>0) {	// if result == 0 --> no adjustments, otherwise errors (parseInt) or invalid values (e.g., <0)
 
@@ -92,6 +98,27 @@ public class Settings extends Dialog<Integer> {
 		    }
 		    return null;
 		});
+		
+	}
+	
+	
+	private GridPane createChartEnginePane() {
+		
+		GridPane result =  new GridPane();
+		result.setHgap(10);
+		result.setVgap(10);
+		result.setPadding(new Insets(20, 20, 20, 20));
+		
+		final ToggleGroup group = new ToggleGroup();
+		String[] label = new String[] { "JFreeChart", "ChartJS"};
+		for (int i=0; i<label.length; i++) {
+			rbChart[i] = new RadioButton(label[i]);
+			rbChart[i].setSelected(UserSettings.get().getChartEngine()==i);
+			rbChart[i].setToggleGroup(group);
+			result.add(rbChart[i], 0, i);			
+		}
+
+		return result;
 		
 	}
 	
