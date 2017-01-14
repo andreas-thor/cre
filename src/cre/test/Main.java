@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jfree.chart.fx.ChartViewer;
 
@@ -19,6 +20,8 @@ import cre.test.data.source.CRE_json;
 import cre.test.data.source.Scopus_csv;
 import cre.test.data.source.WoS_txt;
 import cre.test.ui.CRChart;
+import cre.test.ui.CRChart_HighCharts;
+import cre.test.ui.CRChart_JFreeChart;
 import cre.test.ui.CRTableView;
 import cre.test.ui.StatusBar;
 import cre.test.ui.UserSettings;
@@ -86,8 +89,7 @@ public class Main {
 	
 	
 	CRTable crTable;
-	CRChart crChart;
-	
+	CRChart crChart[] = new CRChart[2];
 	
 	@FXML Label lab;
 	@FXML GridPane mainPane;
@@ -98,20 +100,14 @@ public class Main {
 	@FXML GridPane tablePane;
 	@FXML GridPane statPane;
 	
-	private ChartViewer chView;
-	private WebView browser;
+
 	
 	@FXML public void updateTable () {
 		
 		
 	}
 	
-	public class ChartCallBack  {
-		
-		public void callMe(double min, double max) {
-			System.out.println("Called me!: " + min + "/" + max);
-		}
-	}
+
 
 	
 	public interface EventCRFilter {
@@ -131,33 +127,22 @@ public class Main {
 					@Override
 					public void run() {
 						tableView.setItems(FXCollections.observableArrayList(crTable.crData.stream().filter(cr -> cr.getVI()).collect(Collectors.toList())));
-						crChart.adjustDomainRange (yearMin, yearMax);
-											}
+						Stream.of(crChart).forEach (it -> { it.setDomainRange (yearMin, yearMax); });
+					}
 				});
 			}
 		});
 		
 		
 		tableView = new CRTableView();
-		
 		tablePane.add (tableView, 0, 0);
 		
 
-		crChart = new CRChart(crTable, tableView);
-		chView = crChart.getViewer();
-		chartPane.add(chView, 0, 0);
-		chView.setVisible(UserSettings.get().getChartEngine()==0);
-		
-		browser = new WebView();
-		WebEngine webEngine = browser.getEngine();
-		JSObject jsobj = (JSObject) webEngine.executeScript("window");
-		jsobj.setMember("java", new ChartCallBack());
-		webEngine.load("file:///E:/Dev/CRE/src/cre/test/ui/highcharts/CRChart.html");
-		
-		
-		chartPane.add(browser, 0, 0);
-		browser.setVisible(UserSettings.get().getChartEngine()==1);
-		
+		crChart = new CRChart[] { new CRChart_JFreeChart(tableView), new CRChart_HighCharts() };
+		for (int i=0; i<crChart.length; i++) {
+			chartPane.add(crChart[i].getNode(), 0, 0);
+			crChart[i].setVisible(UserSettings.get().getChartEngine()==i);
+		}
 		
 		
 		// save user settings when exit
@@ -240,6 +225,7 @@ public class Main {
 					wait.close(); 
 					if (!crTable.abort) {
 						OnMenuDataInfo(); 
+						Stream.of(crChart).forEach (it -> { it.updateData(crTable.getChartData()); });
 					}
 				});
 			}).start();
@@ -333,9 +319,9 @@ public class Main {
 			.showAndWait()
 			.ifPresent( noOfErrors -> {
 				
-				chView.setVisible(UserSettings.get().getChartEngine()==0);
-				browser.setVisible(UserSettings.get().getChartEngine()==1);
-
+				for (int i=0; i<crChart.length; i++) {
+					crChart[i].setVisible(UserSettings.get().getChartEngine()==i);
+				}
 				
 				
 				// TODO: Apply settings changes

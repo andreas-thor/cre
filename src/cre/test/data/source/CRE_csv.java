@@ -14,6 +14,7 @@ import cre.test.data.CRTable;
 import cre.test.data.CRType;
 import cre.test.data.PubType;
 import cre.test.ui.StatusBar;
+import cre.test.ui.UserSettings;
 
 public class CRE_csv {
 
@@ -176,11 +177,12 @@ public class CRE_csv {
 		if (!file_name.endsWith(".csv")) file_name += ".csv";
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
-		csv.writeNext(new String[] {"Year", "NCR", String.format("Median-%d", 2*crTab.getMedianRange()+1)});
+		csv.writeNext(new String[] {"Year", "NCR", String.format("Median-%d", 2*UserSettings.get().getMedianRange()+1)});
 		
-		crTab.getChartData().forEach ( (Integer year, int[] values) -> {
-			csv.writeNext (new String[] {year.toString(), String.valueOf(values[0]), String.valueOf(values[1])});
-		});
+		int[][] data = crTab.getChartData();
+		for (int i=0; i<data[0].length; i++) {
+			csv.writeNext (new String[] {String.valueOf(data[0][i]), String.valueOf(data[1][i]), String.valueOf(data[2][i])});
+		}
 				
 		csv.close();
 		StatusBar.get().setValue("Saving Graph as CSV file done", crTab.getInfoString());

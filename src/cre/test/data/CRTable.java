@@ -16,6 +16,7 @@ import org.jfree.data.xy.DefaultXYDataset;
 
 import cre.test.Main.EventCRFilter;
 import cre.test.ui.StatusBar;
+import cre.test.ui.UserSettings;
 import groovy.beans.Bindable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,8 +26,7 @@ public class CRTable {
 	
 	
 	
-	 
-	public @Bindable DefaultXYDataset ds  = new DefaultXYDataset();
+
 	
 	public ArrayList<CRType> crData = new ArrayList<CRType>(); 
 	public ObservableList<CRType> crDataObserved = FXCollections.observableArrayList(crData); // new   new ArrayList<CRType>();	// all CR data
@@ -43,14 +43,12 @@ public class CRTable {
 	
 	private Map<Integer, Integer> sumPerYear = new HashMap<Integer, Integer>();	// year -> sum of CRs (also for years without any CR)
 	private Map<Integer, Integer> crPerYear = new HashMap<Integer, Integer>();	// year -> number of CRs (<0, i.e., only years with >=1 CR are in the map)
-	private Map<Integer, Integer> NCRperYearMedian = new HashMap<Integer, Integer>();	// year -> median of sumPerYear[year-range] ... sumPerYear[year+range]   
 	
 	public CRMatch crMatch;
 	
 	private EventCRFilter eventFilter;
 	
 	
-	private int medianRange;
 	public File creFile;
 	
 	
@@ -260,7 +258,7 @@ public class CRTable {
 		});
 		*/
 		
-		generateChart();
+//		generateChart();
 		duringUpdate = false;
 		
 		System.out.println(System.currentTimeMillis());
@@ -268,79 +266,72 @@ public class CRTable {
 	}
 
 	
-	public void generateChart () {
-		generateChart (-1);
-	}
+//	public void generateChart () {
+//		generateChart (-1);
+//	}
 	
-	public void generateChart (int medianRange) {
+	public int[][] getChartData () {
 		
-		if (medianRange>0) {
-			this.medianRange = medianRange;
-		}
+//		if (medianRange>0) {
+//			this.medianRange = medianRange;
+//		}
 		
+		
+		final Map<Integer, Integer> NCRperYearMedian = new HashMap<Integer, Integer>();	// year -> median of sumPerYear[year-range] ... sumPerYear[year+range]   
+		final int medianRange = UserSettings.get().getMedianRange();
 		// generate data rows for chart
-		NCRperYearMedian = new HashMap<Integer, Integer>();
 		sumPerYear.forEach ((y, crs) -> {
 			
-			int median =  IntStream.rangeClosed(-this.medianRange, +this.medianRange)
+			int median =  IntStream.rangeClosed(-medianRange, +medianRange)
 				.map( it -> { return (sumPerYear.get(y+it)==null) ? 0 : sumPerYear.get(y+it);})
 				.sorted()
-				.toArray()[this.medianRange];
+				.toArray()[medianRange];
 			NCRperYearMedian.put(y, crs - median);
 		});
 		
 		System.out.println(System.currentTimeMillis());
 		
-		while (ds.getSeriesCount()>0) {
-			ds.removeSeries(ds.getSeriesKey(ds.getSeriesCount()-1));
-		}
-		
-		
-		// generate chart lines
-		ds.addSeries("Number of Cited References", new double[][] { 
-			sumPerYear.entrySet().stream()
-				.sorted(Map.Entry.comparingByKey())
-				.map(it -> { return it.getKey(); })
-				.mapToDouble(Double::valueOf)
-				.toArray(),
-			sumPerYear.entrySet().stream()
-				.sorted(Map.Entry.comparingByKey())
-				.map(it -> { return it.getValue(); })
-				.mapToDouble(Double::valueOf)
-				.toArray() }
-		);
-		
-		ds.addSeries(String.format("Deviation from the %1$d-Year-Median", 2*this.medianRange+1), new double[][] { 
-			NCRperYearMedian.entrySet().stream()
-				.sorted(Map.Entry.comparingByKey())
-				.map(it -> { return it.getKey(); })
-				.mapToDouble(Double::valueOf)
-				.toArray(),
-			NCRperYearMedian.entrySet().stream()
-				.sorted(Map.Entry.comparingByKey())
-				.map(it -> { return it.getValue(); })
-				.mapToDouble(Double::valueOf)
-				.toArray() }
-		);
-		
 		StatusBar.get().setValue("", getInfoString());
-	}
-		
-	
-	public Map<Integer, int[]> getChartData () {
-		
-		return NCRperYearMedian.keySet()
-			.stream()
-			.collect (Collectors.toMap(
-				year -> year, 
-				year -> new int[] { sumPerYear.getOrDefault(year, 0), NCRperYearMedian.getOrDefault(year, 0)} ));
 
+		return new int[][] {
+			
+			// sorted years = domain
+			sumPerYear.entrySet().stream()
+			.sorted(Map.Entry.comparingByKey())
+			.map(it -> { return it.getKey(); })
+			.mapToInt(Integer::valueOf)
+			.toArray(),
+			
+			// number of CRs per Year
+			sumPerYear.entrySet().stream()
+			.sorted(Map.Entry.comparingByKey())
+			.map(it -> { return it.getValue(); })
+			.mapToInt(Integer::valueOf)
+			.toArray() ,
+			
+			sumPerYear.entrySet().stream()
+			.sorted(Map.Entry.comparingByKey())
+			.map(it -> { return it.getValue(); })
+			.mapToInt(Integer::valueOf)
+			.toArray()
+			
+			// Difference to median
+//			sumPerYear.entrySet().stream()
+//			.sorted(Map.Entry.comparingByKey())
+//			.map(it -> { return NCRperYearMedian.get(it); })
+//			.mapToInt(Integer::valueOf)
+//			.toArray()
+		};
+			
+		
+		
+		
+		
 	}
+		
 	
-	public int getMedianRange() {
-		return this.medianRange;
-	}
-	
+		
+
 
 	
 	/**
@@ -373,15 +364,7 @@ public class CRTable {
 	}
 	
 
-	/**
-	 * Tooltip information for chart	
-	 * @param year 
-	 * @return
-	 */
-	public String getTooltip (Integer year) {
-		return String.format("Year=%1$d, N_CR=%2$d", year, sumPerYear.get(year));
-	}
-	
+
 	
 	
 	/**
