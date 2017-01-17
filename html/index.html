@@ -4,7 +4,7 @@
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 <link rel="icon" href="favicon.ico" type="image/x-icon">
 <title>CRExplorer - Cited References Explorer</title>
-
+<meta charset="utf-8" />
 <script>
 	function showSection(n) {
 		var x = document.getElementsByClassName("section");
@@ -49,64 +49,89 @@
 			The CRExplorer is a new software development which is based on the
 			programs provided at <a
 				href="http://www.leydesdorff.net/software/rpys/">Loet
-				Leydesdorff’s homepage</a>.
+				Leydesdorffâ€™s homepage</a>.
 		</p>
-		<p>
-			The CRExplorer uses data from Web of Science (Thomson Reuters) or
-			Scopus (Elsevier) as input. Publication sets have to be downloaded
+
+		<p>The CRExplorer uses data from Web of Science (Thomson Reuters)
+			or Scopus (Elsevier) as input. Publication sets have to be downloaded
 			including the references cited. The program focusses on the analysis
 			of the cited references, in particular on the referenced publication
 			years. Over time, "citation classics" of a field become more
 			pronounced. When the aggregated citations are plotted along the time
-			axis, one obtains a "spectrogram" with peaks. CRExplorer visualizes
-			this spectrogram, cleans the cited references (so-called
+			axis, one obtains a "spectrogram" with distinct peaks. CRExplorer
+			visualizes this spectrogram, cleans the cited references (so-called
 			"disambiguation"), and uses a smoothing algorithm to suppress the
-			noise. The method Reference Publication Year Spectroscopy (RPYS) was
-			developed by Werner Marx who used it for the first time in the <a
-				href="http://www.rmets.org/sites/default/files/hisnews1003.pdf">field
-				of meteorology (see his study on page 11)</a>.
+			noise.</p>
+
+
+		<p>
+			The method Reference Publication Year Spectroscopy (RPYS) was
+			developed by Werner Marx, who used it for the first time in the field
+			of meteorology (<a
+				href="http://www.rmets.org/sites/default/files/hisnews1003.pdf">see
+				his study on page 11</a>). For demonstration of the potential of the
+			method, figure 1 shows the citation classics concerning the discovery
+			of the â€œgreenhouse effectâ€, a basic component of climate change.
 		</p>
 
 		<figure>
 			<img src="fig1.png" alt="Figure 1">
 			<figcaption>
-				<i>Figure 1: Three citation classics of “climate change”
-					appearing as peaks in the spectrogram</i>
+				<i>Figure 1: Citation classics concerning the discovery of the
+					â€œgreenhouse effectâ€ and appearing as peaks in the spectrogram
+					provided by the CRExplorer.</i>
 			</figcaption>
 		</figure>
 
-		<p>Figure 1, for example, shows three pronounced peaks during the
-			19th century, and a few smaller ones during the first half of the
-			20th century. We first downloaded from the Web of Science 1,413
-			publications containing "carbon dioxide" and "climate" as title
-			words. These papers contain 35,679 references to publications
-			published during 133 years. The graph produced by the CRExplorer
-			shows three distinct peaks in 1861, 1896, and 1899, respectively.</p>
+		<p>We downloaded from the Web of Science 3,244 publications
+			containing the term "greenhouse effectâ€ in the title or in the
+			abstract or as a keyword. These papers contain 81,126 references to
+			publications published over 379 years. The graph produced by the
+			CRExplorer shows three distinct peaks during the 19th century and a
+			few others during the first half of the 20th century.</p>
 
-		<p>These three peaks go back to the following publications:</p>
+		<p>The first three pronounced peaks go back to the following
+			publications:</p>
 
 		<ul>
-			<li>Tyndall's (1861) paper, entitled "On the absorption and
+			<li>Fourierâ€™s 1927 paper, entitled "MÃ©moire sur les tempÃ©ratures
+				du globe terrestre et des espaces planÃ©taires", can be seen as the
+				first decisive publication. Fourier found that the earth is warmer
+				than expected. He attributed this to the phenomenon that the earthâ€™s
+				atmosphere is transparent for solar radiation but not for the
+				infrared radiation from the ground. Thus, he discovered the
+				(natural) greenhouse effect.</li>
+			<li>Tyndall's (1861) study, entitled "On the absorption and
 				radiation of heat by gases and vapours, and on the physical
 				connexion of radiation, absorption, and conduction", proved that the
-				earth's atmosphere has a greenhouse effect and concluded that water
+				earth's atmosphere has a greenhouse effect. He concluded that water
 				vapour is the principal gas controlling air temperature.</li>
 			<li>Arrhenius (1896, entitled "On the influence of carbonic acid
-				in the air upon the temperature of the ground") was the first study
-				with a calculation of how changes in the levels of carbon dioxide in
-				the atmosphere can alter the surface temperature through the
-				greenhouse effect.</li>
-			<li>Chamberlin's (1899) study, entitled "An attempt to frame a
-				working hypothesis of the cause of glacial periods on an atmospheric
-				basis", argued that the glacial periods could result from changes in
-				the concentration of atmospheric carbon dioxide.</li>
+				in the air upon the temperature of the ground") published the first
+				study with a calculation of how changes in the levels of carbon
+				dioxide in the atmosphere can alter the surface temperature through
+				the greenhouse effect.</li>
+
 		</ul>
 
-		<p>In sum, the discovery of the earth’s greenhouse effect and the
-			role of carbon dioxide and water vapor as greenhouse gases are no
-			recent findings but date back to the second half of the nineteenth
-			century.
-		<p />
+		<p>The subsequently following peaks can be assigned to the works
+			of Chamberlin (1898), Arrhenius (1908), and Callendar (1938, 1949).
+			These are citation classics in the climate change literature. They
+			deal with the possibility that climatic change results from changes
+			in the concentration of atmospheric carbon dioxideâ€”thereby supporting
+			the calculationtheory of Arrhenius. Whereas Chamberlin (1898) and
+			Callendar (1938, 1949) have been written for scientists, Arrhenius
+			(1908) book was directed at a general audience.</p>
+
+		<p>
+			In sum, the discovery of the earthâ€™s greenhouse effect and the role
+			of carbon dioxide and water vapor as greenhouse gases are no recent
+			findings but date back to the beginning of the nineteenth century.
+			(See <a
+				href="http://link.springer.com/article/10.1007/s11192-016-2177-x">here</a>
+			for more information.)
+		</p>
+
 	</div>
 
 
@@ -145,22 +170,22 @@
 				CRExplorer</a> for a detailed description):
 		</p>
 		<ul>
-			<li><b>Scopus</b>: Using “File” – “Import” – “Scopus”,
-				CRExplorer reads files from Scopus. The file format “CSV” (including
+			<li><b>Scopus</b>: Using â€œFileâ€ â€“ â€œImportâ€ â€“ â€œScopusâ€,
+				CRExplorer reads files from Scopus. The file format â€œCSVâ€ (including
 				citations, abstracts and references) should be chosen in Scopus for
 				downloading records.</li>
-			<li><b>Export facilities</b>: Using “File” – “Export” –
-				“Scopus”, CRExplorer exports files in the Scopus format. Using
-				“File” – “Export” – “Web of Science”, CRExplorer exports files in
+			<li><b>Export facilities</b>: Using â€œFileâ€ â€“ â€œExportâ€ â€“
+				â€œScopusâ€, CRExplorer exports files in the Scopus format. Using
+				â€œFileâ€ â€“ â€œExportâ€ â€“ â€œWeb of Scienceâ€, CRExplorer exports files in
 				the Web of Science format. These files can be imported in other
 				bibliometric programs (e.g. VOSviewer).</li>
 			<li><b>Space bar</b>: Select a specific cited reference in the
 				cited references table, press the space bar, and all bibliographic
 				details of the CR are shown.</li>
-			<li><b>Internal file format</b>: Using “File” – “Save”, working
-				files are saved in the internal file format “*.cre”. The files
+			<li><b>Internal file format</b>: Using â€œFileâ€ â€“ â€œSaveâ€, working
+				files are saved in the internal file format â€œ*.creâ€. The files
 				include all data including matching results and manual matching
-				corrections. The files can be opened by using “File” – “Open”.</li>
+				corrections. The files can be opened by using â€œFileâ€ â€“ â€œOpenâ€.</li>
 		</ul>
 
 
@@ -168,8 +193,8 @@
 			version includes the following new features and improvements:</p>
 		<ul>
 			<li><b>Co-Citation</b>: If the user marks at least one cited
-				reference in the table and selects “Data” – “Retain Publications
-				Citing Selected Cited References”, all cited references which are
+				reference in the table and selects â€œDataâ€ â€“ â€œRetain Publications
+				Citing Selected Cited Referencesâ€, all cited references which are
 				co-cited with the marked cited reference in citing publications are
 				kept (all other cited references are dropped). See <a
 				href="http://arxiv.org/abs/1608.07960">Which early works are
@@ -261,7 +286,12 @@
 				href="http://emeraldinsight.com/doi/pdfplus/10.1108/JKM-01-2016-0019">Tracing
 					the historical origins of knowledge management issues through
 					Referenced Publication Years Spectroscopy (RPYS).</a> <br />by Ali
-				Akbar Khasseh and Reza Mokhtarpour<br /></li>
+				Akbar Khasseh and Reza Mokhtarpour<br /> <br /></li>
+			<li><a
+				href="http://link.springer.com/article/10.1007/s11192-016-2206-9">
+					Exploration into the evolution and historical roots of citation
+					analysis by referenced publication year spectroscopy </a> <br />by
+				Jianhua Hou<br /> <br /></li>
 		</ul>
 	</div>
 
