@@ -138,7 +138,7 @@ public class Main {
 		tablePane.add (tableView, 0, 0);
 		
 
-		crChart = new CRChart[] { new CRChart_JFreeChart(tableView), new CRChart_HighCharts() };
+		crChart = new CRChart[] { new CRChart_JFreeChart(crTable, tableView), new CRChart_HighCharts(crTable, tableView) };
 		for (int i=0; i<crChart.length; i++) {
 			chartPane.add(crChart[i].getNode(), 0, 0);
 			crChart[i].setVisible(UserSettings.get().getChartEngine()==i);

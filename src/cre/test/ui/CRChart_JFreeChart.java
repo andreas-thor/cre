@@ -6,15 +6,12 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.Optional;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.block.BlockBorder;
 import org.jfree.chart.entity.XYItemEntity;
-import org.jfree.chart.event.PlotChangeEvent;
-import org.jfree.chart.event.PlotChangeListener;
 import org.jfree.chart.fx.ChartViewer;
 import org.jfree.chart.fx.interaction.ChartMouseEventFX;
 import org.jfree.chart.fx.interaction.ChartMouseListenerFX;
@@ -25,24 +22,26 @@ import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
 
-import cre.test.data.CRType;
-import javafx.application.Platform;
+import cre.test.data.CRTable;
 import javafx.scene.Node;
-import javafx.scene.control.TableColumn;
 
-public class CRChart_JFreeChart implements CRChart {
+public class CRChart_JFreeChart extends CRChart {
 
 	private JFreeChart chart;
 	private ChartViewer chView;
 	 
 	private DefaultXYDataset ds;
 
+	private boolean duringRangeSet;
 
 	
-	public CRChart_JFreeChart ( CRTableView tab) {
+	public CRChart_JFreeChart (CRTable crTab, CRTableView tabView) {
 
+		super(crTab, tabView);
+		duringRangeSet = false;
+		
 		ds = new DefaultXYDataset();
-		chart = ChartFactory.createXYLineChart("", "Cited Reference Year", "Cited References", ds);
+		chart = ChartFactory.createXYLineChart("", CRChart.xAxisLabel, CRChart.yAxisLabel, ds);
 
 		chart.getLegend().setFrame(BlockBorder.NONE);
 		
@@ -83,17 +82,14 @@ public class CRChart_JFreeChart implements CRChart {
 		});
 		
 		// update table when zoom changes in chart
-		plot.addChangeListener(new PlotChangeListener() {
-			
-			@Override
-			public void plotChanged(PlotChangeEvent pcevent) {
-//				if (! crTable.duringUpdate) {	// ignore updates during data update
-//					crTable.filterByYear ((int)Math.ceil(dAxis.getLowerBound()), (int)Math.floor(dAxis.getUpperBound()));
-//				}
+		plot.addChangeListener(pcevent -> {
+			if (!duringRangeSet) {
+				System.out.println("onChange");
+				System.out.println(dAxis.getLowerBound());
+				System.out.println(dAxis.getUpperBound());
+				onYearRangeFilter(dAxis.getLowerBound(), dAxis.getUpperBound());
 			}
 		});
-		
-		
 		
 
 		chView = new ChartViewer(chart);
@@ -102,34 +98,16 @@ public class CRChart_JFreeChart implements CRChart {
 			@Override
 			public void chartMouseMoved(ChartMouseEventFX arg0) {
 				// TODO Auto-generated method stub
-				
 			}
 			
 			@Override
 			public void chartMouseClicked(ChartMouseEventFX cmevent) {
-				
-					if (cmevent.getEntity() instanceof XYItemEntity) {
-					
+				if (cmevent.getEntity() instanceof XYItemEntity) {
 					/* get year (domain value) of clicked data item */
 					XYItemEntity a = (XYItemEntity) cmevent.getEntity();
 					int year = a.getDataset().getX(a.getSeriesIndex(), a.getItem()).intValue();
-					
-					/* sort by year ASC, n_cr desc */
-					Platform.runLater( new Runnable() {
-						@Override
-						public void run() {
-							tab.getColumnByName("RPY").setSortType(TableColumn.SortType.ASCENDING);
-							tab.getColumnByName("N_CR").setSortType(TableColumn.SortType.DESCENDING);
-							tab.getSortOrder().clear();
-							tab.getSortOrder().add(tab.getColumnByName("RPY"));
-							tab.getSortOrder().add(tab.getColumnByName("N_CR"));
-							Optional<CRType> first = tab.getItems().stream().filter(cr -> cr.getRPY() == year).findFirst();
-							tab.getSelectionModel().select(first.get());
-							tab.scrollTo(first.get());
-						}
-					}); 
+					onSelectYear (year);
 				}	
-				
 			}
 		});
 	}
@@ -146,19 +124,26 @@ public class CRChart_JFreeChart implements CRChart {
 		chView.setVisible(value);
 	}
 
-	public void setDomainRange(Integer min, Integer max) {
-		if ((min!=null) && (max!=null)) {
-			org.jfree.data.Range dAxisRange = chart.getXYPlot().getDomainAxis().getRange();
-			if ((((int)Math.ceil (dAxisRange.getLowerBound())) != min.intValue()) || (((int)Math.floor(dAxisRange.getUpperBound())) != max.intValue())) { 
-				System.out.println("Adjusting");
-				System.out.println("Axis = " + dAxisRange.toString());
-				System.out.println("Year = " + min + ", " + max);
-				if (min==max) {
-					chart.getXYPlot().getDomainAxis().setRange(min-0.5, max+0.5);
-				} else {
-					chart.getXYPlot().getDomainAxis().setRange(min, max);
-				}
+	@Override
+	public boolean isVisible () {
+		return chView.isVisible();
+	}
+
+	@Override
+	protected void setChartDomainRange(int min, int max) {
+		org.jfree.data.Range dAxisRange = chart.getXYPlot().getDomainAxis().getRange();
+		if ((((int)Math.ceil (dAxisRange.getLowerBound())) != min) || (((int)Math.floor(dAxisRange.getUpperBound())) != max)) { 
+			System.out.println("Adjusting");
+			System.out.println("Axis = " + dAxisRange.toString());
+			System.out.println("Year = " + min + ", " + max);
+			duringRangeSet = true;
+			if (min==max) {
+				chart.getXYPlot().getDomainAxis().setRange(min-0.5, max+0.5);
+			} else {
+				chart.getXYPlot().getDomainAxis().setRange(min, max);
 			}
+			duringRangeSet = false;
+
 		}
 	}
 
@@ -171,12 +156,9 @@ public class CRChart_JFreeChart implements CRChart {
 		}
 		
 		// generate chart lines
-		double[] a = Arrays.stream(data[0]).asDoubleStream().toArray();
-		double[] b = Arrays.stream(data[1]).asDoubleStream().toArray();
-		double[][] c = new double[][] { a, b };
-		
-		ds.addSeries("Number of Cited References", c);
-		ds.addSeries(String.format("Deviation from the %1$d-Year-Median", 2*UserSettings.get().getMedianRange()+1), new double[][] { Arrays.stream(data[0]).asDoubleStream().toArray(), Arrays.stream(data[2]).asDoubleStream().toArray()});
+		double[][] series = Arrays.stream(data).map(it -> Arrays.stream(it).asDoubleStream().toArray() ).toArray(double[][]::new);
+		ds.addSeries(getSeriesLabel(0), new double[][] { series[0], series[1] });
+		ds.addSeries(getSeriesLabel(1), new double[][] { series[0], series[2] });
 	}
 
 

@@ -293,34 +293,30 @@ public class CRTable {
 		
 		StatusBar.get().setValue("", getInfoString());
 
+		
+		
 		return new int[][] {
 			
-			// sorted years = domain
+			// x-axis = sorted years 
 			sumPerYear.entrySet().stream()
 			.sorted(Map.Entry.comparingByKey())
 			.map(it -> { return it.getKey(); })
 			.mapToInt(Integer::valueOf)
 			.toArray(),
 			
-			// number of CRs per Year
+			// y-axis[0] = number of CRs per Year
 			sumPerYear.entrySet().stream()
 			.sorted(Map.Entry.comparingByKey())
 			.map(it -> { return it.getValue(); })
 			.mapToInt(Integer::valueOf)
 			.toArray() ,
 			
+			// y-axis[1] = Difference to median
 			sumPerYear.entrySet().stream()
 			.sorted(Map.Entry.comparingByKey())
-			.map(it -> { return it.getValue(); })
+			.map(it -> { return NCRperYearMedian.get(it.getKey()); })
 			.mapToInt(Integer::valueOf)
 			.toArray()
-			
-			// Difference to median
-//			sumPerYear.entrySet().stream()
-//			.sorted(Map.Entry.comparingByKey())
-//			.map(it -> { return NCRperYearMedian.get(it); })
-//			.mapToInt(Integer::valueOf)
-//			.toArray()
 		};
 			
 		
