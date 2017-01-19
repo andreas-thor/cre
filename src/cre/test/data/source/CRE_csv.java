@@ -94,9 +94,8 @@ public class CRE_csv {
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(csvColumnsCR); 
 		
-		int count = 0;
 		for (CRType cr : crTab.crData) {
-			StatusBar.get().updateProgressbar(++count);
+			StatusBar.get().incProgressbar();;
 			HashMap<String, String> exportCR = getCRExport(cr);
 			csv.writeNext(Arrays.stream(csvColumnsCR).map (attr -> exportCR.get(attr)).toArray(String[]::new)); 
 		}
@@ -108,7 +107,7 @@ public class CRE_csv {
 	
 	public static void savePub (File file, CRTable crTab) throws IOException {
 
-		StatusBar.get().initProgressbar(crTab.pubData.size(), "Saving CSV file (Citing Publications) ...");
+		StatusBar.get().initProgressbar(crTab.getSizePub(), "Saving CSV file (Citing Publications) ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -119,8 +118,8 @@ public class CRE_csv {
 		
 		int count = 0;
 		for (PubType pub: crTab.pubData) {
-			StatusBar.get().updateProgressbar(++count);
-			HashMap<String, String> exportPub = getPubExport(pub, count);
+			StatusBar.get().incProgressbar();
+			HashMap<String, String> exportPub = getPubExport(pub, ++count);
 			csv.writeNext(Arrays.stream(csvColumnsPub).map (attr -> exportPub.get(attr)).toArray(String[]::new)); 
 		}
 		
@@ -143,8 +142,8 @@ public class CRE_csv {
 		
 		int count = 0;
 		for (PubType pub: crTab.pubData) {
-			StatusBar.get().updateProgressbar(++count);
-			HashMap<String, String> exportPub = getPubExport(pub, count);
+			StatusBar.get().incProgressbar();
+			HashMap<String, String> exportPub = getPubExport(pub, ++count);
 			
 			for (CRType cr: pub.crList) {
 				HashMap<String, String> exportCR = getCRExport(cr);

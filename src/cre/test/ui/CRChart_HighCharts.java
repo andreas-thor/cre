@@ -77,10 +77,10 @@ public class CRChart_HighCharts extends CRChart {
 
 	
 	@Override
-	public void setChartDomainRange(int min, int max) {
+	public void setChartDomainRange(int[] range) {
 		if (loaded) {
 			duringRangeSet = true;	// make sure that setting x-axis range does not trigger the onRedraw -> onYearRangeFilter
-			browser.getEngine().executeScript(String.format("c.xAxis[0].setExtremes(%d, %d, true);", min, max));
+			browser.getEngine().executeScript(String.format("c.xAxis[0].setExtremes(%d, %d, true);", range[0], range[1]));
 			duringRangeSet = false;
 		}
 	}

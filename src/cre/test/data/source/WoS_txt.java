@@ -239,8 +239,7 @@ public class WoS_txt {
 	
 	public static void save (File file, CRTable crTab) throws IOException {
 		
-		StatusBar.get().initProgressbar(crTab.pubData.size(), "Saving WoS file ...");
-		int count = 0;
+		StatusBar.get().initProgressbar(crTab.getSizePub(), "Saving WoS file ...");
 		
 		// add txt extension if necessary
 		String file_name = file.toString();
@@ -254,7 +253,6 @@ public class WoS_txt {
 		bw.newLine();
 		
 		for (PubType pub: crTab.pubData) {
-			
 			writeTag(bw, "PT", pub.PT == null ? "J" : pub.PT);	// TODO: Is "J" the correct default for publication type?
 			writeTag(bw, "AU", pub.AU);
 			writeTag(bw, "AF", pub.AF);
@@ -330,7 +328,7 @@ public class WoS_txt {
 			bw.newLine();
 			bw.newLine();
 		
-			StatusBar.get().updateProgressbar(++count);
+			StatusBar.get().incProgressbar();
 		
 		}
 		bw.write("EF"); 

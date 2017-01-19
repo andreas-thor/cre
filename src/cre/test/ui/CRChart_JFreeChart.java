@@ -130,17 +130,17 @@ public class CRChart_JFreeChart extends CRChart {
 	}
 
 	@Override
-	protected void setChartDomainRange(int min, int max) {
+	protected void setChartDomainRange(int[] range) {
 		org.jfree.data.Range dAxisRange = chart.getXYPlot().getDomainAxis().getRange();
-		if ((((int)Math.ceil (dAxisRange.getLowerBound())) != min) || (((int)Math.floor(dAxisRange.getUpperBound())) != max)) { 
+		if ((((int)Math.ceil (dAxisRange.getLowerBound())) != range[0]) || (((int)Math.floor(dAxisRange.getUpperBound())) != range[1])) { 
 			System.out.println("Adjusting");
 			System.out.println("Axis = " + dAxisRange.toString());
-			System.out.println("Year = " + min + ", " + max);
+			System.out.println("Year = " + range[0] + ", " + range[1]);
 			duringRangeSet = true;
-			if (min==max) {
-				chart.getXYPlot().getDomainAxis().setRange(min-0.5, max+0.5);
+			if (range[0]==range[1]) {
+				chart.getXYPlot().getDomainAxis().setRange(range[0]-0.5, range[1]+0.5);
 			} else {
-				chart.getXYPlot().getDomainAxis().setRange(min, max);
+				chart.getXYPlot().getDomainAxis().setRange(range[0], range[1]);
 			}
 			duringRangeSet = false;
 

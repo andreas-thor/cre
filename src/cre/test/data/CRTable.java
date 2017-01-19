@@ -7,7 +7,11 @@ import java.util.HashSet;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import cre.test.Main.EventCRFilter;
 import cre.test.ui.StatusBar;
@@ -23,8 +27,9 @@ public class CRTable {
 
 	
 	public ArrayList<CRType> crData = new ArrayList<CRType>(); 
-	public ObservableList<CRType> crDataObserved = FXCollections.observableArrayList(crData); // new   new ArrayList<CRType>();	// all CR data
+
 	
+	// public ObservableList<CRType> crDataObserved = FXCollections.observableArrayList(crData); // new   new ArrayList<CRType>();	// all CR data
 	
 	// this is automatic but too time consuming for filters
 	// public ObservableList<CRType> crData = FXCollections.observableArrayList( item -> new Observable[] { item.getVIProp() });
@@ -36,9 +41,9 @@ public class CRTable {
 	boolean showNull = false;
 	
 	private Map<Integer, Integer> sumPerYear = new HashMap<Integer, Integer>();	// year -> sum of CRs (also for years without any CR)
-	private Map<Integer, Integer> crPerYear = new HashMap<Integer, Integer>();	// year -> number of CRs (<0, i.e., only years with >=1 CR are in the map)
+//	private Map<Integer, Integer> crPerYear = new HashMap<Integer, Integer>();	// year -> number of CRs (<0, i.e., only years with >=1 CR are in the map)
 	
-	public CRMatch crMatch;
+	private CRMatch crMatch;
 	
 	private EventCRFilter eventFilter;
 	
@@ -134,28 +139,19 @@ public class CRTable {
 		crMatch.updateData (removed);
 		System.out.println("match done:" + System.currentTimeMillis());
 
+		// compute list of citing publications for each CR
+		crData.stream().forEach ( it -> it.pubList = new ArrayList<PubType>() );
+		pubData.stream().forEach ( (PubType pub) -> 
+			pub.crList.stream().forEach ( (CRType cr) -> cr.pubList.add(pub) )
+		);
 		
-		// Determine number of CRs and sum of citations per year
-		crPerYear = new HashMap<Integer, Integer>();
-		sumPerYear = new HashMap<Integer, Integer>();
-		crData.stream().forEach( it -> {
-			if (it.getRPY() != null) {
-				crPerYear.compute(it.getRPY(), (k, v) -> (v == null) ? 1 : v+1);
-				sumPerYear.compute(it.getRPY(), (k, v) -> (v == null) ? it.getN_CR() : v+it.getN_CR());
-			}
-		});
-
-		System.out.println("a" + System.currentTimeMillis());
-
-		// "fill" sumPerYear with zeros for missing years for "smoother" chart lines
-		if (crPerYear.size() > 0) {
-			int min = crPerYear.keySet().stream().mapToInt(Integer::intValue).min().getAsInt();
-			int max = crPerYear.keySet().stream().mapToInt(Integer::intValue).max().getAsInt();
-			IntStream.rangeClosed(min, max).forEach(year -> {
-				sumPerYear.compute(year, (k, v) -> (v == null) ? 0 : v);
-			});
-		} 
 		
+		// Determine sum citations per year
+		int[] rangeYear = getMaxRangeYear();
+		Map<Integer, Integer> sumPerYear = IntStream.rangeClosed(rangeYear[0], rangeYear[1]).mapToObj (it -> new Integer(it)).collect(Collectors.toMap(it->it, it->0));
+		crData.stream().filter (it -> it.getRPY() != null).forEach( it -> { sumPerYear.computeIfPresent(it.getRPY(), (year, sum) -> sum + it.getN_CR()); });
+		
+
 		System.out.println("b" + System.currentTimeMillis());
 		
 		// compute PERC_YR and PERC_ALL
@@ -170,13 +166,29 @@ public class CRTable {
 		System.out.println("c" + System.currentTimeMillis());
 		
 
-		// compute list of citing publications for each CR
-		crData.stream().forEach ( it -> it.pubList = new ArrayList<PubType>() );
-		pubData.stream().forEach ( (PubType pub) -> 
-			pub.crList.stream().forEach ( (CRType cr) -> cr.pubList.add(pub) )
-		);
+		/*
+		 * - PYEARS_PERC= Anzahl Jahre, in denen eine Referenzpublikation
+		 * zitiert wurde/maximal mögliche Anzahl von Jahren.-> NICHT OK!
+		 * Problem: Ich vermute, dass immer das Intervall
+		 * "2016-Referenzpublikationsjahr" als Nenner verwendet wurde. Es gibt
+		 * aber ein vorgegebenes Zeitintervall von Publikationen, hier von
+		 * 2007-2016, die Referenzpublikationen zitieren. Referenzpublikationen
+		 * vor 2007 (z.B. Hirsch-Index, 2005) können maximal 10 Jahre
+		 * (=2016-2007+1) zitiert werden, Publikationen nach 2007 (z.B.
+		 * Radicchi, 2008) können nur x Jahre=(2016-x+1) zitiert werden, z.b.
+		 * Radicchi 9 Jahre (2016-2008+1). D.h. Für Referenzpublikationen vor
+		 * 2007 ist immer das maximal mögliche Intervall "2016-2007"=10 Jahre
+		 * einzusetzen, für die jüngeren Publikationen
+		 * "2016-Referenzpublikationsjahr".
+		 */
 				
 		// compute N_PYEARS
+		
+		int[] rangePub = getMaxRangeCitingYear();
+		crData.parallelStream().forEach( cr -> {
+			cr.setN_PYEARS((int) cr.pubList.stream().filter(pub -> pub.PY!=null).mapToInt(pub -> pub.PY).distinct().count());
+			cr.setPYEAR_PERC( (cr.getRPY()==null) ? null : ((double)cr.getN_PYEARS()) /  (rangePub[1]-Math.max(rangePub[0], cr.getRPY())+1));
+		});
 		
 /*		
 		int maxPubYear = pubData.stream().mapToInt(pub -> (pub.PY==null)?0:pub.PY).max().getAsInt();
@@ -260,22 +272,14 @@ public class CRTable {
 	}
 
 	
-//	public void generateChart () {
-//		generateChart (-1);
-//	}
 	
 	public int[][] getChartData () {
 		
-//		if (medianRange>0) {
-//			this.medianRange = medianRange;
-//		}
-		
-		
 		final Map<Integer, Integer> NCRperYearMedian = new HashMap<Integer, Integer>();	// year -> median of sumPerYear[year-range] ... sumPerYear[year+range]   
 		final int medianRange = UserSettings.get().getMedianRange();
+		
 		// generate data rows for chart
 		sumPerYear.forEach ((y, crs) -> {
-			
 			int median =  IntStream.rangeClosed(-medianRange, +medianRange)
 				.map( it -> { return (sumPerYear.get(y+it)==null) ? 0 : sumPerYear.get(y+it);})
 				.sorted()
@@ -286,8 +290,6 @@ public class CRTable {
 		System.out.println(System.currentTimeMillis());
 		
 		StatusBar.get().setValue("", getInfoString());
-
-		
 		
 		return new int[][] {
 			
@@ -312,11 +314,6 @@ public class CRTable {
 			.mapToInt(Integer::valueOf)
 			.toArray()
 		};
-			
-		
-		
-		
-		
 	}
 		
 	
@@ -334,7 +331,7 @@ public class CRTable {
 		result.put("Number of Cited References", crData.size());
 		result.put("Number of Cited References (shown)", (int) crData.stream().filter( (CRType it) -> it.getVI()).count()); 
 		result.put("Number of Cited References Clusters", crMatch.getNoOfClusters());
-		result.put("Number of different Cited References Years", crPerYear.size()); 
+		result.put("Number of different Cited References Years", (int)crData.stream().filter (it -> it.getRPY() != null).mapToInt(it -> it.getRPY()).distinct().count()); 
 		result.put("Minimal Cited References Year", years[0]);
 		result.put("Maximal Cited References Year", years[1]);
 		result.put("Number of Citing Publications", pubData.size());
@@ -361,22 +358,11 @@ public class CRTable {
 	 * Remove publications based on list of indexes (e.g., selected by user in the table)
 	 * @param idx list of CR indexes
 	 */
-//	public void remove (List<Integer> idx) {
-//
-//		System.out.println("Remove ");
-//		idx.stream().sorted(Collections.reverseOrder()).forEach( id -> {
-//			CRType cr = crData.remove(id.intValue());
-//			cr.removed = true;
-//		});
-//		
-//		updateData(true);
-//	}
-	
-	
 	public void remove (List<CRType> toDelete) {
 		
 		toDelete.stream().forEach( cr -> { cr.removed = true; }); 
 		crData.removeAll(toDelete);
+		updateData(true);
 	}
 	
 	/**
@@ -384,7 +370,6 @@ public class CRTable {
 	 * @param idx list of CR indexes
 	 */
 	public void removeByCR (List<CRType> selCR) {
-
 		
 		pubData.removeIf ( pub -> {
 			
@@ -517,22 +502,21 @@ public class CRTable {
 	 * @param from
 	 * @param to
 	 */
-	public void filterByYear (int from, int to) {
-		crData.stream().forEach ( it -> { it.setVI(((it.getRPY()!=null) && (from<=it.getRPY()) && (to>=it.getRPY())) || ((it.getRPY()==null) && (this.showNull))); });
-		eventFilter.onUpdate(from, to);
+	public void filterByYear (int[] range) {
+		crData.stream().forEach ( it -> { it.setVI(((it.getRPY()!=null) && (range[0]<=it.getRPY()) && (range[1]>=it.getRPY())) || ((it.getRPY()==null) && (this.showNull))); });
+		eventFilter.onUpdate(range);
 	}
 	
 	
 	public void filterByYear () {
-		int[] range = this.getMaxRangeYear();
-		filterByYear (range[0], range[1]);
+		filterByYear (this.getMaxRangeYear());
 	}
 	
 	
 	public void setShowNull (boolean showNull) {
 		this.showNull = showNull;
 		crData.stream().forEach ( it -> { if (it.getRPY() == null) it.setVI(showNull);  });
-		eventFilter.onUpdate(null, null);
+		eventFilter.onUpdate(null);
 
 	}
 	
@@ -541,13 +525,13 @@ public class CRTable {
 	 * @return [min, max]
 	 */
 	public int[] getMaxRangeYear () {
-		IntSummaryStatistics stats = crData.stream().filter (cr -> cr.getRPY() != null).map((CRType it) -> it.getRPY()).mapToInt(Integer::intValue).summaryStatistics();
+		IntSummaryStatistics stats = crData.stream().filter (cr -> cr.getRPY() != null).mapToInt(it -> it.getRPY()).summaryStatistics();
 		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
 	}
 	
 	
 	public int[] getMaxRangeCitingYear () {
-		IntSummaryStatistics stats = pubData.stream().filter (pub -> pub.PY != null).map((PubType it) -> it.PY).mapToInt(Integer::intValue).summaryStatistics();
+		IntSummaryStatistics stats = pubData.stream().filter (pub -> pub.PY != null).mapToInt(it -> it.PY).summaryStatistics();
 		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
 	}
 
@@ -582,10 +566,26 @@ public class CRTable {
 		return this.crData.size();
 	}
 	
+	public int getSizePub () {
+		return this.pubData.size();
+	}
+	
+	public int getSizeMatch (boolean manual) {
+		return this.crMatch.match.get(manual).size();
+	}
+	
 	public CRType getCR (int idx) {
 		return this.crData.get(idx);
 	}
 	
+	
+	public Stream<PubType> getPub () {
+		return this.pubData.stream();
+	}
+	
+	public Stream<Entry<Integer, Map<Integer, Double>>> getMatch (boolean manual) {
+		return this.crMatch.match.get(manual).entrySet().stream();
+	}
 	
 	
 }

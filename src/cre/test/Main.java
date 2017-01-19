@@ -107,7 +107,7 @@ public class Main {
 
 	
 	public interface EventCRFilter {
-		public void onUpdate (Integer yearMin, Integer yearMax);
+		public void onUpdate (int[] range);
 	}
 	
 	@FXML public void initialize() {
@@ -117,13 +117,13 @@ public class Main {
 
 		crTable = new CRTable(new EventCRFilter() {
 			@Override
-			public void onUpdate(Integer yearMin, Integer yearMax) {
+			public void onUpdate(int[] range) {
 
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
 						tableView.setItems(FXCollections.observableArrayList(crTable.crData.stream().filter(cr -> cr.getVI()).collect(Collectors.toList())));
-						Stream.of(crChart).forEach (it -> { it.setDomainRange (yearMin, yearMax); });
+						Stream.of(crChart).forEach (it -> { it.setDomainRange (range); });
 					}
 				});
 			}
@@ -356,7 +356,7 @@ public class Main {
 		new Range("Filter Cited References", "Select Range of Cited References Years", UserSettings.RangeType.FilterByRPYRange, crTable.getMaxRangeYear())
 			.showAndWait()
 			.ifPresent( range -> { 
-				crTable.filterByYear(range[0], range[1]); 
+				crTable.filterByYear(range); 
 			}
 		);
 	}

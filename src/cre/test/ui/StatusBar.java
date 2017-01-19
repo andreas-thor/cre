@@ -25,6 +25,7 @@ public class StatusBar extends GridPane {
 	private Date date;
 	private String label;
 	
+	private long count;
 
 
 	public static StatusBar get() {
@@ -103,12 +104,18 @@ public class StatusBar extends GridPane {
 		this.blockCount = 0;
 		this.date = new Date();
 		this.label = label;
+		this.count = 0;
 		setValue(label, 0, "", this.date);
 		
 		
 	}
 	
+	public void incProgressbar () {
+		updateProgressbar(this.count+1);
+	}
+	
 	public void updateProgressbar (long count) {
+		this.count = count;
 		if (blockCount*blockSize<count) {
 			System.out.println("Count = " + count);
 			setValue(label, count, "", date);

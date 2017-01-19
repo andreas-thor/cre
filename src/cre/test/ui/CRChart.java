@@ -27,12 +27,12 @@ public abstract class CRChart {
 
 	public abstract boolean isVisible ();
 	
-	public void setDomainRange (Integer min, Integer max) {
-		if ((min==null) || (max==null) || !isVisible()) return;
-		setChartDomainRange(min.intValue(), max.intValue());
+	public void setDomainRange (int[] range) {
+		if ((range==null) || !isVisible()) return;
+		setChartDomainRange(range);
 	};
 	
-	protected abstract void setChartDomainRange (int min, int max);
+	protected abstract void setChartDomainRange (int[] range);
 	
 	public abstract void updateData (int[][] data);
 	
@@ -64,7 +64,7 @@ public abstract class CRChart {
 	
 	protected void onYearRangeFilter (double min, double max) {
 		if (! crTab.duringUpdate) {	// ignore updates during data update
-			crTab.filterByYear ((int)Math.ceil(min), (int)Math.floor(max));
+			crTab.filterByYear (new int[] {(int)Math.ceil(min), (int)Math.floor(max)});
 		}
 	}
 	

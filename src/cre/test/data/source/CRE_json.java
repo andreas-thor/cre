@@ -212,7 +212,7 @@ public class CRE_json {
 						}
 						break;
 					case VALUE_NUMBER:
-						crTab.crMatch.setMapping(id1, id2, parser.getBigDecimal().doubleValue(), isManual, false);
+						crTab.setMapping(id1, id2, parser.getBigDecimal().doubleValue(), isManual, false);
 						break;
 					default:break;  
 					}
@@ -256,8 +256,7 @@ public class CRE_json {
 
 	public static void save (File file, CRTable crTab) throws IOException {
 		 
-		int count = 0;
-		StatusBar.get().initProgressbar(crTab.getSize() + crTab.pubData.size() + crTab.crMatch.match.get(true).size() + crTab.crMatch.match.get(false).size(), "Saving CRE file ...");
+		StatusBar.get().initProgressbar(crTab.getSize() + crTab.getSizePub() + crTab.getSizeMatch(true) + crTab.getSizeMatch(false), "Saving CRE file ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -266,84 +265,84 @@ public class CRE_json {
 				
 		
 		zip.putNextEntry(new ZipEntry("crdata.json"));
-		JsonGenerator jgen = Json.createGenerator(zip);
-		jgen.writeStartArray();
+		JsonGenerator jgenCR = Json.createGenerator(zip);
+		jgenCR.writeStartArray();
 		for (CRType it: crTab.crData) {
-			jgen.writeStartObject();
-								jgen.write("ID", it.getID());
-			if (it.getCR()!=null) 	jgen.write("CR", it.getCR());
-			if (it.getAU()!=null) 	jgen.write("AU", it.getAU());
-			if (it.getAU_F()!=null) 	jgen.write("AU_F", it.getAU_F());
-			if (it.getAU_L()!=null) 	jgen.write("AU_L", it.getAU_L());
-			if (it.getAU_A()!=null) 	jgen.write("AU_A", it.getAU_A());
-			if (it.getTI()!=null) 	jgen.write("TI", it.getTI());
-			if (it.getJ()!=null) 	jgen.write("J", it.getJ());
-			if (it.getJ_N()!=null) 	jgen.write("J_N", it.getJ_N());
-			if (it.getJ_S()!=null) 	jgen.write("J_S", it.getJ_S());
-								jgen.write("N_CR", it.getN_CR());
-			if (it.getRPY()!=null)	jgen.write("RPY", it.getRPY());
-			if (it.getPAG()!=null) 	jgen.write("PAG", it.getPAG());
-			if (it.getVOL()!=null) 	jgen.write("VOL", it.getVOL());
-			if (it.getDOI()!=null) 	jgen.write("DOI", it.getDOI());
-			if (it.getCID2()!=null) 	jgen.write("CID2", it.getCID2().toString());
-								jgen.write("CID_S", it.getCID_S());
-								jgen.write("VI", it.getVI()?1:0);
-								jgen.write("CO", it.getCO());
-								jgen.write("type", it.type);			
-			jgen.writeEnd();
+			jgenCR.writeStartObject();
+								jgenCR.write("ID", it.getID());
+			if (it.getCR()!=null) 	jgenCR.write("CR", it.getCR());
+			if (it.getAU()!=null) 	jgenCR.write("AU", it.getAU());
+			if (it.getAU_F()!=null) 	jgenCR.write("AU_F", it.getAU_F());
+			if (it.getAU_L()!=null) 	jgenCR.write("AU_L", it.getAU_L());
+			if (it.getAU_A()!=null) 	jgenCR.write("AU_A", it.getAU_A());
+			if (it.getTI()!=null) 	jgenCR.write("TI", it.getTI());
+			if (it.getJ()!=null) 	jgenCR.write("J", it.getJ());
+			if (it.getJ_N()!=null) 	jgenCR.write("J_N", it.getJ_N());
+			if (it.getJ_S()!=null) 	jgenCR.write("J_S", it.getJ_S());
+								jgenCR.write("N_CR", it.getN_CR());
+			if (it.getRPY()!=null)	jgenCR.write("RPY", it.getRPY());
+			if (it.getPAG()!=null) 	jgenCR.write("PAG", it.getPAG());
+			if (it.getVOL()!=null) 	jgenCR.write("VOL", it.getVOL());
+			if (it.getDOI()!=null) 	jgenCR.write("DOI", it.getDOI());
+			if (it.getCID2()!=null) 	jgenCR.write("CID2", it.getCID2().toString());
+								jgenCR.write("CID_S", it.getCID_S());
+								jgenCR.write("VI", it.getVI()?1:0);
+								jgenCR.write("CO", it.getCO());
+								jgenCR.write("type", it.type);			
+			jgenCR.writeEnd();
 			
-			StatusBar.get().updateProgressbar(++count);
+			StatusBar.get().incProgressbar();
 		};
-		jgen.writeEnd();
-		jgen.flush();
+		jgenCR.writeEnd();
+		jgenCR.flush();
 		zip.closeEntry();
 
 		
 		zip.putNextEntry(new ZipEntry("pubdata.json"));
-		jgen = Json.createGenerator(zip);
-		jgen.writeStartArray();
+		JsonGenerator jgenPub = Json.createGenerator(zip);
+		jgenPub.writeStartArray();
 		for (PubType it: crTab.pubData) {
-			jgen.writeStartObject();
+			jgenPub.writeStartObject();
 			
-			if (it.PT!=null) 	jgen.write("PT", it.PT);
-			if (it.AU!=null) {	jgen.writeStartArray("AU"); for (String x:it.AU) jgen.write(x); jgen.writeEnd(); }
-			if (it.AF!=null) {	jgen.writeStartArray("AF"); for (String x:it.AF) jgen.write(x); jgen.writeEnd(); }
+			if (it.PT!=null) 	jgenPub.write("PT", it.PT);
+			if (it.AU!=null) {	jgenPub.writeStartArray("AU"); for (String x:it.AU) jgenPub.write(x); jgenPub.writeEnd(); }
+			if (it.AF!=null) {	jgenPub.writeStartArray("AF"); for (String x:it.AF) jgenPub.write(x); jgenPub.writeEnd(); }
 			if (it.C1!=null) {
-				jgen.writeStartArray("C1");
+				jgenPub.writeStartArray("C1");
 				for (String[] y:it.C1) {
-					jgen.writeStartArray();
-					for (String x:y) jgen.write(x); 
-					jgen.writeEnd();
+					jgenPub.writeStartArray();
+					for (String x:y) jgenPub.write(x); 
+					jgenPub.writeEnd();
 				}
-				jgen.writeEnd();
+				jgenPub.writeEnd();
 			}
-			if (it.EM!=null) {	jgen.writeStartArray("EM"); for (String x:it.EM) jgen.write(x); jgen.writeEnd(); }
-			if (it.AA!=null) {	jgen.writeStartArray("AA"); for (String x:it.AA) jgen.write(x); jgen.writeEnd(); }
-			if (it.TI!=null) 	jgen.write("TI", it.TI);
-			if (it.PY!=null) 	jgen.write("PY", it.PY);
-			if (it.SO!=null) 	jgen.write("SO", it.SO);
-			if (it.VL!=null) 	jgen.write("VL", it.VL);
-			if (it.IS!=null) 	jgen.write("IS", it.IS);
-			if (it.AR!=null) 	jgen.write("AR", it.AR);
-			if (it.BP!=null) 	jgen.write("BP", it.BP);
-			if (it.EP!=null) 	jgen.write("EP", it.EP);
-			if (it.PG!=null) 	jgen.write("PG", it.PG);
-			if (it.TC!=null) 	jgen.write("TC", it.TC);
-			if (it.crList!=null) {	jgen.writeStartArray("CRLISTID"); for (CRType x:it.crList) jgen.write(x.getID()); jgen.writeEnd(); }
-			if (it.DI!=null) 	jgen.write("DI", it.DI);
-			if (it.LI!=null) 	jgen.write("LI", it.LI);
-			if (it.AB!=null) 	jgen.write("AB", it.AB);
-			if (it.DE!=null) 	jgen.write("DE", it.DE);
-			if (it.DT!=null) 	jgen.write("DT", it.DT);
-			if (it.FS!=null) 	jgen.write("FS", it.FS);
-			if (it.UT!=null) 	jgen.write("UT", it.UT);
+			if (it.EM!=null) {	jgenPub.writeStartArray("EM"); for (String x:it.EM) jgenPub.write(x); jgenPub.writeEnd(); }
+			if (it.AA!=null) {	jgenPub.writeStartArray("AA"); for (String x:it.AA) jgenPub.write(x); jgenPub.writeEnd(); }
+			if (it.TI!=null) 	jgenPub.write("TI", it.TI);
+			if (it.PY!=null) 	jgenPub.write("PY", it.PY);
+			if (it.SO!=null) 	jgenPub.write("SO", it.SO);
+			if (it.VL!=null) 	jgenPub.write("VL", it.VL);
+			if (it.IS!=null) 	jgenPub.write("IS", it.IS);
+			if (it.AR!=null) 	jgenPub.write("AR", it.AR);
+			if (it.BP!=null) 	jgenPub.write("BP", it.BP);
+			if (it.EP!=null) 	jgenPub.write("EP", it.EP);
+			if (it.PG!=null) 	jgenPub.write("PG", it.PG);
+			if (it.TC!=null) 	jgenPub.write("TC", it.TC);
+			if (it.crList!=null) {	jgenPub.writeStartArray("CRLISTID"); for (CRType x:it.crList) jgenPub.write(x.getID()); jgenPub.writeEnd(); }
+			if (it.DI!=null) 	jgenPub.write("DI", it.DI);
+			if (it.LI!=null) 	jgenPub.write("LI", it.LI);
+			if (it.AB!=null) 	jgenPub.write("AB", it.AB);
+			if (it.DE!=null) 	jgenPub.write("DE", it.DE);
+			if (it.DT!=null) 	jgenPub.write("DT", it.DT);
+			if (it.FS!=null) 	jgenPub.write("FS", it.FS);
+			if (it.UT!=null) 	jgenPub.write("UT", it.UT);
 			
-			jgen.writeEnd();
+			jgenPub.writeEnd();
 			
-			StatusBar.get().updateProgressbar(++count);
+			StatusBar.get().incProgressbar();
 		};
-		jgen.writeEnd();
-		jgen.flush();
+		jgenPub.writeEnd();
+		jgenPub.flush();
 		zip.closeEntry();
 
 		/**
@@ -351,25 +350,26 @@ public class CRE_json {
 		 */
 		 
 		zip.putNextEntry(new ZipEntry("crmatch.json"));
-		jgen = Json.createGenerator(zip);
-		jgen.writeStartObject();
+		JsonGenerator jgenMatch = Json.createGenerator(zip);
+		jgenMatch.writeStartObject();
 		for (boolean loop: new boolean[] { false, true }) {
-			jgen.writeStartObject(loop?"MATCH_MANU":"MATCH_AUTO");
-			for (Entry<Integer, Map<Integer, Double>> it: crTab.crMatch.match.get(loop).entrySet()) {
+			jgenMatch.writeStartObject(loop?"MATCH_MANU":"MATCH_AUTO");
+//			for (Entry<Integer, Map<Integer, Double>> it: crTab.crMatch.match.get(loop).entrySet()) {
+			crTab.getMatch(loop).forEach(it -> {
 				if (it.getValue().size()>0) {
-					jgen.writeStartObject(String.valueOf(it.getKey()));
+					jgenMatch.writeStartObject(String.valueOf(it.getKey()));
 					for (Entry<Integer, Double> pair: it.getValue().entrySet()) {
-						jgen.write(String.valueOf(pair.getKey()), pair.getValue());
+						jgenMatch.write(String.valueOf(pair.getKey()), pair.getValue());
 					}
-					jgen.writeEnd();
+					jgenMatch.writeEnd();
 				}
 				
-				StatusBar.get().updateProgressbar(++count);
-			}
-			jgen.writeEnd();
+				StatusBar.get().incProgressbar();
+			});
+			jgenMatch.writeEnd();
 		}
-		jgen.writeEnd();
-		jgen.flush();
+		jgenMatch.writeEnd();
+		jgenMatch.flush();
 		zip.closeEntry();
 
 		
