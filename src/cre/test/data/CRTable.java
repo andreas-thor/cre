@@ -2,22 +2,16 @@ package cre.test.data;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import org.jfree.data.xy.DefaultXYDataset;
 
 import cre.test.Main.EventCRFilter;
 import cre.test.ui.StatusBar;
 import cre.test.ui.UserSettings;
-import groovy.beans.Bindable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -554,7 +548,7 @@ public class CRTable {
 	
 	public int[] getMaxRangeCitingYear () {
 		IntSummaryStatistics stats = pubData.stream().filter (pub -> pub.PY != null).map((PubType it) -> it.PY).mapToInt(Integer::intValue).summaryStatistics();
-		return new int[] { stats.getMin(), stats.getMax() };
+		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
 	}
 
 	
@@ -565,7 +559,7 @@ public class CRTable {
 	 */
 	public int[] getMaxRangeNCR () {
 		IntSummaryStatistics stats = crData.stream().map((CRType it) -> it.getN_CR()).mapToInt(Integer::intValue).summaryStatistics();
-		return new int[] { stats.getMin(), stats.getMax() };
+		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
 	}
 	
 

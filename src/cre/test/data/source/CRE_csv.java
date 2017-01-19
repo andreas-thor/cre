@@ -85,7 +85,7 @@ public class CRE_csv {
 	 */
 	public static void saveCR (File file, CRTable crTab) throws IOException {
 
-		StatusBar.get().initProgressbar(crTab.crData.size(), "Saving CSV file (Cited References) ...");
+		StatusBar.get().initProgressbar(crTab.getSize(), "Saving CSV file (Cited References) ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();

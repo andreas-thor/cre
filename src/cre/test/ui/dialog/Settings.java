@@ -1,15 +1,16 @@
 package cre.test.ui.dialog;
 
 import java.io.IOException;
-import java.util.Map.Entry;
 
 import cre.test.ui.CRTableView;
+import cre.test.ui.CRTableView.CRColumn;
+import cre.test.ui.CRTableView.ColGroup;
 import cre.test.ui.UserSettings;
 import cre.test.ui.UserSettings.RangeType;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.geometry.Side;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
@@ -21,7 +22,6 @@ import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -29,7 +29,7 @@ import javafx.scene.layout.VBox;
 public class Settings extends Dialog<Integer> {
 
 	
-	private final CheckBox[] cbCol = new CheckBox[CRTableView.attr.size()];
+	private final CheckBox[] cbCol = new CheckBox[CRTableView.CRColumn.values().length];
 	private final TextField tfDigits = new TextField();
 	private final CheckBox[] cbLine = new CheckBox[2];
 	private final TextField[] tfLine = new TextField[2];
@@ -47,7 +47,9 @@ public class Settings extends Dialog<Integer> {
 
 		VBox tabTable = new VBox(10);
 		tabTable.setPadding (new Insets(20, 20, 20, 20));
-		tabTable.getChildren().add(new TitledPane("Visible Columns", createTableColPane()));
+		tabTable.getChildren().add(new TitledPane("Cited References", createTableColPane(ColGroup.CR)));
+		tabTable.getChildren().add(new TitledPane("Indicators", createTableColPane(ColGroup.INDICATOR)));
+		tabTable.getChildren().add(new TitledPane("Clustering", createTableColPane(ColGroup.CLUSTER)));
 		tabTable.getChildren().add(new TitledPane("Value Format", createTableValPane()));
 		tpane.getTabs().add(new Tab("Table", tabTable));
 		
@@ -190,7 +192,7 @@ public class Settings extends Dialog<Integer> {
 		
 	}
 	
-	private GridPane createTableColPane() {
+	private GridPane createTableColPane(ColGroup group) {
 		GridPane result =  new GridPane();
 		result.setHgap(10);
 		result.setVgap(10);
@@ -209,15 +211,18 @@ public class Settings extends Dialog<Integer> {
 		int col = 0;
 		int row = 0;
 		int idx = 0;
-		for (Entry<String, String> e: CRTableView.attr.entrySet()) {
-			cbCol[idx] = new CheckBox(e.getValue());
-			cbCol[idx].setSelected(UserSettings.get().getColumnVisibleProperty(idx).get());
-			result.add(cbCol[idx], col, row);
-			if (col<2) {
-				col++;
-			} else {
-				row++;
-				col=0;
+		for (CRColumn e: CRTableView.CRColumn.values()) {
+			
+			if (e.group == group) {
+				cbCol[idx] = new CheckBox(e.title);
+				cbCol[idx].setSelected(UserSettings.get().getColumnVisibleProperty(idx).get());
+				result.add(cbCol[idx], col, row);
+				if (col<2) {
+					col++;
+				} else {
+					row++;
+					col=0;
+				}
 			}
 			idx++;
 		}

@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.jfree.chart.fx.ChartViewer;
-
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
@@ -44,13 +42,11 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableColumn;
 import javafx.scene.layout.GridPane;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.WindowEvent;
-import netscape.javascript.JSObject;
 
 public class Main {
 
@@ -315,6 +311,13 @@ public class Main {
 	
 	
 	@FXML public void OnMenuFileSettings() throws IOException {
+		
+		int a=0;
+
+		for (TableColumn<CRType, ?> x: tableView.getColumns()) { 
+			System.out.println((++a) + " " + x.getText());
+		}
+		
 		new Settings()
 			.showAndWait()
 			.ifPresent( noOfErrors -> {

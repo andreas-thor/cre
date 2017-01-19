@@ -1,9 +1,6 @@
 package cre.test.data;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -39,47 +36,12 @@ public class CRType {
 	private SimpleDoubleProperty PERC_YR;
 	private SimpleDoubleProperty PERC_ALL;
 	
-	private int N_PYEARS = 0;	
-	private Double PYEAR_PERC;
-	private int N_PCT50 = 0;
-	private int N_PCT75 = 0;
-	private int N_PCT90 = 0;
-	private int N_PYEARS2 = 0;	
-	
-	
-	
-	
-	
-//	public ReadOnlyObjectProperty<Integer> propID;
-//	public SimpleStringProperty propCR;
-//	public SimpleStringProperty propAU;
-//	public SimpleStringProperty propAU_F; 
-//	public SimpleStringProperty propAU_L;
-//	public SimpleStringProperty propAU_A;	
-//	public SimpleStringProperty propTI; 		
-//	public SimpleStringProperty propJ;
-//	public SimpleStringProperty propJ_N;
-//	public SimpleStringProperty propJ_S;
-//	public ReadOnlyObjectProperty<Integer> propN_CR;
-//	public ReadOnlyObjectProperty<Integer> propRPY;
-//	public SimpleStringProperty propPAG;
-//	public SimpleStringProperty propVOL;
-//	public SimpleStringProperty propDOI;
-//	public ReadOnlyObjectProperty<Integer> propCID_S;
-//	public ReadOnlyObjectProperty<Integer> propVI;	
-//	public ReadOnlyObjectProperty<Integer> propCO;	
-//	public ReadOnlyObjectProperty<Double> propPERC_YR;
-//	public ReadOnlyObjectProperty<Double> propPERC_ALL;
-//	public ReadOnlyObjectProperty<Integer> propN_PYEARS;	
-//	public ReadOnlyObjectProperty<Double> propPYEAR_PERC;
-//	public ReadOnlyObjectProperty<Integer> propN_PCT50;
-//	public ReadOnlyObjectProperty<Integer> propN_PCT75;
-//	public ReadOnlyObjectProperty<Integer> propN_PCT90;
-//	public ReadOnlyObjectProperty<Integer> propN_PYEARS2;		
-	
-	
-	
-	
+	private SimpleIntegerProperty N_PYEARS;	
+	private SimpleDoubleProperty PYEAR_PERC;
+	private SimpleIntegerProperty N_PCT50;
+	private SimpleIntegerProperty N_PCT75;
+	private SimpleIntegerProperty N_PCT90;
+	private SimpleIntegerProperty N_PYEARS2;	
 	
 	
 	
@@ -107,6 +69,13 @@ public class CRType {
 		CID_S = new SimpleIntegerProperty();
 		PERC_YR = new SimpleDoubleProperty();
 		PERC_ALL = new SimpleDoubleProperty();
+		
+		N_PYEARS = new SimpleIntegerProperty();
+		PYEAR_PERC = new SimpleDoubleProperty();
+		N_PCT50 = new SimpleIntegerProperty();
+		N_PCT75 = new SimpleIntegerProperty();
+		N_PCT90 = new SimpleIntegerProperty();
+		N_PYEARS2 = new SimpleIntegerProperty();
 		
 		VI = new SimpleBooleanProperty(true);
 		CO = new SimpleIntegerProperty(0);
@@ -359,42 +328,75 @@ public class CRType {
 		PERC_ALL.set(pERC_ALL);
 	}
 	
-	
+		
 	public int getN_PYEARS() {
+		return N_PYEARS.get();
+	}
+	public SimpleIntegerProperty getN_PYEARSProp() {
 		return N_PYEARS;
 	}
 	public void setN_PYEARS(int n_PYEARS) {
-		N_PYEARS = n_PYEARS;
+		N_PYEARS.set(n_PYEARS);
 	}
+	
+	
+	
 	public Double getPYEAR_PERC() {
+		return PYEAR_PERC.get();
+	}
+	public SimpleDoubleProperty getPYEAR_PERCProp() {
 		return PYEAR_PERC;
 	}
 	public void setPYEAR_PERC(Double pYEAR_PERC) {
-		PYEAR_PERC = pYEAR_PERC;
+		PYEAR_PERC.set(pYEAR_PERC);
 	}
+	
+	
+	
 	public int getN_PCT50() {
+		return N_PCT50.get();
+	}
+	public SimpleIntegerProperty getN_PCT50Prop() {
 		return N_PCT50;
 	}
 	public void setN_PCT50(int n_PCT50) {
-		N_PCT50 = n_PCT50;
+		N_PCT50.set(n_PCT50);
 	}
+	
+	
+	
 	public int getN_PCT75() {
+		return N_PCT75.get();
+	}
+	public SimpleIntegerProperty getN_PCT75Prop() {
 		return N_PCT75;
 	}
 	public void setN_PCT75(int n_PCT75) {
-		N_PCT75 = n_PCT75;
+		N_PCT75.set(n_PCT75);
 	}
+	
+	
+	
 	public int getN_PCT90() {
+		return N_PCT90.get();
+	}
+	public SimpleIntegerProperty getN_PCT90Prop() {
 		return N_PCT90;
 	}
 	public void setN_PCT90(int n_PCT90) {
-		N_PCT90 = n_PCT90;
+		N_PCT90.set(n_PCT90);
 	}
+	
+	
+	
 	public int getN_PYEARS2() {
+		return N_PYEARS2.get();
+	}
+	public SimpleIntegerProperty getN_PYEARS2Prop() {
 		return N_PYEARS2;
 	}
 	public void setN_PYEARS2(int n_PYEARS2) {
-		N_PYEARS2 = n_PYEARS2;
+		N_PYEARS2.set(n_PYEARS2);
 	}
 			
     

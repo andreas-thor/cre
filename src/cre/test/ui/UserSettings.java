@@ -24,7 +24,7 @@ public class UserSettings {
 	private File lastFileDir = new File("");
 
 	// visibility of table columns and number of digits
-	private SimpleBooleanProperty[] columnVisible = new SimpleBooleanProperty[CRTableView.attr.size()];
+	private SimpleBooleanProperty[] columnVisible = new SimpleBooleanProperty[CRTableView.CRColumn.values().length];
 	private int formatDigits = 2;
 	private DecimalFormat format;
 
