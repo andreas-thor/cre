@@ -13,11 +13,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.apache.commons.math3.stat.Frequency;
+
 import cre.test.Main.EventCRFilter;
 import cre.test.ui.StatusBar;
 import cre.test.ui.UserSettings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.util.Pair;
 
 public class CRTable {
 
@@ -182,13 +185,57 @@ public class CRTable {
 		 * "2016-Referenzpublikationsjahr".
 		 */
 				
-		// compute N_PYEARS
-		
+		// N_PYEARS = Number of DISTINCT PY (for a CR)
 		int[] rangePub = getMaxRangeCitingYear();
 		crData.parallelStream().forEach( cr -> {
 			cr.setN_PYEARS((int) cr.pubList.stream().filter(pub -> pub.PY!=null).mapToInt(pub -> pub.PY).distinct().count());
 			cr.setPYEAR_PERC( (cr.getRPY()==null) ? null : ((double)cr.getN_PYEARS()) /  (rangePub[1]-Math.max(rangePub[0], cr.getRPY())+1));
 		});
+		
+		System.out.println("c1: " + System.currentTimeMillis());
+
+		// SELECT RPY, PY, Frequency FROM CR-Pub GROUP BY RPY, PY
+		Map<Pair<Integer, Integer>, Frequency> mapRPY_PY_Count = new HashMap<Pair<Integer, Integer>, Frequency>();
+		crData.stream().filter(cr -> cr.getRPY()!=null).forEach(cr -> {
+			cr.pubList.stream().filter(pub -> pub.PY != null).collect(Collectors.groupingBy(PubType::getPY, Collectors.counting())).forEach((py, count) -> {
+				Pair<Integer, Integer> pair = new Pair<Integer, Integer>(cr.getRPY(), py);
+				mapRPY_PY_Count.putIfAbsent(pair, new Frequency());
+				mapRPY_PY_Count.get(pair).addValue(count);
+			});
+		});
+		
+		System.out.println("c2: " + System.currentTimeMillis());
+
+		crData.stream().filter(cr -> cr.getRPY()!=null).forEach(cr -> {
+			cr.setN_PCT50(0);
+			cr.setN_PCT75(0);
+			cr.setN_PCT90(0);
+			cr.pubList.stream().filter(pub -> pub.PY != null).collect(Collectors.groupingBy(PubType::getPY, Collectors.counting())).forEach((py, count) -> {
+				Pair<Integer, Integer> pair = new Pair<Integer, Integer>(cr.getRPY(), py);
+				Frequency f = mapRPY_PY_Count.get(pair);
+				double perc = f.getCumPct(count-1); // -f.getPct(count);
+		
+				if (cr.getID()==56) {
+					System.out.println("RPY=" + pair.getKey() + ", PY=" + pair.getValue() + ", Count=" + count + " ==> perc=" + perc);
+					System.out.println(f);
+				}
+				
+				
+				if (perc>0.5)  cr.setN_PCT50(cr.getN_PCT50()+1);
+				if (perc>0.75) cr.setN_PCT75(cr.getN_PCT75()+1);
+				if (perc>0.9)  cr.setN_PCT90(cr.getN_PCT90()+1);
+			});
+			
+			if (cr.getID()==56) {
+				System.out.println("N_PCT50=" + cr.getN_PCT50());
+				System.out.println("N_PCT75=" + cr.getN_PCT75());
+				System.out.println("N_PCT90=" + cr.getN_PCT90());
+			}
+		});
+			
+		
+		
+		System.out.println("c3: " + System.currentTimeMillis());
 		
 /*		
 		int maxPubYear = pubData.stream().mapToInt(pub -> (pub.PY==null)?0:pub.PY).max().getAsInt();

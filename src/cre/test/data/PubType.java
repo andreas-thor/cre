@@ -43,4 +43,8 @@ public class PubType {
 
 
 	
+	public Integer getPY () {
+		return this.PY;
+	}
+	
 }
