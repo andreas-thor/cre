@@ -308,24 +308,24 @@ public class CRType {
 	
 	
 	public Double getPERC_YR() {
-		return PERC_YR.get();
+		return PERC_YR.getValue();
 	}
 	public SimpleDoubleProperty getPERC_YRProp() {
 		return PERC_YR;
 	}
 	public void setPERC_YR(Double pERC_YR) {
-		PERC_YR.set(pERC_YR);
+		PERC_YR.setValue(pERC_YR);
 	}
 	
 	
 	public Double getPERC_ALL() {
-		return PERC_ALL.get();
+		return PERC_ALL.getValue();
 	}
 	public SimpleDoubleProperty getPERC_ALLProp() {
 		return PERC_ALL;
 	}
 	public void setPERC_ALL(Double pERC_ALL) {
-		PERC_ALL.set(pERC_ALL);
+		PERC_ALL.setValue(pERC_ALL);
 	}
 	
 		
@@ -342,13 +342,13 @@ public class CRType {
 	
 	
 	public Double getPYEAR_PERC() {
-		return PYEAR_PERC.get();
+		return PYEAR_PERC.getValue();
 	}
 	public SimpleDoubleProperty getPYEAR_PERCProp() {
 		return PYEAR_PERC;
 	}
 	public void setPYEAR_PERC(Double pYEAR_PERC) {
-		PYEAR_PERC.set(pYEAR_PERC);
+		PYEAR_PERC.setValue(pYEAR_PERC);
 	}
 	
 	

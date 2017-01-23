@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import javax.jws.soap.SOAPBinding.Use;
-
 import org.apache.commons.math3.stat.Frequency;
 
 import cre.test.ui.StatusBar;
@@ -21,7 +19,7 @@ import cre.test.ui.UserSettings;
 import cre.test.ui.UserSettings.RangeType;
 import javafx.util.Pair;
 
-public class CRTable {
+public abstract class CRTable {
 
 	
 	
@@ -46,18 +44,21 @@ public class CRTable {
 	private Map<Integer, Integer> sumPerYear = new HashMap<Integer, Integer>();	// year -> sum of CRs (also for years without any CR)
 //	private Map<Integer, Integer> crPerYear = new HashMap<Integer, Integer>();	// year -> number of CRs (<0, i.e., only years with >=1 CR are in the map)
 	
-	private CRMatch crMatch;
+	public CRMatch crMatch;
 	
-	private CRTableEvent eventHandler;
+//	private CRTableEvent eventHandler;
 	
 	public File creFile;
 	
 	
+	public abstract void onUpdate ();
+	public abstract void onFilter (); 
+	
 	/**
 	 * @param stat status panel
 	 */
-	public CRTable (CRTableEvent eventHandler) {
-		this.eventHandler = eventHandler;
+	public CRTable (/* CRTableEvent eventHandler */) {
+//		this.eventHandler = eventHandler;
 		this.crMatch = new CRMatch(this);
 	}
 	
@@ -189,7 +190,7 @@ public class CRTable {
 				
 		// N_PYEARS = Number of DISTINCT PY (for a CR)
 		int[] rangePub = getMaxRangeCitingYear();
-		crData.parallelStream().forEach( cr -> {
+		crData.stream().forEach( cr -> {
 			cr.setN_PYEARS((int) cr.pubList.stream().filter(pub -> pub.PY!=null).mapToInt(pub -> pub.PY).distinct().count());
 			cr.setPYEAR_PERC( (cr.getRPY()==null) ? null : ((double)cr.getN_PYEARS()) /  (rangePub[1]-Math.max(rangePub[0], cr.getRPY())+1));
 		});
@@ -331,7 +332,7 @@ public class CRTable {
 			UserSettings.get().setRange(RangeType.CurrentYearRange, this.getMaxRangeYear());
 			duringInit = false;
 		}
-		eventHandler.onUpdate();
+		onUpdate();
 	}
 
 	
@@ -567,7 +568,7 @@ public class CRTable {
 	 */
 	public void filterByYear (int[] range) {
 		crData.stream().forEach ( it -> { it.setVI(((it.getRPY()!=null) && (range[0]<=it.getRPY()) && (range[1]>=it.getRPY())) || ((it.getRPY()==null) && (this.showNull))); });
-		eventHandler.onFilter();
+		onFilter();
 	}
 	
 	
@@ -579,7 +580,7 @@ public class CRTable {
 	public void setShowNull (boolean showNull) {
 		this.showNull = showNull;
 		crData.stream().forEach ( it -> { if (it.getRPY() == null) it.setVI(showNull);  });
-		eventHandler.onFilter();
+		onFilter();
 	}
 	
 	/**

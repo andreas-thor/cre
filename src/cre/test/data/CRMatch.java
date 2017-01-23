@@ -13,13 +13,27 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 import cre.test.ui.StatusBar;
-import cre.test.ui.UIMatchPanelFactory;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
 public class CRMatch {
 
 
+	public static enum ManualMatchType { 
+		SAME ("Same"), 
+		DIFFERENT ("Different"),
+		EXTRACT ("Extract");
+		
+		public final String label;
+		ManualMatchType(String label) {
+			this.label = label;
+		}
+	};
+	
+	
+
+	
+	
 	class Pair {
 		Integer id1;
 		Integer id2;
@@ -94,7 +108,7 @@ public class CRMatch {
 		}
 		
 		System.out.println(System.currentTimeMillis());
-		
+		System.out.println("CRID2Index ist " + crId2Index.size());
 		if (removed) {
 //			println "removed"
 //			println System.currentTimeMillis()
@@ -194,7 +208,7 @@ public class CRMatch {
 	 * @throws Exception 
 	 */
 	
-	public void doBlocking () throws Exception {
+	public boolean doBlocking () {
 		
 		// standard blocking: year + first letter of last name
 		StatusBar.get().setValue(String.format("%1$s: Start Blocking of ${crTab.crData.size()} objects", new Date()), 0);
@@ -303,7 +317,7 @@ public class CRMatch {
 		System.out.println("CRMatch> matchresult size is " + size(false));
 		StatusBar.get().setValue(String.format("%1$s: Matching done", startdate), 0);
 		
-		updateClusterId(threshold, false, false, false, false);
+		return updateClusterId(threshold, false, false, false, false);
 	}
 	
 
@@ -315,10 +329,10 @@ public class CRMatch {
 	 * @param useVol
 	 * @param usePag
 	 * @param useDOI
-	 * @throws Exception
+	 * @return true if okay; false otherwise
 	 */
 	
-	public void updateClusterId (double threshold, boolean useClustering, boolean useVol, boolean usePag, boolean useDOI) throws Exception {
+	public boolean updateClusterId (double threshold, boolean useClustering, boolean useVol, boolean usePag, boolean useDOI) {
 		
 		StatusBar.get().setValue ("${new Date()}: Prepare clustering ...", 0);
 		
@@ -334,7 +348,7 @@ public class CRMatch {
 			clusterId2Objects.put (it.getCID2(), new HashSet<Integer>());
 			clusterId2Objects.get (it.getCID2()).add(it.getID());
 		});
-		clusterMatch( null, threshold, useVol, usePag, useDOI);	// null == all objects are considered for clustering
+		return clusterMatch( null, threshold, useVol, usePag, useDOI);	// null == all objects are considered for clustering
 		
 		
 		
@@ -347,13 +361,15 @@ public class CRMatch {
 	 * @param id list of object ids to be considered for clustering (null=all objects)
 	 * @param threshold
 	 * @param stat
-	 * @throws Exception
+	 * @return true if okay; false if interrupted
 	 */
 	
 	
-	private void clusterMatch (Set<Integer> id, double threshold, boolean useVol, boolean usePag, boolean useDOI) throws Exception {
+	private boolean clusterMatch (Set<Integer> id, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
 		
 		System.out.println("ClusterMatch with Threshold " + threshold);
+		System.out.println("CRID2Index ist " + crId2Index.size());
+
 		Date startdate = new Date();
 		int mSize = (size(false)+size(true));
 		int count = 0;
@@ -367,7 +383,7 @@ public class CRMatch {
 		// for all domain objects (id1)
 		for (int id1: id) {
 			
-			if (Thread.interrupted()) throw new Exception();
+			if (Thread.interrupted()) return false;
 			StatusBar.get().setValue (String.format("%1$s: Clustering with threshold %2$f in progress ...", startdate, threshold), (int)Math.round (++count*100d/mSize));
 			
 			// for all matching range objects (id2 with id1<id2) 
@@ -410,6 +426,9 @@ public class CRMatch {
 		}
 		
 		StatusBar.get().setValue ("Clustering done", crTab.getInfoString());
+		System.out.println("OnFilter");
+		this.crTab.onFilter();
+		return true;
 	}
 	
 	
@@ -425,24 +444,24 @@ public class CRMatch {
 	 * @param useDOI
 	 * @throws Exception 
 	 */
-	public void matchManual (List<Integer> idx, int matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) throws Exception {
+	public boolean matchManual (List<CRType> selCR, ManualMatchType matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
 		
 		// TODO: Performanter machen
 		
 		
 		Long timestamp = System.currentTimeMillis();		// used to group together all individual mapping pairs of match operation
 		
-		Set<Integer> crIds = idx.stream().map(it -> crTab.crData.get(it).getID() ).collect(Collectors.toSet());
+		Set<Integer> crIds = selCR.stream().map(cr -> cr.getID()).collect(Collectors.toSet());
 		 
 		// manual-same is indicated by similarity = 2; different = -2
-		if ((matchType==UIMatchPanelFactory.matchSame) || (matchType==UIMatchPanelFactory.matchDifferent)) {
+		if ((matchType==ManualMatchType.SAME) || (matchType==ManualMatchType.DIFFERENT)) {
 			for (Integer id1: crIds) {
 				for (Integer id2: crIds) {
-					if (id1<id2) setMapping(id1, id2, ((matchType==UIMatchPanelFactory.matchSame) ? 2d : -2d), true, false, timestamp);
+					if (id1<id2) setMapping(id1, id2, ((matchType==ManualMatchType.SAME) ? 2d : -2d), true, false, timestamp);
 				}
 			}
 		}
-		if (matchType==UIMatchPanelFactory.matchExtract) {
+		if (matchType==ManualMatchType.EXTRACT) {
 			for (Integer id1: crIds) {
 				for (Integer id2: clusterId2Objects.get(crTab.crData.get(crId2Index.get(id1)).getCID2())) {
 					setMapping(id1, id2, -2d, true, false, timestamp);
@@ -451,11 +470,11 @@ public class CRMatch {
 		}
 
 		
-		if (matchType==UIMatchPanelFactory.matchSame) {	// cluster using the existing cluster
-			clusterMatch(crIds, matchThreshold, useVol, usePag, useDOI);
+		if (matchType==ManualMatchType.SAME) {	// cluster using the existing cluster
+			return clusterMatch(crIds, matchThreshold, useVol, usePag, useDOI);
 		} else { 	// re-initialize the clusters that may be subject to split and rerun clustering for all objects of the clusters
 			// find all relevant clusters
-			clusterMatch(reInitObjects (idx.stream().map ( it -> crTab.crData.get(it).getCID2()).collect(Collectors.toSet())), matchThreshold, useVol, usePag, useDOI);
+			return clusterMatch(reInitObjects (selCR.stream().map ( cr -> cr.getCID2()).collect(Collectors.toSet())), matchThreshold, useVol, usePag, useDOI);
 			
 		}
 		
@@ -495,10 +514,13 @@ public class CRMatch {
 	}
 	
 	
-	public void matchUndo (double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) throws Exception {
+	
+
+	
+	public boolean matchUndo (double matchThreshold, boolean useVol, boolean usePag, boolean useDOI)  {
 		
 		
-		if (timestampedPairs.keySet().size()==0) return;
+		if (timestampedPairs.keySet().size()==0) return true;
  
 		Long lastTimestamp = timestampedPairs.lastKey();
 		List<Pair> undoPairs = timestampedPairs.get(lastTimestamp);
@@ -512,7 +534,7 @@ public class CRMatch {
 
 		// remove last undo/able operation and re/cluster
 		timestampedPairs.remove(lastTimestamp);
-		clusterMatch(reInitObjects (clusterIds), matchThreshold, useVol, usePag, useDOI);
+		return clusterMatch(reInitObjects (clusterIds), matchThreshold, useVol, usePag, useDOI);
 		
 	}
 		

@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
+import cre.test.data.CRMatch.ManualMatchType;
 import cre.test.data.CRTable;
-import cre.test.data.CRTableEvent;
 import cre.test.data.CRType;
 import cre.test.data.source.CRE_csv;
 import cre.test.data.source.CRE_json;
@@ -86,20 +86,23 @@ public class Main {
 	};
 	
 	
+	
 	CRTable crTable;
 	CRChart crChart[] = new CRChart[2];
 	
 	@FXML Label lab;
 	@FXML GridPane mainPane;
 	@FXML ScrollPane scrollTab;
-	@FXML CRTableView tableView;
 
 	@FXML GridPane chartPane;
 	@FXML GridPane tablePane;
 	@FXML GridPane statPane;
-	@FXML GridPane matchPane;
-	
 
+	private CRTableView tableView;
+
+	private MatchPanel matchView;
+	
+	private Thread t;
 	
 	@FXML public void updateTable () {
 		
@@ -114,23 +117,27 @@ public class Main {
 	@FXML public void initialize() {
 	
 		statPane.add(StatusBar.get(), 0, 0);
-		matchPane.add(new MatchPanel(), 0, 0);		
 
-		crTable = new CRTable( new CRTableEvent() {
+		crTable = new CRTable() {
 			
 			@Override 
 			public void onUpdate() {
 				crTable.filterByYear(UserSettings.get().getRange(RangeType.CurrentYearRange));
-				Stream.of(crChart).forEach (it -> { it.updateData(crTable.getChartData()); });
-				Stream.of(crChart).forEach (it -> { it.setDomainRange (UserSettings.get().getRange(RangeType.CurrentYearRange)); });
+				
+				Platform.runLater(() -> {
+					Stream.of(crChart).forEach (it -> { it.updateData(crTable.getChartData()); });
+					Stream.of(crChart).forEach (it -> { it.setDomainRange (UserSettings.get().getRange(RangeType.CurrentYearRange)); });
+				});
 			}
 			
 			@Override
 			public void onFilter() {
-				tableView.setItems(FXCollections.observableArrayList(crTable.crData.stream().filter(cr -> cr.getVI()).collect(Collectors.toList())));
-				Stream.of(crChart).forEach (it -> { it.setDomainRange (UserSettings.get().getRange(RangeType.CurrentYearRange)); });
+				Platform.runLater(() -> {
+					tableView.setItems(FXCollections.observableArrayList(crTable.crData.stream().filter(cr -> cr.getVI()).collect(Collectors.toList())));
+					Stream.of(crChart).forEach (it -> { it.setDomainRange (UserSettings.get().getRange(RangeType.CurrentYearRange)); });
+				});
 			}
-		});
+		};
 				
 				
 //				new CRTableEvent() {
@@ -154,11 +161,38 @@ public class Main {
 //			}
 //		};
 		
-		
+
 		tableView = new CRTableView();
-		tablePane.add (tableView, 0, 0);
-		
-		
+		tablePane.add (tableView, 0, 1);
+
+		matchView = new MatchPanel() {
+
+			@Override
+			public void onUpdateClustering(double threshold, boolean useClustering, boolean useVol, boolean usePag, boolean useDOI) {
+				if (t!=null) t.interrupt();
+				t = new Thread( () -> { crTable.crMatch.updateClusterId(threshold, true, useVol, usePag, useDOI); });
+				t.start();
+			}
+
+			@Override
+			public void onMatchManual(ManualMatchType type, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
+				List<CRType> toMatch = tableView.getSelectionModel().getSelectedItems();
+				if ((toMatch.size()==0) || ((toMatch.size()==1) && (type != ManualMatchType.EXTRACT))) {
+					new ConfirmAlert("Error during clustering!", true, new String[] {"Too few Cited References selected!"}).showAndWait();
+				} else {
+					crTable.crMatch.matchManual (toMatch, type, threshold, useVol, usePag, useDOI);
+				}
+			}
+
+			@Override
+			public void onMatchUnDo(double threshold, boolean useVol, boolean usePag, boolean useDOI) {
+				crTable.crMatch.matchUndo(threshold, useVol, usePag, useDOI);
+				
+			}
+			
+		};
+		matchView.setVisible(false);
+		tablePane.add(matchView, 0, 0);		
 		
 
 		crChart = new CRChart[] { new CRChart_JFreeChart(crTable, tableView), new CRChart_HighCharts(crTable, tableView) };
@@ -225,6 +259,7 @@ public class Main {
     		Wait wait = new Wait();
     		new Thread( () -> {
 				try { 
+					matchView.setVisible(false);
 					switch (source) {
 						case CRE_JSON: CRE_json.load (files.get(0), crTable); break;
 						case WOS_TXT: WoS_txt.load(files, crTable, UserSettings.get().getMaxCR(), UserSettings.get().getRange(RangeType.ImportYearRange)); break;
@@ -240,7 +275,8 @@ public class Main {
 					crTable.init();
 					Platform.runLater( () -> { new ConfirmAlert("Error during file import!", true, new String[] {"Out of Memory Error."}).showAndWait(); });							
 				} catch (Exception e3) {
-					Platform.runLater( () -> { new ExceptionStacktrace("Error during file import!", e3).showAndWait(); });
+					e3.printStackTrace();
+//					Platform.runLater( () -> { new ExceptionStacktrace("Error during file import!", e3).showAndWait(); });
 				}
 				
 //				crTable.filterByYear();
@@ -500,6 +536,27 @@ public class Main {
 			}
 		);
 	}
+
+
+
+
+
+
+	@FXML public void OnMenuStdCluster() {
+		
+		new Thread( () -> {
+			crTable.crMatch.doBlocking();
+			matchView.setVisible(true);
+			matchView.updateClustering(); 
+		}).start();
+	}
+
+
+
+
+
+
+	@FXML public void OnMenuStdMerge() {}
 
 
 
