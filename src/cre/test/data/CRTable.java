@@ -8,23 +8,21 @@ import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import javax.jws.soap.SOAPBinding.Use;
+
 import org.apache.commons.math3.stat.Frequency;
 
-import cre.test.Main.EventCRFilter;
 import cre.test.ui.StatusBar;
 import cre.test.ui.UserSettings;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import cre.test.ui.UserSettings.RangeType;
 import javafx.util.Pair;
 
 public class CRTable {
 
-	
 	
 	
 
@@ -40,6 +38,8 @@ public class CRTable {
 	public List<PubType> pubData = new ArrayList<PubType>();	// all Publication data
 	
 	public boolean duringUpdate = false;
+	public boolean duringInit = false;
+	
 	public boolean abort = false;
 	boolean showNull = false;
 	
@@ -48,8 +48,7 @@ public class CRTable {
 	
 	private CRMatch crMatch;
 	
-	private EventCRFilter eventFilter;
-	
+	private CRTableEvent eventHandler;
 	
 	public File creFile;
 	
@@ -57,12 +56,14 @@ public class CRTable {
 	/**
 	 * @param stat status panel
 	 */
-	public CRTable (EventCRFilter eventFilter) {
-		this.eventFilter = eventFilter;
+	public CRTable (CRTableEvent eventHandler) {
+		this.eventHandler = eventHandler;
 		this.crMatch = new CRMatch(this);
 	}
 	
-	
+
+
+
 	/**
 	 * Initialize empty CRTable
 	 */
@@ -76,6 +77,7 @@ public class CRTable {
 //		pubData.clear();
 		pubData = new ArrayList<PubType>();
 		creFile = null;
+		duringInit = true;
 	}
 	
 	
@@ -200,7 +202,11 @@ public class CRTable {
 			cr.pubList.stream().filter(pub -> pub.PY != null).collect(Collectors.groupingBy(PubType::getPY, Collectors.counting())).forEach((py, count) -> {
 				Pair<Integer, Integer> pair = new Pair<Integer, Integer>(cr.getRPY(), py);
 				mapRPY_PY_Count.putIfAbsent(pair, new Frequency());
-				mapRPY_PY_Count.get(pair).addValue(count);
+				
+				// consider #citations only ocnce
+//				if (mapRPY_PY_Count.get(pair).getCount(count)==0) {
+					mapRPY_PY_Count.get(pair).addValue(count);
+//				}
 			});
 		});
 		
@@ -213,7 +219,12 @@ public class CRTable {
 			cr.pubList.stream().filter(pub -> pub.PY != null).collect(Collectors.groupingBy(PubType::getPY, Collectors.counting())).forEach((py, count) -> {
 				Pair<Integer, Integer> pair = new Pair<Integer, Integer>(cr.getRPY(), py);
 				Frequency f = mapRPY_PY_Count.get(pair);
-				double perc = f.getCumPct(count-1); // -f.getPct(count);
+				
+				double perc = f.getCumPct(count);
+				// adjustment if there are multiple CRs with the same N_CR
+				if (f.getCount(count)>1) {
+					perc -= f.getPct(count)/2;
+				}
 		
 				if (cr.getID()==56) {
 					System.out.println("RPY=" + pair.getKey() + ", PY=" + pair.getValue() + ", Count=" + count + " ==> perc=" + perc);
@@ -315,7 +326,12 @@ public class CRTable {
 		duringUpdate = false;
 		
 		System.out.println(System.currentTimeMillis());
-		
+	
+		if (duringInit) {
+			UserSettings.get().setRange(RangeType.CurrentYearRange, this.getMaxRangeYear());
+			duringInit = false;
+		}
+		eventHandler.onUpdate();
 	}
 
 	
@@ -551,20 +567,19 @@ public class CRTable {
 	 */
 	public void filterByYear (int[] range) {
 		crData.stream().forEach ( it -> { it.setVI(((it.getRPY()!=null) && (range[0]<=it.getRPY()) && (range[1]>=it.getRPY())) || ((it.getRPY()==null) && (this.showNull))); });
-		eventFilter.onUpdate(range);
+		eventHandler.onFilter();
 	}
 	
 	
-	public void filterByYear () {
-		filterByYear (this.getMaxRangeYear());
-	}
+//	public void filterByYear () {
+//		filterByYear (this.getMaxRangeYear());
+//	}
 	
 	
 	public void setShowNull (boolean showNull) {
 		this.showNull = showNull;
 		crData.stream().forEach ( it -> { if (it.getRPY() == null) it.setVI(showNull);  });
-		eventFilter.onUpdate(null);
-
+		eventHandler.onFilter();
 	}
 	
 	/**

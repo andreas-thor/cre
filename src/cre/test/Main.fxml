@@ -91,10 +91,14 @@
 				</GridPane>
 			</GridPane>
 
-
-			<GridPane fx:id="tablePane">
-				<!-- here comes the list of columns dynamically -->
-
+			<GridPane>
+				<GridPane fx:id="matchPane" visible="true" GridPane.columnIndex="0" GridPane.rowIndex="0">
+					<!-- here comes the list of columns dynamically -->
+				</GridPane>
+			
+				<GridPane fx:id="tablePane" GridPane.vgrow="always" GridPane.hgrow="always" maxWidth="Infinity" maxHeight="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="1">
+					<!-- here comes the list of columns dynamically -->
+				</GridPane>
 			</GridPane>
 
 		</items>

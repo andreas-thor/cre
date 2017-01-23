@@ -17,8 +17,8 @@ public class UserSettings {
 	private Preferences userPrefs;
 
 	// ranges
-	public static enum RangeType { FilterByRPYRange, RemoveByRPYRange, RemoveByNCRRange, RetainByRPYRange, ImportYearRange }
-	private int[][] range = new int[][] { { -1, -1 }, { -1, -1 }, { -1, -1 }, { -1, -1 }, {0, 0} };
+	public static enum RangeType { FilterByRPYRange, RemoveByRPYRange, RemoveByNCRRange, RetainByRPYRange, ImportYearRange, CurrentYearRange }
+	private int[][] range = new int[][] { { -1, -1 }, { -1, -1 }, { -1, -1 }, { -1, -1 }, {0, 0}, {-1, -1} };
 
 	// directory for loading/saving files
 	private File lastFileDir = new File("");
@@ -60,7 +60,9 @@ public class UserSettings {
 	public void loadUserPrefs() {
 
 		for (RangeType r : RangeType.values()) {
-			setRange(r, new int[] { userPrefs.getInt(r.toString() + "0", -1), userPrefs.getInt(r.toString() + "1", -1) });
+			if (r != RangeType.CurrentYearRange) {
+				setRange(r, new int[] { userPrefs.getInt(r.toString() + "0", -1), userPrefs.getInt(r.toString() + "1", -1) });
+			}
 		}
 
 		for (int i = 0; i < columnVisible.length; i++) {
@@ -93,8 +95,10 @@ public class UserSettings {
 	public void saveUserPrefs(double windowWidth, double windowHeight, double windowX, double windowY) {
 
 		for (RangeType r : RangeType.values()) {
-			userPrefs.putInt(r.toString() + "0", getRange(r)[0]);
-			userPrefs.putInt(r.toString() + "1", getRange(r)[1]);
+			if (r != RangeType.CurrentYearRange) {
+				userPrefs.putInt(r.toString() + "0", getRange(r)[0]);
+				userPrefs.putInt(r.toString() + "1", getRange(r)[1]);
+			}
 		}
 
 		for (int i = 0; i < columnVisible.length; i++) {

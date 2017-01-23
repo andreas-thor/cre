@@ -12,6 +12,7 @@ import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRTable;
+import cre.test.data.CRTableEvent;
 import cre.test.data.CRType;
 import cre.test.data.source.CRE_csv;
 import cre.test.data.source.CRE_json;
@@ -21,6 +22,7 @@ import cre.test.ui.CRChart;
 import cre.test.ui.CRChart_HighCharts;
 import cre.test.ui.CRChart_JFreeChart;
 import cre.test.ui.CRTableView;
+import cre.test.ui.MatchPanel;
 import cre.test.ui.StatusBar;
 import cre.test.ui.UserSettings;
 import cre.test.ui.UserSettings.RangeType;
@@ -95,6 +97,7 @@ public class Main {
 	@FXML GridPane chartPane;
 	@FXML GridPane tablePane;
 	@FXML GridPane statPane;
+	@FXML GridPane matchPane;
 	
 
 	
@@ -106,32 +109,56 @@ public class Main {
 
 
 	
-	public interface EventCRFilter {
-		public void onUpdate (int[] range);
-	}
+	
 	
 	@FXML public void initialize() {
 	
 		statPane.add(StatusBar.get(), 0, 0);
-				
+		matchPane.add(new MatchPanel(), 0, 0);		
 
-		crTable = new CRTable(new EventCRFilter() {
+		crTable = new CRTable( new CRTableEvent() {
+			
+			@Override 
+			public void onUpdate() {
+				crTable.filterByYear(UserSettings.get().getRange(RangeType.CurrentYearRange));
+				Stream.of(crChart).forEach (it -> { it.updateData(crTable.getChartData()); });
+				Stream.of(crChart).forEach (it -> { it.setDomainRange (UserSettings.get().getRange(RangeType.CurrentYearRange)); });
+			}
+			
 			@Override
-			public void onUpdate(int[] range) {
-
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						tableView.setItems(FXCollections.observableArrayList(crTable.crData.stream().filter(cr -> cr.getVI()).collect(Collectors.toList())));
-						Stream.of(crChart).forEach (it -> { it.setDomainRange (range); });
-					}
-				});
+			public void onFilter() {
+				tableView.setItems(FXCollections.observableArrayList(crTable.crData.stream().filter(cr -> cr.getVI()).collect(Collectors.toList())));
+				Stream.of(crChart).forEach (it -> { it.setDomainRange (UserSettings.get().getRange(RangeType.CurrentYearRange)); });
 			}
 		});
+				
+				
+//				new CRTableEvent() {
+//			
+//			@Override
+//			public void onUpdate() {
+//				Platform.runLater(new Runnable() {
+//					@Override
+//					public void run() {
+//						tableView.setItems(FXCollections.observableArrayList(crTable.crData.stream().filter(cr -> cr.getVI()).collect(Collectors.toList())));
+//						Stream.of(crChart).forEach (it -> { it.setDomainRange (range); });
+//					}
+//				});
+//				
+//			}
+//			
+//			@Override
+//			public void onFilter(int[] range) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		};
 		
 		
 		tableView = new CRTableView();
 		tablePane.add (tableView, 0, 0);
+		
+		
 		
 
 		crChart = new CRChart[] { new CRChart_JFreeChart(crTable, tableView), new CRChart_HighCharts(crTable, tableView) };
@@ -216,12 +243,14 @@ public class Main {
 					Platform.runLater( () -> { new ExceptionStacktrace("Error during file import!", e3).showAndWait(); });
 				}
 				
-				crTable.filterByYear();
+//				crTable.filterByYear();
+				
+				
 				Platform.runLater(() -> { 
 					wait.close(); 
 					if (!crTable.abort) {
 						OnMenuDataInfo(); 
-						Stream.of(crChart).forEach (it -> { it.updateData(crTable.getChartData()); });
+//						Stream.of(crChart).forEach (it -> { it.updateData(crTable.getChartData()); });
 					}
 				});
 			}).start();
