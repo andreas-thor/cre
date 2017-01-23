@@ -118,6 +118,10 @@ public class Main {
 	
 		statPane.add(StatusBar.get(), 0, 0);
 
+		tableView = new CRTableView();
+		tablePane.add (tableView, 0, 1);
+
+		
 		crTable = new CRTable() {
 			
 			@Override 
@@ -139,31 +143,8 @@ public class Main {
 			}
 		};
 				
-				
-//				new CRTableEvent() {
-//			
-//			@Override
-//			public void onUpdate() {
-//				Platform.runLater(new Runnable() {
-//					@Override
-//					public void run() {
-//						tableView.setItems(FXCollections.observableArrayList(crTable.crData.stream().filter(cr -> cr.getVI()).collect(Collectors.toList())));
-//						Stream.of(crChart).forEach (it -> { it.setDomainRange (range); });
-//					}
-//				});
-//				
-//			}
-//			
-//			@Override
-//			public void onFilter(int[] range) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//		};
-		
 
-		tableView = new CRTableView();
-		tablePane.add (tableView, 0, 1);
+
 
 		matchView = new MatchPanel() {
 
@@ -194,8 +175,16 @@ public class Main {
 		matchView.setVisible(false);
 		tablePane.add(matchView, 0, 0);		
 		
-
-		crChart = new CRChart[] { new CRChart_JFreeChart(crTable, tableView), new CRChart_HighCharts(crTable, tableView) };
+		crChart = new CRChart[] {
+			new CRChart_JFreeChart () {
+				@Override protected void onSelectYear(int year) { tableView.orderByYearAndSelect(year); }
+				@Override protected void onYearRangeFilter(double min, double max) { crTable.filterByYear (new int[] {(int)Math.ceil(min), (int)Math.floor(max)}); }
+			}, 
+			new CRChart_HighCharts () {
+				@Override protected void onSelectYear(int year) { tableView.orderByYearAndSelect(year); }
+				@Override protected void onYearRangeFilter(double min, double max) { crTable.filterByYear (new int[] {(int)Math.ceil(min), (int)Math.floor(max)}); }
+			} 
+		};
 		for (int i=0; i<crChart.length; i++) {
 			chartPane.add(crChart[i].getNode(), 0, 0);
 			crChart[i].setVisible(UserSettings.get().getChartEngine()==i);
@@ -236,6 +225,9 @@ public class Main {
 	}
 	
 
+	
+
+	
     
     private void openFile (ImportFormat source) throws IOException {
     	

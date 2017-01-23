@@ -567,8 +567,10 @@ public abstract class CRTable {
 	 * @param to
 	 */
 	public void filterByYear (int[] range) {
-		crData.stream().forEach ( it -> { it.setVI(((it.getRPY()!=null) && (range[0]<=it.getRPY()) && (range[1]>=it.getRPY())) || ((it.getRPY()==null) && (this.showNull))); });
-		onFilter();
+		if (!duringUpdate) {
+			crData.stream().forEach ( it -> { it.setVI(((it.getRPY()!=null) && (range[0]<=it.getRPY()) && (range[1]>=it.getRPY())) || ((it.getRPY()==null) && (this.showNull))); });
+			onFilter();
+		}
 	}
 	
 	

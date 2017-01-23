@@ -25,7 +25,6 @@ import cre.test.data.CRTable;
 import cre.test.data.CRType;
 import cre.test.data.PubType;
 import cre.test.ui.StatusBar;
-import cre.test.ui.UserSettings;
 
 public class WoS_txt {
 

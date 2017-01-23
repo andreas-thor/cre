@@ -7,7 +7,6 @@ import java.util.stream.IntStream;
 
 import org.w3c.dom.Document;
 
-import cre.test.data.CRTable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
@@ -15,7 +14,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 
-public class CRChart_HighCharts extends CRChart {
+public abstract class CRChart_HighCharts extends CRChart {
 
 	
 	private WebView browser;
@@ -33,9 +32,9 @@ public class CRChart_HighCharts extends CRChart {
 	}
 
 	
-	public CRChart_HighCharts (CRTable crTab, CRTableView tabView) {
+	public CRChart_HighCharts () {
 
-		super(crTab, tabView);
+		super();
 		
 		browser = new WebView();
 		loaded = false;

@@ -22,10 +22,9 @@ import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
 
-import cre.test.data.CRTable;
 import javafx.scene.Node;
 
-public class CRChart_JFreeChart extends CRChart {
+public abstract class CRChart_JFreeChart extends CRChart {
 
 	private JFreeChart chart;
 	private ChartViewer chView;
@@ -35,9 +34,9 @@ public class CRChart_JFreeChart extends CRChart {
 	private boolean duringRangeSet;
 
 	
-	public CRChart_JFreeChart (CRTable crTab, CRTableView tabView) {
+	public CRChart_JFreeChart () {
 
-		super(crTab, tabView);
+		super();
 		duringRangeSet = false;
 		
 		ds = new DefaultXYDataset();

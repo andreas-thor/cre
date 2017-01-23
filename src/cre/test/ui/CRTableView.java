@@ -1,5 +1,6 @@
 package cre.test.ui;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 import cre.test.data.CRCluster;
@@ -129,16 +130,30 @@ public class CRTableView extends TableView<CRType> {
 	
 
 
-
-	public TableColumn<CRType, ?> getColumnByName (String name) {
-		
-		int idx = 0;
-		for (CRColumn e: CRColumn.values()) {
-			if (name.equalsIgnoreCase(e.id)) return columns[idx];
-			idx++;
+//	public TableColumn<CRType, ?> getColumnByName (String name) {
+//		
+//		int idx = 0;
+//		for (CRColumn e: CRColumn.values()) {
+//			if (name.equalsIgnoreCase(e.id)) return columns[idx];
+//			idx++;
+//		}
+//		
+//		return null;
+//	}
+	
+	
+	public void orderByYearAndSelect (int year) {
+		/* sort by year ASC, n_cr desc */
+		columns[CRColumn.RPY.ordinal()].setSortType(TableColumn.SortType.ASCENDING);
+		columns[CRColumn.N_CR.ordinal()].setSortType(TableColumn.SortType.DESCENDING);
+		getSortOrder().clear();
+		getSortOrder().add(columns[CRColumn.RPY.ordinal()]);
+		getSortOrder().add(columns[CRColumn.N_CR.ordinal()]);
+		Optional<CRType> first = getItems().stream().filter(cr -> cr.getRPY() == year).findFirst();
+		if (first.isPresent()) {
+			getSelectionModel().select(first.get());
+			scrollTo(first.get());
 		}
-		
-		return null;
 	}
 	
 }

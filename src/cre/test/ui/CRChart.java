@@ -1,24 +1,15 @@
 package cre.test.ui;
 
-import java.util.Optional;
-
-import cre.test.data.CRTable;
-import cre.test.data.CRType;
-import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.control.TableColumn;
 
 public abstract class CRChart {
 
 	public static String xAxisLabel = "Cited Reference Year";
 	public static String yAxisLabel = "Cited References";
 	
-	protected CRTableView tabView;
-	protected CRTable crTab;
 	
-	public CRChart (CRTable crTab, CRTableView tabView) {
-		this.crTab = crTab;
-		this.tabView = tabView;
+	public CRChart () {
+		super();
 	}
 	
 	public abstract Node getNode ();
@@ -45,27 +36,10 @@ public abstract class CRChart {
 		}
 	}
 	
-	protected void onSelectYear (int year) {
-		
-		/* sort by year ASC, n_cr desc */
-		Platform.runLater( () -> {
-			tabView.getColumnByName("RPY").setSortType(TableColumn.SortType.ASCENDING);
-			tabView.getColumnByName("N_CR").setSortType(TableColumn.SortType.DESCENDING);
-			tabView.getSortOrder().clear();
-			tabView.getSortOrder().add(tabView.getColumnByName("RPY"));
-			tabView.getSortOrder().add(tabView.getColumnByName("N_CR"));
-			Optional<CRType> first = tabView.getItems().stream().filter(cr -> cr.getRPY() == year).findFirst();
-			if (first.isPresent()) {
-				tabView.getSelectionModel().select(first.get());
-				tabView.scrollTo(first.get());
-			}
-		});
-	}
+	protected abstract void onSelectYear (int year);
 	
-	protected void onYearRangeFilter (double min, double max) {
-		if (! crTab.duringUpdate) {	// ignore updates during data update
-			crTab.filterByYear (new int[] {(int)Math.ceil(min), (int)Math.floor(max)});
-		}
-	}
+	protected abstract void onYearRangeFilter (double min, double max);
+	
+
 	
 }
