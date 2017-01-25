@@ -3,10 +3,8 @@ package cre.test.ui.dialog;
 import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
 
 import cre.test.CitedReferencesExplorer;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -34,15 +32,8 @@ public class About extends Alert {
 			HostServicesFactory.getInstance(CitedReferencesExplorer.app).showDocument(CitedReferencesExplorer.url);
 		});
 		grid.add(hp, 0, 2);
-		 
-		
 		
 		getDialogPane().setContent(grid);
-		
-		// Request focus on first field by default.
-
-//		Platform.runLater(() -> getDialogPane().lookupButton(ButtonType.OK).requestFocus());
-
 			
 	}
 	
