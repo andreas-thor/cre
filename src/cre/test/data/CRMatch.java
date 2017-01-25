@@ -211,7 +211,8 @@ public class CRMatch {
 	public boolean doBlocking () {
 		
 		// standard blocking: year + first letter of last name
-		StatusBar.get().setValue(String.format("%1$s: Start Blocking of ${crTab.crData.size()} objects", new Date()), 0);
+		StatusBar.get().setValue(String.format("Blocking of %d objects...", crTab.crData.size()));
+		
 		Map<String, ArrayList<Integer>> blocks = new HashMap<String, ArrayList<Integer>>();	// block key -> list of indexes (not IDs)!
 		int idx = 0;
 		for (CRType cr: crTab.crData) {
@@ -223,12 +224,8 @@ public class CRMatch {
 			idx++;
 		}
 
-		System.out.println(String.format("%1$s: Blocking done (%2$d blocks)", new Date(), blocks.size()));
-		
 		match.put(false, new HashMap<Integer,Map<Integer,Double>>());		// remove automatic match result, but preserve manual matching
 		Levenshtein l = new Levenshtein();
-		long progMax = blocks.size();
-		AtomicLong progCount = new AtomicLong(0);
 		
 		AtomicLong testCount = new AtomicLong(0);
 		
@@ -240,15 +237,16 @@ public class CRMatch {
 		// TODO: handle missing values
 		// TODO: incorporate title (from scopus)
 		
+		
+		StatusBar.get().initProgressbar(blocks.size(), String.format("Matching %d objects in %d blocks", crTab.crData.size(), blocks.size()));
+		
 		// Matching: author lastname & journal name
 		List<Pair> matchResult = blocks.entrySet().parallelStream().map( entry -> {
-			
+
+			StatusBar.get().incProgressbar();
+
 			List<Pair> result = new ArrayList<Pair>();
-			
 			ArrayList<Integer> crlist = entry.getValue();
-			
-			progCount.incrementAndGet();
-			StatusBar.get().setValue(String.format("%1$s: Matching in progress ...", startdate), (int) ((100d*progCount.get())/progMax));
 			
 			// allX = List of all AU_L values;
 			List<String> allX = crlist.stream().map ( it -> crTab.crData.get(it).getAU_L().toLowerCase() ).collect (Collectors.toList());
@@ -334,7 +332,7 @@ public class CRMatch {
 	
 	public boolean updateClusterId (double threshold, boolean useClustering, boolean useVol, boolean usePag, boolean useDOI) {
 		
-		StatusBar.get().setValue ("${new Date()}: Prepare clustering ...", 0);
+		StatusBar.get().setValue ("Prepare clustering ...");
 		
 		// initialize clustering; each objects forms its own cluster
 		// useClustering = true => re-use first cluster component
@@ -372,19 +370,23 @@ public class CRMatch {
 
 		Date startdate = new Date();
 		int mSize = (size(false)+size(true));
-		int count = 0;
+
+
 
 		if (id == null) {	// if no ids are given, use all ids with match pairs
 			id = new HashSet<Integer>();
 			id.addAll(match.get(false).keySet());
 			id.addAll(match.get(true).keySet());
 		}
+
+		StatusBar.get().initProgressbar(id.size(), String.format("Clustering with threshold %1$f...", threshold));
 		
 		// for all domain objects (id1)
 		for (int id1: id) {
 			
 			if (Thread.interrupted()) return false;
-			StatusBar.get().setValue (String.format("%1$s: Clustering with threshold %2$f in progress ...", startdate, threshold), (int)Math.round (++count*100d/mSize));
+			StatusBar.get().incProgressbar();
+//			StatusBar.get().setValue (String.format("%1$s: Clustering with threshold %2$f in progress ...", startdate, threshold), (int)Math.round (++count*100d/mSize));
 			
 			// for all matching range objects (id2 with id1<id2) 
 			Map<Integer, Double> tmpMap1 = match.get(false).get(id1) == null ? new HashMap<Integer, Double>() : match.get(false).get(id1);
@@ -427,7 +429,6 @@ public class CRMatch {
 		
 		StatusBar.get().setValue ("Clustering done", crTab.getInfoString());
 		System.out.println("OnFilter");
-		this.crTab.onFilter();
 		return true;
 	}
 	
@@ -452,6 +453,7 @@ public class CRMatch {
 		Long timestamp = System.currentTimeMillis();		// used to group together all individual mapping pairs of match operation
 		
 		Set<Integer> crIds = selCR.stream().map(cr -> cr.getID()).collect(Collectors.toSet());
+		System.out.println(crIds);
 		 
 		// manual-same is indicated by similarity = 2; different = -2
 		if ((matchType==ManualMatchType.SAME) || (matchType==ManualMatchType.DIFFERENT)) {
@@ -541,14 +543,12 @@ public class CRMatch {
 	
 	public void merge () {
 		
-		StatusBar.get().setValue ("Start merging ...", 0);
+		StatusBar.get().initProgressbar(clusterId2Objects.size(), String.format("Merging %d clusters...", clusterId2Objects.size()));
 				
-		double progressFactor = 100d / clusterId2Objects.keySet().size();
-		int cidx = 0;
 		for (Map.Entry<CRCluster, Set<Integer>> entry: clusterId2Objects.entrySet()) {
 //		clusterId2Objects.eachWithIndex { cid, crlist, cidx ->
-			
-			StatusBar.get().setValue ("Merging in progress ...", (int)(cidx*progressFactor));
+
+			StatusBar.get().incProgressbar();
 			
 			if (entry.getValue().size()>1) {
 				
@@ -578,8 +578,6 @@ public class CRMatch {
 				};
 				
 			}
-			
-			cidx++;
 		}
 		
 		// for all CRs that will eventually be removed: add the cluster representative to the crList of each publication and remove to-be-removed CRs

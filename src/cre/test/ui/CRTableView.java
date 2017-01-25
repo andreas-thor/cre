@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import cre.test.data.CRCluster;
 import cre.test.data.CRType;
+import cre.test.data.UserSettings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;

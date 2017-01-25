@@ -242,7 +242,7 @@ public class CRE_json {
 		if (crTab.abort) {
 			crTab.init();
 			crTab.updateData(false);
-			StatusBar.get().setValue("Loading CRE file aborted (due to user request)", 0);
+			StatusBar.get().setValue("Loading CRE file aborted (due to user request)");
 			throw new AbortedException();
 		}
 		

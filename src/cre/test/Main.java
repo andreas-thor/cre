@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
 
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
@@ -14,6 +17,8 @@ import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRMatch.ManualMatchType;
 import cre.test.data.CRTable;
 import cre.test.data.CRType;
+import cre.test.data.UserSettings;
+import cre.test.data.UserSettings.RangeType;
 import cre.test.data.source.CRE_csv;
 import cre.test.data.source.CRE_json;
 import cre.test.data.source.Scopus_csv;
@@ -24,13 +29,14 @@ import cre.test.ui.CRChart_JFreeChart;
 import cre.test.ui.CRTableView;
 import cre.test.ui.MatchPanel;
 import cre.test.ui.StatusBar;
-import cre.test.ui.UserSettings;
-import cre.test.ui.UserSettings.RangeType;
+import cre.test.ui.dialog.About;
+import cre.test.ui.dialog.CRInfo;
 import cre.test.ui.dialog.ConfirmAlert;
 import cre.test.ui.dialog.ExceptionStacktrace;
 import cre.test.ui.dialog.Info;
 import cre.test.ui.dialog.Range;
 import cre.test.ui.dialog.Settings;
+import cre.test.ui.dialog.TextInput;
 import cre.test.ui.dialog.Threshold;
 import cre.test.ui.dialog.Wait;
 import javafx.application.Platform;
@@ -39,12 +45,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -104,10 +110,7 @@ public class Main {
 	
 	private Thread t;
 	
-	@FXML public void updateTable () {
-		
-		
-	}
+
 	
 
 
@@ -116,33 +119,22 @@ public class Main {
 	
 	@FXML public void initialize() {
 	
+		crTable = new CRTable();
 		statPane.add(StatusBar.get(), 0, 0);
 
 		tableView = new CRTableView();
 		tablePane.add (tableView, 0, 1);
-
-		
-		crTable = new CRTable() {
-			
-			@Override 
-			public void onUpdate() {
-				crTable.filterByYear(UserSettings.get().getRange(RangeType.CurrentYearRange));
-				
-				Platform.runLater(() -> {
-					Stream.of(crChart).forEach (it -> { it.updateData(crTable.getChartData()); });
-					Stream.of(crChart).forEach (it -> { it.setDomainRange (UserSettings.get().getRange(RangeType.CurrentYearRange)); });
-				});
+		tableView.setOnKeyPressed(e -> {
+			if (e.getCode() == KeyCode.DELETE) {
+				OnMenuDataRemoveSelected();
 			}
-			
-			@Override
-			public void onFilter() {
-				Platform.runLater(() -> {
-					tableView.setItems(FXCollections.observableArrayList(crTable.crData.stream().filter(cr -> cr.getVI()).collect(Collectors.toList())));
-					Stream.of(crChart).forEach (it -> { it.setDomainRange (UserSettings.get().getRange(RangeType.CurrentYearRange)); });
-				});
+			if (e.getCode() == KeyCode.SPACE) {
+				List<CRType> sel = tableView.getSelectionModel().getSelectedItems();
+				if (sel.size()==1) {
+					new CRInfo(sel.get(0)).showAndWait();	
+				}
 			}
-		};
-				
+		});
 
 
 
@@ -151,7 +143,10 @@ public class Main {
 			@Override
 			public void onUpdateClustering(double threshold, boolean useClustering, boolean useVol, boolean usePag, boolean useDOI) {
 				if (t!=null) t.interrupt();
-				t = new Thread( () -> { crTable.crMatch.updateClusterId(threshold, true, useVol, usePag, useDOI); });
+				t = new Thread( () -> { 
+					crTable.crMatch.updateClusterId(threshold, true, useVol, usePag, useDOI); 
+					tableView.refresh();
+				});
 				t.start();
 			}
 
@@ -161,14 +156,21 @@ public class Main {
 				if ((toMatch.size()==0) || ((toMatch.size()==1) && (type != ManualMatchType.EXTRACT))) {
 					new ConfirmAlert("Error during clustering!", true, new String[] {"Too few Cited References selected!"}).showAndWait();
 				} else {
+					System.out.println(toMatch);
 					crTable.crMatch.matchManual (toMatch, type, threshold, useVol, usePag, useDOI);
+					
+					 tableView.getColumns().get(0).setVisible(false);
+					 tableView.getColumns().get(0).setVisible(true);
+					 
+//					tableView.refresh();
+//					tableView.sort();
 				}
 			}
 
 			@Override
 			public void onMatchUnDo(double threshold, boolean useVol, boolean usePag, boolean useDOI) {
 				crTable.crMatch.matchUndo(threshold, useVol, usePag, useDOI);
-				
+				tableView.refresh();
 			}
 			
 		};
@@ -178,11 +180,11 @@ public class Main {
 		crChart = new CRChart[] {
 			new CRChart_JFreeChart () {
 				@Override protected void onSelectYear(int year) { tableView.orderByYearAndSelect(year); }
-				@Override protected void onYearRangeFilter(double min, double max) { crTable.filterByYear (new int[] {(int)Math.ceil(min), (int)Math.floor(max)}); }
+				@Override protected void onYearRangeFilter(double min, double max) { filterData (new int[] {(int)Math.ceil(min), (int)Math.floor(max)}); }
 			}, 
 			new CRChart_HighCharts () {
 				@Override protected void onSelectYear(int year) { tableView.orderByYearAndSelect(year); }
-				@Override protected void onYearRangeFilter(double min, double max) { crTable.filterByYear (new int[] {(int)Math.ceil(min), (int)Math.floor(max)}); }
+				@Override protected void onYearRangeFilter(double min, double max) { filterData (new int[] {(int)Math.ceil(min), (int)Math.floor(max)}); }
 			} 
 		};
 		for (int i=0; i<crChart.length; i++) {
@@ -195,27 +197,30 @@ public class Main {
 		CitedReferencesExplorer.stage.setOnCloseRequest(event -> {  
 			
 			event.consume();
+			
 			Alert exit = new Alert(AlertType.CONFIRMATION);
 			exit.setTitle ("Warning");
 			exit.setHeaderText("Save before exit?");
 			exit.getDialogPane().getButtonTypes().clear();
 			exit.getDialogPane().getButtonTypes().addAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
-			((Button) exit.getDialogPane().lookupButton(ButtonType.YES)).setDefaultButton (false);
-			((Button) exit.getDialogPane().lookupButton(ButtonType.CANCEL)).setDefaultButton (true);
+//			((Button) exit.getDialogPane().lookupButton(ButtonType.YES)).setDefaultButton (false);
+//			((Button) exit.getDialogPane().lookupButton(ButtonType.CANCEL)).setDefaultButton (true);
+			
 			exit.showAndWait().ifPresent(button -> {
-				
-				if (button != ButtonType.CANCEL) {
-					if (button == ButtonType.YES) {
-						try {
-							saveFile(ExportFormat.CRE_JSON);
-						} catch (Exception e) {
-							Platform.runLater( () -> { new ExceptionStacktrace("Error during file export!", e).showAndWait(); });
-							return;
-						}
+
+				if (button == ButtonType.CANCEL) return;
+
+				if (button == ButtonType.YES) {
+					try {
+						if (!saveFile(ExportFormat.CRE_JSON, false)) return;
+					} catch (Exception e) {
+						Platform.runLater( () -> { new ExceptionStacktrace("Error during file export!", e).showAndWait(); });
+						return;
 					}
-					UserSettings.get().saveUserPrefs(CitedReferencesExplorer.stage.getWidth(), CitedReferencesExplorer.stage.getHeight(), CitedReferencesExplorer.stage.getX(), CitedReferencesExplorer.stage.getY());
-					CitedReferencesExplorer.stage.close();
 				}
+				
+				UserSettings.get().saveUserPrefs(CitedReferencesExplorer.stage.getWidth(), CitedReferencesExplorer.stage.getHeight(), CitedReferencesExplorer.stage.getX(), CitedReferencesExplorer.stage.getY());
+				CitedReferencesExplorer.stage.close();
 			});
 		});
 
@@ -225,7 +230,25 @@ public class Main {
 	}
 	
 
+	private void updateData (int[] range) {
+		Platform.runLater(() -> { 
+			Stream.of(crChart).forEach (it -> { it.updateData(crTable.getChartData()); } );
+		});
+		filterData(range);
+	}
 	
+	private void filterData (int[] range) {
+		
+		if (range != null) {
+			UserSettings.get().setRange(RangeType.CurrentYearRange, range);
+		}
+		
+		Platform.runLater( () -> {
+			crTable.filterByYear(UserSettings.get().getRange(RangeType.CurrentYearRange));
+			tableView.setItems(FXCollections.observableArrayList(crTable.crData.stream().filter(cr -> cr.getVI()).collect(Collectors.toList())));
+			Stream.of(crChart).forEach (it -> { it.setDomainRange (UserSettings.get().getRange(RangeType.CurrentYearRange)); });
+		});
+	}
 
 	
     
@@ -277,7 +300,11 @@ public class Main {
 				Platform.runLater(() -> { 
 					wait.close(); 
 					if (!crTable.abort) {
-						OnMenuDataInfo(); 
+						OnMenuDataInfo();
+						updateData(crTable.getMaxRangeYear());
+						CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title + ((crTable.creFile == null) ? "" : " - " + crTable.creFile.getAbsolutePath()));
+						
+//						crTable.filterByYear(UserSettings.get().getRange(RangeType.CurrentYearRange));
 //						Stream.of(crChart).forEach (it -> { it.updateData(crTable.getChartData()); });
 					}
 				});
@@ -288,34 +315,48 @@ public class Main {
 		}
     }
     
+    private boolean saveFile (ExportFormat source) throws IOException {
+    	return saveFile(source, true);
+    }
     
-    private void saveFile (ExportFormat source) throws IOException {
+    private boolean saveFile (ExportFormat source, boolean saveAs) throws IOException {
 
-    	FileChooser fileChooser = new FileChooser();
-    	fileChooser.setTitle(source.label);
-   		fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
-    	fileChooser.getExtensionFilters().add(source.filter); 
-    	fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[]{"*.*"})));
-
-   		File selFile = fileChooser.showSaveDialog(CitedReferencesExplorer.stage);
-   		if (selFile != null) {
+    	File selFile;
+    	if ((source == ExportFormat.CRE_JSON) && (crTable.creFile != null) && (!saveAs)) {
+    		selFile = crTable.creFile;
+    	} else {
+	    	FileChooser fileChooser = new FileChooser();
+	    	fileChooser.setTitle(source.label);
+	   		fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
+	    	fileChooser.getExtensionFilters().add(source.filter); 
+	    	fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[]{"*.*"})));
+	   		selFile = fileChooser.showSaveDialog(CitedReferencesExplorer.stage);
+    	}
+    	
+   		if (selFile == null) return false;
    			
-   			new Thread( () -> {
-   				try {
-		   			switch (source) {
-			   			case CRE_JSON: CRE_json.save(selFile, crTable); break;
-						case WOS_TXT: WoS_txt.save(selFile, crTable); break;
-						case SCOPUS_CSV: Scopus_csv.save(selFile, crTable); break;
-						case CRE_CSV_CR: CRE_csv.saveCR(selFile, crTable); break;
-						case CRE_CSV_PUB: CRE_csv.savePub(selFile, crTable); break;
-						case CRE_CSV_CR_PUB: CRE_csv.saveCRPub(selFile, crTable); break;
-						case CRE_CSV_GRAPH: CRE_csv.saveGraph(selFile, crTable); break;
-		   			}
-   				} catch (Exception e) {
-					Platform.runLater( () -> { new ExceptionStacktrace("Error during file export!", e).showAndWait(); });
-				}
-   			}).start();
-   		}
+		new Thread( () -> {
+			try {
+	   			switch (source) {
+		   			case CRE_JSON: CRE_json.save(selFile, crTable); break;
+					case WOS_TXT: WoS_txt.save(selFile, crTable); break;
+					case SCOPUS_CSV: Scopus_csv.save(selFile, crTable); break;
+					case CRE_CSV_CR: CRE_csv.saveCR(selFile, crTable); break;
+					case CRE_CSV_PUB: CRE_csv.savePub(selFile, crTable); break;
+					case CRE_CSV_CR_PUB: CRE_csv.saveCRPub(selFile, crTable); break;
+					case CRE_CSV_GRAPH: CRE_csv.saveGraph(selFile, crTable); break;
+	   			}
+	   			
+	   			Platform.runLater( () -> {
+					CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title + ((crTable.creFile == null) ? "" : " - " + crTable.creFile.getAbsolutePath()));
+	   			});
+				
+			} catch (Exception e) {
+				Platform.runLater( () -> { new ExceptionStacktrace("Error during file export!", e).showAndWait(); });
+			}
+		}).start();
+
+		return true;
     }
     
     
@@ -337,11 +378,11 @@ public class Main {
 	}
 
 	@FXML public void OnMenuFileSave() throws IOException {
-		saveFile(ExportFormat.CRE_JSON);
+		saveFile(ExportFormat.CRE_JSON, false);
 	}
 
 	@FXML public void OnMenuFileSaveAs() throws IOException {
-		saveFile(ExportFormat.CRE_JSON);
+		saveFile(ExportFormat.CRE_JSON, true);
 	}
 
 	@FXML public void OnMenuFileExportWoS() throws IOException {
@@ -413,7 +454,7 @@ public class Main {
 		new Range("Filter Cited References", "Select Range of Cited References Years", UserSettings.RangeType.FilterByRPYRange, crTable.getMaxRangeYear())
 			.showAndWait()
 			.ifPresent( range -> { 
-				crTable.filterByYear(range); 
+				filterData(range);
 			}
 		);
 	}
@@ -425,8 +466,11 @@ public class Main {
 		int n = toDelete.size();
 		new ConfirmAlert("Remove Cited References", n==0, new String[] {"No Cited References selected.", String.format("Would you like to remove all %d selected Cited References?", n)})
 			.showAndWait()
-			.ifPresent( confirmed -> {
-				if (confirmed) crTable.remove(toDelete);
+			.ifPresent( btn -> {
+				if (btn==ButtonType.YES) {
+					crTable.remove(toDelete);
+					updateData(null);
+				}
 			}
 		);
 	}
@@ -437,8 +481,11 @@ public class Main {
 		int n = crTable.getNumberWithoutYear();
 		new ConfirmAlert("Remove Cited References", n==0, new String[] {"No Cited References w/o Year.", String.format("Would you like to remove all %d Cited References w/o Year?", n)})
 			.showAndWait()
-			.ifPresent( confirmed -> {
-				if (confirmed) crTable.removeWithoutYear();
+			.ifPresent( btn -> {
+				if (btn==ButtonType.YES) {
+					crTable.removeWithoutYear();
+					updateData(null);
+				}
 			}
 		);
 	}
@@ -451,10 +498,13 @@ public class Main {
 			.showAndWait()
 			.ifPresent( range -> { 
 				long n =  crTable.getNumberByYear(range);
-				new ConfirmAlert(header, n==0, new String[] {String.format ("No Cited References with Cited Reference Year between %d and %d.", range[0], range[1]), String.format("Would you like to remove all %1$d Cited References w/o Year?", n, range[0], range[1])})
+				new ConfirmAlert(header, n==0, new String[] {String.format ("No Cited References with Cited Reference Year between %d and %d.", range[0], range[1]), String.format("Would you like to remove all %d Cited References with Cited Reference Year between %d and %d?", n, range[0], range[1])})
 					.showAndWait()
-					.ifPresent( confirmed -> {
-						if (confirmed) crTable.removeByYear(range[0], range[1]);
+					.ifPresent( btn -> {
+						if (btn==ButtonType.YES) {
+							crTable.removeByYear(range[0], range[1]);
+							updateData(null);
+						}
 					}
 				);
 			}
@@ -471,8 +521,11 @@ public class Main {
 				long n =  crTable.getNumberByNCR(range);
 				new ConfirmAlert(header, n==0, new String[] {String.format ("No Cited References with Number of Cited References between %d and %d.", range[0], range[1]), String.format("Would you like to remove all %d Cited References with Number of Cited References between %d and %d?", n, range[0], range[1])})
 					.showAndWait()
-					.ifPresent( confirmed -> {
-						if (confirmed) crTable.removeByNCR(range);
+					.ifPresent( btn -> {
+						if (btn==ButtonType.YES) {
+							crTable.removeByNCR(range);
+							updateData(null);
+						}
 					}
 				);
 			}
@@ -491,14 +544,34 @@ public class Main {
 				long n =  crTable.getNumberByPercentYear(comp, threshold);
 				new ConfirmAlert(header, n==0, new String[] {String.format ("No Cited References with Percent in Year %s %.1f%%.", comp, 100*threshold), String.format("Would you like to remove all %d Cited References with Percent in Year %s %.1f%%?", n, comp, 100*threshold)})
 					.showAndWait()
-					.ifPresent( confirmed -> {
-						if (confirmed) crTable.removeByPercentYear(comp, threshold);
+					.ifPresent( btn -> {
+						if (btn==ButtonType.YES) {
+							crTable.removeByPercentYear(comp, threshold);
+							updateData(null);
+						}
 					}
 				);
 			}
 		);
 	}
 
+	
+	@FXML public void OnMenuDataRetainCRById() {
+		
+		new TextInput("Retain Cited References By Id", "Specify list if CR Ids")
+		.showAndWait()
+		.ifPresent( list -> {
+			if (list != null) {
+				int[] id = Arrays.stream(list.split("\\D")).mapToInt(Integer::valueOf).toArray();
+				List<CRType> toRetain = crTable.crData.stream().filter(cr -> 
+					IntStream.of(id).anyMatch(it -> cr.getID()==it)
+				).collect(Collectors.toList());
+				crTable.retain (toRetain);
+			}});
+	}
+
+
+	
 
 	@FXML public void OnMenuDataRetainSelected() {
 		
@@ -506,8 +579,11 @@ public class Main {
 		int n = toDelete.size();
 		new ConfirmAlert("Remove Publications", n==0, new String[] {"No Cited References selected.", String.format("Would you like to remove all citing publications that do not cite any of the selected %d Cited References?", n)})
 			.showAndWait()
-			.ifPresent( confirmed -> {
-				if (confirmed) crTable.removeByCR(toDelete);
+			.ifPresent( btn -> {
+				if (btn==ButtonType.YES) {
+					crTable.removeByCR(toDelete);
+					updateData(null);
+				}
 			}
 		);
 	}
@@ -521,8 +597,11 @@ public class Main {
 				long n =  crTable.getNumberOfPubs() - crTable.getNumberOfPubsByCitingYear(range);
 				new ConfirmAlert("Remove Publications", n==0, new String[] {String.format ("All Citing Publication Years are between between %d and %d.", range[0], range[1]), String.format("Would you like to remove all %d citing publications with publication year lower than %d or higher than %d?", n, range[0], range[1])})
 					.showAndWait()
-					.ifPresent( confirmed -> {
-						if (confirmed) crTable.removeByCitingYear(range);
+					.ifPresent( btn -> {
+						if (btn==ButtonType.YES) {
+							crTable.removeByCitingYear(range);
+							updateData(null);
+						}
 					}
 				);
 			}
@@ -539,6 +618,7 @@ public class Main {
 		new Thread( () -> {
 			crTable.crMatch.doBlocking();
 			matchView.setVisible(true);
+			tablePane.requestLayout();
 			matchView.updateClustering(); 
 		}).start();
 	}
@@ -546,9 +626,35 @@ public class Main {
 
 
 
+	@FXML public void OnMenuStdMerge() {
+
+		
+		long n = crTable.getSize()-crTable.crMatch.getNoOfClusters();
+		new ConfirmAlert("Merge clusters", n==0, new String[] {"No Clusters to merge.", String.format("Merging will aggregate %d Cited References! Are you sure?", n)})
+			.showAndWait()
+			.ifPresent( btn -> {
+				if (btn==ButtonType.YES) {
+					new Thread( () -> {
+						crTable.crMatch.merge();
+						matchView.setVisible(false);
+						tablePane.requestLayout();
+					}).start();
+				}
+			});
+	}
 
 
-	@FXML public void OnMenuStdMerge() {}
+	@FXML public void OnMenuHelpManual() {
+		HostServicesFactory.getInstance(CitedReferencesExplorer.app).showDocument(CitedReferencesExplorer.url);
+	}
+
+
+	@FXML public void OnMenuHelpAbout() {
+		new About().showAndWait();
+	}
+
+
+
 
 
 

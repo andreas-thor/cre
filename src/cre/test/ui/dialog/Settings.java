@@ -2,11 +2,11 @@ package cre.test.ui.dialog;
 
 import java.io.IOException;
 
+import cre.test.data.UserSettings;
+import cre.test.data.UserSettings.RangeType;
 import cre.test.ui.CRTableView;
 import cre.test.ui.CRTableView.CRColumn;
 import cre.test.ui.CRTableView.ColGroup;
-import cre.test.ui.UserSettings;
-import cre.test.ui.UserSettings.RangeType;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;

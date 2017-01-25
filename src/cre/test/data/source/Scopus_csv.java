@@ -191,13 +191,13 @@ public class Scopus_csv  {
 			if (crTab.abort) {
 				crTab.init();
 				crTab.updateData(false);
-				StatusBar.get().setValue(String.format("%1$s: Loading Scopus files aborted (due to user request)", startDate), 0);
+				StatusBar.get().setValue ("Loading Scopus files aborted (due to user request)");
 				throw new AbortedException();
 			}
 
 			// Check for maximal number of CRs
 			if ((maxCR>0) && (countCR.get()>=maxCR)) {
-				StatusBar.get().setValue(String.format("$1%s: Loading Scopus files aborted (due to maximal number of CRs)", startDate), 0);
+				StatusBar.get().setValue("Loading Scopus files aborted (due to maximal number of CRs)");
 				crTab.createCRList();
 				crTab.updateData(false);
 				throw new FileTooLargeException ((int) countCR.get());

@@ -1,7 +1,7 @@
 package cre.test.ui.dialog;
 
-import cre.test.ui.UserSettings;
-import cre.test.ui.UserSettings.RangeType;
+import cre.test.data.UserSettings;
+import cre.test.data.UserSettings.RangeType;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
@@ -29,6 +29,12 @@ public class Range extends Dialog<int[]> {
 		setTitle(title);
 		setHeaderText(header);
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		
+		
+//		DialogPane pane = getDialogPane();
+//		pane.getButtonTypes().clear();
+//		pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		
 		
 		TextField[] tf = new TextField[] { new TextField(String.valueOf(range[0])), new TextField(String.valueOf(range[1])) }; 
 		CheckBox[] cb = new CheckBox[] { new CheckBox("Minimum"), new CheckBox("Maximum") }; 

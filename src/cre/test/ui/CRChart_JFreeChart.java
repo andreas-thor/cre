@@ -31,13 +31,12 @@ public abstract class CRChart_JFreeChart extends CRChart {
 	 
 	private DefaultXYDataset ds;
 
-	private boolean duringRangeSet;
-
+	private boolean duringUpdate;
 	
 	public CRChart_JFreeChart () {
 
 		super();
-		duringRangeSet = false;
+		duringUpdate = false;
 		
 		ds = new DefaultXYDataset();
 		chart = ChartFactory.createXYLineChart("", CRChart.xAxisLabel, CRChart.yAxisLabel, ds);
@@ -82,7 +81,7 @@ public abstract class CRChart_JFreeChart extends CRChart {
 		
 		// update table when zoom changes in chart
 		plot.addChangeListener(pcevent -> {
-			if (!duringRangeSet) {
+			if (!duringUpdate) {
 				System.out.println("onChange");
 				System.out.println(dAxis.getLowerBound());
 				System.out.println(dAxis.getUpperBound());
@@ -131,23 +130,25 @@ public abstract class CRChart_JFreeChart extends CRChart {
 	@Override
 	protected void setChartDomainRange(int[] range) {
 		org.jfree.data.Range dAxisRange = chart.getXYPlot().getDomainAxis().getRange();
-		if ((((int)Math.ceil (dAxisRange.getLowerBound())) != range[0]) || (((int)Math.floor(dAxisRange.getUpperBound())) != range[1])) { 
+//		if ((((int)Math.ceil (dAxisRange.getLowerBound())) != range[0]) || (((int)Math.floor(dAxisRange.getUpperBound())) != range[1])) { 
 			System.out.println("Adjusting");
 			System.out.println("Axis = " + dAxisRange.toString());
 			System.out.println("Year = " + range[0] + ", " + range[1]);
-			duringRangeSet = true;
+			duringUpdate = true;
 			if (range[0]==range[1]) {
 				chart.getXYPlot().getDomainAxis().setRange(range[0]-0.5, range[1]+0.5);
 			} else {
 				chart.getXYPlot().getDomainAxis().setRange(range[0], range[1]);
 			}
-			duringRangeSet = false;
+			duringUpdate = false;
 
-		}
+//		}
 	}
 
 	@Override
 	public void updateData(int[][] data) {
+		
+		this.duringUpdate = true;	// avoids triggering plot change listener
 		
 		// delete previous chart lines
 		while (ds.getSeriesCount()>0) {
@@ -158,6 +159,8 @@ public abstract class CRChart_JFreeChart extends CRChart {
 		double[][] series = Arrays.stream(data).map(it -> Arrays.stream(it).asDoubleStream().toArray() ).toArray(double[][]::new);
 		ds.addSeries(getSeriesLabel(0), new double[][] { series[0], series[1] });
 		ds.addSeries(getSeriesLabel(1), new double[][] { series[0], series[2] });
+		
+		this.duringUpdate = false;
 	}
 
 

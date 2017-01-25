@@ -204,13 +204,13 @@ public class WoS_txt {
 			if (crTab.abort) {
 				crTab.init();
 				crTab.updateData(false);
-				StatusBar.get().setValue("Loading WoS files aborted (due to user request)", 0);
+				StatusBar.get().setValue ("Loading WoS files aborted (due to user request)");
 				throw new AbortedException();
 			}
 
 			// Check for maximal number of CRs
 			if ((maxCR>0) && (countCR.get()>=maxCR)) {
-				StatusBar.get().setValue("Loading WoS files aborted (due to maximal number of CRs)", 0);
+				StatusBar.get().setValue("Loading WoS files aborted (due to maximal number of CRs)");
 				crTab.createCRList();
 				crTab.updateData(false);
 				throw new FileTooLargeException ((int) countCR.get());

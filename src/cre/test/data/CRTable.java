@@ -14,14 +14,12 @@ import java.util.stream.Stream;
 
 import org.apache.commons.math3.stat.Frequency;
 
-import cre.test.ui.StatusBar;
-import cre.test.ui.UserSettings;
-import cre.test.ui.UserSettings.RangeType;
 import javafx.util.Pair;
 
-public abstract class CRTable {
+public class CRTable {
 
 	
+
 	
 
 	
@@ -36,7 +34,6 @@ public abstract class CRTable {
 	public List<PubType> pubData = new ArrayList<PubType>();	// all Publication data
 	
 	public boolean duringUpdate = false;
-	public boolean duringInit = false;
 	
 	public boolean abort = false;
 	boolean showNull = false;
@@ -50,9 +47,6 @@ public abstract class CRTable {
 	
 	public File creFile;
 	
-	
-	public abstract void onUpdate ();
-	public abstract void onFilter (); 
 	
 	/**
 	 * @param stat status panel
@@ -78,7 +72,6 @@ public abstract class CRTable {
 //		pubData.clear();
 		pubData = new ArrayList<PubType>();
 		creFile = null;
-		duringInit = true;
 	}
 	
 	
@@ -154,7 +147,7 @@ public abstract class CRTable {
 		
 		// Determine sum citations per year
 		int[] rangeYear = getMaxRangeYear();
-		Map<Integer, Integer> sumPerYear = IntStream.rangeClosed(rangeYear[0], rangeYear[1]).mapToObj (it -> new Integer(it)).collect(Collectors.toMap(it->it, it->0));
+		sumPerYear = IntStream.rangeClosed(rangeYear[0], rangeYear[1]).mapToObj (it -> new Integer(it)).collect(Collectors.toMap(it->it, it->0));
 		crData.stream().filter (it -> it.getRPY() != null).forEach( it -> { sumPerYear.computeIfPresent(it.getRPY(), (year, sum) -> sum + it.getN_CR()); });
 		
 
@@ -196,6 +189,11 @@ public abstract class CRTable {
 		});
 		
 		System.out.println("c1: " + System.currentTimeMillis());
+		
+		
+		Indicators.computeNPCT(crData, rangePub[1]);
+		
+/*		
 
 		// SELECT RPY, PY, Frequency FROM CR-Pub GROUP BY RPY, PY
 		Map<Pair<Integer, Integer>, Frequency> mapRPY_PY_Count = new HashMap<Pair<Integer, Integer>, Frequency>();
@@ -245,7 +243,7 @@ public abstract class CRTable {
 			}
 		});
 			
-		
+		*/
 		
 		System.out.println("c3: " + System.currentTimeMillis());
 		
@@ -327,12 +325,6 @@ public abstract class CRTable {
 		duringUpdate = false;
 		
 		System.out.println(System.currentTimeMillis());
-	
-		if (duringInit) {
-			UserSettings.get().setRange(RangeType.CurrentYearRange, this.getMaxRangeYear());
-			duringInit = false;
-		}
-		onUpdate();
 	}
 
 	
@@ -350,10 +342,6 @@ public abstract class CRTable {
 				.toArray()[medianRange];
 			NCRperYearMedian.put(y, crs - median);
 		});
-		
-		System.out.println(System.currentTimeMillis());
-		
-		StatusBar.get().setValue("", getInfoString());
 		
 		return new int[][] {
 			
@@ -425,7 +413,16 @@ public abstract class CRTable {
 	public void remove (List<CRType> toDelete) {
 		
 		toDelete.stream().forEach( cr -> { cr.removed = true; }); 
-		crData.removeAll(toDelete);
+		crData.removeIf(cr -> cr.removed);
+		updateData(true);
+	}
+	
+	
+	public void retain (List<CRType> toRetain) {
+		
+		crData.stream().forEach(cr -> cr.removed = true);
+		toRetain.stream().forEach( cr -> { cr.removed = false; }); 
+		crData.removeIf(cr -> cr.removed);
 		updateData(true);
 	}
 	
@@ -569,7 +566,6 @@ public abstract class CRTable {
 	public void filterByYear (int[] range) {
 		if (!duringUpdate) {
 			crData.stream().forEach ( it -> { it.setVI(((it.getRPY()!=null) && (range[0]<=it.getRPY()) && (range[1]>=it.getRPY())) || ((it.getRPY()==null) && (this.showNull))); });
-			onFilter();
 		}
 	}
 	
@@ -582,7 +578,6 @@ public abstract class CRTable {
 	public void setShowNull (boolean showNull) {
 		this.showNull = showNull;
 		crData.stream().forEach ( it -> { if (it.getRPY() == null) it.setVI(showNull);  });
-		onFilter();
 	}
 	
 	/**

@@ -60,6 +60,10 @@
 					<MenuItem text="Remove by Percent in Year..." onAction="#OnMenuDataRemoveByPERC_YEAR" />
 
 					<SeparatorMenuItem />
+					
+					<MenuItem text="Retain Cited References byId..." onAction="#OnMenuDataRetainCRById" />
+
+					<SeparatorMenuItem />
 
 					<MenuItem text="Retain Publications citing Selected Cited References..." onAction="#OnMenuDataRetainSelected" />
 					<MenuItem text="Retain Publications within Citing Publication Year..." onAction="#OnMenuDataRetainByRPY" />
@@ -73,9 +77,9 @@
 			</Menu>
 			<Menu text="Help">
 				<items>
-					<MenuItem text="Online Manual" disable="true" />
+					<MenuItem text="Online Manual" onAction="#OnMenuHelpManual" />
 					<SeparatorMenuItem />
-					<MenuItem text="About" />
+					<MenuItem text="About" onAction="#OnMenuHelpAbout"/>
 				</items>
 			</Menu>
 		</menus>

@@ -2,7 +2,7 @@ package cre.test;
 
 import java.util.Locale;
 
-import cre.test.ui.UserSettings;
+import cre.test.data.UserSettings;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +14,9 @@ public class CitedReferencesExplorer extends Application {
 
 	
 	public static Stage stage;
+	public static Application app;
+	public static String url = "http://www.crexplorer.net";
+	public static String title = "CRExplorer (Version 1.71 DEVELOPMENT)";
 	
 	public static void main(String[] args) {
 		launch(args);
@@ -29,7 +32,7 @@ public class CitedReferencesExplorer extends Application {
 		setUserAgentStylesheet(STYLESHEET_MODENA);  // Switches to "Modena"
 		
 		CitedReferencesExplorer.stage = stage;
-		
+		CitedReferencesExplorer.app = this;
 		
 		stage.setWidth(UserSettings.get().getWindowWidth());
 		stage.setHeight(UserSettings.get().getWindowHeight());
@@ -41,7 +44,7 @@ public class CitedReferencesExplorer extends Application {
         Scene scene = new Scene(root); // , 800, 600);
         
         
-        stage.setTitle("FXML Welcome");
+		stage.setTitle(CitedReferencesExplorer.title);
         stage.setScene(scene);
         stage.show();
 	}

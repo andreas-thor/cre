@@ -19,12 +19,12 @@ public abstract class CRChart_HighCharts extends CRChart {
 	
 	private WebView browser;
 	private boolean loaded;
-	private boolean duringRangeSet;
+	private boolean duringUpdate;
 
 	public class ChartCallBack  {
 		
 		public void onRedraw(double min, double max) {
-			if (!duringRangeSet) onYearRangeFilter(min, max);
+			if (!duringUpdate) onYearRangeFilter(min, max);
 		}
 		public void onClick(double x) {
 			onSelectYear((int)Math.round(x));
@@ -38,7 +38,7 @@ public abstract class CRChart_HighCharts extends CRChart {
 		
 		browser = new WebView();
 		loaded = false;
-		duringRangeSet = false;
+		duringUpdate = false;
 		
 		WebEngine webEngine = browser.getEngine();
 		browser.setContextMenuEnabled(false);
@@ -78,15 +78,17 @@ public abstract class CRChart_HighCharts extends CRChart {
 	@Override
 	public void setChartDomainRange(int[] range) {
 		if (loaded) {
-			duringRangeSet = true;	// make sure that setting x-axis range does not trigger the onRedraw -> onYearRangeFilter
+			duringUpdate = true;	// make sure that setting x-axis range does not trigger the onRedraw -> onYearRangeFilter
 			browser.getEngine().executeScript(String.format("c.xAxis[0].setExtremes(%d, %d, true);", range[0], range[1]));
-			duringRangeSet = false;
+			duringUpdate = false;
 		}
 	}
 
 	@Override
 	public void updateData(int[][] data) {
 
+		duringUpdate = true;
+		
 		// series as JSON data
 		String[] json = IntStream.range(0, 2).mapToObj(s ->
 				IntStream.range(0, data[0].length).mapToObj(it -> "["+data[0][it]+","+data[s+1][it]+"]").collect(Collectors.joining(", "))
@@ -104,6 +106,8 @@ public abstract class CRChart_HighCharts extends CRChart {
 			browser.getEngine().executeScript(String.format("c.xAxis[0].setExtremes(%d, %d, false);", extremes[0][0], extremes[0][1]));
 			browser.getEngine().executeScript(String.format("c.yAxis[0].setExtremes(%d, %d, true);", Math.min(extremes[1][0], extremes[2][0]), Math.max(extremes[1][1], extremes[2][1])));
 		}
+		
+		duringUpdate = false;
 		
 	}
 

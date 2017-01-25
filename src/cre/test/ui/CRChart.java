@@ -1,5 +1,6 @@
 package cre.test.ui;
 
+import cre.test.data.UserSettings;
 import javafx.scene.Node;
 
 public abstract class CRChart {

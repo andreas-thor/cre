@@ -13,8 +13,8 @@ import au.com.bytecode.opencsv.CSVWriter;
 import cre.test.data.CRTable;
 import cre.test.data.CRType;
 import cre.test.data.PubType;
+import cre.test.data.UserSettings;
 import cre.test.ui.StatusBar;
-import cre.test.ui.UserSettings;
 
 public class CRE_csv {
 

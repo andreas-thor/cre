@@ -1,4 +1,4 @@
-package cre.test.ui;
+package cre.test.data;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.prefs.Preferences;
 
 import cre.test.CitedReferencesExplorer;
+import cre.test.ui.CRTableView;
+import cre.test.ui.CRTableView.CRColumn;
 import javafx.beans.property.SimpleBooleanProperty;
 
 public class UserSettings {

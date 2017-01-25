@@ -1,32 +1,45 @@
 package cre.test.ui.dialog;
 
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
-public class ConfirmAlert extends Dialog<Boolean> {
+public class ConfirmAlert extends Alert {
 
 	
 	public ConfirmAlert(String header, boolean condition, String[] message) {
+		
+		super (condition ? AlertType.ERROR : AlertType.WARNING);
 		
 		setHeaderText(header);
 		if (condition) {
 			setTitle ("Error");
 			setContentText(message[0]);
+			getDialogPane().getButtonTypes().clear();
 			getDialogPane().getButtonTypes().addAll(ButtonType.OK);
 			Platform.runLater(() -> getDialogPane().lookupButton(ButtonType.OK).requestFocus());
-
-			setResultConverter(dialogButton -> {
-			    return false;
-			});
 		} else {
 			setTitle ("Warning");
 			setContentText(message[1]);
-			getDialogPane().getButtonTypes().addAll(ButtonType.YES, ButtonType.NO);
-			Platform.runLater(() -> getDialogPane().lookupButton(ButtonType.NO).requestFocus());
-
-			setResultConverter(dialogButton -> {
-			    return (dialogButton == ButtonType.YES); 
+			
+			DialogPane pane = getDialogPane();
+			pane.getButtonTypes().clear();
+			pane.getButtonTypes().addAll(ButtonType.YES, ButtonType.NO);
+			pane.getButtonTypes().stream().map (pane::lookupButton).map (Button.class::cast).forEach( button -> {
+				button.setDefaultButton(false);
+				button.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+					if (KeyCode.ENTER.equals(event.getCode()) && event.getTarget() instanceof Button) {
+					      ((Button) event.getTarget()).fire();
+					   }
+				});
+			});
+			
+			Platform.runLater(() -> {
+				((Button) pane.lookupButton(ButtonType.NO)).requestFocus();
 			});
 		}
 		
