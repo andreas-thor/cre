@@ -12,6 +12,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import netscape.javascript.JSException;
 import netscape.javascript.JSObject;
 
 public abstract class CRChart_HighCharts extends CRChart {
@@ -44,7 +45,8 @@ public abstract class CRChart_HighCharts extends CRChart {
 		browser.setContextMenuEnabled(false);
 		JSObject jsobj = (JSObject) webEngine.executeScript("window");
 		jsobj.setMember("java", new ChartCallBack());
-		webEngine.load("file:///E:/Dev/CRE/src/cre/test/ui/highcharts/CRChart.html");
+		
+		webEngine.load(CRChart_HighCharts.class.getResource("highcharts/CRChart.html").toString());
 		
 		webEngine.documentProperty().addListener(new ChangeListener<Document>() {
 			@Override
@@ -102,9 +104,11 @@ public abstract class CRChart_HighCharts extends CRChart {
 		
 		// call Javascript to render chart
 		if (loaded) {
-			browser.getEngine().executeScript(String.format("updateData($.parseJSON('[%s]'), $.parseJSON('[%s]'), '%s', '%s', ['%s', '%s']);", json[0] ,json[1], CRChart.xAxisLabel, CRChart.yAxisLabel, getSeriesLabel(0), getSeriesLabel(1)));
-			browser.getEngine().executeScript(String.format("c.xAxis[0].setExtremes(%d, %d, false);", extremes[0][0], extremes[0][1]));
-			browser.getEngine().executeScript(String.format("c.yAxis[0].setExtremes(%d, %d, true);", Math.min(extremes[1][0], extremes[2][0]), Math.max(extremes[1][1], extremes[2][1])));
+			try {
+				browser.getEngine().executeScript(String.format("updateData($.parseJSON('[%s]'), $.parseJSON('[%s]'), '%s', '%s', ['%s', '%s']);", json[0] ,json[1], CRChart.xAxisLabel, CRChart.yAxisLabel, getSeriesLabel(0), getSeriesLabel(1)));
+				browser.getEngine().executeScript(String.format("c.xAxis[0].setExtremes(%d, %d, false);", extremes[0][0], extremes[0][1]));
+				browser.getEngine().executeScript(String.format("c.yAxis[0].setExtremes(%d, %d, true);", Math.min(extremes[1][0], extremes[2][0]), Math.max(extremes[1][1], extremes[2][1])));
+			} catch (JSException e) {}
 		}
 		
 		duringUpdate = false;

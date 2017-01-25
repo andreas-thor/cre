@@ -12,10 +12,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.apache.commons.math3.stat.Frequency;
-
-import javafx.util.Pair;
-
 public class CRTable {
 
 	

@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class CitedReferencesExplorer extends Application {
@@ -38,6 +39,7 @@ public class CitedReferencesExplorer extends Application {
 		stage.setHeight(UserSettings.get().getWindowHeight());
 		stage.setX(UserSettings.get().getWindowX());
 		stage.setY(UserSettings.get().getWindowY());
+		stage.getIcons().add(new Image("file:CRE32.png"));
 		
 		Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
 	    

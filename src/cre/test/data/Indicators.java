@@ -2,54 +2,15 @@ package cre.test.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.apache.commons.math3.stat.Frequency;
-
-import javafx.util.Pair;
 
 public class Indicators {
 
-	
-	public class CR_PY_Cit implements Comparable<CR_PY_Cit> {
 
-		private int cr;
-		private int py;
-		private int cit;
-		
-		public CR_PY_Cit(int cr, int py, int cit) {
-			super();
-			this.cr = cr;
-			this.py = py;
-			this.cit = cit;
-		}
-		
-		
-		@Override
-		public int compareTo(CR_PY_Cit o) {
-			if (this.cr < o.cr) return -1;
-			if (this.cr > o.cr) return +1;
-			return this.cr - o.cr;
-		}
-		
-		@Override
-		public boolean equals(Object obj) {
-			CR_PY_Cit o = (CR_PY_Cit) obj;
-			return (this.cr == o.cr) && (this.py == o.py); 
-		}
-		
-		@Override
-		public int hashCode() {
-			return cr;
-		}
-	}
-	
 	
 	public static void computeNPCT (ArrayList<CRType> crData, int maxPY) {
 		

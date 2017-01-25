@@ -368,9 +368,6 @@ public class CRMatch {
 		System.out.println("ClusterMatch with Threshold " + threshold);
 		System.out.println("CRID2Index ist " + crId2Index.size());
 
-		Date startdate = new Date();
-		int mSize = (size(false)+size(true));
-
 
 
 		if (id == null) {	// if no ids are given, use all ids with match pairs
@@ -386,7 +383,6 @@ public class CRMatch {
 			
 			if (Thread.interrupted()) return false;
 			StatusBar.get().incProgressbar();
-//			StatusBar.get().setValue (String.format("%1$s: Clustering with threshold %2$f in progress ...", startdate, threshold), (int)Math.round (++count*100d/mSize));
 			
 			// for all matching range objects (id2 with id1<id2) 
 			Map<Integer, Double> tmpMap1 = match.get(false).get(id1) == null ? new HashMap<Integer, Double>() : match.get(false).get(id1);
