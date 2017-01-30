@@ -1,6 +1,5 @@
 package cre.test.data;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,43 +11,39 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import cre.test.data.CRMatch.ManualMatchType;
+
 public class CRTable {
 
 	
 
-	
-
-	
 	protected ArrayList<CRType> crData = new ArrayList<CRType>(); 
-
+	protected List<PubType> pubData = new ArrayList<PubType>();	// all Publication data
+	protected CRMatch crMatch;
+	
 	
 	// public ObservableList<CRType> crDataObserved = FXCollections.observableArrayList(crData); // new   new ArrayList<CRType>();	// all CR data
 	
 	// this is automatic but too time consuming for filters
 	// public ObservableList<CRType> crData = FXCollections.observableArrayList( item -> new Observable[] { item.getVIProp() });
 	
-	public List<PubType> pubData = new ArrayList<PubType>();	// all Publication data
 	
-	public boolean duringUpdate = false;
 	
-	public boolean abort = false;
-	boolean showNull = false;
+	private boolean duringUpdate = false;
+	private boolean aborted;
+	private boolean showNull = false;
+	
+	
 	
 	private Map<Integer, Integer> sumPerYear = new HashMap<Integer, Integer>();	// year -> sum of CRs (also for years without any CR)
-//	private Map<Integer, Integer> crPerYear = new HashMap<Integer, Integer>();	// year -> number of CRs (<0, i.e., only years with >=1 CR are in the map)
 	
-	public CRMatch crMatch;
-	
-//	private CRTableEvent eventHandler;
-	
-	public File creFile;
+
 	
 	
 	/**
 	 * @param stat status panel
 	 */
-	public CRTable (/* CRTableEvent eventHandler */) {
-//		this.eventHandler = eventHandler;
+	public CRTable () {
 		this.crMatch = new CRMatch(this);
 	}
 	
@@ -67,7 +62,7 @@ public class CRTable {
 		crMatch = new CRMatch(this);
 //		pubData.clear();
 		pubData = new ArrayList<PubType>();
-		creFile = null;
+		setAborted(false);
 	}
 	
 	
@@ -654,6 +649,67 @@ public class CRTable {
 
 
 
+
+	public void addPub(PubType pub) {
+		this.pubData.add(pub);
+	}
+
+
+
+
+	public void addAllPub(List<PubType> pubs) {
+		this.pubData.addAll(pubs);
+	}
+
+
+
+
+	public void matchManual(List<CRType> toMatch, ManualMatchType type, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
+		this.crMatch.matchManual(toMatch, type, threshold, useVol, usePag, useDOI);
+	}
+
+	public void matchUndo(double threshold, boolean useVol, boolean usePag, boolean useDOI) {
+		this.crMatch.matchUndo(threshold, useVol, usePag, useDOI);
+	}
+
+
+
+
+	public void matchUpdateClusterId(double threshold, boolean useClustering, boolean useVol, boolean usePag, boolean useDOI) {
+		this.crMatch.updateClusterId(threshold, useClustering, useVol, usePag, useDOI);
+		
+	}
+
+
+	public int getNoOfClusters() {
+		return this.crMatch.getNoOfClusters();
+	}
+
+
+
+
+	public void matchMerge() {
+		this.crMatch.merge();
+	}
+
+
+
+
+	public void matchDoBlocking() {
+		this.crMatch.doBlocking();
+	}
+
+	public boolean hasMatches () {
+		return this.crMatch.hasMatches();
+	}
+	
+	public boolean isAborted() {
+		return aborted;
+	}
+
+	public void setAborted(boolean aborted) {
+		this.aborted = aborted;
+	}
 
 	
 	

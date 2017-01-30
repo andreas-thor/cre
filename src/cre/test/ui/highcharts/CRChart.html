@@ -9,9 +9,10 @@
 		<script type="text/javascript">
 		
 		var c;
-
+		var crejava;
 		
 	    function updateData (data0, data1, xAxisLabel, yAxisLabel, seriesLabel) {
+
 
 	        c = Highcharts.chart('container', {
 	            
@@ -27,12 +28,17 @@
 	                events: {
 	                    redraw: function () {
 	                    	var extremes = c.xAxis[0].getExtremes();
-	                    	java.onRedraw(extremes.min, extremes.max);
-	                    },
-	                    click: function(e) {
-	                    	java.onClick (e.xAxis[0].value);
+	                    	
+	                    	if (typeof crejava !== 'undefined') {
+	                    		crejava.onRedraw(extremes.min, extremes.max);
+	                    	}
 	                    }
-	                }
+                    },
+                    click: function(e) {
+                    	if (typeof crejava !== 'undefined') {
+                    		crejava.onClick (e.xAxis[0].value);
+                    	}
+                    }
 	                
 	            },
 	            
@@ -86,7 +92,9 @@
 	            		point: { 
 	    	            	events: {
 	    	                    click: function() {
-	    	                    	java.onClick (this.x);
+	    	                    	if (typeof crejava !== 'undefined') {
+	    	                    		crejava.onClick (this.x);
+	    	                    	}
 	    	                    }
 	    	                }
 	    	            }

@@ -18,8 +18,14 @@ public class CitedReferencesExplorer extends Application {
 	public static Application app;
 	public static String url = "http://www.crexplorer.net";
 	public static String title = "CRExplorer (Version 1.71 DEVELOPMENT; Jan-30-2017)";
+	public static String loadOnOpen = null;
 	
 	public static void main(String[] args) {
+
+		if ((args.length>1) && (args[0].equals ("-open"))) {
+			loadOnOpen = args[1];
+		}
+		
 		launch(args);
 	}
 
@@ -40,13 +46,11 @@ public class CitedReferencesExplorer extends Application {
 		stage.setX(UserSettings.get().getWindowX());
 		stage.setY(UserSettings.get().getWindowY());
 		stage.getIcons().add(new Image("file:CRE32.png"));
+		stage.setTitle(CitedReferencesExplorer.title);
+
 		
 		Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
-	    
         Scene scene = new Scene(root); // , 800, 600);
-        
-        
-		stage.setTitle(CitedReferencesExplorer.title);
         stage.setScene(scene);
         stage.show();
 	}

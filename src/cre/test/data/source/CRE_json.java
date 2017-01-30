@@ -31,7 +31,6 @@ public class CRE_json {
 	public static void load (File file, CRTable crTab) throws IOException, AbortedException {
 		
 		
-		crTab.abort = false;	// can be changed by "wait dialog"
 		StatusBar.get().setValue("Loading CRE file ...");
 		
 		
@@ -58,7 +57,7 @@ public class CRE_json {
 				parser = Json.createParser(zipFile.getInputStream(entry) /*zip*/);
 				CRType cr = null;
 				String key = "";
-				while (!crTab.abort && parser.hasNext()) {
+				while (!crTab.isAborted() && parser.hasNext()) {
 					
 					
 					switch (parser.next()) {
@@ -112,11 +111,11 @@ public class CRE_json {
 				List<String> C1List = null;
 				int arrayLevel = 0;
 				String key = "";
-				while (!crTab.abort && parser.hasNext()) {
+				while (!crTab.isAborted() && parser.hasNext()) {
 					
 					switch (parser.next()) {
 					case START_OBJECT: 	pub = new PubType(); break; 
-					case END_OBJECT: 	crTab.pubData.add(pub); break;
+					case END_OBJECT: 	crTab.addPub(pub); break;
 					case KEY_NAME:		key = parser.getString(); break;
 					case START_ARRAY:	
 						arrayLevel++;
@@ -196,7 +195,7 @@ public class CRE_json {
 				boolean isManual = false;
 				int id1 = 0, id2 = 0;
 				
-				while (!crTab.abort && parser.hasNext()) {
+				while (!crTab.isAborted() && parser.hasNext()) {
 					switch (parser.next()) {
 					case START_OBJECT: 	level++; break; 
 					case END_OBJECT: 	level--; break;
@@ -239,7 +238,7 @@ public class CRE_json {
 				
 		
 		// Check for abort by user
-		if (crTab.abort) {
+		if (crTab.isAborted()) {
 			crTab.init();
 			crTab.updateData(false);
 			StatusBar.get().setValue("Loading CRE file aborted (due to user request)");
@@ -247,8 +246,6 @@ public class CRE_json {
 		}
 		
 		crTab.updateData(true);
-
-		crTab.creFile = file;
 		StatusBar.get().setValue("Loading CRE file done");
 	}
 
@@ -268,28 +265,28 @@ public class CRE_json {
 		JsonGenerator jgenCR = Json.createGenerator(zip);
 		jgenCR.writeStartArray();
 
-		crTab.getCR().forEach(it -> {	
+		crTab.getCR().forEach(cr -> {	
 			jgenCR.writeStartObject();
-									jgenCR.write("ID", it.getID());
-			if (it.getCR()!=null) 	jgenCR.write("CR", it.getCR());
-			if (it.getAU()!=null) 	jgenCR.write("AU", it.getAU());
-			if (it.getAU_F()!=null) jgenCR.write("AU_F", it.getAU_F());
-			if (it.getAU_L()!=null) jgenCR.write("AU_L", it.getAU_L());
-			if (it.getAU_A()!=null) jgenCR.write("AU_A", it.getAU_A());
-			if (it.getTI()!=null) 	jgenCR.write("TI", it.getTI());
-			if (it.getJ()!=null) 	jgenCR.write("J", it.getJ());
-			if (it.getJ_N()!=null) 	jgenCR.write("J_N", it.getJ_N());
-			if (it.getJ_S()!=null) 	jgenCR.write("J_S", it.getJ_S());
-									jgenCR.write("N_CR", it.getN_CR());
-			if (it.getRPY()!=null)	jgenCR.write("RPY", it.getRPY());
-			if (it.getPAG()!=null) 	jgenCR.write("PAG", it.getPAG());
-			if (it.getVOL()!=null) 	jgenCR.write("VOL", it.getVOL());
-			if (it.getDOI()!=null) 	jgenCR.write("DOI", it.getDOI());
-			if (it.getCID2()!=null) jgenCR.write("CID2", it.getCID2().toString());
-									jgenCR.write("CID_S", it.getCID_S());
-									jgenCR.write("VI", it.getVI()?1:0);
-									jgenCR.write("CO", it.getCO());
-									jgenCR.write("type", it.type);			
+									jgenCR.write("ID", cr.getID());
+			if (cr.getCR()!=null) 	jgenCR.write("CR", cr.getCR());
+			if (cr.getAU()!=null) 	jgenCR.write("AU", cr.getAU());
+			if (cr.getAU_F()!=null) jgenCR.write("AU_F", cr.getAU_F());
+			if (cr.getAU_L()!=null) jgenCR.write("AU_L", cr.getAU_L());
+			if (cr.getAU_A()!=null) jgenCR.write("AU_A", cr.getAU_A());
+			if (cr.getTI()!=null) 	jgenCR.write("TI", cr.getTI());
+			if (cr.getJ()!=null) 	jgenCR.write("J", cr.getJ());
+			if (cr.getJ_N()!=null) 	jgenCR.write("J_N", cr.getJ_N());
+			if (cr.getJ_S()!=null) 	jgenCR.write("J_S", cr.getJ_S());
+									jgenCR.write("N_CR", cr.getN_CR());
+			if (cr.getRPY()!=null)	jgenCR.write("RPY", cr.getRPY());
+			if (cr.getPAG()!=null) 	jgenCR.write("PAG", cr.getPAG());
+			if (cr.getVOL()!=null) 	jgenCR.write("VOL", cr.getVOL());
+			if (cr.getDOI()!=null) 	jgenCR.write("DOI", cr.getDOI());
+			if (cr.getCID2()!=null) jgenCR.write("CID2", cr.getCID2().toString());
+									jgenCR.write("CID_S", cr.getCID_S());
+									jgenCR.write("VI", cr.getVI()?1:0);
+									jgenCR.write("CO", cr.getCO());
+									jgenCR.write("type", cr.type);			
 			jgenCR.writeEnd();
 			
 			StatusBar.get().incProgressbar();
@@ -302,50 +299,50 @@ public class CRE_json {
 		zip.putNextEntry(new ZipEntry("pubdata.json"));
 		JsonGenerator jgenPub = Json.createGenerator(zip);
 		jgenPub.writeStartArray();
-		for (PubType it: crTab.pubData) {
+		crTab.getPub().forEach(pub -> {
 			jgenPub.writeStartObject();
 			
-			if (it.PT!=null) 	jgenPub.write("PT", it.PT);
-			if (it.AU!=null) {	jgenPub.writeStartArray("AU"); for (String x:it.AU) jgenPub.write(x); jgenPub.writeEnd(); }
-			if (it.AF!=null) {	jgenPub.writeStartArray("AF"); for (String x:it.AF) jgenPub.write(x); jgenPub.writeEnd(); }
-			if (it.C1!=null) {
+			if (pub.PT!=null) 	jgenPub.write("PT", pub.PT);
+			if (pub.AU!=null) {	jgenPub.writeStartArray("AU"); for (String x:pub.AU) jgenPub.write(x); jgenPub.writeEnd(); }
+			if (pub.AF!=null) {	jgenPub.writeStartArray("AF"); for (String x:pub.AF) jgenPub.write(x); jgenPub.writeEnd(); }
+			if (pub.C1!=null) {
 				jgenPub.writeStartArray("C1");
-				for (String[] y:it.C1) {
+				for (String[] y:pub.C1) {
 					jgenPub.writeStartArray();
 					for (String x:y) jgenPub.write(x); 
 					jgenPub.writeEnd();
 				}
 				jgenPub.writeEnd();
 			}
-			if (it.EM!=null) {	jgenPub.writeStartArray("EM"); for (String x:it.EM) jgenPub.write(x); jgenPub.writeEnd(); }
-			if (it.AA!=null) {	jgenPub.writeStartArray("AA"); for (String x:it.AA) jgenPub.write(x); jgenPub.writeEnd(); }
-			if (it.TI!=null) 	jgenPub.write("TI", it.TI);
-			if (it.PY!=null) 	jgenPub.write("PY", it.PY);
-			if (it.SO!=null) 	jgenPub.write("SO", it.SO);
-			if (it.VL!=null) 	jgenPub.write("VL", it.VL);
-			if (it.IS!=null) 	jgenPub.write("IS", it.IS);
-			if (it.AR!=null) 	jgenPub.write("AR", it.AR);
-			if (it.BP!=null) 	jgenPub.write("BP", it.BP);
-			if (it.EP!=null) 	jgenPub.write("EP", it.EP);
-			if (it.PG!=null) 	jgenPub.write("PG", it.PG);
-			if (it.TC!=null) 	jgenPub.write("TC", it.TC);
+			if (pub.EM!=null) {	jgenPub.writeStartArray("EM"); for (String x:pub.EM) jgenPub.write(x); jgenPub.writeEnd(); }
+			if (pub.AA!=null) {	jgenPub.writeStartArray("AA"); for (String x:pub.AA) jgenPub.write(x); jgenPub.writeEnd(); }
+			if (pub.TI!=null) 	jgenPub.write("TI", pub.TI);
+			if (pub.PY!=null) 	jgenPub.write("PY", pub.PY);
+			if (pub.SO!=null) 	jgenPub.write("SO", pub.SO);
+			if (pub.VL!=null) 	jgenPub.write("VL", pub.VL);
+			if (pub.IS!=null) 	jgenPub.write("IS", pub.IS);
+			if (pub.AR!=null) 	jgenPub.write("AR", pub.AR);
+			if (pub.BP!=null) 	jgenPub.write("BP", pub.BP);
+			if (pub.EP!=null) 	jgenPub.write("EP", pub.EP);
+			if (pub.PG!=null) 	jgenPub.write("PG", pub.PG);
+			if (pub.TC!=null) 	jgenPub.write("TC", pub.TC);
 			
 			jgenPub.writeStartArray("CRLISTID"); 
-			it.getCR().forEach(cr -> { jgenPub.write(cr.getID()); }); 
+			pub.getCR().forEach(cr -> { jgenPub.write(cr.getID()); }); 
 			jgenPub.writeEnd(); 
 			
-			if (it.DI!=null) 	jgenPub.write("DI", it.DI);
-			if (it.LI!=null) 	jgenPub.write("LI", it.LI);
-			if (it.AB!=null) 	jgenPub.write("AB", it.AB);
-			if (it.DE!=null) 	jgenPub.write("DE", it.DE);
-			if (it.DT!=null) 	jgenPub.write("DT", it.DT);
-			if (it.FS!=null) 	jgenPub.write("FS", it.FS);
-			if (it.UT!=null) 	jgenPub.write("UT", it.UT);
+			if (pub.DI!=null) 	jgenPub.write("DI", pub.DI);
+			if (pub.LI!=null) 	jgenPub.write("LI", pub.LI);
+			if (pub.AB!=null) 	jgenPub.write("AB", pub.AB);
+			if (pub.DE!=null) 	jgenPub.write("DE", pub.DE);
+			if (pub.DT!=null) 	jgenPub.write("DT", pub.DT);
+			if (pub.FS!=null) 	jgenPub.write("FS", pub.FS);
+			if (pub.UT!=null) 	jgenPub.write("UT", pub.UT);
 			
 			jgenPub.writeEnd();
 			
 			StatusBar.get().incProgressbar();
-		};
+		});
 		jgenPub.writeEnd();
 		jgenPub.flush();
 		zip.closeEntry();
@@ -381,7 +378,6 @@ public class CRE_json {
 		zip.flush();
 		zip.close();
 		
-		crTab.creFile = file;
 		StatusBar.get().setValue("Saving CRE file done");
 
 		

@@ -34,6 +34,7 @@
 						<MenuItem text="Web of Science..." onAction="#OnMenuFileExportWoS"/>
 						<MenuItem text="Scopus..." onAction="#OnMenuFileExportScopus"/>
 						<SeparatorMenuItem />
+						<MenuItem text="CSV (Graph)..." onAction="#OnMenuFileExportCSVGraph"/>
 						<MenuItem text="CSV (Cited References)..." onAction="#OnMenuFileExportCSVCR"/>
 						<MenuItem text="CSV (Citing Publications)..." onAction="#OnMenuFileExportCSVPub"/>
 						<MenuItem text="CSV (Cited References + Citing Publications)..." onAction="#OnMenuFileExportCSVAll"/>

@@ -21,6 +21,8 @@ public class CRE_csv {
 	private static String[] csvColumnsCR = new String[] {"CRID", "CR", "AU", "AU_F", "AU_L", "AU_A", "TI", "J", "J_N", "J_S", "N_CR", "RPY", "PAG", "VOL", "DOI", "PERC_YR", "PERC_ALL"};
 	private static String[] csvColumnsPub = new String[] {"PUBID", "PT", "AU", "AF", "C1", "EM", "AA", "TI", "PY", "SO", "VL", "IS", "AR", "BP", "EP", "PG", "TC", "DI", "LI", "AB", "DE", "DT", "FS", "UT"}; 
 	
+	private static int pubId;
+	
 	private static HashMap<String, String> getCRExport (CRType cr) {
 		
 		HashMap<String, String> result = new HashMap<String, String>();
@@ -46,10 +48,10 @@ public class CRE_csv {
 	
 	
 	
-	private static HashMap<String, String> getPubExport (PubType pub, int id) {
+	private static HashMap<String, String> getPubExport (PubType pub) {
 		
 		HashMap<String, String> result = new HashMap<String, String>();
-		result.put ("PUBID",							 String.valueOf(id));
+		result.put ("PUBID",							 String.valueOf(++pubId));
 		result.put ("PT", 		(pub.PT==null)?""		:pub.PT);
 		result.put ("AU", 		(pub.AU==null)?""		:String.join("; ", pub.AU));
 		result.put ("AF", 		(pub.AF==null)?""		:String.join("; ", pub.AF));
@@ -116,12 +118,12 @@ public class CRE_csv {
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(csvColumnsPub); 
 		
-		int count = 0;
-		for (PubType pub: crTab.pubData) {
+		pubId = 0;
+		crTab.getPub().forEach(pub -> {
 			StatusBar.get().incProgressbar();
-			HashMap<String, String> exportPub = getPubExport(pub, ++count);
+			HashMap<String, String> exportPub = getPubExport(pub);
 			csv.writeNext(Arrays.stream(csvColumnsPub).map (attr -> exportPub.get(attr)).toArray(String[]::new)); 
-		}
+		});
 		
 		csv.close();
 		StatusBar.get().setValue("Saving CSV file (Citing Publications) done");
@@ -131,7 +133,7 @@ public class CRE_csv {
 	
 	public static void saveCRPub (File file, CRTable crTab) throws IOException {
 
-		StatusBar.get().initProgressbar(crTab.pubData.size(), "Saving CSV file (Cited References + Citing Publications) ...");
+		StatusBar.get().initProgressbar(crTab.getSizePub(), "Saving CSV file (Cited References + Citing Publications) ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -140,10 +142,10 @@ public class CRE_csv {
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext (Stream.concat (Arrays.stream(csvColumnsPub),	Arrays.stream(csvColumnsCR)).toArray(String[]::new)); 
 		
-		int count = 0;
-		for (PubType pub: crTab.pubData) {
+		pubId = 0;
+		crTab.getPub().forEach(pub -> {
 			StatusBar.get().incProgressbar();
-			HashMap<String, String> exportPub = getPubExport(pub, ++count);
+			HashMap<String, String> exportPub = getPubExport(pub);
 			
 			pub.getCR().forEach(cr -> {
 				HashMap<String, String> exportCR = getCRExport(cr);
@@ -153,7 +155,7 @@ public class CRE_csv {
 						Arrays.stream(csvColumnsCR).map (attr -> exportCR.get(attr))
 				).toArray(String[]::new)); 
 			});
-		}
+		});
 		
 		csv.close();
 		StatusBar.get().setValue("Saving CSV file (Cited References + Citing Publications) done");

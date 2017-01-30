@@ -5,10 +5,10 @@ import java.util.IntSummaryStatistics;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.w3c.dom.Document;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
+import javafx.concurrent.Worker.State;
 import javafx.scene.Node;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -45,20 +45,35 @@ public abstract class CRChart_HighCharts extends CRChart {
 		browser.setContextMenuEnabled(false);
 
 		
-		webEngine.load(CRChart_HighCharts.class.getResource("highcharts/CRChart.html").toString());
+		webEngine.load(CRChart_HighCharts.class.getResource("highcharts/CRChart.html").toExternalForm());
 		
-		webEngine.documentProperty().addListener(new ChangeListener<Document>() {
+		webEngine.getLoadWorker().stateProperty().addListener(new ChangeListener<Worker.State>() {
+
 			@Override
-			public void changed(ObservableValue<? extends Document> observableValue, Document document,	Document newDoc) {
-				if (newDoc != null) {
-					webEngine.documentProperty().removeListener(this);
+			public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
+				if (newValue == Worker.State.SUCCEEDED) {
 					loaded = true;
 					JSObject jsobj = (JSObject) webEngine.executeScript("window");
-					jsobj.setMember("java", new ChartCallBack());
+					jsobj.setMember("crejava", new ChartCallBack());
 					updateData(new int[][] { { 0 }, { 0 }, { 0 } });
 				}
+				
 			}
 		});
+
+		
+//		webEngine.documentProperty().addListener(new ChangeListener<Document>() {
+//			@Override
+//			public void changed(ObservableValue<? extends Document> observableValue, Document document,	Document newDoc) {
+//				if (newDoc != null) {
+//					webEngine.documentProperty().removeListener(this);
+//					loaded = true;
+//					JSObject jsobj = (JSObject) webEngine.executeScript("window");
+//					jsobj.setMember("java", new ChartCallBack());
+//					updateData(new int[][] { { 0 }, { 0 }, { 0 } });
+//				}
+//			}
+//		});
 		
 	}
 	
@@ -80,6 +95,9 @@ public abstract class CRChart_HighCharts extends CRChart {
 	
 	@Override
 	public void setChartDomainRange(int[] range) {
+		
+		System.out.println( "Java Object? " + (((JSObject) browser.getEngine().executeScript("window")).getMember("crejava")));
+
 		if (loaded) {
 			duringUpdate = true;	// make sure that setting x-axis range does not trigger the onRedraw -> onYearRangeFilter
 			browser.getEngine().executeScript(String.format("c.xAxis[0].setExtremes(%d, %d, true);", range[0], range[1]));
@@ -90,6 +108,8 @@ public abstract class CRChart_HighCharts extends CRChart {
 	@Override
 	public void updateData(int[][] data) {
 
+		System.out.println( "Java Object? " + (((JSObject) browser.getEngine().executeScript("window")).getMember("crejava")));
+		
 		duringUpdate = true;
 		
 		// series as JSON data
@@ -106,14 +126,27 @@ public abstract class CRChart_HighCharts extends CRChart {
 		// call Javascript to render chart
 		if (loaded) {
 			try {
-				browser.getEngine().executeScript(String.format("updateData($.parseJSON('[%s]'), $.parseJSON('[%s]'), '%s', '%s', ['%s', '%s']);", json[0] ,json[1], CRChart.xAxisLabel, CRChart.yAxisLabel, getSeriesLabel(0), getSeriesLabel(1)));
-				browser.getEngine().executeScript(String.format("c.xAxis[0].setExtremes(%d, %d, false);", extremes[0][0], extremes[0][1]));
-				browser.getEngine().executeScript(String.format("c.yAxis[0].setExtremes(%d, %d, true);", Math.min(extremes[1][0], extremes[2][0]), Math.max(extremes[1][1], extremes[2][1])));
-			} catch (JSException e) {}
+				WebEngine webEngine = browser.getEngine();
+				
+				JSObject jsobj = (JSObject) browser.getEngine().executeScript("window");
+				if ((jsobj.getMember("crejava")==null) || (jsobj.getMember("crejava").equals("undefined"))) {
+//					jsobj.setMember("crejava", new ChartCallBack());
+				}
+
+				webEngine.executeScript(String.format("updateData($.parseJSON('[%s]'), $.parseJSON('[%s]'), '%s', '%s', ['%s', '%s']);", json[0] ,json[1], CRChart.xAxisLabel, CRChart.yAxisLabel, getSeriesLabel(0), getSeriesLabel(1)));
+				webEngine.executeScript(String.format("c.xAxis[0].setExtremes(%d, %d, false);", extremes[0][0], extremes[0][1]));
+				webEngine.executeScript(String.format("c.yAxis[0].setExtremes(%d, %d, true);", Math.min(extremes[1][0], extremes[2][0]), Math.max(extremes[1][1], extremes[2][1])));
+			} catch (JSException e) {
+				e.printStackTrace();
+				
+				
+			}
 		}
 		
 		duringUpdate = false;
 		
+		System.out.println( "Java Object? " + (((JSObject) browser.getEngine().executeScript("window")).getMember("crejava")));
+
 	}
 
 }

@@ -93,10 +93,6 @@ public class WoS_txt {
 		long ts1 = System.currentTimeMillis();
 		long ms1 = Runtime.getRuntime().totalMemory();
 		
-		crTab.abort = false;	// can be changed by "wait dialog"
-		
-
-		
 		crTab.init();
 		
 		AtomicLong countCR = new AtomicLong(0);
@@ -110,10 +106,10 @@ public class WoS_txt {
 			
 			AtomicLong countSize = new AtomicLong(0);
 			
-			crTab.pubData.addAll(StreamSupport.stream(wosIt.getIterable().spliterator(), true).map ( it -> {
+			crTab.addAllPub(StreamSupport.stream(wosIt.getIterable().spliterator(), true).map ( it -> {
 			
 				/* if user abort or maximum number of CRs reached --> do no process anymore */
-				if (crTab.abort) return null;
+				if (crTab.isAborted()) return null;
 				if ((maxCR>0) && (countCR.get()>=maxCR)) return null;
 
 				String currentTag = "";
@@ -201,7 +197,7 @@ public class WoS_txt {
 			wosIt.close();
 			
 			// Check for abort by user
-			if (crTab.abort) {
+			if (crTab.isAborted()) {
 				crTab.init();
 				crTab.updateData(false);
 				StatusBar.get().setValue ("Loading WoS files aborted (due to user request)");
@@ -236,7 +232,7 @@ public class WoS_txt {
 		
 	}
 	
-	public static void save (File file, CRTable crTab) throws IOException {
+	public static void save (File file, CRTable crTab) throws IOException, RuntimeException {
 		
 		StatusBar.get().initProgressbar(crTab.getSizePub(), "Saving WoS file ...");
 		
@@ -251,85 +247,90 @@ public class WoS_txt {
 		bw.write("VR 1.0");
 		bw.newLine();
 		
-		for (PubType pub: crTab.pubData) {
-			writeTag(bw, "PT", pub.PT == null ? "J" : pub.PT);	// TODO: Is "J" the correct default for publication type?
-			writeTag(bw, "AU", pub.AU);
-			writeTag(bw, "AF", pub.AF);
-			if (pub.C1 != null) {
-				writeTag(bw, "C1", pub.C1.stream().map(it -> { return "[" + it[0] + "] " + it[1]; }).collect(Collectors.toList()));
+		crTab.getPub().forEach (pub -> {
+			try {
+				writeTag(bw, "PT", pub.PT == null ? "J" : pub.PT);	// TODO: Is "J" the correct default for publication type?
+				writeTag(bw, "AU", pub.AU);
+				writeTag(bw, "AF", pub.AF);
+				if (pub.C1 != null) {
+					writeTag(bw, "C1", pub.C1.stream().map(it -> { return "[" + it[0] + "] " + it[1]; }).collect(Collectors.toList()));
+				}
+				
+				if (pub.EM != null) {
+					writeTag (bw, "EM", pub.EM.stream().distinct().collect(Collectors.joining("; ")));
+				}
+				
+				// make sure TI value is split into lines up to 70 characters (=maxLength)
+				ArrayList<String> linesTI = new ArrayList<String>();
+				String title = new String(pub.TI == null ? "" : pub.TI);
+				int maxLength = 70;
+				while (true) {
+					if (title.length()<=maxLength) { 
+						linesTI.add(title);
+						break;
+					}
+					
+					int pos = title.lastIndexOf(' ', maxLength);
+					if (pos > 0) {
+						linesTI.add (title.substring(0,  pos));
+						title = title.substring(pos+1);
+					} else {
+						linesTI.add (title.substring(0,  maxLength));
+						title = title.substring(maxLength);
+					}
+				} 
+				writeTag(bw, "TI", linesTI);
+				
+				if (pub.PY != null) writeTag(bw, "PY", pub.PY.toString());
+				writeTag(bw, "SO", pub.SO);
+				writeTag(bw, "VL", pub.VL);
+				writeTag(bw, "IS", pub.IS);
+				writeTag(bw, "AR", pub.AR);
+				if (pub.BP != null) writeTag(bw, "BP", pub.BP.toString());
+				if (pub.EP != null) writeTag(bw, "EP", pub.EP.toString());
+				if (pub.PG != null) writeTag(bw, "PG", pub.PG.toString());
+				if (pub.TC != null) writeTag(bw, "TC", pub.TC.toString());
+				
+				writeTag(bw, "CR", pub.getCR().map(it -> {
+	
+					if (it.type == CRType.TYPE_WOS) return it.getCR();
+					
+					/* Generate CR-String in WoS format */
+					String res = (it.getAU_L() != null) ? it.getAU_L() + " " : "";
+					if (it.getAU_F() != null) res += it.getAU_F();
+					if (it.getRPY() != null) res += ", " + it.getRPY();
+					if ((it.getVOL()!=null) || (it.getPAG()!=null)) {
+						if (it.getJ_N()!=null) res += ", " + it.getJ_N(); 
+						if (it.getVOL()!=null) res += ", V" + it.getVOL();
+						if (it.getPAG()!=null) res += ", P" + it.getPAG();
+					} else {
+						res += ", " + it.getJ();
+					}
+					if (it.getDOI()!=null) res += ", DOI " + it.getDOI();
+					
+					return res;
+					
+				}).collect(Collectors.toList()));
+				
+				
+				writeTag(bw, "NR", String.valueOf(pub.getSizeCR()));
+				writeTag(bw, "DI", pub.DI);
+				writeTag(bw, "AB", pub.AB);
+				writeTag(bw, "DE", pub.DE);
+				writeTag(bw, "DT", pub.DT);
+				writeTag(bw, "UT", pub.UT);
+				
+				bw.write("ER");
+				bw.newLine();
+				bw.newLine();
+			
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
-			
-			if (pub.EM != null) {
-				writeTag (bw, "EM", pub.EM.stream().distinct().collect(Collectors.joining("; ")));
-			}
-			
-			// make sure TI value is split into lines up to 70 characters (=maxLength)
-			ArrayList<String> linesTI = new ArrayList<String>();
-			String title = new String(pub.TI == null ? "" : pub.TI);
-			int maxLength = 70;
-			while (true) {
-				if (title.length()<=maxLength) { 
-					linesTI.add(title);
-					break;
-				}
-				
-				int pos = title.lastIndexOf(' ', maxLength);
-				if (pos > 0) {
-					linesTI.add (title.substring(0,  pos));
-					title = title.substring(pos+1);
-				} else {
-					linesTI.add (title.substring(0,  maxLength));
-					title = title.substring(maxLength);
-				}
-			} 
-			writeTag(bw, "TI", linesTI);
-			
-			if (pub.PY != null) writeTag(bw, "PY", pub.PY.toString());
-			writeTag(bw, "SO", pub.SO);
-			writeTag(bw, "VL", pub.VL);
-			writeTag(bw, "IS", pub.IS);
-			writeTag(bw, "AR", pub.AR);
-			if (pub.BP != null) writeTag(bw, "BP", pub.BP.toString());
-			if (pub.EP != null) writeTag(bw, "EP", pub.EP.toString());
-			if (pub.PG != null) writeTag(bw, "PG", pub.PG.toString());
-			if (pub.TC != null) writeTag(bw, "TC", pub.TC.toString());
-			
-			writeTag(bw, "CR", pub.getCR().map(it -> {
-
-				if (it.type == CRType.TYPE_WOS) return it.getCR();
-				
-				/* Generate CR-String in WoS format */
-				String res = (it.getAU_L() != null) ? it.getAU_L() + " " : "";
-				if (it.getAU_F() != null) res += it.getAU_F();
-				if (it.getRPY() != null) res += ", " + it.getRPY();
-				if ((it.getVOL()!=null) || (it.getPAG()!=null)) {
-					if (it.getJ_N()!=null) res += ", " + it.getJ_N(); 
-					if (it.getVOL()!=null) res += ", V" + it.getVOL();
-					if (it.getPAG()!=null) res += ", P" + it.getPAG();
-				} else {
-					res += ", " + it.getJ();
-				}
-				if (it.getDOI()!=null) res += ", DOI " + it.getDOI();
-				
-				return res;
-				
-			}).collect(Collectors.toList()));
-			
-			
-			writeTag(bw, "NR", String.valueOf(pub.getSizeCR()));
-			writeTag(bw, "DI", pub.DI);
-			writeTag(bw, "AB", pub.AB);
-			writeTag(bw, "DE", pub.DE);
-			writeTag(bw, "DT", pub.DT);
-			writeTag(bw, "UT", pub.UT);
-			
-			bw.write("ER");
-			bw.newLine();
-			bw.newLine();
 		
 			StatusBar.get().incProgressbar();
 		
-		}
+		});
 		bw.write("EF"); 
 		bw.newLine();
 		bw.close();
@@ -346,7 +347,7 @@ public class WoS_txt {
 		bw.newLine();
 	}
 	
-	private static void writeTag (BufferedWriter bw, String tag, List<String> values) throws IOException {
+	private static void writeTag (BufferedWriter bw, String tag, List<String> values) throws IOException  {
 		if (values == null) return;
 		if (values.size()==0) return;
 		int pos = 0;

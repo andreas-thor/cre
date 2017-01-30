@@ -182,8 +182,10 @@ public class CRTableView extends TableView<CRType> {
 		getSortOrder().clear();
 		getSortOrder().add(columns[CRColumn.RPY.ordinal()]);
 		getSortOrder().add(columns[CRColumn.N_CR.ordinal()]);
-		Optional<CRType> first = getItems().stream().filter(cr -> cr.getRPY() == year).findFirst();
+		sort();
+		Optional<CRType> first = getItems().stream().filter(cr -> (cr.getRPY()!=null) && (cr.getRPY().intValue() == year)).findFirst();
 		if (first.isPresent()) {
+			getSelectionModel().clearSelection();
 			getSelectionModel().select(first.get());
 			scrollTo(first.get());
 		}

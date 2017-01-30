@@ -9,7 +9,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -60,7 +59,6 @@ public class Scopus_csv  {
 		
 		long ts1 = System.currentTimeMillis();
 		
-		crTab.abort = false;	// can be changed by "wait dialog"
 		
 		StatusBar.get().setValue("Loding Scopus files...");
 
@@ -96,10 +94,10 @@ public class Scopus_csv  {
 			
 			AtomicLong countPub = new AtomicLong(0);
 
-			crTab.pubData.addAll(content.parallelStream().map ( (String[] it) -> {
+			crTab.addAllPub(content.parallelStream().map ( (String[] it) -> {
 			
 				/* if user abort or maximum number of CRs reached --> do no process anymore */
-				if (crTab.abort) return null;
+				if (crTab.isAborted()) return null;
 				if ((maxCR>0) && (countCR.get()>=maxCR)) return null;
 				
 				PubType pub = new PubType(); // .parseScopus(it, attributes, yearRange);
@@ -179,7 +177,7 @@ public class Scopus_csv  {
 			}).filter ( it -> it != null).collect (Collectors.toList()));	// remove null values (abort)
 			
 			// Check for abort by user
-			if (crTab.abort) {
+			if (crTab.isAborted()) {
 				crTab.init();
 				crTab.updateData(false);
 				StatusBar.get().setValue ("Loading Scopus files aborted (due to user request)");
@@ -321,14 +319,14 @@ public class Scopus_csv  {
 		
 		csv.writeNext(new String[] {"Authors","Title","Year","Source title","Volume","Issue","Art. No.","Page start","Page end","Page count","Cited by","DOI","Link","Affiliations","Authors with affiliations","Abstract","Author Keywords","References","Document Type","Source","EID"});
 		
-		for (PubType pub: crTab.pubData) {
+		crTab.getPub().forEach(pub -> {
 			ArrayList<String> row = new ArrayList<String>();
 			
 			row.add ((pub.AU == null) ? "" :
 				pub.AU.stream().map ( a -> {
 					String[] split = a.split(", ", 2);
 					String res = (split.length==2) ? split[0] + ", " + split[1].replaceAll("([A-Z])", "$1.") : a; 
-					return  res;
+					return res;
 				}).collect (Collectors.joining(", "))
 			);
 
@@ -387,7 +385,7 @@ public class Scopus_csv  {
 			csv.writeNext ((String[]) row.toArray(new String[row.size()]));
 		
 			StatusBar.get().incProgressbar();
-		}
+		});
 					
 			
 		csv.close();

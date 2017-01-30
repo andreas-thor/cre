@@ -112,7 +112,7 @@ public class Settings extends Dialog<Integer> {
 		result.setPadding(new Insets(20, 20, 20, 20));
 		
 		final ToggleGroup group = new ToggleGroup();
-		String[] label = new String[] { "JFreeChart", "ChartJS"};
+		String[] label = new String[] { "JFreeChart", "Highcharts"};
 		for (int i=0; i<label.length; i++) {
 			rbChart[i] = new RadioButton(label[i]);
 			rbChart[i].setSelected(UserSettings.get().getChartEngine()==i);

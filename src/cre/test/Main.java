@@ -110,15 +110,16 @@ public class Main {
 	
 	private Thread t;
 	
-
+	private File creFile;
 	
 
 
 	
 	
 	
-	@FXML public void initialize() {
+	@FXML public void initialize() throws IOException {
 	
+		creFile = null;
 		crTable = new CRTable();
 		statPane.add(StatusBar.get(), 0, 0);
 
@@ -144,7 +145,7 @@ public class Main {
 			public void onUpdateClustering(double threshold, boolean useClustering, boolean useVol, boolean usePag, boolean useDOI) {
 				if (t!=null) t.interrupt();
 				t = new Thread( () -> { 
-					crTable.crMatch.updateClusterId(threshold, true, useVol, usePag, useDOI);
+					crTable.matchUpdateClusterId(threshold, true, useVol, usePag, useDOI);
 					refreshTable();
 				});
 				t.start();
@@ -157,14 +158,18 @@ public class Main {
 				if ((toMatch.size()==0) || ((toMatch.size()==1) && (type != ManualMatchType.EXTRACT))) {
 					new ConfirmAlert("Error during clustering!", true, new String[] {"Too few Cited References selected!"}).showAndWait();
 				} else {
-					crTable.crMatch.matchManual (toMatch, type, threshold, useVol, usePag, useDOI);
-					refreshTable();
+					if ((toMatch.size()>5) && (type != ManualMatchType.EXTRACT)) {
+						new ConfirmAlert("Error during clustering!", true, new String[] {"Too many Cited References selected (at most 5)!"}).showAndWait();
+					} else {
+						crTable.matchManual (toMatch, type, threshold, useVol, usePag, useDOI);
+						refreshTable();
+					}
 				}
 			}
 
 			@Override
 			public void onMatchUnDo(double threshold, boolean useVol, boolean usePag, boolean useDOI) {
-				crTable.crMatch.matchUndo(threshold, useVol, usePag, useDOI);
+				crTable.matchUndo(threshold, useVol, usePag, useDOI);
 				refreshTable();
 			}
 			
@@ -219,7 +224,9 @@ public class Main {
 			});
 		});
 
-		
+		if (CitedReferencesExplorer.loadOnOpen!=null) {
+			openFile(ImportFormat.CRE_JSON, CitedReferencesExplorer.loadOnOpen);
+		}
 
 		
 	}
@@ -287,33 +294,55 @@ public class Main {
 	}
 	
 	
-    private void openFile (ImportFormat source) throws IOException {
-    	
-    	FileChooser fileChooser = new FileChooser();
-    	fileChooser.setTitle(source.label);
-   		fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
-    	fileChooser.getExtensionFilters().add(source.filter); 
-    	fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[]{"*.*"})));
+	private void openFile (ImportFormat source) throws IOException {
+		openFile(source, null);
+	}
+	
+    private void openFile (ImportFormat source, String fileName) throws IOException {
     	
     	final List<File> files = new ArrayList<File>();
-    	if (source.multiple) {
-    		List<File> selFiles = fileChooser.showOpenMultipleDialog(CitedReferencesExplorer.stage);
-    		if (selFiles != null) files.addAll(selFiles);
+
+    	if (fileName != null) {	// load specific file (e.g., during appilcation start)
+    		files.add(new File(fileName));
     	} else {
-    		File selFile = fileChooser.showOpenDialog(CitedReferencesExplorer.stage);
-    		if (selFile != null) files.add(selFile);
+    		
+    		FileChooser fileChooser = new FileChooser();
+        	fileChooser.setTitle(source.label);
+       		fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
+        	fileChooser.getExtensionFilters().add(source.filter); 
+        	fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[]{"*.*"})));
+    		
+	    	if (source.multiple) {
+	    		List<File> selFiles = fileChooser.showOpenMultipleDialog(CitedReferencesExplorer.stage);
+	    		if (selFiles != null) files.addAll(selFiles);
+	    	} else {
+	    		File selFile = fileChooser.showOpenDialog(CitedReferencesExplorer.stage);
+	    		if (selFile != null) files.add(selFile);
+	    	}
     	}
     	
     	if (files.size()>0) {
+    		this.creFile = null;
     		UserSettings.get().setLastFileDir(files.get(0).getParentFile());	// save last directory to be used as initial directory
     		Wait wait = new Wait();
     		new Thread( () -> {
 				try { 
 					matchView.setVisible(false);
 					switch (source) {
-						case CRE_JSON: CRE_json.load (files.get(0), crTable); break;
-						case WOS_TXT: WoS_txt.load(files, crTable, UserSettings.get().getMaxCR(), UserSettings.get().getRange(RangeType.ImportYearRange)); break;
-						case SCOPUS_CSV: Scopus_csv.load(files, crTable, UserSettings.get().getMaxCR(), UserSettings.get().getRange(RangeType.ImportYearRange)); break;
+						case CRE_JSON: 
+							CRE_json.load (files.get(0), crTable); 
+							creFile = files.get(0); 		// save file name for window title and save operation
+							if (crTable.hasMatches()) {		// show match panel if applicable
+								matchView.setVisible(true);
+								matchView.updateClustering();
+							}
+							break;
+						case WOS_TXT: 
+							WoS_txt.load(files, crTable, UserSettings.get().getMaxCR(), UserSettings.get().getRange(RangeType.ImportYearRange)); 
+							break;
+						case SCOPUS_CSV: 
+							Scopus_csv.load(files, crTable, UserSettings.get().getMaxCR(), UserSettings.get().getRange(RangeType.ImportYearRange)); 
+							break;
 					}	
 				} catch (FileTooLargeException e1) {
 					Platform.runLater( () -> { new ConfirmAlert("Error during file import!", true, new String[] {String.format("You try to import too many cited references. Import was aborted after loading %d Cited References. You can change the maximum number in the File > Settings > Import menu. ", e1.numberOfCRs)}).showAndWait(); });
@@ -325,27 +354,21 @@ public class Main {
 					crTable.init();
 					Platform.runLater( () -> { new ConfirmAlert("Error during file import!", true, new String[] {"Out of Memory Error."}).showAndWait(); });							
 				} catch (Exception e3) {
-					e3.printStackTrace();
-//					Platform.runLater( () -> { new ExceptionStacktrace("Error during file import!", e3).showAndWait(); });
+//					e3.printStackTrace();
+					Platform.runLater( () -> { new ExceptionStacktrace("Error during file import!", e3).showAndWait(); });
 				}
-				
-//				crTable.filterByYear();
-				
 				
 				Platform.runLater(() -> { 
 					wait.close(); 
-					if (!crTable.abort) {
+					if (!crTable.isAborted()) {
 						OnMenuDataInfo();
 						updateData(crTable.getMaxRangeYear());
-						CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title + ((crTable.creFile == null) ? "" : " - " + crTable.creFile.getAbsolutePath()));
-						
-//						crTable.filterByYear(UserSettings.get().getRange(RangeType.CurrentYearRange));
-//						Stream.of(crChart).forEach (it -> { it.updateData(crTable.getChartData()); });
+						CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title + ((creFile == null) ? "" : " - " + creFile.getAbsolutePath()));
 					}
 				});
 			}).start();
     		
-    		wait.showAndWait().ifPresent(cancel -> { crTable.abort=cancel; }); 
+    		wait.showAndWait().ifPresent(cancel -> { crTable.setAborted(cancel); }); 
 		
 		}
     }
@@ -357,8 +380,8 @@ public class Main {
     private boolean saveFile (ExportFormat source, boolean saveAs) throws IOException {
 
     	File selFile;
-    	if ((source == ExportFormat.CRE_JSON) && (crTable.creFile != null) && (!saveAs)) {
-    		selFile = crTable.creFile;
+    	if ((source == ExportFormat.CRE_JSON) && (creFile != null) && (!saveAs)) {
+    		selFile = creFile;
     	} else {
 	    	FileChooser fileChooser = new FileChooser();
 	    	fileChooser.setTitle(source.label);
@@ -373,7 +396,7 @@ public class Main {
 		new Thread( () -> {
 			try {
 	   			switch (source) {
-		   			case CRE_JSON: CRE_json.save(selFile, crTable); break;
+		   			case CRE_JSON: CRE_json.save(selFile, crTable); creFile = selFile; break;
 					case WOS_TXT: WoS_txt.save(selFile, crTable); break;
 					case SCOPUS_CSV: Scopus_csv.save(selFile, crTable); break;
 					case CRE_CSV_CR: CRE_csv.saveCR(selFile, crTable); break;
@@ -383,7 +406,7 @@ public class Main {
 	   			}
 	   			
 	   			Platform.runLater( () -> {
-					CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title + ((crTable.creFile == null) ? "" : " - " + crTable.creFile.getAbsolutePath()));
+					CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title + ((creFile == null) ? "" : " - " + creFile.getAbsolutePath()));
 	   			});
 				
 			} catch (Exception e) {
@@ -426,6 +449,10 @@ public class Main {
 
 	@FXML public void OnMenuFileExportScopus() throws IOException {
 		saveFile(ExportFormat.SCOPUS_CSV);
+	}
+
+	@FXML public void OnMenuFileExportCSVGraph() throws IOException {
+		saveFile(ExportFormat.CRE_CSV_GRAPH);
 	}
 
 	@FXML public void OnMenuFileExportCSVCR() throws IOException {
@@ -637,12 +664,14 @@ public class Main {
 
 
 
-
+	/*
+	 * Standardization Menu
+	 */
 
 	@FXML public void OnMenuStdCluster() {
 		
 		new Thread( () -> {
-			crTable.crMatch.doBlocking();
+			crTable.matchDoBlocking();
 			matchView.setVisible(true);
 			tablePane.requestLayout();
 			matchView.updateClustering(); 
@@ -655,13 +684,13 @@ public class Main {
 	@FXML public void OnMenuStdMerge() {
 
 		
-		long n = crTable.getSize()-crTable.crMatch.getNoOfClusters();
+		long n = crTable.getSize()-crTable.getNoOfClusters();
 		new ConfirmAlert("Merge clusters", n==0, new String[] {"No Clusters to merge.", String.format("Merging will aggregate %d Cited References! Are you sure?", n)})
 			.showAndWait()
 			.ifPresent( btn -> {
 				if (btn==ButtonType.YES) {
 					new Thread( () -> {
-						crTable.crMatch.merge();
+						crTable.matchMerge();
 						matchView.setVisible(false);
 						updateData(null);
 //						tablePane.requestLayout();
@@ -671,6 +700,10 @@ public class Main {
 	}
 
 
+	/*
+	 * Help Menu
+	 */
+	
 	@FXML public void OnMenuHelpManual() {
 		HostServicesFactory.getInstance(CitedReferencesExplorer.app).showDocument(CitedReferencesExplorer.url);
 	}
@@ -683,18 +716,5 @@ public class Main {
 
 
 
-
-
-
-
-
-	
-
-
-
-
-
-	
-	
 	
 }

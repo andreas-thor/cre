@@ -15,6 +15,7 @@ public class Wait extends Dialog<Boolean> {
 		getDialogPane().getButtonTypes().addAll(ButtonType.CANCEL);
 		Platform.runLater(() -> getDialogPane().lookupButton(ButtonType.CANCEL).requestFocus());
 
+		
 		setResultConverter(dialogButton -> {
 		    return (dialogButton == ButtonType.CANCEL); 
 		});
