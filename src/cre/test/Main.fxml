@@ -61,7 +61,7 @@
 
 					<SeparatorMenuItem />
 					
-					<MenuItem text="Retain Cited References byId..." onAction="#OnMenuDataRetainCRById" />
+					<MenuItem text="Retain Cited References by Id..." onAction="#OnMenuDataRetainCRById" />
 
 					<SeparatorMenuItem />
 

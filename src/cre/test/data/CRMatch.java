@@ -84,14 +84,14 @@ public class CRMatch {
 	private void updateClusterId2Objects () {
 		
 		clusterId2Objects.clear();
-		crTab.crData.forEach ( cr -> {
+		crTab.getCR().forEach ( cr -> {
 			if (clusterId2Objects.get(cr.getCID2()) == null) {
 				clusterId2Objects.put(cr.getCID2(), new HashSet<Integer>());
 			}
 			clusterId2Objects.get(cr.getCID2()).add (cr.getID());
 		});
 		
-		crTab.crData.forEach ( cr -> {
+		crTab.getCR().forEach ( cr -> {
 			cr.setCID_S(clusterId2Objects.get(cr.getCID2()).size());
 		});
 
@@ -211,7 +211,7 @@ public class CRMatch {
 	public boolean doBlocking () {
 		
 		// standard blocking: year + first letter of last name
-		StatusBar.get().setValue(String.format("Blocking of %d objects...", crTab.crData.size()));
+		StatusBar.get().setValue(String.format("Blocking of %d objects...", crTab.getSize()));
 		
 		Map<String, ArrayList<Integer>> blocks = new HashMap<String, ArrayList<Integer>>();	// block key -> list of indexes (not IDs)!
 		int idx = 0;
@@ -238,7 +238,7 @@ public class CRMatch {
 		// TODO: incorporate title (from scopus)
 		
 		
-		StatusBar.get().initProgressbar(blocks.size(), String.format("Matching %d objects in %d blocks", crTab.crData.size(), blocks.size()));
+		StatusBar.get().initProgressbar(blocks.size(), String.format("Matching %d objects in %d blocks", crTab.getSize(), blocks.size()));
 		
 		// Matching: author lastname & journal name
 		List<Pair> matchResult = blocks.entrySet().parallelStream().map( entry -> {
@@ -249,7 +249,7 @@ public class CRMatch {
 			ArrayList<Integer> crlist = entry.getValue();
 			
 			// allX = List of all AU_L values;
-			List<String> allX = crlist.stream().map ( it -> crTab.crData.get(it).getAU_L().toLowerCase() ).collect (Collectors.toList());
+			List<String> allX = crlist.stream().map ( it -> crTab.getCR(it).getAU_L().toLowerCase() ).collect (Collectors.toList());
 
 			// compareY = List of compare string 
 			ArrayList<String> compareY = new ArrayList<String>(allX);
@@ -265,7 +265,7 @@ public class CRMatch {
 					if (s1>=threshold) {
 
 						// the two CR to be compared
-						CRType[] comp_CR = new CRType[] { crTab.crData.get(crlist.get(xIndx)), crTab.crData.get(crlist.get(xIndx+yIndx+1/*ySize-yIndx-1*/)) };
+						CRType[] comp_CR = new CRType[] { crTab.getCR(crlist.get(xIndx)), crTab.getCR(crlist.get(xIndx+yIndx+1/*ySize-yIndx-1*/)) };
 						
 						// increasing sim + weight if data is available; weight for author is 2
 						double sim = 2*s1;
@@ -340,7 +340,7 @@ public class CRMatch {
 		// TODO: J8 check (groovy uses with index ...)
 		
 		clusterId2Objects = new HashMap<CRCluster, Set<Integer>>();
-		crTab.crData.forEach ( it -> {
+		crTab.getCR().forEach ( it -> {
 			it.setCID2(useClustering ? new CRCluster (it.getCID2().c1, it.getID()) : new CRCluster (it.getID(), 1));
 			it.setCID_S(1);
 			clusterId2Objects.put (it.getCID2(), new HashSet<Integer>());
@@ -401,8 +401,8 @@ public class CRMatch {
 
 				if (s>=threshold) {
 					
-					CRType cr1 = crTab.crData.get(crId2Index.get(id1));
-					CRType cr2 = crTab.crData.get(crId2Index.get(id2));
+					CRType cr1 = crTab.getCR(crId2Index.get(id1));
+					CRType cr2 = crTab.getCR(crId2Index.get(id2));
 					
 					CRCluster minId = (cr1.getCID2().compareTo(cr2.getCID2())<0) ? cr1.getCID2() : cr2.getCID2();
 					CRCluster maxId = (cr1.getCID2().compareTo(cr2.getCID2())>0) ? cr1.getCID2() : cr2.getCID2();
@@ -415,8 +415,8 @@ public class CRMatch {
 					if ((minId.compareTo(maxId)!=0) && ((s==2) || ((vol) && (pag) && (doi)))) {
 						clusterId2Objects.get(minId).addAll (clusterId2Objects.get(maxId));
 						int size = clusterId2Objects.get(minId).size();
-						clusterId2Objects.get(minId).forEach( it -> { crTab.crData.get(crId2Index.get(it)).setCID_S(size); });
-						clusterId2Objects.get(maxId).forEach( it -> { crTab.crData.get(crId2Index.get(it)).setCID2(minId); });
+						clusterId2Objects.get(minId).forEach( it -> { crTab.getCR(crId2Index.get(it)).setCID_S(size); });
+						clusterId2Objects.get(maxId).forEach( it -> { crTab.getCR(crId2Index.get(it)).setCID2(minId); });
 						clusterId2Objects.remove(maxId);
 					}
 				}
@@ -447,9 +447,12 @@ public class CRMatch {
 		
 		
 		Long timestamp = System.currentTimeMillis();		// used to group together all individual mapping pairs of match operation
+		if (selCR==null) System.out.println("SelCR==null");
+		selCR.stream().forEach(cr -> { if (cr==null) System.out.println("Huch"); });
+		
 		
 		Set<Integer> crIds = selCR.stream().map(cr -> cr.getID()).collect(Collectors.toSet());
-		System.out.println(crIds);
+		// System.out.println(crIds);
 		 
 		// manual-same is indicated by similarity = 2; different = -2
 		if ((matchType==ManualMatchType.SAME) || (matchType==ManualMatchType.DIFFERENT)) {
@@ -461,7 +464,7 @@ public class CRMatch {
 		}
 		if (matchType==ManualMatchType.EXTRACT) {
 			for (Integer id1: crIds) {
-				for (Integer id2: clusterId2Objects.get(crTab.crData.get(crId2Index.get(id1)).getCID2())) {
+				for (Integer id2: clusterId2Objects.get(crTab.getCR(crId2Index.get(id1)).getCID2())) {
 					setMapping(id1, id2, -2d, true, false, timestamp);
 				}
 			}
@@ -497,12 +500,12 @@ public class CRMatch {
 			int index = crId2Index.get(it);
 //				println "crId = ${it}, index = ${index}, cluster = ${crTab.crData[index].CID2}"
 			
-			crTab.crData.get(index).setCID2(new CRCluster (crTab.crData.get(index).getCID2().c1, it));
-			crTab.crData.get(index).setCID_S(1);
+			crTab.getCR(index).setCID2(new CRCluster (crTab.getCR(index).getCID2().c1, it));
+			crTab.getCR(index).setCID_S(1);
 			
 			Set<Integer> tmp = new HashSet<Integer>();
 			tmp.add(it);
-			clusterId2Objects.put(crTab.crData.get(index).getCID2(), tmp);
+			clusterId2Objects.put(crTab.getCR(index).getCID2(), tmp);
 			
 //				println crTab.crData[index]
 		});
@@ -527,8 +530,8 @@ public class CRMatch {
 		undoPairs.forEach (p -> setMapping(p.id1, p.id2, p.s, true, false));
 		
 		// get relevant cluster ids and remove
-		Set<CRCluster> clusterIds = undoPairs.stream().map (p -> crTab.crData.get(crId2Index.get(p.id1)).getCID2() ).collect(Collectors.toSet());
-		clusterIds.addAll(undoPairs.stream().map (p -> crTab.crData.get(crId2Index.get(p.id2)).getCID2() ).collect(Collectors.toSet()));
+		Set<CRCluster> clusterIds = undoPairs.stream().map (p -> crTab.getCR(crId2Index.get(p.id1)).getCID2() ).collect(Collectors.toSet());
+		clusterIds.addAll(undoPairs.stream().map (p -> crTab.getCR(crId2Index.get(p.id2)).getCID2() ).collect(Collectors.toSet()));
 
 		// remove last undo/able operation and re/cluster
 		timestampedPairs.remove(lastTimestamp);
@@ -555,9 +558,9 @@ public class CRMatch {
 				// sum all N_CR; find max
 				for (Integer it: entry.getValue()) {
 					int idx = crId2Index.get(it);
-					sum_N_CR += crTab.crData.get(idx).getN_CR();
-					if (crTab.crData.get(idx).getN_CR()>max_N_CR) {
-						max_N_CR = crTab.crData.get(idx).getN_CR();
+					sum_N_CR += crTab.getCR(idx).getN_CR();
+					if (crTab.getCR(idx).getN_CR()>max_N_CR) {
+						max_N_CR = crTab.getCR(idx).getN_CR();
 						max_cr = idx;
 					}
 				};
@@ -566,10 +569,10 @@ public class CRMatch {
 				for (Integer it: entry.getValue()) {
 					int idx = crId2Index.get(it);
 					if (idx == max_cr) {
-						crTab.crData.get(idx).setN_CR(sum_N_CR);
-						crTab.crData.get(idx).setCID_S(1);
+						crTab.getCR(idx).setN_CR(sum_N_CR);
+						crTab.getCR(idx).setCID_S(1);
 					} else {
-						crTab.crData.get(idx).mergedTo = max_cr;
+						crTab.getCR(idx).mergedTo = max_cr;
 					}
 				};
 				
@@ -581,7 +584,7 @@ public class CRMatch {
 			pub.crList.addAll (
 				pub.crList.stream()
 					.filter ( it -> it.mergedTo >= 0)
-					.map ( it -> crTab.crData.get(it.mergedTo))
+					.map ( it -> crTab.getCR(it.mergedTo))
 					.collect(Collectors.toList())
 			);
 			pub.crList = new ArrayList<CRType>(new HashSet<CRType>(pub.crList));	// in case, both merged CRs are in a list of the same publication

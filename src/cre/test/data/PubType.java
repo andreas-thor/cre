@@ -2,6 +2,7 @@ package cre.test.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class PubType {
 
@@ -27,7 +28,8 @@ public class PubType {
 	public Integer PG;	// Page Count
 	
 	public Integer TC;	// Times Cited
-	public ArrayList<CRType> crList = new ArrayList<CRType>();
+	
+	protected ArrayList<CRType> crList = new ArrayList<CRType>();
 	
 	public String DI;	// Digital Object Identifier (DOI)
 	public String LI;// Link	(Scopus only)
@@ -45,6 +47,21 @@ public class PubType {
 	
 	public Integer getPY () {
 		return this.PY;
+	}
+	
+	
+	public Stream<CRType> getCR() {
+		return crList.stream();
+	}
+
+
+	public int getSizeCR() {
+		return crList.size();
+	}
+
+
+	public void addCR(CRType cr) {
+		if (cr != null) this.crList.add(cr);
 	}
 	
 }

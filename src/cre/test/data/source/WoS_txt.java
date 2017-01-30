@@ -160,7 +160,7 @@ public class WoS_txt {
 					case "TC": try { pub.TC = Integer.valueOf(value); } catch (NumberFormatException e) { }; break;
 					
 					/* Parse Cited References */
-					case "CR": CRType cr = /*new CRType().*/parseCR(value, yearRange); if (cr!=null) pub.crList.add(cr); break;
+					case "CR": pub.addCR(parseCR(value, yearRange)); break;
 					
 					/* Authors */
 					case "AU": if (pub.AU==null) pub.AU=new ArrayList<String>(); pub.AU.add(value); break;
@@ -193,7 +193,7 @@ public class WoS_txt {
 				}
 				
 				StatusBar.get().updateProgressbar(countSize.addAndGet(pub.length));
-				countCR.addAndGet(pub.crList.size());
+				countCR.addAndGet(pub.getSizeCR());
 				
 				return pub;
 			}).filter ( it -> it != null).collect (Collectors.toList()));	// remove null values (abort)
@@ -232,7 +232,7 @@ public class WoS_txt {
 		System.out.println("Memory usage " + ((ms2-ms1)/1024d/1024d) + " MBytes");
 
 		crTab.updateData(false);
-		StatusBar.get().setValue("Loading WoS files done", crTab.getInfoString());		
+		StatusBar.get().setValue("Loading WoS files done");		
 		
 	}
 	
@@ -294,7 +294,7 @@ public class WoS_txt {
 			if (pub.PG != null) writeTag(bw, "PG", pub.PG.toString());
 			if (pub.TC != null) writeTag(bw, "TC", pub.TC.toString());
 			
-			writeTag(bw, "CR", pub.crList.stream().map(it -> {
+			writeTag(bw, "CR", pub.getCR().map(it -> {
 
 				if (it.type == CRType.TYPE_WOS) return it.getCR();
 				
@@ -316,7 +316,7 @@ public class WoS_txt {
 			}).collect(Collectors.toList()));
 			
 			
-			writeTag(bw, "NR", String.valueOf(pub.crList.size()));
+			writeTag(bw, "NR", String.valueOf(pub.getSizeCR()));
 			writeTag(bw, "DI", pub.DI);
 			writeTag(bw, "AB", pub.AB);
 			writeTag(bw, "DE", pub.DE);
@@ -333,7 +333,7 @@ public class WoS_txt {
 		bw.write("EF"); 
 		bw.newLine();
 		bw.close();
-		StatusBar.get().setValue("Saving WoS file done", crTab.getInfoString());
+		StatusBar.get().setValue("Saving WoS file done");
 
 			
 	}

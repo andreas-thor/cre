@@ -19,7 +19,7 @@ public class CRTable {
 	
 
 	
-	public ArrayList<CRType> crData = new ArrayList<CRType>(); 
+	protected ArrayList<CRType> crData = new ArrayList<CRType>(); 
 
 	
 	// public ObservableList<CRType> crDataObserved = FXCollections.observableArrayList(crData); // new   new ArrayList<CRType>();	// all CR data
@@ -634,6 +634,15 @@ public class CRTable {
 		return this.crData.get(idx);
 	}
 	
+
+	public Stream<CRType> getCR () {
+		return this.crData.stream();
+	}
+	
+	public void add(CRType cr) {
+		crData.add(cr);
+	}
+
 	
 	public Stream<PubType> getPub () {
 		return this.pubData.stream();
@@ -642,6 +651,10 @@ public class CRTable {
 	public Stream<Entry<Integer, Map<Integer, Double>>> getMatch (boolean manual) {
 		return this.crMatch.match.get(manual).entrySet().stream();
 	}
+
+
+
+
 	
 	
 }

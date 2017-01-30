@@ -43,8 +43,7 @@ public abstract class CRChart_HighCharts extends CRChart {
 		
 		WebEngine webEngine = browser.getEngine();
 		browser.setContextMenuEnabled(false);
-		JSObject jsobj = (JSObject) webEngine.executeScript("window");
-		jsobj.setMember("java", new ChartCallBack());
+
 		
 		webEngine.load(CRChart_HighCharts.class.getResource("highcharts/CRChart.html").toString());
 		
@@ -54,6 +53,8 @@ public abstract class CRChart_HighCharts extends CRChart {
 				if (newDoc != null) {
 					webEngine.documentProperty().removeListener(this);
 					loaded = true;
+					JSObject jsobj = (JSObject) webEngine.executeScript("window");
+					jsobj.setMember("java", new ChartCallBack());
 					updateData(new int[][] { { 0 }, { 0 }, { 0 } });
 				}
 			}

@@ -94,14 +94,14 @@ public class CRE_csv {
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(csvColumnsCR); 
 		
-		for (CRType cr : crTab.crData) {
-			StatusBar.get().incProgressbar();;
+		crTab.getCR().forEach(cr -> {
+			StatusBar.get().incProgressbar();
 			HashMap<String, String> exportCR = getCRExport(cr);
 			csv.writeNext(Arrays.stream(csvColumnsCR).map (attr -> exportCR.get(attr)).toArray(String[]::new)); 
-		}
+		});
 		
 		csv.close();
-		StatusBar.get().setValue("Saving CSV file (Cited References) done", crTab.getInfoString());
+		StatusBar.get().setValue("Saving CSV file (Cited References) done");
 	}
 
 	
@@ -124,7 +124,7 @@ public class CRE_csv {
 		}
 		
 		csv.close();
-		StatusBar.get().setValue("Saving CSV file (Citing Publications) done", crTab.getInfoString());
+		StatusBar.get().setValue("Saving CSV file (Citing Publications) done");
 	}
 	
 	
@@ -145,18 +145,18 @@ public class CRE_csv {
 			StatusBar.get().incProgressbar();
 			HashMap<String, String> exportPub = getPubExport(pub, ++count);
 			
-			for (CRType cr: pub.crList) {
+			pub.getCR().forEach(cr -> {
 				HashMap<String, String> exportCR = getCRExport(cr);
 			
 				csv.writeNext (Stream.concat (
 						Arrays.stream(csvColumnsPub).map (attr -> exportPub.get(attr)),
 						Arrays.stream(csvColumnsCR).map (attr -> exportCR.get(attr))
 				).toArray(String[]::new)); 
-			}
+			});
 		}
 		
 		csv.close();
-		StatusBar.get().setValue("Saving CSV file (Cited References + Citing Publications) done", crTab.getInfoString());
+		StatusBar.get().setValue("Saving CSV file (Cited References + Citing Publications) done");
 	}
 
 	
@@ -184,7 +184,7 @@ public class CRE_csv {
 		}
 				
 		csv.close();
-		StatusBar.get().setValue("Saving Graph as CSV file done", crTab.getInfoString());
+		StatusBar.get().setValue("Saving Graph as CSV file done");
 	}
 	
 }

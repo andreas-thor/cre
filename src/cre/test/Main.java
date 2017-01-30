@@ -129,7 +129,7 @@ public class Main {
 				OnMenuDataRemoveSelected();
 			}
 			if (e.getCode() == KeyCode.SPACE) {
-				List<CRType> sel = tableView.getSelectionModel().getSelectedItems();
+				List<CRType> sel = getSelectedCRs(); 
 				if (sel.size()==1) {
 					new CRInfo(sel.get(0)).showAndWait();	
 				}
@@ -144,33 +144,28 @@ public class Main {
 			public void onUpdateClustering(double threshold, boolean useClustering, boolean useVol, boolean usePag, boolean useDOI) {
 				if (t!=null) t.interrupt();
 				t = new Thread( () -> { 
-					crTable.crMatch.updateClusterId(threshold, true, useVol, usePag, useDOI); 
-					tableView.refresh();
+					crTable.crMatch.updateClusterId(threshold, true, useVol, usePag, useDOI);
+					refreshTable();
 				});
 				t.start();
 			}
 
 			@Override
 			public void onMatchManual(ManualMatchType type, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
-				List<CRType> toMatch = tableView.getSelectionModel().getSelectedItems();
+				
+				List<CRType> toMatch = getSelectedCRs();
 				if ((toMatch.size()==0) || ((toMatch.size()==1) && (type != ManualMatchType.EXTRACT))) {
 					new ConfirmAlert("Error during clustering!", true, new String[] {"Too few Cited References selected!"}).showAndWait();
 				} else {
-					System.out.println(toMatch);
 					crTable.crMatch.matchManual (toMatch, type, threshold, useVol, usePag, useDOI);
-					
-					 tableView.getColumns().get(0).setVisible(false);
-					 tableView.getColumns().get(0).setVisible(true);
-					 
-//					tableView.refresh();
-//					tableView.sort();
+					refreshTable();
 				}
 			}
 
 			@Override
 			public void onMatchUnDo(double threshold, boolean useVol, boolean usePag, boolean useDOI) {
 				crTable.crMatch.matchUndo(threshold, useVol, usePag, useDOI);
-				tableView.refresh();
+				refreshTable();
 			}
 			
 		};
@@ -245,13 +240,53 @@ public class Main {
 		
 		Platform.runLater( () -> {
 			crTable.filterByYear(UserSettings.get().getRange(RangeType.CurrentYearRange));
-			tableView.setItems(FXCollections.observableArrayList(crTable.crData.stream().filter(cr -> cr.getVI()).collect(Collectors.toList())));
+			
+			// save sort order ...
+			List<TableColumn<CRType, ?>> oldSort = new ArrayList<TableColumn<CRType, ?>>();
+			tableView.getSortOrder().forEach(it -> oldSort.add(it));
+
+			// ... update rows ...
+			tableView.setItems(FXCollections.observableArrayList(crTable.getCR().filter(cr -> cr.getVI()).collect(Collectors.toList())));
+
+			// ... reset old sort order
+			for (TableColumn<CRType, ?> x: oldSort) {
+				tableView.getSortOrder().add(x);
+			}
+			
 			Stream.of(crChart).forEach (it -> { it.setDomainRange (UserSettings.get().getRange(RangeType.CurrentYearRange)); });
+			refreshTable();
 		});
 	}
 
 	
+	private void refreshTable () {
+		Platform.runLater( () -> {
+			System.out.println("SortOrderSize = " + tableView.getSortOrder().size());
+			
+			if (tableView.getSortOrder().size() > 0) {
+				tableView.sort();
+			}
+			tableView.getColumns().get(0).setVisible(false);
+			tableView.getColumns().get(0).setVisible(true);
+			
+			StatusBar.get().setInfo(crTable.getInfoString());
+		});
+	}
+	
     
+		
+/*
+ * http://stackoverflow.com/questions/36353518/javafx-table-view-multiple-selection-sometimes-skips-one-of-the-items/38207246#38207246
+ * Apparently it's a bug, already fixed for version 9 (and also 8u112, if I understand correctly): https://bugs.openjdk.java.net/browse/JDK-8144501
+ * A workaround for now is to use getSelectedIndices(), then get the items corresponding to these instances from table.getItems()
+ * return tableView.getSelectionModel().getSelectedIndices().stream().map(idx -> tableView.getItems().get(idx)).collect(Collectors.toList());
+ * ==> GEHT AUCH NICHT
+*/
+	private List<CRType> getSelectedCRs () {
+		return tableView.getSelectionModel().getSelectedItems().stream().filter(cr -> cr != null).collect(Collectors.toList());
+	}
+	
+	
     private void openFile (ImportFormat source) throws IOException {
     	
     	FileChooser fileChooser = new FileChooser();
@@ -410,21 +445,12 @@ public class Main {
 	
 	@FXML public void OnMenuFileSettings() throws IOException {
 		
-		int a=0;
-
-		for (TableColumn<CRType, ?> x: tableView.getColumns()) { 
-			System.out.println((++a) + " " + x.getText());
-		}
-		
 		new Settings()
 			.showAndWait()
 			.ifPresent( noOfErrors -> {
-				
 				for (int i=0; i<crChart.length; i++) {
 					crChart[i].setVisible(UserSettings.get().getChartEngine()==i);
 				}
-				
-				
 				// TODO: Apply settings changes
 			}
 		);
@@ -462,7 +488,7 @@ public class Main {
 	
 	@FXML public void OnMenuDataRemoveSelected() {
 		
-		List<CRType> toDelete = tableView.getSelectionModel().getSelectedItems();
+		List<CRType> toDelete = getSelectedCRs();
 		int n = toDelete.size();
 		new ConfirmAlert("Remove Cited References", n==0, new String[] {"No Cited References selected.", String.format("Would you like to remove all %d selected Cited References?", n)})
 			.showAndWait()
@@ -563,7 +589,7 @@ public class Main {
 		.ifPresent( list -> {
 			if (list != null) {
 				int[] id = Arrays.stream(list.split("\\D")).mapToInt(Integer::valueOf).toArray();
-				List<CRType> toRetain = crTable.crData.stream().filter(cr -> 
+				List<CRType> toRetain = crTable.getCR().filter(cr -> 
 					IntStream.of(id).anyMatch(it -> cr.getID()==it)
 				).collect(Collectors.toList());
 				crTable.retain (toRetain);
@@ -575,7 +601,7 @@ public class Main {
 
 	@FXML public void OnMenuDataRetainSelected() {
 		
-		List<CRType> toDelete = tableView.getSelectionModel().getSelectedItems();
+		List<CRType> toDelete = getSelectedCRs(); 
 		int n = toDelete.size();
 		new ConfirmAlert("Remove Publications", n==0, new String[] {"No Cited References selected.", String.format("Would you like to remove all citing publications that do not cite any of the selected %d Cited References?", n)})
 			.showAndWait()
@@ -637,7 +663,8 @@ public class Main {
 					new Thread( () -> {
 						crTable.crMatch.merge();
 						matchView.setVisible(false);
-						tablePane.requestLayout();
+						updateData(null);
+//						tablePane.requestLayout();
 					}).start();
 				}
 			});

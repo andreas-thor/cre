@@ -62,15 +62,13 @@ public class Scopus_csv  {
 		
 		crTab.abort = false;	// can be changed by "wait dialog"
 		
-		Date startDate = new Date();
-		StatusBar.get().setValue(String.format("%1$s: Loading Scopus files ...", startDate), "");
-		
+		StatusBar.get().setValue("Loding Scopus files...");
+
 		crTab.init();
 		
 		AtomicLong countCR = new AtomicLong(0);
 		int idx=0;
 		for (File file: files) {
-
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 			CSVReader csv = new CSVReader(br);
@@ -79,7 +77,9 @@ public class Scopus_csv  {
 			
 			String[] attributes = Arrays.stream(content.get(0)).map(it ->  it.trim()).toArray(size -> new String[size]);
 			content.remove(0);
-			
+
+			StatusBar.get().initProgressbar(content.size(), String.format("Loading Scopus files %d of %d...", ++idx, files.size()));
+
 			/*
 				http://stackoverflow.com/questions/21891578/removing-bom-characters-using-java
 				Java does not handle BOM properly. In fact Java handles a BOM like every other char.
@@ -94,11 +94,8 @@ public class Scopus_csv  {
 			}
 
 			
-			int stepSize = 5;
-			int modulo = content.size()*stepSize/100;
 			AtomicLong countPub = new AtomicLong(0);
 
-			int fileNr = ++idx;
 			crTab.pubData.addAll(content.parallelStream().map ( (String[] it) -> {
 			
 				/* if user abort or maximum number of CRs reached --> do no process anymore */
@@ -159,11 +156,9 @@ public class Scopus_csv  {
 				try { pub.TC = Integer.valueOf(it[attribute2Index.get("Cited by")]); } catch (NumberFormatException e) { }
 				
 				/* parse list of CRs */
-				pub.crList = new ArrayList<CRType>();
 				if (it[attribute2Index.get("References")] != null) {
 					for (String crString: it[attribute2Index.get("References")].split(";")) {
-						CRType cr = parseCR (crString, yearRange);
-						if (cr != null) pub.crList.add (cr); 
+						pub.addCR (parseCR (crString, yearRange)); 
 					}
 				}
 				
@@ -177,13 +172,9 @@ public class Scopus_csv  {
 				
 				
 				countPub.incrementAndGet();
-				countCR.addAndGet(pub.crList.size());
+				countCR.addAndGet(pub.getSizeCR());
 				
-				// update status bar
-				if ((countPub.get()%modulo) == 0) {
-					StatusBar.get().setValue (String.format("%1$s: Loading Scopus file %2$d of %3$d", startDate, fileNr, files.size()), (int)countPub.get()*stepSize/modulo);
-				}
-				
+				StatusBar.get().incProgressbar();
 				return pub;
 			}).filter ( it -> it != null).collect (Collectors.toList()));	// remove null values (abort)
 			
@@ -202,8 +193,6 @@ public class Scopus_csv  {
 				crTab.updateData(false);
 				throw new FileTooLargeException ((int) countCR.get());
 			}
-
-			
 		}
 
 
@@ -214,7 +203,8 @@ public class Scopus_csv  {
 		System.out.println("Load time is " + ((ts2-ts1)/1000d) + " seconds");
 
 		crTab.updateData(false);
-		StatusBar.get().setValue(String.format("%1$s: Loading Scopus files done", startDate), crTab.getInfoString());
+		StatusBar.get().setValue("Loding Scopus files done");
+
 	}
 	
 	
@@ -368,7 +358,7 @@ public class Scopus_csv  {
 			row.add (pub.AB == null ? "" : pub.AB);
 			row.add (pub.DE == null ? "" : pub.DE);
 
-			row.add (pub.crList.stream().map ( cr -> { 
+			row.add (pub.getCR().map ( cr -> { 
 				
 				if (cr.type == CRType.TYPE_SCOPUS) return cr.getCR();
 				
@@ -402,7 +392,7 @@ public class Scopus_csv  {
 			
 		csv.close();
 
-		StatusBar.get().setValue(String.format("%1$s: Saving Scopus file done", new Date()), crTab.getInfoString());
+		StatusBar.get().setValue ("Saving Scopus file done");
 	}
 	
 	

@@ -22,6 +22,7 @@ public class CRTableView extends TableView<CRType> {
 	public static enum CRColumn {
 		
 		ID 	("ID", "ID", ColGroup.CR, ColDataType.INT, CRType::getIDProp),
+//		CO  ("CO", "CO", ColGroup.CR, ColDataType.INT, CRType::getCOProp), 
 		CR 	("CR", "Cited Reference", ColGroup.CR, ColDataType.STRING, CRType::getCRProp),
 		RPY ("RPY", "Cited Reference Year", ColGroup.CR, ColDataType.INT, CRType::getRPYProp),
 		N_CR ("N_CR", "Number of Cited References", ColGroup.CR, ColDataType.INT, CRType::getN_CRProp),
@@ -114,6 +115,7 @@ public class CRTableView extends TableView<CRType> {
 					break;
 				default: assert false;
 			}
+			
 			columns[i].visibleProperty().bindBidirectional(UserSettings.get().getColumnVisibleProperty(i));
 			if (i==0) {
 				((TableColumn<CRType, Number>) columns[ 0]).setCellValueFactory(cellData -> (ObservableValue<Number>) col.prop.apply (cellData.getValue()));
@@ -121,6 +123,27 @@ public class CRTableView extends TableView<CRType> {
 
 
 		}
+		
+		
+		
+//		setRowFactory(x -> {
+//			TableRow<CRType> row = new TableRow<CRType>() {
+//				
+//				@Override
+//			    public void updateItem(CRType cr, boolean empty){
+//					
+//					if (cr==null) return;
+//					if (cr.getCO()==0) {
+//						this.setStyle("-fx-background-color:lightcoral");
+//					} else {
+//						this.setStyle("-fx-background-color:lightgreen");
+//					}
+//				}
+//				
+//			};
+//			
+//			return row;
+//		});
 		
 		getColumns().addAll(columns);
 		setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -142,7 +165,16 @@ public class CRTableView extends TableView<CRType> {
 //		return null;
 //	}
 	
-	
+//	
+//	private void setRowFactory(Callback<TableView<CRType>, TableRow<CRType>> value) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+
+
+
+
+
 	public void orderByYearAndSelect (int year) {
 		/* sort by year ASC, n_cr desc */
 		columns[CRColumn.RPY.ordinal()].setSortType(TableColumn.SortType.ASCENDING);

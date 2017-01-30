@@ -73,9 +73,9 @@ public class StatusBar extends GridPane {
 	public void setValue (String label, long value) {
 		setValue(label, value, null, new Date()); 
 	}
-	public void setValue (String label, long value, String info) {
-		setValue(label, value, info, new Date());
-	}
+//	public void setValue (String label, long value, String info) {
+//		setValue(label, value, info, new Date());
+//	}
 	public void setValue (String label) {
 		setValue(label, 0L, null, new Date());
 	}
@@ -83,6 +83,11 @@ public class StatusBar extends GridPane {
 		setValue(label, 0L, info, new Date());
 	}
 
+	public void setInfo (String info) {
+		if (info!= null) {
+			sbinfo.setText(info);
+		}
+	}
 		
 	public void setValue (String label, long value, String info, Date d) {
 		Platform.runLater( () -> {

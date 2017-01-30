@@ -32,7 +32,7 @@ public class CRE_json {
 		
 		
 		crTab.abort = false;	// can be changed by "wait dialog"
-		StatusBar.get().setValue("Loading CRE file ...", "");
+		StatusBar.get().setValue("Loading CRE file ...");
 		
 		
 		crTab.init();
@@ -63,7 +63,7 @@ public class CRE_json {
 					
 					switch (parser.next()) {
 					case START_OBJECT: 	cr = new CRType(); break; 
-					case END_OBJECT: 	crTab.crData.add(cr); break;
+					case END_OBJECT: 	crTab.add(cr); break;
 					case KEY_NAME:		key = parser.getString(); break;
 					case VALUE_STRING: 
 						switch (key) {
@@ -128,7 +128,7 @@ public class CRE_json {
 							case "C1":	pub.C1 = new ArrayList<String[]>(); break;	
 							case "EM":	pub.EM = new ArrayList<String>(); break;
 							case "AA":	pub.AA = new ArrayList<String>(); break;
-							case "CRLISTID":	pub.crList = new ArrayList<CRType>(); break;
+//							case "CRLISTID":	pub.crList = new ArrayList<CRType>(); break;
 							}
 							break;
 						case 3:			C1List = new ArrayList<String>(); break;
@@ -173,7 +173,7 @@ public class CRE_json {
 						case "EP": 	pub.EP = parser.getInt(); break;
 						case "PG": 	pub.PG = parser.getInt(); break;
 						case "TC": 	pub.TC = parser.getInt(); break;
-						case "CRLISTID":	pub.crList.add(mapId2CR.get(parser.getInt())); break;
+						case "CRLISTID":	pub.addCR(mapId2CR.get(parser.getInt())); break;
 						// local mapping: case "CRLISTID":	crTab.crData.get(crTab.crMatch.crId2Index.get(parser.getInt()))); break;
 						default: System.out.println("PUBDATA.json >> Unknow Key with Number Value: " + key); 
 						}
@@ -249,7 +249,7 @@ public class CRE_json {
 		crTab.updateData(true);
 
 		crTab.creFile = file;
-		StatusBar.get().setValue("Loading CRE file done", crTab.getInfoString());
+		StatusBar.get().setValue("Loading CRE file done");
 	}
 
 
@@ -267,32 +267,33 @@ public class CRE_json {
 		zip.putNextEntry(new ZipEntry("crdata.json"));
 		JsonGenerator jgenCR = Json.createGenerator(zip);
 		jgenCR.writeStartArray();
-		for (CRType it: crTab.crData) {
+
+		crTab.getCR().forEach(it -> {	
 			jgenCR.writeStartObject();
-								jgenCR.write("ID", it.getID());
+									jgenCR.write("ID", it.getID());
 			if (it.getCR()!=null) 	jgenCR.write("CR", it.getCR());
 			if (it.getAU()!=null) 	jgenCR.write("AU", it.getAU());
-			if (it.getAU_F()!=null) 	jgenCR.write("AU_F", it.getAU_F());
-			if (it.getAU_L()!=null) 	jgenCR.write("AU_L", it.getAU_L());
-			if (it.getAU_A()!=null) 	jgenCR.write("AU_A", it.getAU_A());
+			if (it.getAU_F()!=null) jgenCR.write("AU_F", it.getAU_F());
+			if (it.getAU_L()!=null) jgenCR.write("AU_L", it.getAU_L());
+			if (it.getAU_A()!=null) jgenCR.write("AU_A", it.getAU_A());
 			if (it.getTI()!=null) 	jgenCR.write("TI", it.getTI());
 			if (it.getJ()!=null) 	jgenCR.write("J", it.getJ());
 			if (it.getJ_N()!=null) 	jgenCR.write("J_N", it.getJ_N());
 			if (it.getJ_S()!=null) 	jgenCR.write("J_S", it.getJ_S());
-								jgenCR.write("N_CR", it.getN_CR());
+									jgenCR.write("N_CR", it.getN_CR());
 			if (it.getRPY()!=null)	jgenCR.write("RPY", it.getRPY());
 			if (it.getPAG()!=null) 	jgenCR.write("PAG", it.getPAG());
 			if (it.getVOL()!=null) 	jgenCR.write("VOL", it.getVOL());
 			if (it.getDOI()!=null) 	jgenCR.write("DOI", it.getDOI());
-			if (it.getCID2()!=null) 	jgenCR.write("CID2", it.getCID2().toString());
-								jgenCR.write("CID_S", it.getCID_S());
-								jgenCR.write("VI", it.getVI()?1:0);
-								jgenCR.write("CO", it.getCO());
-								jgenCR.write("type", it.type);			
+			if (it.getCID2()!=null) jgenCR.write("CID2", it.getCID2().toString());
+									jgenCR.write("CID_S", it.getCID_S());
+									jgenCR.write("VI", it.getVI()?1:0);
+									jgenCR.write("CO", it.getCO());
+									jgenCR.write("type", it.type);			
 			jgenCR.writeEnd();
 			
 			StatusBar.get().incProgressbar();
-		};
+		});
 		jgenCR.writeEnd();
 		jgenCR.flush();
 		zip.closeEntry();
@@ -328,7 +329,11 @@ public class CRE_json {
 			if (it.EP!=null) 	jgenPub.write("EP", it.EP);
 			if (it.PG!=null) 	jgenPub.write("PG", it.PG);
 			if (it.TC!=null) 	jgenPub.write("TC", it.TC);
-			if (it.crList!=null) {	jgenPub.writeStartArray("CRLISTID"); for (CRType x:it.crList) jgenPub.write(x.getID()); jgenPub.writeEnd(); }
+			
+			jgenPub.writeStartArray("CRLISTID"); 
+			it.getCR().forEach(cr -> { jgenPub.write(cr.getID()); }); 
+			jgenPub.writeEnd(); 
+			
 			if (it.DI!=null) 	jgenPub.write("DI", it.DI);
 			if (it.LI!=null) 	jgenPub.write("LI", it.LI);
 			if (it.AB!=null) 	jgenPub.write("AB", it.AB);
@@ -377,7 +382,7 @@ public class CRE_json {
 		zip.close();
 		
 		crTab.creFile = file;
-		StatusBar.get().setValue("Saving CRE file done", crTab.getInfoString());
+		StatusBar.get().setValue("Saving CRE file done");
 
 		
 	}

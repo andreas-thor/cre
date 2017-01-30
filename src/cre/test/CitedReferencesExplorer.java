@@ -17,7 +17,7 @@ public class CitedReferencesExplorer extends Application {
 	public static Stage stage;
 	public static Application app;
 	public static String url = "http://www.crexplorer.net";
-	public static String title = "CRExplorer (Version 1.71 DEVELOPMENT)";
+	public static String title = "CRExplorer (Version 1.71 DEVELOPMENT; Jan-30-2017)";
 	
 	public static void main(String[] args) {
 		launch(args);

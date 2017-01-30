@@ -18,11 +18,13 @@ public class Indicators {
 		// Group CRs by RPY
 		Map<Integer, Set<CRType>> mapRPY_CRs = crData.stream().filter(cr -> cr.getRPY()!=null).collect(
 				Collectors.groupingBy(CRType::getRPY, Collectors.mapping(Function.identity(), Collectors.toSet()) ));
+		
 		for (Entry<Integer, Set<CRType>> group: mapRPY_CRs.entrySet()) {
 			int rpy = group.getKey();
-			
 			int yearSize = maxPY-rpy+1;
 			int crSize = group.getValue().size();
+			
+			if (yearSize<=0) continue;	// in the error case that RPY is higher than PY
 			
 			int[][] cit = new int[yearSize][crSize];	// matrix [year] x [cr] -> #citations 
 
