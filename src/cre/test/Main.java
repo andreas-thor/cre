@@ -276,7 +276,7 @@ public class Main {
 			tableView.getColumns().get(0).setVisible(false);
 			tableView.getColumns().get(0).setVisible(true);
 			
-			StatusBar.get().setInfo(crTable.getInfoString());
+			StatusBar.get().updateInfo(crTable.getStats());
 		});
 	}
 	
@@ -362,7 +362,7 @@ public class Main {
 					wait.close(); 
 					if (!crTable.isAborted()) {
 						OnMenuDataInfo();
-						updateData(crTable.getMaxRangeYear());
+						updateData(crTable.getStats().getMaxRangeYear());
 						CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title + ((creFile == null) ? "" : " - " + creFile.getAbsolutePath()));
 					}
 				});
@@ -494,7 +494,7 @@ public class Main {
 	 */
 	
 	@FXML public void OnMenuDataInfo() {
-		new Info(crTable.getInfo()).showAndWait();	
+		new Info(crTable.getStats()).showAndWait();	
 	}
 	
 	
@@ -504,7 +504,7 @@ public class Main {
 
 	
 	@FXML public void OnMenuDataFilterByRPY(ActionEvent event) {
-		new Range("Filter Cited References", "Select Range of Cited References Years", UserSettings.RangeType.FilterByRPYRange, crTable.getMaxRangeYear())
+		new Range("Filter Cited References", "Select Range of Cited References Years", UserSettings.RangeType.FilterByRPYRange, crTable.getStats().getMaxRangeYear())
 			.showAndWait()
 			.ifPresent( range -> { 
 				filterData(range);
@@ -531,7 +531,7 @@ public class Main {
 	
 	@FXML public void OnMenuDataRemovewoYears() {
 		
-		int n = crTable.getNumberWithoutYear();
+		int n = crTable.getStats().getNumberWithoutYear();
 		new ConfirmAlert("Remove Cited References", n==0, new String[] {"No Cited References w/o Year.", String.format("Would you like to remove all %d Cited References w/o Year?", n)})
 			.showAndWait()
 			.ifPresent( btn -> {
@@ -547,10 +547,10 @@ public class Main {
 	@FXML public void OnMenuDataRemoveByRPY() {
 		
 		final String header = "Remove Cited References";  
-		new Range(header, "Select Range of Cited References Years", UserSettings.RangeType.RemoveByRPYRange, crTable.getMaxRangeYear())
+		new Range(header, "Select Range of Cited References Years", UserSettings.RangeType.RemoveByRPYRange, crTable.getStats().getMaxRangeYear())
 			.showAndWait()
 			.ifPresent( range -> { 
-				long n =  crTable.getNumberByYear(range);
+				long n =  crTable.getStats().getNumberByYear(range);
 				new ConfirmAlert(header, n==0, new String[] {String.format ("No Cited References with Cited Reference Year between %d and %d.", range[0], range[1]), String.format("Would you like to remove all %d Cited References with Cited Reference Year between %d and %d?", n, range[0], range[1])})
 					.showAndWait()
 					.ifPresent( btn -> {
@@ -568,10 +568,10 @@ public class Main {
 	@FXML public void OnMenuDataRemoveByNCR() {
 
 		final String header = "Remove Cited References";  
-		new Range(header, "Select Number of Cited References", UserSettings.RangeType.RemoveByNCRRange, crTable.getMaxRangeNCR())
+		new Range(header, "Select Number of Cited References", UserSettings.RangeType.RemoveByNCRRange, crTable.getStats().getMaxRangeNCR())
 			.showAndWait()
 			.ifPresent( range -> { 
-				long n =  crTable.getNumberByNCR(range);
+				long n =  crTable.getStats().getNumberByNCR(range);
 				new ConfirmAlert(header, n==0, new String[] {String.format ("No Cited References with Number of Cited References between %d and %d.", range[0], range[1]), String.format("Would you like to remove all %d Cited References with Number of Cited References between %d and %d?", n, range[0], range[1])})
 					.showAndWait()
 					.ifPresent( btn -> {
@@ -594,7 +594,7 @@ public class Main {
 			.ifPresent( cond -> {
 				String comp = cond.getKey();
 				double threshold = cond.getValue().doubleValue();
-				long n =  crTable.getNumberByPercentYear(comp, threshold);
+				long n =  crTable.getStats().getNumberByPercentYear(comp, threshold);
 				new ConfirmAlert(header, n==0, new String[] {String.format ("No Cited References with Percent in Year %s %.1f%%.", comp, 100*threshold), String.format("Would you like to remove all %d Cited References with Percent in Year %s %.1f%%?", n, comp, 100*threshold)})
 					.showAndWait()
 					.ifPresent( btn -> {
@@ -644,10 +644,10 @@ public class Main {
 	
 	@FXML public void OnMenuDataRetainByRPY() {
 		
-		new Range("Retain Publications", "Select Range of Citing Publication Years", UserSettings.RangeType.RetainByRPYRange, crTable.getMaxRangeCitingYear())
+		new Range("Retain Publications", "Select Range of Citing Publication Years", UserSettings.RangeType.RetainByRPYRange, crTable.getStats().getMaxRangeCitingYear())
 			.showAndWait()
 			.ifPresent( range -> { 
-				long n =  crTable.getNumberOfPubs() - crTable.getNumberOfPubsByCitingYear(range);
+				long n =  crTable.getStats().getNumberOfPubs() - crTable.getStats().getNumberOfPubsByCitingYear(range);
 				new ConfirmAlert("Remove Publications", n==0, new String[] {String.format ("All Citing Publication Years are between between %d and %d.", range[0], range[1]), String.format("Would you like to remove all %d citing publications with publication year lower than %d or higher than %d?", n, range[0], range[1])})
 					.showAndWait()
 					.ifPresent( btn -> {
@@ -684,7 +684,7 @@ public class Main {
 	@FXML public void OnMenuStdMerge() {
 
 		
-		long n = crTable.getSize()-crTable.getNoOfClusters();
+		long n = crTable.getStats().getSize()-crTable.getStats().getNoOfClusters();
 		new ConfirmAlert("Merge clusters", n==0, new String[] {"No Clusters to merge.", String.format("Merging will aggregate %d Cited References! Are you sure?", n)})
 			.showAndWait()
 			.ifPresent( btn -> {

@@ -309,7 +309,7 @@ public class Scopus_csv  {
 
 	public static void save (File file, CRTable crTab) throws IOException {
 		
-		StatusBar.get().initProgressbar(crTab.getSizePub(), "Saving Scopus file ...");
+		StatusBar.get().initProgressbar(crTab.getStats().getSizePub(), "Saving Scopus file ...");
 
 		// add csv extension if necessary
 		String file_name = file.toString();

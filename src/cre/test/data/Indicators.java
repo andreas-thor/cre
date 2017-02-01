@@ -12,7 +12,7 @@ public class Indicators {
 
 
 	
-	public static void computeNPCT (ArrayList<CRType> crData, int maxPY) {
+	public static void computeNPCT (ArrayList<CRType> crData, int minPY, int maxPY) {
 		
 		
 		// Group CRs by RPY
@@ -21,7 +21,8 @@ public class Indicators {
 		
 		for (Entry<Integer, Set<CRType>> group: mapRPY_CRs.entrySet()) {
 			int rpy = group.getKey();
-			int yearSize = maxPY-rpy+1;
+			int firstPY = Math.max(rpy, minPY); 
+			int yearSize = maxPY-firstPY+1;
 			int crSize = group.getValue().size();
 			
 			if (yearSize<=0) continue;	// in the error case that RPY is higher than PY
@@ -37,7 +38,7 @@ public class Indicators {
 				for (Entry<Integer, Long> pyCount: mapPY_Count.entrySet()) { 
 					int py = pyCount.getKey();
 					if (py < rpy) continue;
-					cit[py-rpy][idx] += pyCount.getValue();
+					cit[py-firstPY][idx] += pyCount.getValue();
 				}				
 				idx++;
 			}

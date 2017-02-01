@@ -87,7 +87,7 @@ public class CRE_csv {
 	 */
 	public static void saveCR (File file, CRTable crTab) throws IOException {
 
-		StatusBar.get().initProgressbar(crTab.getSize(), "Saving CSV file (Cited References) ...");
+		StatusBar.get().initProgressbar(crTab.getStats().getSize(), "Saving CSV file (Cited References) ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -109,7 +109,7 @@ public class CRE_csv {
 	
 	public static void savePub (File file, CRTable crTab) throws IOException {
 
-		StatusBar.get().initProgressbar(crTab.getSizePub(), "Saving CSV file (Citing Publications) ...");
+		StatusBar.get().initProgressbar(crTab.getStats().getSizePub(), "Saving CSV file (Citing Publications) ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -133,7 +133,7 @@ public class CRE_csv {
 	
 	public static void saveCRPub (File file, CRTable crTab) throws IOException {
 
-		StatusBar.get().initProgressbar(crTab.getSizePub(), "Saving CSV file (Cited References + Citing Publications) ...");
+		StatusBar.get().initProgressbar(crTab.getStats().getSizePub(), "Saving CSV file (Cited References + Citing Publications) ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();

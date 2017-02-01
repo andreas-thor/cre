@@ -3,7 +3,6 @@ package cre.test.data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,7 +19,7 @@ public class CRTable {
 	protected ArrayList<CRType> crData = new ArrayList<CRType>(); 
 	protected List<PubType> pubData = new ArrayList<PubType>();	// all Publication data
 	protected CRMatch crMatch;
-	
+	protected CRStats crStats;
 	
 	// public ObservableList<CRType> crDataObserved = FXCollections.observableArrayList(crData); // new   new ArrayList<CRType>();	// all CR data
 	
@@ -45,6 +44,7 @@ public class CRTable {
 	 */
 	public CRTable () {
 		this.crMatch = new CRMatch(this);
+		this.crStats = new CRStats(this);
 	}
 	
 
@@ -137,7 +137,7 @@ public class CRTable {
 		
 		
 		// Determine sum citations per year
-		int[] rangeYear = getMaxRangeYear();
+		int[] rangeYear = crStats.getMaxRangeYear();
 		sumPerYear = IntStream.rangeClosed(rangeYear[0], rangeYear[1]).mapToObj (it -> new Integer(it)).collect(Collectors.toMap(it->it, it->0));
 		crData.stream().filter (it -> it.getRPY() != null).forEach( it -> { sumPerYear.computeIfPresent(it.getRPY(), (year, sum) -> sum + it.getN_CR()); });
 		
@@ -173,7 +173,7 @@ public class CRTable {
 		 */
 				
 		// N_PYEARS = Number of DISTINCT PY (for a CR)
-		int[] rangePub = getMaxRangeCitingYear();
+		int[] rangePub = crStats.getMaxRangeCitingYear();
 		crData.stream().forEach( cr -> {
 			cr.setN_PYEARS((int) cr.pubList.stream().filter(pub -> pub.PY!=null).mapToInt(pub -> pub.PY).distinct().count());
 			cr.setPYEAR_PERC( (cr.getRPY()==null) ? null : ((double)cr.getN_PYEARS()) /  (rangePub[1]-Math.max(rangePub[0], cr.getRPY())+1));
@@ -182,7 +182,7 @@ public class CRTable {
 		System.out.println("c1: " + System.currentTimeMillis());
 		
 		
-		Indicators.computeNPCT(crData, rangePub[1]);
+		Indicators.computeNPCT(crData, rangePub[0], rangePub[1]);
 		
 /*		
 
@@ -365,39 +365,6 @@ public class CRTable {
 
 	
 	/**
-	 * Meta data about CR table 
-	 * @return Map with meta data
-	 */
-	public Map<String, Integer> getInfo() {
-		int[] years = getMaxRangeYear();
-		Map<String, Integer> result = new HashMap<String, Integer>();
-		result.put("Number of Cited References", crData.size());
-		result.put("Number of Cited References (shown)", (int) crData.stream().filter( (CRType it) -> it.getVI()).count()); 
-		result.put("Number of Cited References Clusters", crMatch.getNoOfClusters());
-		result.put("Number of different Cited References Years", (int)crData.stream().filter (it -> it.getRPY() != null).mapToInt(it -> it.getRPY()).distinct().count()); 
-		result.put("Minimal Cited References Year", years[0]);
-		result.put("Maximal Cited References Year", years[1]);
-		result.put("Number of Citing Publications", pubData.size());
-		return result;
-	}
-	
-	
-	
-	public String getInfoString() {
-		int[] years = getMaxRangeYear();
-		return String.format("%1$d CRs (%2$d shown), %3$d clusters, %4$d-%5$d ",
-			crData.size(),
-			crData.stream().filter ( (CRType it) -> it.getVI()).count(),
-			crMatch.getNoOfClusters(), 
-			years[0], 
-			years[1]);
-	}
-	
-
-
-	
-	
-	/**
 	 * Remove publications based on list of indexes (e.g., selected by user in the table)
 	 * @param idx list of CR indexes
 	 */
@@ -444,10 +411,6 @@ public class CRTable {
 	
 	
 	
-	public int getNumberWithoutYear () {
-		return (int) crData.stream().filter( (CRType it) -> it.getRPY() == null).count();  
-	}
-	
 	public void removeWithoutYear () {
 		crData.removeIf( (CRType cr) -> { cr.removed = (cr.getRPY() == null); return cr.removed; });
 		updateData(true);
@@ -456,30 +419,11 @@ public class CRTable {
 	
 	
 
-	/**
-	 * Count / Remove publications based on year range (from <= x <= to)	
-	 * Property "removed" is set for cascading deletions (e.g., Citing Publications) 
-	 * @param from
-	 * @param to
-	 */
-	
-	public long getNumberByYear (int[] range) {
-		return crData.stream().filter( cr -> ((cr.getRPY()!=null) && (range[0] <= cr.getRPY()) && (cr.getRPY() <= range[1]))).count();
-	}
-	
 	public void removeByYear (int from, int to) {
 		crData.removeIf( (CRType cr) -> { cr.removed = ((cr.getRPY()!=null) && (from <= cr.getRPY()) && (cr.getRPY() <= to)); return cr.removed; });
 		updateData(true);
 	}
 
-	public long getNumberOfPubsByCitingYear (int[] range) {
-		return pubData.stream().filter( pub -> ((pub.PY!=null) && (range[0] <= pub.PY) && (pub.PY <= range[1]))).count();
-	}
-
-	public long getNumberOfPubs () {
-		return pubData.size();
-	}
-	
 	/**
 	 * Remove all citing publications OUTSIDE the given year range
 	 * @param from
@@ -503,37 +447,9 @@ public class CRTable {
 	}
 	
 	
-	/**
-	 * Count / Remove publications based on NCR range (from <= N_CR <= to)
-	 * @param from
-	 * @param to
-	 */
-	
-	public long getNumberByNCR (int[] range) {
-		return crData.stream().filter(cr -> ((range[0] <= cr.getN_CR()) && (cr.getN_CR() <= range[1]))).count();
-	}
-	
 	public void removeByNCR(int[] range) {
 		crData.removeIf ( (CRType cr) -> { cr.removed = ((range[0] <= cr.getN_CR()) && (cr.getN_CR() <= range[1])); return cr.removed; });
 		updateData(true);
-	}
-	
-	/**
-	 * Count / Remove publiations based on PERC_YR
-	 * @param comp Comparator (<, <=, =, >=, or >)
-	 * @param threshold
-	 * @return
-	 */
-	
-	public long getNumberByPercentYear (String comp, double threshold) {
-		switch (comp) {
-			case "<" : return crData.stream().filter( cr -> cr.getPERC_YR() <  threshold ).count(); 
-			case "<=": return crData.stream().filter( cr -> cr.getPERC_YR() <= threshold ).count();
-			case "=" : return crData.stream().filter( cr -> cr.getPERC_YR() == threshold ).count();
-			case ">=": return crData.stream().filter( cr -> cr.getPERC_YR() >= threshold ).count();
-			case ">" : return crData.stream().filter( cr -> cr.getPERC_YR() >  threshold ).count();
-		}
-		return 0;
 	}
 	
 	public void removeByPercentYear (String comp, double threshold) {
@@ -571,34 +487,6 @@ public class CRTable {
 		crData.stream().forEach ( it -> { if (it.getRPY() == null) it.setVI(showNull);  });
 	}
 	
-	/**
-	 * 
-	 * @return [min, max]
-	 */
-	public int[] getMaxRangeYear () {
-		IntSummaryStatistics stats = crData.stream().filter (cr -> cr.getRPY() != null).mapToInt(it -> it.getRPY()).summaryStatistics();
-		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
-	}
-	
-	
-	public int[] getMaxRangeCitingYear () {
-		IntSummaryStatistics stats = pubData.stream().filter (pub -> pub.PY != null).mapToInt(it -> it.PY).summaryStatistics();
-		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
-	}
-
-	
-	
-	/**
-	 * 
-	 * @return [min, max]
-	 */
-	public int[] getMaxRangeNCR () {
-		IntSummaryStatistics stats = crData.stream().map((CRType it) -> it.getN_CR()).mapToInt(Integer::intValue).summaryStatistics();
-		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
-	}
-	
-
-	
 	public void setMapping (Integer id1, Integer id2, Double s, boolean isManual, boolean add, Long timestamp) {
 		this.crMatch.setMapping(id1, id2, s, isManual, add, timestamp);
 	}
@@ -613,17 +501,7 @@ public class CRTable {
 	
 	
 
-	public int getSize () {
-		return this.crData.size();
-	}
-	
-	public int getSizePub () {
-		return this.pubData.size();
-	}
-	
-	public int getSizeMatch (boolean manual) {
-		return this.crMatch.match.get(manual).size();
-	}
+
 	
 	public CRType getCR (int idx) {
 		return this.crData.get(idx);
@@ -681,13 +559,6 @@ public class CRTable {
 	}
 
 
-	public int getNoOfClusters() {
-		return this.crMatch.getNoOfClusters();
-	}
-
-
-
-
 	public void matchMerge() {
 		this.crMatch.merge();
 	}
@@ -711,6 +582,9 @@ public class CRTable {
 		this.aborted = aborted;
 	}
 
-	
+
+	public CRStats getStats() {
+		return this.crStats;
+	}
 	
 }

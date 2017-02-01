@@ -234,7 +234,7 @@ public class WoS_txt {
 	
 	public static void save (File file, CRTable crTab) throws IOException, RuntimeException {
 		
-		StatusBar.get().initProgressbar(crTab.getSizePub(), "Saving WoS file ...");
+		StatusBar.get().initProgressbar(crTab.getStats().getSizePub(), "Saving WoS file ...");
 		
 		// add txt extension if necessary
 		String file_name = file.toString();

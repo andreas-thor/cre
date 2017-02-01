@@ -211,7 +211,7 @@ public class CRMatch {
 	public boolean doBlocking () {
 		
 		// standard blocking: year + first letter of last name
-		StatusBar.get().setValue(String.format("Blocking of %d objects...", crTab.getSize()));
+		StatusBar.get().setValue(String.format("Blocking of %d objects...", crTab.getStats().getSize()));
 		
 		Map<String, ArrayList<Integer>> blocks = new HashMap<String, ArrayList<Integer>>();	// block key -> list of indexes (not IDs)!
 		int idx = 0;
@@ -238,7 +238,7 @@ public class CRMatch {
 		// TODO: incorporate title (from scopus)
 		
 		
-		StatusBar.get().initProgressbar(blocks.size(), String.format("Matching %d objects in %d blocks", crTab.getSize(), blocks.size()));
+		StatusBar.get().initProgressbar(blocks.size(), String.format("Matching %d objects in %d blocks", crTab.getStats().getSize(), blocks.size()));
 		
 		// Matching: author lastname & journal name
 		List<Pair> matchResult = blocks.entrySet().parallelStream().map( entry -> {
@@ -423,7 +423,7 @@ public class CRMatch {
 			});
 		}
 		
-		StatusBar.get().setValue ("Clustering done", crTab.getInfoString());
+		StatusBar.get().setValue ("Clustering done");
 		System.out.println("OnFilter");
 		return true;
 	}
@@ -594,7 +594,7 @@ public class CRMatch {
 		// remove all invalidated CRs
 		crTab.crData.removeIf ( it -> { return (it.mergedTo >= 0); } );
 		crTab.updateData(true);
-		StatusBar.get().setValue ("Merging done", crTab.getInfoString()); 
+		StatusBar.get().setValue ("Merging done"); 
 		
 	}
 	

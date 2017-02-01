@@ -1,8 +1,6 @@
 package cre.test.ui.dialog;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
+import cre.test.data.CRStats;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonType;
@@ -14,26 +12,57 @@ import javafx.scene.layout.GridPane;
 public class Info extends Dialog<Void> {
 
 	
-	public Info(Map<String, Integer> info) {
+	public Info(CRStats crStats) {
 		super();
 		
 		setTitle("Info");
 		setHeaderText("Cited References Dataset");
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK);
 		
+		
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(20, 20, 20, 20));
 		
-		int i = 0;
-		for (Entry<String, Integer> e: info.entrySet()) {
-			grid.add(new Label(e.getKey()), 0, i);
-			TextField tf = new TextField(String.valueOf(e.getValue()));
-			tf.setEditable(false);
-			grid.add(tf, 1, i);
-			i++;
-		};
+		grid.addRow(0, 
+			new Label("Number of Cited References"),
+			createTF (crStats.getSize()));
+		
+		grid.addRow(1, 
+			new Label("Number of Cited References (shown)"),
+			createTF (crStats.getNumberByVisibility(true)));
+		
+		grid.addRow(2, 
+			new Label("Number of Cited References Clusters"), 
+			createTF (crStats.getNoOfClusters()));
+		
+		int[] r = crStats.getMaxRangeYear();
+		grid.addRow(3, 
+			new Label("Range of Cited References Years"), 
+			createTF (r[0], 1),
+			new Label("-"),
+			createTF (r[1], 1));
+		
+		grid.addRow(4, 
+			new Label("Number of different Cited References Years"), 
+			createTF (crStats.getNumberOfDistinctRPY()));
+		
+		grid.addRow(5, 
+			new Label("Number of Citing Publications"), 
+			createTF (crStats.getSizePub()));
+
+		r = crStats.getMaxRangeCitingYear();
+		grid.addRow(6, 
+			new Label("Range of Cited Publications Years"),
+			createTF (r[0], 1),
+			new Label("-"),
+			createTF (r[1], 1));
+		
+		grid.addRow(7,
+			new Label("Number of different Citing Publications Years"),
+			createTF (crStats.getNumberOfDistinctPY()));
+		
 		
 		getDialogPane().setContent(grid);
 		
@@ -42,6 +71,20 @@ public class Info extends Dialog<Void> {
 		Platform.runLater(() -> getDialogPane().lookupButton(ButtonType.OK).requestFocus());
 
 			
+	}
+	
+	
+	TextField createTF (int value) {
+		return createTF(value, 3);
+	}
+	
+	
+	TextField createTF (int value, int colspan) {
+		TextField tf = new TextField(String.valueOf(value));
+		tf.setEditable(false);
+		tf.setMaxWidth(colspan==1 ? 50 : 125);
+		GridPane.setColumnSpan(tf, colspan);
+		return tf;
 	}
 	
 	

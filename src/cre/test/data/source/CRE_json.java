@@ -253,7 +253,7 @@ public class CRE_json {
 
 	public static void save (File file, CRTable crTab) throws IOException {
 		 
-		StatusBar.get().initProgressbar(crTab.getSize() + crTab.getSizePub() + crTab.getSizeMatch(true) + crTab.getSizeMatch(false), "Saving CRE file ...");
+		StatusBar.get().initProgressbar(crTab.getStats().getSize() + crTab.getStats().getSizePub() + crTab.getStats().getSizeMatch(true) + crTab.getStats().getSizeMatch(false), "Saving CRE file ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
