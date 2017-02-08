@@ -182,7 +182,7 @@ public class CRTable {
 		System.out.println("c1: " + System.currentTimeMillis());
 		
 		
-		Indicators.computeNPCT(crData, rangePub[0], rangePub[1]);
+		Indicators.computeNPCT(crData, rangePub[0], rangePub[1], UserSettings.get().getNPCTRange());
 		
 /*		
 

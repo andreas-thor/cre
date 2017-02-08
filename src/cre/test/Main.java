@@ -478,6 +478,10 @@ public class Main {
 				for (int i=0; i<crChart.length; i++) {
 					crChart[i].setVisible(UserSettings.get().getChartEngine()==i);
 				}
+				crTable.updateData(false);
+				updateData(crTable.getStats().getMaxRangeYear());
+				
+				
 				// TODO: Apply settings changes
 			}
 		);

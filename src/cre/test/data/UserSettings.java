@@ -7,7 +7,6 @@ import java.util.prefs.Preferences;
 
 import cre.test.CitedReferencesExplorer;
 import cre.test.ui.CRTableView;
-import cre.test.ui.CRTableView.CRColumn;
 import javafx.beans.property.SimpleBooleanProperty;
 
 public class UserSettings {
@@ -34,6 +33,9 @@ public class UserSettings {
 	private boolean[] chartLine = new boolean[] { true, true };
 	private int[] chartSize = new int[] { 1, 3 };
 	private int medianRange = 2;
+
+	// PubYear Range (+/-) for NPCT indicators
+	private int npctRange = 5;
 
 	// import restrictions
 	private int maxCR = 0;
@@ -81,7 +83,10 @@ public class UserSettings {
 		for (int i = 0; i < chartSize.length; i++) {
 			chartSize[i] = userPrefs.getInt("chartSize" + i, chartSize[i]);
 		}
+		
 		medianRange = userPrefs.getInt("medianRange", medianRange);
+		npctRange = userPrefs.getInt("npctRange", npctRange);
+
 		maxCR = userPrefs.getInt("maxCR", maxCR);
 		chartEngine = userPrefs.getInt("chartEngine", 0);
 		
@@ -116,6 +121,7 @@ public class UserSettings {
 		for (int i = 0; i < chartSize.length; i++) {
 			userPrefs.putInt("chartSize" + i, chartSize[i]);
 		}
+		userPrefs.putInt("npctRange", npctRange);
 		userPrefs.putInt("medianRange", medianRange);
 		userPrefs.putInt("maxCR", maxCR);
 		userPrefs.putInt("chartEngine", chartEngine);
@@ -260,6 +266,26 @@ public class UserSettings {
 		}
 	}
 
+	public int getNPCTRange() {
+		return npctRange;
+	}
+	
+	
+	// checks that NPCT Range is Integer and >= 0
+	public int setNPCTRange(String npctRange) {
+		try {
+			this.npctRange = Integer.parseInt(npctRange);
+			if (this.npctRange < 0) {
+				this.npctRange = 0;
+				return 1;
+			}
+			return 0;
+		} catch (NumberFormatException e) {
+			return 1;
+		}
+	}	
+	
+	
 	public int getMaxCR() {
 		return maxCR;
 	}

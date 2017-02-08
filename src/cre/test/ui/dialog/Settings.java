@@ -31,6 +31,7 @@ public class Settings extends Dialog<Integer> {
 	
 	private final CheckBox[] cbCol = new CheckBox[CRTableView.CRColumn.values().length];
 	private final TextField tfDigits = new TextField();
+	private final TextField tfNPCT = new TextField();
 	private final CheckBox[] cbLine = new CheckBox[2];
 	private final TextField[] tfLine = new TextField[2];
 	private final TextField tfMedian = new TextField();
@@ -50,7 +51,7 @@ public class Settings extends Dialog<Integer> {
 		tabTable.getChildren().add(new TitledPane("Cited References", createTableColPane(ColGroup.CR)));
 		tabTable.getChildren().add(new TitledPane("Indicators", createTableColPane(ColGroup.INDICATOR)));
 		tabTable.getChildren().add(new TitledPane("Clustering", createTableColPane(ColGroup.CLUSTER)));
-		tabTable.getChildren().add(new TitledPane("Value Format", createTableValPane()));
+		tabTable.getChildren().add(new TitledPane("Value Format", createTableDataPane()));
 		tpane.getTabs().add(new Tab("Table", tabTable));
 		
 		VBox tabChart = new VBox(10);
@@ -83,6 +84,7 @@ public class Settings extends Dialog<Integer> {
 		    	noOfErrors += UserSettings.get().setMedianRange(tfMedian.getText());
 		    	noOfErrors += UserSettings.get().setMaxCR(tfImport[0].getText());
 		    	noOfErrors += UserSettings.get().setRange(UserSettings.RangeType.ImportYearRange, new String[] { tfImport[1].getText(), tfImport[2].getText()} );
+		    	noOfErrors += UserSettings.get().setNPCTRange(tfNPCT.getText());
 		    	UserSettings.get().setChartEngine(rbChart[0].isSelected() ? 0 : 1);
 		    	
 		    	
@@ -178,7 +180,7 @@ public class Settings extends Dialog<Integer> {
 		
 	}
 	
-	private GridPane createTableValPane() {
+	private GridPane createTableDataPane() {
 		GridPane result =  new GridPane();
 		result.setHgap(10);
 		result.setVgap(10);
@@ -188,6 +190,12 @@ public class Settings extends Dialog<Integer> {
 		tfDigits.setMaxWidth(50);
 		tfDigits.setText(UserSettings.get().getFormatDigits());
 		result.add(tfDigits, 1, 0);
+		
+		result.add(new Label("NPCT Range"), 0, 1);
+		tfNPCT.setMaxWidth(50);
+		tfNPCT.setText(String.valueOf(UserSettings.get().getNPCTRange()));
+		result.add(tfNPCT, 1, 1);
+		
 		return result;
 		
 	}
