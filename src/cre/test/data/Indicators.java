@@ -99,6 +99,8 @@ public class Indicators {
 					percBorder = getPercBorders(group.getValue(), firstPY, lastPY);
 					cachePercBorder.put(new Pair<Integer, Integer> (firstPY, lastPY), percBorder);
 				}
+
+//				System.out.println("\n" + percBorder[0] + "," + percBorder[1] + "," + percBorder[2]);
 				
 				
 				for (CRType cr: group.getValue()) {

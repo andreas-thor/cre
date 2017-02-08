@@ -51,7 +51,7 @@ public class Settings extends Dialog<Integer> {
 		tabTable.getChildren().add(new TitledPane("Cited References", createTableColPane(ColGroup.CR)));
 		tabTable.getChildren().add(new TitledPane("Indicators", createTableColPane(ColGroup.INDICATOR)));
 		tabTable.getChildren().add(new TitledPane("Clustering", createTableColPane(ColGroup.CLUSTER)));
-		tabTable.getChildren().add(new TitledPane("Value Format", createTableDataPane()));
+		tabTable.getChildren().add(new TitledPane("Value Settings", createTableDataPane()));
 		tpane.getTabs().add(new Tab("Table", tabTable));
 		
 		VBox tabChart = new VBox(10);
