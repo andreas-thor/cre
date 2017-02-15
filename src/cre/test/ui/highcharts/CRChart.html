@@ -9,7 +9,13 @@
 		<script type="text/javascript">
 		
 		var c;
-		var crejava;
+
+		/*
+		var crejava = {
+				onRedraw : function (a, b) { },
+				onClick  : function (x) { }
+		};
+		*/
 		
 	    function updateData (data0, data1, xAxisLabel, yAxisLabel, seriesLabel) {
 
@@ -29,15 +35,15 @@
 	                    redraw: function () {
 	                    	var extremes = c.xAxis[0].getExtremes();
 	                    	
-	                    	if (typeof crejava !== 'undefined') {
+	                    	// if (typeof window.crejava !== 'undefined') {
 	                    		crejava.onRedraw(extremes.min, extremes.max);
-	                    	}
+	                    	// }
 	                    }
                     },
                     click: function(e) {
-                    	if (typeof crejava !== 'undefined') {
+                    	// if (typeof window.crejava !== 'undefined') {
                     		crejava.onClick (e.xAxis[0].value);
-                    	}
+                    	// }
                     }
 	                
 	            },
@@ -92,9 +98,9 @@
 	            		point: { 
 	    	            	events: {
 	    	                    click: function() {
-	    	                    	if (typeof crejava !== 'undefined') {
+	    	                    	// if (typeof window.crejava !== 'undefined') {
 	    	                    		crejava.onClick (this.x);
-	    	                    	}
+	    	                    	// }
 	    	                    }
 	    	                }
 	    	            }

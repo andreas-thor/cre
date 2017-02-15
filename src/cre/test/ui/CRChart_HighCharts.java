@@ -5,6 +5,7 @@ import java.util.IntSummaryStatistics;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
@@ -21,7 +22,9 @@ public abstract class CRChart_HighCharts extends CRChart {
 	private WebView browser;
 	private boolean loaded;
 	private boolean duringUpdate;
-
+	private ChartCallBack cb;
+	
+	
 	public class ChartCallBack  {
 		
 		public void onRedraw(double min, double max) {
@@ -40,12 +43,12 @@ public abstract class CRChart_HighCharts extends CRChart {
 		browser = new WebView();
 		loaded = false;
 		duringUpdate = false;
+		cb = new ChartCallBack();
 		
 		WebEngine webEngine = browser.getEngine();
 		browser.setContextMenuEnabled(false);
 
 		
-		webEngine.load(CRChart_HighCharts.class.getResource("highcharts/CRChart.html").toExternalForm());
 		
 		webEngine.getLoadWorker().stateProperty().addListener(new ChangeListener<Worker.State>() {
 
@@ -53,14 +56,20 @@ public abstract class CRChart_HighCharts extends CRChart {
 			public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
 				if (newValue == Worker.State.SUCCEEDED) {
 					loaded = true;
-					JSObject jsobj = (JSObject) webEngine.executeScript("window");
-					jsobj.setMember("crejava", new ChartCallBack());
-					updateData(new int[][] { { 0 }, { 0 }, { 0 } });
+					Platform.runLater( () -> {
+						JSObject jsobj = (JSObject) webEngine.executeScript("window");
+						jsobj.setMember("crejava", cb);
+						updateData(new int[][] { { 0 }, { 0 }, { 0 } });
+					});
 				}
 				
 			}
 		});
 
+		
+		webEngine.load(CRChart_HighCharts.class.getResource("highcharts/CRChart.html").toExternalForm());
+		
+     
 		
 //		webEngine.documentProperty().addListener(new ChangeListener<Document>() {
 //			@Override
@@ -96,11 +105,16 @@ public abstract class CRChart_HighCharts extends CRChart {
 	@Override
 	public void setChartDomainRange(int[] range) {
 		
-		System.out.println( "Java Object? " + (((JSObject) browser.getEngine().executeScript("window")).getMember("crejava")));
+		WebEngine webEngine = browser.getEngine();
+
+		JSObject jsobj = (JSObject) webEngine.executeScript("window");
+		if ((jsobj.getMember("crejava")==null) || (jsobj.getMember("crejava").equals("undefined"))) {
+			jsobj.setMember("crejava", cb);
+		}
 
 		if (loaded) {
 			duringUpdate = true;	// make sure that setting x-axis range does not trigger the onRedraw -> onYearRangeFilter
-			browser.getEngine().executeScript(String.format("c.xAxis[0].setExtremes(%d, %d, true);", range[0], range[1]));
+			webEngine.executeScript(String.format("c.xAxis[0].setExtremes(%d, %d, true);", range[0], range[1]));
 			duringUpdate = false;
 		}
 	}
@@ -108,8 +122,6 @@ public abstract class CRChart_HighCharts extends CRChart {
 	@Override
 	public void updateData(int[][] data) {
 
-		System.out.println( "Java Object? " + (((JSObject) browser.getEngine().executeScript("window")).getMember("crejava")));
-		
 		duringUpdate = true;
 		
 		// series as JSON data
@@ -128,14 +140,15 @@ public abstract class CRChart_HighCharts extends CRChart {
 			try {
 				WebEngine webEngine = browser.getEngine();
 				
-				JSObject jsobj = (JSObject) browser.getEngine().executeScript("window");
+				JSObject jsobj = (JSObject) webEngine.executeScript("window");
 				if ((jsobj.getMember("crejava")==null) || (jsobj.getMember("crejava").equals("undefined"))) {
-//					jsobj.setMember("crejava", new ChartCallBack());
+					jsobj.setMember("crejava", cb);
 				}
 
 				webEngine.executeScript(String.format("updateData($.parseJSON('[%s]'), $.parseJSON('[%s]'), '%s', '%s', ['%s', '%s']);", json[0] ,json[1], CRChart.xAxisLabel, CRChart.yAxisLabel, getSeriesLabel(0), getSeriesLabel(1)));
 				webEngine.executeScript(String.format("c.xAxis[0].setExtremes(%d, %d, false);", extremes[0][0], extremes[0][1]));
 				webEngine.executeScript(String.format("c.yAxis[0].setExtremes(%d, %d, true);", Math.min(extremes[1][0], extremes[2][0]), Math.max(extremes[1][1], extremes[2][1])));
+				
 			} catch (JSException e) {
 				e.printStackTrace();
 				
@@ -145,8 +158,6 @@ public abstract class CRChart_HighCharts extends CRChart {
 		
 		duringUpdate = false;
 		
-		System.out.println( "Java Object? " + (((JSObject) browser.getEngine().executeScript("window")).getMember("crejava")));
-
 	}
 
 }
