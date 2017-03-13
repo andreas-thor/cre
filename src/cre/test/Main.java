@@ -15,6 +15,7 @@ import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRMatch.ManualMatchType;
+import cre.test.data.CRStats;
 import cre.test.data.CRTable;
 import cre.test.data.CRType;
 import cre.test.data.UserSettings;
@@ -50,6 +51,8 @@ import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
@@ -120,7 +123,7 @@ public class Main {
 	@FXML public void initialize() throws IOException {
 	
 		creFile = null;
-		crTable = new CRTable();
+		crTable = CRTable.get();
 		statPane.add(StatusBar.get(), 0, 0);
 
 		tableView = new CRTableView();
@@ -276,7 +279,7 @@ public class Main {
 			tableView.getColumns().get(0).setVisible(false);
 			tableView.getColumns().get(0).setVisible(true);
 			
-			StatusBar.get().updateInfo(crTable.getStats());
+			StatusBar.get().updateInfo();
 		});
 	}
 	
@@ -362,7 +365,7 @@ public class Main {
 					wait.close(); 
 					if (!crTable.isAborted()) {
 						OnMenuDataInfo();
-						updateData(crTable.getStats().getMaxRangeYear());
+						updateData(CRStats.getMaxRangeYear());
 						CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title + ((creFile == null) ? "" : " - " + creFile.getAbsolutePath()));
 					}
 				});
@@ -479,7 +482,7 @@ public class Main {
 					crChart[i].setVisible(UserSettings.get().getChartEngine()==i);
 				}
 				crTable.updateData(false);
-				updateData(crTable.getStats().getMaxRangeYear());
+				updateData(CRStats.getMaxRangeYear());
 				
 				
 				// TODO: Apply settings changes
@@ -498,7 +501,23 @@ public class Main {
 	 */
 	
 	@FXML public void OnMenuDataInfo() {
-		new Info(crTable.getStats()).showAndWait();	
+		
+		
+		System.out.println("So viele Pubs haben doppelte CRs");
+		System.out.println(crTable.getPub().filter(p -> p.getCR().count() != p.getCR().distinct().count()).count());
+		
+		System.out.println("So viele CRs haben doppelte Pubs");
+//		System.out.println(crTable.getCR().filter(cr -> cr.pubList.size() != cr.pubList.stream().distinct().count()).count());
+		
+		
+		
+//		crTable.getPub().filter(p -> p.getCR().count() != p.getCR().distinct().count()).forEach(p -> {
+//			System.out.print("[");
+//			p.getCR().forEach(cr -> { System.out.print(cr.getID() + ",");} );
+//			System.out.println("]");
+//		});
+		
+		new Info().showAndWait();	
 	}
 	
 	
@@ -508,7 +527,7 @@ public class Main {
 
 	
 	@FXML public void OnMenuDataFilterByRPY(ActionEvent event) {
-		new Range("Filter Cited References", "Select Range of Cited References Years", UserSettings.RangeType.FilterByRPYRange, crTable.getStats().getMaxRangeYear())
+		new Range("Filter Cited References", "Select Range of Cited References Years", UserSettings.RangeType.FilterByRPYRange, CRStats.getMaxRangeYear())
 			.showAndWait()
 			.ifPresent( range -> { 
 				filterData(range);
@@ -532,10 +551,22 @@ public class Main {
 		);
 	}
 
+	@FXML public void OnMenuDataCopySelected() {
+
+		StringBuffer buf = new StringBuffer();
+		tableView.getSelectionModel().getSelectedItems().stream().forEach((CRType cr) -> {
+			buf.append(cr.toString());
+		});
+		
+		final ClipboardContent clipboardContent = new ClipboardContent();
+		clipboardContent.putString(buf.toString());			
+        Clipboard.getSystemClipboard().setContent(clipboardContent);
+	}
+	
 	
 	@FXML public void OnMenuDataRemovewoYears() {
 		
-		int n = crTable.getStats().getNumberWithoutYear();
+		int n = CRStats.getNumberWithoutYear();
 		new ConfirmAlert("Remove Cited References", n==0, new String[] {"No Cited References w/o Year.", String.format("Would you like to remove all %d Cited References w/o Year?", n)})
 			.showAndWait()
 			.ifPresent( btn -> {
@@ -551,10 +582,10 @@ public class Main {
 	@FXML public void OnMenuDataRemoveByRPY() {
 		
 		final String header = "Remove Cited References";  
-		new Range(header, "Select Range of Cited References Years", UserSettings.RangeType.RemoveByRPYRange, crTable.getStats().getMaxRangeYear())
+		new Range(header, "Select Range of Cited References Years", UserSettings.RangeType.RemoveByRPYRange, CRStats.getMaxRangeYear())
 			.showAndWait()
 			.ifPresent( range -> { 
-				long n =  crTable.getStats().getNumberByYear(range);
+				long n =  CRStats.getNumberByYear(range);
 				new ConfirmAlert(header, n==0, new String[] {String.format ("No Cited References with Cited Reference Year between %d and %d.", range[0], range[1]), String.format("Would you like to remove all %d Cited References with Cited Reference Year between %d and %d?", n, range[0], range[1])})
 					.showAndWait()
 					.ifPresent( btn -> {
@@ -572,10 +603,10 @@ public class Main {
 	@FXML public void OnMenuDataRemoveByNCR() {
 
 		final String header = "Remove Cited References";  
-		new Range(header, "Select Number of Cited References", UserSettings.RangeType.RemoveByNCRRange, crTable.getStats().getMaxRangeNCR())
+		new Range(header, "Select Number of Cited References", UserSettings.RangeType.RemoveByNCRRange, CRStats.getMaxRangeNCR())
 			.showAndWait()
 			.ifPresent( range -> { 
-				long n =  crTable.getStats().getNumberByNCR(range);
+				long n =  CRStats.getNumberByNCR(range);
 				new ConfirmAlert(header, n==0, new String[] {String.format ("No Cited References with Number of Cited References between %d and %d.", range[0], range[1]), String.format("Would you like to remove all %d Cited References with Number of Cited References between %d and %d?", n, range[0], range[1])})
 					.showAndWait()
 					.ifPresent( btn -> {
@@ -598,7 +629,7 @@ public class Main {
 			.ifPresent( cond -> {
 				String comp = cond.getKey();
 				double threshold = cond.getValue().doubleValue();
-				long n =  crTable.getStats().getNumberByPercentYear(comp, threshold);
+				long n =  CRStats.getNumberByPercentYear(comp, threshold);
 				new ConfirmAlert(header, n==0, new String[] {String.format ("No Cited References with Percent in Year %s %.1f%%.", comp, 100*threshold), String.format("Would you like to remove all %d Cited References with Percent in Year %s %.1f%%?", n, comp, 100*threshold)})
 					.showAndWait()
 					.ifPresent( btn -> {
@@ -648,10 +679,10 @@ public class Main {
 	
 	@FXML public void OnMenuDataRetainByRPY() {
 		
-		new Range("Retain Publications", "Select Range of Citing Publication Years", UserSettings.RangeType.RetainByRPYRange, crTable.getStats().getMaxRangeCitingYear())
+		new Range("Retain Publications", "Select Range of Citing Publication Years", UserSettings.RangeType.RetainByRPYRange, CRStats.getMaxRangeCitingYear())
 			.showAndWait()
 			.ifPresent( range -> { 
-				long n =  crTable.getStats().getNumberOfPubs() - crTable.getStats().getNumberOfPubsByCitingYear(range);
+				long n =  CRStats.getNumberOfPubs() - CRStats.getNumberOfPubsByCitingYear(range);
 				new ConfirmAlert("Remove Publications", n==0, new String[] {String.format ("All Citing Publication Years are between between %d and %d.", range[0], range[1]), String.format("Would you like to remove all %d citing publications with publication year lower than %d or higher than %d?", n, range[0], range[1])})
 					.showAndWait()
 					.ifPresent( btn -> {
@@ -688,7 +719,7 @@ public class Main {
 	@FXML public void OnMenuStdMerge() {
 
 		
-		long n = crTable.getStats().getSize()-crTable.getStats().getNoOfClusters();
+		long n = CRStats.getSize()-CRStats.getNoOfClusters();
 		new ConfirmAlert("Merge clusters", n==0, new String[] {"No Clusters to merge.", String.format("Merging will aggregate %d Cited References! Are you sure?", n)})
 			.showAndWait()
 			.ifPresent( btn -> {
@@ -716,6 +747,9 @@ public class Main {
 	@FXML public void OnMenuHelpAbout() {
 		new About().showAndWait();
 	}
+
+
+	
 
 
 

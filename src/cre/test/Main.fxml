@@ -68,6 +68,11 @@
 
 					<MenuItem text="Retain Publications citing Selected Cited References..." onAction="#OnMenuDataRetainSelected" />
 					<MenuItem text="Retain Publications within Citing Publication Year..." onAction="#OnMenuDataRetainByRPY" />
+					
+					<SeparatorMenuItem />
+					
+					<MenuItem text="Copy Selected Cited Reference" onAction="#OnMenuDataCopySelected" />
+					
 				</items>
 			</Menu>
 			<Menu text="_Standardization"  >

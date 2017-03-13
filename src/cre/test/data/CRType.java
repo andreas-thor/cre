@@ -1,6 +1,7 @@
 package cre.test.data;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.stream.Stream;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -8,6 +9,9 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class CRType {
+
+	public static byte TYPE_WOS = 1;
+	public static byte TYPE_SCOPUS = 2;
 
 	private SimpleIntegerProperty ID;
 	private SimpleStringProperty CR;
@@ -44,7 +48,19 @@ public class CRType {
 	private SimpleIntegerProperty N_PYEARS2;	
 	
 	
+	private byte type = 0;	
 	
+
+	protected HashSet<PubType> pubList;
+	
+//	public int mergedTo = -1;
+	public boolean removed = false;	
+
+	
+	
+	
+	
+
 	
 	public CRType() {
 		super();
@@ -80,21 +96,31 @@ public class CRType {
 		VI = new SimpleBooleanProperty(true);
 		CO = new SimpleIntegerProperty(0);
 		
+		pubList = new HashSet<PubType>();
 	}
 	
-	public static byte TYPE_WOS = 1;
-	public static byte TYPE_SCOPUS = 2;
-	public byte type = 0;	
-	
 
-	public ArrayList<PubType> pubList;
-	
-	public int mergedTo = -1;
-	public boolean removed = false;
-	
+	public byte getType() {
+		return type;
+	}
 
+	public void setType(int type) {
+		this.type = (byte) type;
+	}
+
+	public Stream<PubType> getPub() {
+		return pubList.stream();
+	}
     
-    
+	public void addPub(PubType pub) {
+		this.pubList.add(pub);
+	}
+
+	public boolean removePub(PubType pub) {
+		return this.pubList.remove(pub);
+	}
+
+	
 	public int getID() {
 		return ID.get();
 	}
@@ -206,14 +232,16 @@ public class CRType {
 	
 	
 	public int getN_CR() {
-		return N_CR.get();
+		return pubList.size();
+//		return N_CR.get();
 	}
 	public SimpleIntegerProperty getN_CRProp() {
-		return N_CR;
+		return new SimpleIntegerProperty(getN_CR());
+//		return N_CR;
 	}
-	public void setN_CR(int n_CR) {
-		N_CR.set(n_CR);;
-	}
+//	public void setN_CR(int n_CR) {
+//		N_CR.set(n_CR);;
+//	}
 	
 	
 	public Integer getRPY() {
@@ -401,6 +429,49 @@ public class CRType {
 			
     
   
+	@Override
+	public String toString() {
+		
+		StringBuffer result = new StringBuffer();
+		result.append (String.valueOf(this.getID()));
+		result.append("\t");
+		result.append ((this.getCR()==null)?""		:this.getCR());
+		result.append("\t");
+		result.append ((this.getAU()==null)?""		:this.getAU());
+		result.append("\t");
+		result.append ((this.getAU_F()==null)?""	:this.getAU_F());
+		result.append("\t");
+		result.append ((this.getAU_L()==null)?""	:this.getAU_L());
+		result.append("\t");
+		result.append ((this.getAU_A()==null)?""	:this.getAU_A());
+		result.append("\t");
+		result.append ((this.getTI()==null)?""		:this.getTI());
+		result.append("\t");
+		result.append ((this.getJ()==null)?""		:this.getJ());
+		result.append("\t");
+		result.append ((this.getJ_N()==null)?""		:this.getJ_N());
+		result.append("\t");
+		result.append ((this.getJ_S()==null)?""		:this.getJ_S());
+		result.append("\t");
+		result.append (String.valueOf(this.getN_CR()));
+		result.append("\t");
+		result.append ((this.getRPY()==null)?""		:this.getRPY().toString());
+		result.append("\t");
+		result.append ((this.getPAG()==null)?""		:this.getPAG());
+		result.append("\t");
+		result.append ((this.getVOL()==null)?""		:this.getVOL());
+		result.append("\t");
+		result.append ((this.getDOI()==null)?""		:this.getDOI());
+		result.append("\t");
+		result.append ((this.getPERC_YR()==null)?""	:this.getPERC_YR().toString());
+		result.append("\t");
+		result.append ((this.getPERC_ALL()==null)?"":this.getPERC_ALL().toString());
+		result.append("\n");
+		
+		// TODO Auto-generated method stub
+		return result.toString();
+	}
+
 	
 }
 

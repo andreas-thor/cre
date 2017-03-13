@@ -3,7 +3,6 @@ package cre.test.ui;
 import java.util.Date;
 
 import cre.test.data.CRStats;
-import cre.test.data.CRType;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -85,14 +84,14 @@ public class StatusBar extends GridPane {
 		setValue(label, 0L, info, new Date());
 	}
 
-	public void updateInfo (CRStats crStats) {
-		int[] yearsRPY = crStats.getMaxRangeYear();
-		int[] yearsPY  = crStats.getMaxRangeCitingYear();
+	public void updateInfo () {
+		int[] yearsRPY = CRStats.getMaxRangeYear();
+		int[] yearsPY  = CRStats.getMaxRangeCitingYear();
 
 		sbinfo.setText (String.format("#CRs: %d (%d shown), #Clusters: %d, RPY: %d-%d, PY: %d-%d",
-			crStats.getSize(),
-			crStats.getNumberByVisibility(true),
-			crStats.getNoOfClusters(), 
+			CRStats.getSize(),
+			CRStats.getNumberByVisibility(true),
+			CRStats.getNoOfClusters(), 
 			yearsRPY[0], 
 			yearsRPY[1],
 			yearsPY[0], 

@@ -211,7 +211,7 @@ public class CRMatch {
 	public boolean doBlocking () {
 		
 		// standard blocking: year + first letter of last name
-		StatusBar.get().setValue(String.format("Blocking of %d objects...", crTab.getStats().getSize()));
+		StatusBar.get().setValue(String.format("Blocking of %d objects...", CRStats.getSize()));
 		
 		Map<String, ArrayList<Integer>> blocks = new HashMap<String, ArrayList<Integer>>();	// block key -> list of indexes (not IDs)!
 		int idx = 0;
@@ -238,7 +238,7 @@ public class CRMatch {
 		// TODO: incorporate title (from scopus)
 		
 		
-		StatusBar.get().initProgressbar(blocks.size(), String.format("Matching %d objects in %d blocks", crTab.getStats().getSize(), blocks.size()));
+		StatusBar.get().initProgressbar(blocks.size(), String.format("Matching %d objects in %d blocks", CRStats.getSize(), blocks.size()));
 		
 		// Matching: author lastname & journal name
 		List<Pair> matchResult = blocks.entrySet().parallelStream().map( entry -> {
@@ -552,47 +552,101 @@ public class CRMatch {
 			if (entry.getValue().size()>1) {
 				
 				int max_N_CR = 0;
-				int max_cr = 0;
-				int sum_N_CR = 0;
+				CRType crMax = null;
+				CRType cr;
+//				int sum_N_CR = 0;
 	
 				// sum all N_CR; find max
 				for (Integer it: entry.getValue()) {
-					int idx = crId2Index.get(it);
-					sum_N_CR += crTab.getCR(idx).getN_CR();
-					if (crTab.getCR(idx).getN_CR()>max_N_CR) {
-						max_N_CR = crTab.getCR(idx).getN_CR();
-						max_cr = idx;
+//					int idx = crId2Index.get(it);
+					cr = crTab.getCR(crId2Index.get(it));
+//					sum_N_CR += crTab.getCR(idx).getN_CR();
+					if (cr.getN_CR()>max_N_CR) {
+						max_N_CR = cr.getN_CR();
+						crMax = cr;
 					}
 				};
 				
+				final CRType crMax2 = crMax;
 				// update cluster representative; invalidate all others (set mergedTo)
 				for (Integer it: entry.getValue()) {
-					int idx = crId2Index.get(it);
-					if (idx == max_cr) {
-						crTab.getCR(idx).setN_CR(sum_N_CR);
-						crTab.getCR(idx).setCID_S(1);
+//					int idx = crId2Index.get(it);
+					final CRType crDel = crTab.getCR(crId2Index.get(it));
+					
+					if (crDel == crMax) {
+//						crTab.getCR(idx).setN_CR(sum_N_CR);
+						crDel.setCID_S(1);
 					} else {
-						crTab.getCR(idx).mergedTo = max_cr;
+						
+						
+						
+						
+						crDel.getPub().forEach ( pub -> { 
+							pub.removeCR(crDel);
+							pub.addCR(crMax2);
+							crMax2.addPub(pub);
+						});
+						crDel.pubList.clear();
+						 
+						
 					}
 				};
 				
 			}
 		}
 		
+		/*
 		// for all CRs that will eventually be removed: add the cluster representative to the crList of each publication and remove to-be-removed CRs
 		for (PubType pub: crTab.pubData) {
-			pub.crList.addAll (
-				pub.crList.stream()
-					.filter ( it -> it.mergedTo >= 0)
-					.map ( it -> crTab.getCR(it.mergedTo))
-					.collect(Collectors.toList())
-			);
-			pub.crList = new ArrayList<CRType>(new HashSet<CRType>(pub.crList));	// in case, both merged CRs are in a list of the same publication
-			pub.crList.removeIf(it -> { return (it.mergedTo >= 0); });				// remove CRs that will be removed
-		}
+			
+			final PubType p = pub;
+			
+			// change to-be-deleted-CRs to CR cluster representative & group by CR  
+			Map<CRType, Long> result = pub.crList.stream()
+					.map ( it -> it.mergedTo < 0 ? it : crTab.getCR(it.mergedTo))
+					.collect( Collectors.groupingBy( Function.identity(), Collectors.counting() ));
+			
+			// decrease N_CR in case multiple CRs are merged to the same publication
+			result.forEach((cr, count) -> {
+				if (count>1) {
+//					cr.setN_CR((int) (cr.getN_CR()-count+1));
+					
+					
+					if (cr.getID()==65) {
+						System.out.println("Doppelte Referenzierung");
+						System.out.println(p.PY);
+						System.out.println("\n");
+					}
+					
+				}
+			});
+			
+//			pub.crList = new ArrayList<CRType>(result.keySet());
+			pub.crList = new HashSet<CRType>(result.keySet());
+			
+			
+			
+//			pub.crList.addAll (
+//				pub.crList.stream()
+//					.filter ( it -> it.mergedTo >= 0)
+//					.map ( it -> crTab.getCR(it.mergedTo))
+//					.collect(Collectors.toList())
+//			);
+			
+//			if (pub.crList.size() != (new ArrayList<CRType>(new HashSet<CRType>(pub.crList))).size()) {
+//				
+//				System.out.println("Hier");
+//				
+//			}
+			
+//			pub.crList = (ArrayList<CRType>) pub.crList.stream().distinct().collect(Collectors.toList());
+//			pub.crList = new ArrayList<CRType>(new HashSet<CRType>(pub.crList));	// in case, both merged CRs are in a list of the same publication
+//			pub.crList.removeIf(it -> { return (it.mergedTo >= 0); });				// remove CRs that will be removed
 		
+		}
+		*/
 		// remove all invalidated CRs
-		crTab.crData.removeIf ( it -> { return (it.mergedTo >= 0); } );
+		crTab.crData.removeIf ( it -> it.getN_CR()<1 );
 		crTab.updateData(true);
 		StatusBar.get().setValue ("Merging done"); 
 		

@@ -1,6 +1,7 @@
 package cre.test.data;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -29,7 +30,7 @@ public class PubType {
 	
 	public Integer TC;	// Times Cited
 	
-	protected ArrayList<CRType> crList = new ArrayList<CRType>();
+	protected HashSet<CRType> crList = new HashSet<CRType>();
 	
 	public String DI;	// Digital Object Identifier (DOI)
 	public String LI;// Link	(Scopus only)
@@ -61,7 +62,14 @@ public class PubType {
 
 
 	public void addCR(CRType cr) {
-		if (cr != null) this.crList.add(cr);
+		if (cr != null) {
+			this.crList.add(cr);
+			cr.addPub(this);
+		}
+	}
+	
+	public boolean removeCR (CRType cr) {
+		return this.crList.remove(cr);
 	}
 	
 }

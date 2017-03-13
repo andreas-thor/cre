@@ -21,6 +21,7 @@ import java.util.stream.StreamSupport;
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
+import cre.test.data.CRStats;
 import cre.test.data.CRTable;
 import cre.test.data.CRType;
 import cre.test.data.PubType;
@@ -234,7 +235,7 @@ public class WoS_txt {
 	
 	public static void save (File file, CRTable crTab) throws IOException, RuntimeException {
 		
-		StatusBar.get().initProgressbar(crTab.getStats().getSizePub(), "Saving WoS file ...");
+		StatusBar.get().initProgressbar(CRStats.getSizePub(), "Saving WoS file ...");
 		
 		// add txt extension if necessary
 		String file_name = file.toString();
@@ -293,7 +294,7 @@ public class WoS_txt {
 				
 				writeTag(bw, "CR", pub.getCR().map(it -> {
 	
-					if (it.type == CRType.TYPE_WOS) return it.getCR();
+					if (it.getType() == CRType.TYPE_WOS) return it.getCR();
 					
 					/* Generate CR-String in WoS format */
 					String res = (it.getAU_L() != null) ? it.getAU_L() + " " : "";
@@ -363,7 +364,7 @@ public class WoS_txt {
 
 		CRType cr = new CRType();
 		cr.setCR(line); // [3..-1] // .toUpperCase()
-		cr.type = CRType.TYPE_WOS;
+		cr.setType (CRType.TYPE_WOS);
 		cr.setRPY(null);
 		String[] crsplit = cr.getCR().split (",", 3);
 		

@@ -21,6 +21,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
+import cre.test.data.CRStats;
 import cre.test.data.CRTable;
 import cre.test.data.CRType;
 import cre.test.data.PubType;
@@ -213,7 +214,7 @@ public class Scopus_csv  {
 		if (line.length() == 0) return null;
 		
 		CRType res = new CRType();
-		res.type = CRType.TYPE_SCOPUS;
+		res.setType (CRType.TYPE_SCOPUS);
 		res.setCR(line);
 		
 		// parse all authors (but save first author only in AU_L, AU_F, AU; all authors go to AU_A)
@@ -309,7 +310,7 @@ public class Scopus_csv  {
 
 	public static void save (File file, CRTable crTab) throws IOException {
 		
-		StatusBar.get().initProgressbar(crTab.getStats().getSizePub(), "Saving Scopus file ...");
+		StatusBar.get().initProgressbar(CRStats.getSizePub(), "Saving Scopus file ...");
 
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -358,7 +359,7 @@ public class Scopus_csv  {
 
 			row.add (pub.getCR().map ( cr -> { 
 				
-				if (cr.type == CRType.TYPE_SCOPUS) return cr.getCR();
+				if (cr.getType() == CRType.TYPE_SCOPUS) return cr.getCR();
 				
 				/* generate CR string in Scopus format */
 				String res = "";

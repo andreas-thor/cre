@@ -14,18 +14,12 @@ import cre.test.data.CRMatch.ManualMatchType;
 
 public class CRTable {
 
+	private static CRTable crTab = null;
 	
 
 	protected ArrayList<CRType> crData = new ArrayList<CRType>(); 
 	protected List<PubType> pubData = new ArrayList<PubType>();	// all Publication data
 	protected CRMatch crMatch;
-	protected CRStats crStats;
-	
-	// public ObservableList<CRType> crDataObserved = FXCollections.observableArrayList(crData); // new   new ArrayList<CRType>();	// all CR data
-	
-	// this is automatic but too time consuming for filters
-	// public ObservableList<CRType> crData = FXCollections.observableArrayList( item -> new Observable[] { item.getVIProp() });
-	
 	
 	
 	private boolean duringUpdate = false;
@@ -38,13 +32,21 @@ public class CRTable {
 	
 
 	
+	public static CRTable get() {
+		if (crTab == null) {
+			crTab = new CRTable();
+		}
+		return crTab;
+	}
+	
+	
 	
 	/**
 	 * @param stat status panel
 	 */
-	public CRTable () {
+	private CRTable () {
 		this.crMatch = new CRMatch(this);
-		this.crStats = new CRStats(this);
+//		this.crStats = new CRStats(this);
 	}
 	
 
@@ -76,15 +78,25 @@ public class CRTable {
 		for (PubType pub: pubData) {
 				
 			int crPos = 0;
-			for (CRType cr: pub.crList) {
+			
+			HashSet<CRType> crList = new HashSet<CRType>(pub.crList);
+			pub.crList = new HashSet<CRType>();
+			
+			for (CRType cr: crList) {
 					
 				// if CR already in database: increase N_CR by 1; else add new record
 				crDup.putIfAbsent(cr.getCR().charAt(0), new HashMap<String,Integer>());
 				Integer id = crDup.get(cr.getCR().charAt(0)).get(cr.getCR());
 				if (id != null) {
-					crData.get(id).setN_CR(crData.get(id).getN_CR() + 1);
-					pub.crList.set(crPos, crData.get(id));
+//					crData.get(id).setN_CR(crData.get(id).getN_CR() + 1);
+//					pub.crList.set(crPos, crData.get(id));
+					
+					pub.crList.add(crData.get(id));
+					crData.get(id).addPub(pub);
+					
 				} else {
+					
+					
 					crDup.get(cr.getCR().charAt(0)).put (cr.getCR(), indexCount);
 					
 
@@ -101,6 +113,9 @@ public class CRTable {
 					crMatch.clusterId2Objects.put(cr.getCID2(), tmp);
 //								crTab.crMatch.clusterId2Objects[cr.CID2] = [indexCount+1];
 					indexCount++;
+					
+					pub.crList.add(cr);
+					cr.addPub(pub);
 				}
 				crPos++;
 					
@@ -130,14 +145,21 @@ public class CRTable {
 		System.out.println("match done:" + System.currentTimeMillis());
 
 		// compute list of citing publications for each CR
-		crData.stream().forEach ( it -> it.pubList = new ArrayList<PubType>() );
-		pubData.stream().forEach ( (PubType pub) -> 
-			pub.crList.stream().forEach ( (CRType cr) -> cr.pubList.add(pub) )
-		);
 		
+		// not anymore ?
+//		crData.stream().forEach ( it -> it.pubList = new ArrayList<PubType>() );
+//		pubData.stream().forEach ( (PubType pub) -> 
+//			pub.crList.stream().distinct().forEach ( (CRType cr) -> cr.pubList.add(pub) )
+//		);
+		
+		
+//		crData.stream().forEach( it -> it.setN_CR(it.pubList.size()) );
+		
+
+
 		
 		// Determine sum citations per year
-		int[] rangeYear = crStats.getMaxRangeYear();
+		int[] rangeYear = CRStats.getMaxRangeYear();
 		sumPerYear = IntStream.rangeClosed(rangeYear[0], rangeYear[1]).mapToObj (it -> new Integer(it)).collect(Collectors.toMap(it->it, it->0));
 		crData.stream().filter (it -> it.getRPY() != null).forEach( it -> { sumPerYear.computeIfPresent(it.getRPY(), (year, sum) -> sum + it.getN_CR()); });
 		
@@ -173,9 +195,9 @@ public class CRTable {
 		 */
 				
 		// N_PYEARS = Number of DISTINCT PY (for a CR)
-		int[] rangePub = crStats.getMaxRangeCitingYear();
+		int[] rangePub = CRStats.getMaxRangeCitingYear();
 		crData.stream().forEach( cr -> {
-			cr.setN_PYEARS((int) cr.pubList.stream().filter(pub -> pub.PY!=null).mapToInt(pub -> pub.PY).distinct().count());
+			cr.setN_PYEARS((int) cr.getPub().filter(pub -> pub.PY!=null).mapToInt(pub -> pub.PY).distinct().count());
 			cr.setPYEAR_PERC( (cr.getRPY()==null) ? null : ((double)cr.getN_PYEARS()) /  (rangePub[1]-Math.max(rangePub[0], cr.getRPY())+1));
 		});
 		
@@ -316,6 +338,41 @@ public class CRTable {
 		duringUpdate = false;
 		
 		System.out.println(System.currentTimeMillis());
+		
+		
+		
+		
+		
+/*  LUCENE TEST		
+		 System.out.println("Free memory (bytes): " + 
+				  Runtime.getRuntime().freeMemory());
+		 
+		RAMDirectory lu_dir = new RAMDirectory();
+		try {
+			IndexWriter lu_idx = new IndexWriter(lu_dir, new IndexWriterConfig(new StandardAnalyzer()));
+			
+			for (CRType cr: crData) {
+				
+				Document d = new Document();
+				org.apache.lucene.document.TextField t = new org.apache.lucene.document.TextField("CR", cr.getCR(), Store.YES);
+				d.add(t);
+				
+				lu_idx.addDocument(d);
+			}
+			
+			lu_idx.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		 System.out.println("Free memory (bytes): " + 
+				  Runtime.getRuntime().freeMemory());
+		 
+			System.out.println(System.currentTimeMillis());
+*/
+			
 	}
 
 	
@@ -370,8 +427,15 @@ public class CRTable {
 	 */
 	public void remove (List<CRType> toDelete) {
 		
-		toDelete.stream().forEach( cr -> { cr.removed = true; }); 
-		crData.removeIf(cr -> cr.removed);
+		toDelete.stream().forEach( cr -> { 
+			
+			cr.getPub().forEach(pub -> pub.removeCR(cr));
+			cr.pubList.clear();
+			
+			
+		}); 
+		crData.removeIf(cr -> cr.getN_CR() < 1);
+		pubData.removeIf(pub -> pub.crList.size()==0);
 		updateData(true);
 	}
 	
@@ -394,7 +458,9 @@ public class CRTable {
 			
 			// if crList of publications does not contain any of the CRs 
 			if (!pub.crList.stream().anyMatch ( cr -> { return selCR.contains (cr); } )) {
-				pub.crList.forEach ( cr -> { cr.setN_CR(cr.getN_CR() - 1); } );	// remove number of CRs by 1
+//				pub.crList.forEach ( cr -> { cr.setN_CR(cr.getN_CR() - 1); } );	// remove number of CRs by 1
+				pub.crList.forEach ( cr -> cr.removePub (pub));
+				pub.crList = null;
 				return true;	// delete pub
 			} else {
 				return false;
@@ -402,7 +468,8 @@ public class CRTable {
 		});
 		
 		// remove all CRs that are not referenced anymore
-		crData.removeIf (  it -> { it.removed = (it.getN_CR() < 1); return it.removed; });
+//		crData.removeIf (  it -> { it.removed = (it.getN_CR() < 1); return it.removed; });
+		crData.removeIf (  cr -> { cr.removed = (cr.getN_CR() == 0); return cr.removed; });
 		updateData(true);
 	}
 	
@@ -434,7 +501,9 @@ public class CRTable {
 		pubData.removeIf  ( (PubType pub) -> {
 		
 			if ((pub.PY==null) || (range[0] > pub.PY) || (pub.PY > range[1])) {
-				pub.crList.forEach ( cr -> { cr.setN_CR(cr.getN_CR() - 1); } );	// remove number of CRs by 1
+//				pub.crList.forEach ( cr -> { cr.setN_CR(cr.getN_CR() - 1); } );	// remove number of CRs by 1
+				pub.crList.forEach ( cr -> cr.removePub (pub) );	// remove number of CRs by 1
+				pub.crList = null;
 				return true;	// delete pub
 			} else {
 				return false;
@@ -442,7 +511,8 @@ public class CRTable {
 		});
 		
 		// remove all CRs that are not referenced anymore
-		crData.removeIf (  it -> { it.removed = (it.getN_CR() < 1); return it.removed; });
+//		crData.removeIf (  it -> { it.removed = (it.getN_CR() < 1); return it.removed; });
+		crData.removeIf (  cr -> { cr.removed = (cr.getN_CR() == 0); return cr.removed; });
 		updateData(true);				
 	}
 	
@@ -583,8 +653,6 @@ public class CRTable {
 	}
 
 
-	public CRStats getStats() {
-		return this.crStats;
-	}
+
 	
 }

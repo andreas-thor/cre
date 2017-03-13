@@ -20,6 +20,7 @@ import javax.json.stream.JsonParser;
 
 import cre.test.Exceptions.AbortedException;
 import cre.test.data.CRCluster;
+import cre.test.data.CRStats;
 import cre.test.data.CRTable;
 import cre.test.data.CRType;
 import cre.test.data.PubType;
@@ -85,12 +86,12 @@ public class CRE_json {
 					case VALUE_NUMBER:
 						switch (key) {
 						case "ID": 		cr.setID(parser.getInt()); mapId2CR.put(cr.getID(), cr); break;
-						case "N_CR": 	cr.setN_CR(parser.getInt()); break;
+						case "N_CR": 	/*cr.setN_CR(parser.getInt());*/ break;
 						case "RPY": 	cr.setRPY(parser.getInt()); break;
 						case "CID_S": 	cr.setCID_S(parser.getInt()); break;
 						case "VI": 		cr.setVI(parser.getInt()==1); break;
 						case "CO": 		cr.setCO(parser.getInt()); break;
-						case "type": 	cr.type = (byte) parser.getInt(); break;
+						case "type": 	cr.setType (parser.getInt()); break;
 						default: System.out.println("CRDATA.json >> Unknow Key with Number Value: " + key); 
 						}
 						break;
@@ -253,7 +254,7 @@ public class CRE_json {
 
 	public static void save (File file, CRTable crTab) throws IOException {
 		 
-		StatusBar.get().initProgressbar(crTab.getStats().getSize() + crTab.getStats().getSizePub() + crTab.getStats().getSizeMatch(true) + crTab.getStats().getSizeMatch(false), "Saving CRE file ...");
+		StatusBar.get().initProgressbar(CRStats.getSize() + CRStats.getSizePub() + CRStats.getSizeMatch(true) + CRStats.getSizeMatch(false), "Saving CRE file ...");
 		
 		// add csv extension if necessary
 		String file_name = file.toString();
@@ -286,7 +287,7 @@ public class CRE_json {
 									jgenCR.write("CID_S", cr.getCID_S());
 									jgenCR.write("VI", cr.getVI()?1:0);
 									jgenCR.write("CO", cr.getCO());
-									jgenCR.write("type", cr.type);			
+									jgenCR.write("type", cr.getType());			
 			jgenCR.writeEnd();
 			
 			StatusBar.get().incProgressbar();

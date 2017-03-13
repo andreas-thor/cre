@@ -56,6 +56,9 @@ public class CRInfo extends Dialog<Void> {
 			addProperty (grid, row, col.title, prop.getValue()==null ? "" : value);
 			row++;
 		}
+
+//		addProperty (grid, row, "text", String.valueOf(cr.pubList.size()));
+
 		
 		getDialogPane().setContent(grid);
 		
