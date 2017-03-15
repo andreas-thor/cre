@@ -132,6 +132,10 @@ public class StatusBar extends GridPane {
 		updateProgressbar(this.count+1);
 	}
 	
+	public void incProgressbar (long inc) {
+		updateProgressbar(this.count+inc);
+	}
+	
 	public void updateProgressbar (long count) {
 		this.count = count;
 		if (blockCount*blockSize<count) {

@@ -2,17 +2,19 @@ package cre.test.data;
 
 import java.util.IntSummaryStatistics;
 
+import cre.test.data.type.CRType;
+
 public class CRStats {
 
 	/** TODO: Namen der Methoden vereinheitlichen */
 	
 	
-	public static int getSize () {
-		return CRTable.get().crData.size();
+	public static long getSize () {
+		return CRTable.get().getCR().count();
 	}
 	
-	public static int getSizePub () {
-		return CRTable.get().pubData.size();
+	public static long getSizePub () {
+		return CRTable.get().getPub().count();
 	}
 	
 	public static int getSizeMatch (boolean manual) {
@@ -20,15 +22,12 @@ public class CRStats {
 	}
 
 	public static int[] getMaxRangeCitingYear () {
-		IntSummaryStatistics stats = CRTable.get().pubData.stream().filter (pub -> pub.PY != null).mapToInt(it -> it.PY).summaryStatistics();
+		IntSummaryStatistics stats = CRTable.get().getPub().filter (pub -> pub.PY != null).mapToInt(it -> it.PY).summaryStatistics();
 		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
 	}
 
 	public static int getNumberOfDistinctPY () {
-//		return (int)CRTable.get().pubData.stream().filter (pub -> pub.PY != null).mapToInt(pub -> pub.PY).distinct().count();
-		
-		return (int) CRTable.get().crData.stream().map(cr -> cr.pubList).flatMap(pub -> pub.stream()).filter (pub -> pub.PY != null).mapToInt(pub -> pub.PY).distinct().count();
-		
+		return (int)CRTable.get().getPub().filter (pub -> pub.PY != null).mapToInt(pub -> pub.PY).distinct().count();
 	}
 
 	
@@ -107,15 +106,15 @@ public class CRStats {
 	}
 
 	public static long getNumberOfPubs () {
-		return CRTable.get().pubData.size();
+		return CRTable.get().getPub().count();
 	}
 
 	public static long getNumberOfPubsByCitingYear (int[] range) {
-		return CRTable.get().pubData.stream().filter( pub -> ((pub.PY!=null) && (range[0] <= pub.PY) && (pub.PY <= range[1]))).count();
+		return CRTable.get().getPub().filter( pub -> ((pub.PY!=null) && (range[0] <= pub.PY) && (pub.PY <= range[1]))).count();
 	}
 
 	public static int getNumberWithoutYear () {
-		return (int) CRTable.get().crData.stream().filter( (CRType it) -> it.getRPY() == null).count();  
+		return (int) CRTable.get().getCR().filter( (CRType it) -> it.getRPY() == null).count();  
 	}
 
 

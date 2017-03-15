@@ -24,7 +24,7 @@
     <jar href="CitedReferencesExplorer.jar" main="true"/>
   	<property name="swing.defaultlaf" value="com.sun.java.swing.plaf.windows.WindowsLookAndFeel"/>
   
-	<jar href="lib/opencsv-2.3.jar"/>
+	<jar href="lib/opencsv-3.9.jar"/>
 	<jar href="lib/simmetrics_jar_v1_6_2_d07_02_07.jar"/>
 	<jar href="lib/hamcrest-core-1.3.jar"/>
 	<jar href="lib/jcommon-1.0.23.jar"/>

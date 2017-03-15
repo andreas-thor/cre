@@ -9,12 +9,12 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import com.opencsv.CSVWriter;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
-import cre.test.data.CRType;
-import cre.test.data.PubType;
 import cre.test.data.UserSettings;
+import cre.test.data.type.CRType;
+import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
 
 public class CRE_csv {

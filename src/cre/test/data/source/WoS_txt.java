@@ -23,8 +23,8 @@ import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
-import cre.test.data.CRType;
-import cre.test.data.PubType;
+import cre.test.data.type.CRType;
+import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
 
 public class WoS_txt {
@@ -105,9 +105,7 @@ public class WoS_txt {
 			
 			StatusBar.get().initProgressbar(file.length(), String.format("Loading WoS file %1$d of %2$d ...", (++idx), files.size()));
 			
-			AtomicLong countSize = new AtomicLong(0);
-			
-			crTab.addAllPub(StreamSupport.stream(wosIt.getIterable().spliterator(), true).map ( it -> {
+			crTab.addPubs(StreamSupport.stream(wosIt.getIterable().spliterator(), true).map ( it -> {
 			
 				/* if user abort or maximum number of CRs reached --> do no process anymore */
 				if (crTab.isAborted()) return null;
@@ -157,7 +155,7 @@ public class WoS_txt {
 					case "TC": try { pub.TC = Integer.valueOf(value); } catch (NumberFormatException e) { }; break;
 					
 					/* Parse Cited References */
-					case "CR": pub.addCR(parseCR(value, yearRange)); break;
+					case "CR": pub.addCR(parseCR(value, yearRange), true); break;
 					
 					/* Authors */
 					case "AU": if (pub.AU==null) pub.AU=new ArrayList<String>(); pub.AU.add(value); break;
@@ -189,7 +187,7 @@ public class WoS_txt {
 					}
 				}
 				
-				StatusBar.get().updateProgressbar(countSize.addAndGet(pub.length));
+				StatusBar.get().incProgressbar(pub.length);
 				countCR.addAndGet(pub.getSizeCR());
 				
 				return pub;
@@ -208,7 +206,7 @@ public class WoS_txt {
 			// Check for maximal number of CRs
 			if ((maxCR>0) && (countCR.get()>=maxCR)) {
 				StatusBar.get().setValue("Loading WoS files aborted (due to maximal number of CRs)");
-				crTab.createCRList();
+//				crTab.createCRList();
 				crTab.updateData(false);
 				throw new FileTooLargeException ((int) countCR.get());
 			}
@@ -218,7 +216,7 @@ public class WoS_txt {
 
 
 		
-		crTab.createCRList();
+//		crTab.createCRList();
 		
 		
 

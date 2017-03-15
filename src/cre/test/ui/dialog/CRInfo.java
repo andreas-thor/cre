@@ -1,8 +1,8 @@
 package cre.test.ui.dialog;
 
 import cre.test.data.CRCluster;
-import cre.test.data.CRType;
 import cre.test.data.UserSettings;
+import cre.test.data.type.CRType;
 import cre.test.ui.CRTableView.CRColumn;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;

@@ -74,12 +74,12 @@ public class Info extends Dialog<Void> {
 	}
 	
 	
-	TextField createTF (int value) {
+	TextField createTF (long value) {
 		return createTF(value, 3);
 	}
 	
 	
-	TextField createTF (int value, int colspan) {
+	TextField createTF (long value, int colspan) {
 		TextField tf = new TextField(String.valueOf(value));
 		tf.setEditable(false);
 		tf.setMaxWidth(colspan==1 ? 50 : 125);

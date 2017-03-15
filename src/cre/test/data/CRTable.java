@@ -6,19 +6,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import cre.test.data.CRMatch.ManualMatchType;
+import cre.test.data.type.CRType;
+import cre.test.data.type.PubType;
 
 public class CRTable {
 
 	private static CRTable crTab = null;
 	
 
-	protected ArrayList<CRType> crData = new ArrayList<CRType>(); 
-	protected List<PubType> pubData = new ArrayList<PubType>();	// all Publication data
+//	protected ArrayList<CRType> crData = new ArrayList<CRType>();
+	
+	protected Set<CRType> crData = new HashSet<CRType>();
+	
+//	protected List<PubType> pubData = new ArrayList<PubType>();	// all Publication data
 	protected CRMatch crMatch;
 	
 	
@@ -27,6 +35,8 @@ public class CRTable {
 	private boolean showNull = false;
 	
 	
+	private Map<Character, HashMap<String,CRType>> crDup; // first character -> (crString -> CR )
+
 	
 	private Map<Integer, Integer> sumPerYear = new HashMap<Integer, Integer>();	// year -> sum of CRs (also for years without any CR)
 	
@@ -58,16 +68,65 @@ public class CRTable {
 	
 	public void init() {
 //		crData.clear ();
-		crData = new ArrayList<CRType>();
+		crData = new HashSet<CRType>();
+		crDup = new HashMap<Character,  HashMap<String, CRType>>();
+				
+				
 		showNull = true;
 //		crMatch.clear();
 		crMatch = new CRMatch(this);
 //		pubData.clear();
-		pubData = new ArrayList<PubType>();
+//		pubData = new ArrayList<PubType>();
 		setAborted(false);
 	}
 	
 	
+	public Stream<CRType> getCR() {
+		return crData.stream();
+	}
+	
+	public Stream<PubType> getPub() {
+		return crData.stream().flatMap(cr -> cr.getPub()).distinct();
+	}
+	
+//	public Stream<PubType> getPub () {
+//		return this.pubData.stream();
+//	}
+	
+
+	
+	
+	
+	
+	public void addPubs(List<PubType> pubs) {
+		
+		pubs.stream().flatMap(pub -> pub.getCR()).distinct().collect(Collectors.toList()).stream().forEach(cr -> { // make a copy to avoid concurrent modifcation
+			
+			String crS = cr.getCR();
+			char cr1 = crS.charAt(0);
+			crDup.putIfAbsent(cr1, new HashMap<String,CRType>());
+			CRType crMain = crDup.get(cr1).get(crS); 
+			if (crMain == null) {
+				// add current CR to list
+				crDup.get(cr1).put(crS, cr);
+				crData.add(cr);
+				cr.setID(crData.size());
+				cr.setCID2(new CRCluster (cr.getID(), 1));
+				cr.setCID_S(1);
+			} else {
+				// merge current CR with main CR
+				cr.getPub().collect(Collectors.toList()).stream().forEach(crPub -> {		// make a copy to avoid concurrent modifcation
+					crPub.addCR(crMain, true);
+					crPub.removeCR(cr, true);
+				});
+			}
+		});
+	}	
+	
+	
+
+	
+	/*
 	
 	public void createCRList () {
 		
@@ -127,6 +186,8 @@ public class CRTable {
 		};
 	}
 	
+	*/
+	
 	/**
 	 * Update computation of percentiles for all CRs
 	 * Called after loading, deleting or merging of CRs
@@ -141,7 +202,10 @@ public class CRTable {
 		duringUpdate = true;		// mutex to avoid chart updates during computation
 		
 		// update match
+		
 		crMatch.updateData (removed);
+		
+		
 		System.out.println("match done:" + System.currentTimeMillis());
 
 		// compute list of citing publications for each CR
@@ -420,118 +484,104 @@ public class CRTable {
 		
 
 
-	
-	/**
-	 * Remove publications based on list of indexes (e.g., selected by user in the table)
-	 * @param idx list of CR indexes
-	 */
-	public void remove (List<CRType> toDelete) {
-		
-		toDelete.stream().forEach( cr -> { 
-			
-			cr.getPub().forEach(pub -> pub.removeCR(cr));
-			cr.pubList.clear();
-			
-			
-		}); 
-		crData.removeIf(cr -> cr.getN_CR() < 1);
-		pubData.removeIf(pub -> pub.crList.size()==0);
-		updateData(true);
-	}
-	
-	
-	public void retain (List<CRType> toRetain) {
-		
-		crData.stream().forEach(cr -> cr.removed = true);
-		toRetain.stream().forEach( cr -> { cr.removed = false; }); 
-		crData.removeIf(cr -> cr.removed);
-		updateData(true);
-	}
-	
-	/**
-	 * Remove all citing publications, that do not reference any of the given CRs (idx)
-	 * @param idx list of CR indexes
-	 */
-	public void removeByCR (List<CRType> selCR) {
-		
-		pubData.removeIf ( pub -> {
-			
-			// if crList of publications does not contain any of the CRs 
-			if (!pub.crList.stream().anyMatch ( cr -> { return selCR.contains (cr); } )) {
-//				pub.crList.forEach ( cr -> { cr.setN_CR(cr.getN_CR() - 1); } );	// remove number of CRs by 1
-				pub.crList.forEach ( cr -> cr.removePub (pub));
-				pub.crList = null;
-				return true;	// delete pub
+	private void removeCR (Predicate<CRType> cond) {
+		crData.removeIf( cr ->  { 
+			if (cond.test(cr)) {
+				cr.removeAllPubs(true);
+				return true;
 			} else {
 				return false;
 			}
 		});
-		
-		// remove all CRs that are not referenced anymore
-//		crData.removeIf (  it -> { it.removed = (it.getN_CR() < 1); return it.removed; });
-		crData.removeIf (  cr -> { cr.removed = (cr.getN_CR() == 0); return cr.removed; });
-		updateData(true);
-	}
-	
-	
-	
-	
-	
-	
-	public void removeWithoutYear () {
-		crData.removeIf( (CRType cr) -> { cr.removed = (cr.getRPY() == null); return cr.removed; });
-		updateData(true);
-	}
-
-	
-	
-
-	public void removeByYear (int from, int to) {
-		crData.removeIf( (CRType cr) -> { cr.removed = ((cr.getRPY()!=null) && (from <= cr.getRPY()) && (cr.getRPY() <= to)); return cr.removed; });
 		updateData(true);
 	}
 
 	/**
-	 * Remove all citing publications OUTSIDE the given year range
-	 * @param from
-	 * @param to
+	 * Remove list of CRs
+	 * @param toDelete list of CRs to be deleted
 	 */
-	public void removeByCitingYear (int[] range) {
-		
-		pubData.removeIf  ( (PubType pub) -> {
-		
-			if ((pub.PY==null) || (range[0] > pub.PY) || (pub.PY > range[1])) {
-//				pub.crList.forEach ( cr -> { cr.setN_CR(cr.getN_CR() - 1); } );	// remove number of CRs by 1
-				pub.crList.forEach ( cr -> cr.removePub (pub) );	// remove number of CRs by 1
-				pub.crList = null;
-				return true;	// delete pub
-			} else {
-				return false;
-			}
-		});
-		
-		// remove all CRs that are not referenced anymore
-//		crData.removeIf (  it -> { it.removed = (it.getN_CR() < 1); return it.removed; });
-		crData.removeIf (  cr -> { cr.removed = (cr.getN_CR() == 0); return cr.removed; });
-		updateData(true);				
+	public void removeCR (List<CRType> toDelete) {
+		removeCR(cr -> toDelete.contains(cr));
+	}
+	
+
+	/**
+	 * Remove all but the given list of CRs
+	 * @param toRetain list of CRs to be retained
+	 */
+	public void retainCR (List<CRType> toRetain) {
+		removeCR(cr -> !toRetain.contains(cr));
 	}
 	
 	
-	public void removeByNCR(int[] range) {
-		crData.removeIf ( (CRType cr) -> { cr.removed = ((range[0] <= cr.getN_CR()) && (cr.getN_CR() <= range[1])); return cr.removed; });
-		updateData(true);
+	/**
+	 * Remove all CRs without year (RPY)
+	 */
+	public void removeCRWithoutYear () {
+		removeCR (cr -> cr.getRPY() == null);
+	}
+
+	
+	/**
+	 * Remove all CRS within a given RPY range
+	 * @param range
+	 */
+	public void removeCRByYear (int[] range) {
+		removeCR (cr -> ((cr.getRPY()!=null) && (range[0] <= cr.getRPY()) && (cr.getRPY() <= range[1])));
+	}
+
+	
+	/**
+	 * Remove all CRs within a given N_CR range
+	 * @param range
+	 */
+	public void removeCRByN_CR(int[] range) {
+		removeCR (cr -> (range[0] <= cr.getN_CR()) && (cr.getN_CR() <= range[1]));
 	}
 	
-	public void removeByPercentYear (String comp, double threshold) {
+	
+	/**
+	 * Remove all CRs < / <= / = / >= / > PERC_YR
+	 * @param comp comparator (as string); TODO: ENUMERATION
+	 * @param threshold
+	 */
+	
+	public void removeCRByPERC_YR (String comp, double threshold) {
 		switch (comp) {
-			case "<" : crData.removeIf ( (CRType it) -> { it.removed = (it.getPERC_YR() <  threshold); return it.removed; }); break;
-			case "<=": crData.removeIf ( (CRType it) -> { it.removed = (it.getPERC_YR() <= threshold); return it.removed; }); break;
-			case "=" : crData.removeIf ( (CRType it) -> { it.removed = (it.getPERC_YR() == threshold); return it.removed; }); break;
-			case ">=": crData.removeIf ( (CRType it) -> { it.removed = (it.getPERC_YR() >= threshold); return it.removed; }); break;
-			case ">" : crData.removeIf ( (CRType it) -> { it.removed = (it.getPERC_YR() >  threshold); return it.removed; }); break;
+			case "<" : removeCR (cr -> cr.getPERC_YR() <  threshold); break;
+			case "<=": removeCR (cr -> cr.getPERC_YR() <= threshold); break;
+			case "=" : removeCR (cr -> cr.getPERC_YR() == threshold); break;
+			case ">=": removeCR (cr -> cr.getPERC_YR() >= threshold); break;
+			case ">" : removeCR (cr -> cr.getPERC_YR() >  threshold); break;
 		}
-		updateData(true);
 	}
+	
+	
+	/**
+	 * Remove all citing publications, that do *not* reference any of the given CRs 
+	 * @param selCR list of CRs
+	 */
+	public void removePubByCR (List<CRType> selCR) {
+		removePub (pub -> !selCR.stream().flatMap (cr -> cr.getPub()).distinct().collect(Collectors.toList()).contains(pub));
+	}
+	
+	
+	
+	private void removePub (Predicate<PubType> cond) {
+		getPub().filter(cond).forEach(pub -> pub.removeAllCRs(true));
+		removeCR(cr -> cr.getN_CR()==0);
+	}
+	
+	/**
+	 * Remove all citing publications OUTSIDE the given citing year (PY) range
+	 * @param range
+	 */
+	public void removePubByCitingYear (int[] range) {
+		removePub (pub -> (pub.PY==null) || (range[0] > pub.PY) || (pub.PY > range[1]));
+	}
+	
+	
+
 	
 	
 	/**
@@ -573,23 +623,21 @@ public class CRTable {
 
 
 	
-	public CRType getCR (int idx) {
-		return this.crData.get(idx);
-	}
+//	public CRType getCR (int idx) {
+//		return this.crData.get(idx);
+//	}
 	
 
-	public Stream<CRType> getCR () {
-		return this.crData.stream();
-	}
+
 	
-	public void add(CRType cr) {
+	public void addCR(CRType cr) {
 		crData.add(cr);
 	}
 
 	
-	public Stream<PubType> getPub () {
-		return this.pubData.stream();
-	}
+
+
+
 	
 	public Stream<Entry<Integer, Map<Integer, Double>>> getMatch (boolean manual) {
 		return this.crMatch.match.get(manual).entrySet().stream();
@@ -598,16 +646,7 @@ public class CRTable {
 
 
 
-	public void addPub(PubType pub) {
-		this.pubData.add(pub);
-	}
 
-
-
-
-	public void addAllPub(List<PubType> pubs) {
-		this.pubData.addAll(pubs);
-	}
 
 
 

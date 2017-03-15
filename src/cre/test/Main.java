@@ -17,13 +17,13 @@ import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRMatch.ManualMatchType;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
-import cre.test.data.CRType;
 import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
 import cre.test.data.source.CRE_csv;
 import cre.test.data.source.CRE_json;
 import cre.test.data.source.Scopus_csv;
 import cre.test.data.source.WoS_txt;
+import cre.test.data.type.CRType;
 import cre.test.ui.CRChart;
 import cre.test.ui.CRChart_HighCharts;
 import cre.test.ui.CRChart_JFreeChart;
@@ -544,7 +544,7 @@ public class Main {
 			.showAndWait()
 			.ifPresent( btn -> {
 				if (btn==ButtonType.YES) {
-					crTable.remove(toDelete);
+					crTable.removeCR(toDelete);
 					updateData(null);
 				}
 			}
@@ -571,7 +571,7 @@ public class Main {
 			.showAndWait()
 			.ifPresent( btn -> {
 				if (btn==ButtonType.YES) {
-					crTable.removeWithoutYear();
+					crTable.removeCRWithoutYear();
 					updateData(null);
 				}
 			}
@@ -590,7 +590,7 @@ public class Main {
 					.showAndWait()
 					.ifPresent( btn -> {
 						if (btn==ButtonType.YES) {
-							crTable.removeByYear(range[0], range[1]);
+							crTable.removeCRByYear(range);
 							updateData(null);
 						}
 					}
@@ -611,7 +611,7 @@ public class Main {
 					.showAndWait()
 					.ifPresent( btn -> {
 						if (btn==ButtonType.YES) {
-							crTable.removeByNCR(range);
+							crTable.removeCRByN_CR(range);
 							updateData(null);
 						}
 					}
@@ -634,7 +634,7 @@ public class Main {
 					.showAndWait()
 					.ifPresent( btn -> {
 						if (btn==ButtonType.YES) {
-							crTable.removeByPercentYear(comp, threshold);
+							crTable.removeCRByPERC_YR(comp, threshold);
 							updateData(null);
 						}
 					}
@@ -654,7 +654,7 @@ public class Main {
 				List<CRType> toRetain = crTable.getCR().filter(cr -> 
 					IntStream.of(id).anyMatch(it -> cr.getID()==it)
 				).collect(Collectors.toList());
-				crTable.retain (toRetain);
+				crTable.retainCR (toRetain);
 			}});
 	}
 
@@ -669,7 +669,7 @@ public class Main {
 			.showAndWait()
 			.ifPresent( btn -> {
 				if (btn==ButtonType.YES) {
-					crTable.removeByCR(toDelete);
+					crTable.removePubByCR(toDelete);
 					updateData(null);
 				}
 			}
@@ -687,7 +687,7 @@ public class Main {
 					.showAndWait()
 					.ifPresent( btn -> {
 						if (btn==ButtonType.YES) {
-							crTable.removeByCitingYear(range);
+							crTable.removePubByCitingYear(range);
 							updateData(null);
 						}
 					}

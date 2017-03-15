@@ -9,22 +9,24 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
+
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
-import cre.test.data.CRType;
-import cre.test.data.PubType;
+import cre.test.data.type.CRType;
+import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
 
 public class Scopus_csv  {
@@ -73,30 +75,26 @@ public class Scopus_csv  {
 			CSVReader csv = new CSVReader(br);
 			List<String[]> content = csv.readAll(); 
 			csv.close();
-			
-			String[] attributes = Arrays.stream(content.get(0)).map(it ->  it.trim()).toArray(size -> new String[size]);
-			content.remove(0);
-
 			StatusBar.get().initProgressbar(content.size(), String.format("Loading Scopus files %d of %d...", ++idx, files.size()));
+			
 
 			/*
 				http://stackoverflow.com/questions/21891578/removing-bom-characters-using-java
 				Java does not handle BOM properly. In fact Java handles a BOM like every other char.
 				Found this:	http://www.rgagnon.com/javadetails/java-handle-utf8-file-with-bom.html
 			*/
+			String[] attributes = Arrays.stream(content.get(0)).map(it ->  it.trim()).toArray(size -> new String[size]);
 			if (attributes[0].startsWith("\uFEFF")) attributes[0] = attributes[0].substring(1);
-			
+			Map<String, Integer> attribute2Index = IntStream.range(0, attributes.length).mapToObj (i -> Integer.valueOf(i)).collect(Collectors.toMap(i -> attributes[i], i -> i));
 
-			HashMap<String, Integer> attribute2Index = new HashMap<String, Integer>();
-			for (int i=0; i<attributes.length; i++) {
-				attribute2Index.put(attributes[i], i);
-			}
 
 			
+			content.remove(0);
 			AtomicLong countPub = new AtomicLong(0);
-
-			crTab.addAllPub(content.parallelStream().map ( (String[] it) -> {
-			
+			crTab.addPubs(content.parallelStream().map ( (String[] line) -> {
+	
+				StatusBar.get().incProgressbar (Arrays.stream(line).mapToInt (v -> v.length()+1).sum());
+				
 				/* if user abort or maximum number of CRs reached --> do no process anymore */
 				if (crTab.isAborted()) return null;
 				if ((maxCR>0) && (countCR.get()>=maxCR)) return null;
@@ -107,8 +105,8 @@ public class Scopus_csv  {
 						
 				// Scopus Authors: Lastname1 I1., Lastname2 I2.I2. ...
 				pub.AU = new ArrayList<String>();
-				if (it[attribute2Index.get("Authors")]!=null) {
-					for (String name: it[attribute2Index.get("Authors")].split("\\., ")) {
+				if (line[attribute2Index.get("Authors")]!=null) {
+					for (String name: line[attribute2Index.get("Authors")].split("\\., ")) {
 						name = name.replaceAll("\\.", ""); 
 						int pos = name.lastIndexOf(" ");
 						pub.AU.add ((pos>0) ? name.substring(0, pos) + "," + name.substring (pos) : name);
@@ -120,9 +118,9 @@ public class Scopus_csv  {
 				// Authors with affiliations: "<lastname>, <initials with dots>, affiliation"
 				pub.C1 = new ArrayList<String[]>();
 				pub.EM = new ArrayList<String>();
-				if (it[attribute2Index.get("Authors with affiliations")] != null) {
+				if (line[attribute2Index.get("Authors with affiliations")] != null) {
 				
-					for (String author: it[attribute2Index.get("Authors with affiliations")].split("; ")) {
+					for (String author: line[attribute2Index.get("Authors with affiliations")].split("; ")) {
 						String[] split = author.split(", ", 3);
 						if (split.length == 3) {
 							pub.C1.add (new String[] { (split[0]+", "+split[1].replaceAll("\\.", "")), split[2] });
@@ -139,43 +137,44 @@ public class Scopus_csv  {
 				}
 					
 				pub.AA = new ArrayList<String>();
-				for (String aff: it[attribute2Index.get("Affiliations")].split("; ")) pub.AA.add(aff); 
+				for (String aff: line[attribute2Index.get("Affiliations")].split("; ")) pub.AA.add(aff); 
 						
-				pub.TI = it[attribute2Index.get("Title")];
-				try { pub.PY = Integer.valueOf(it[attribute2Index.get("Year")]); } catch (NumberFormatException e) { }
+				pub.TI = line[attribute2Index.get("Title")];
+				try { pub.PY = Integer.valueOf(line[attribute2Index.get("Year")]); } catch (NumberFormatException e) { }
 
-				pub.SO = it[attribute2Index.get("Source title")];
-				pub.VL = it[attribute2Index.get("Volume")];
-				pub.IS = it[attribute2Index.get("Issue")];
-				pub.AR = it[attribute2Index.get("Art. No.")];
+				pub.SO = line[attribute2Index.get("Source title")];
+				pub.VL = line[attribute2Index.get("Volume")];
+				pub.IS = line[attribute2Index.get("Issue")];
+				pub.AR = line[attribute2Index.get("Art. No.")];
 				
-				try { pub.BP = Integer.valueOf(it[attribute2Index.get("Page start")]); } catch (NumberFormatException e) { }
-				try { pub.EP = Integer.valueOf(it[attribute2Index.get("Page end")]); } catch (NumberFormatException e) { }
-				try { pub.PG = Integer.valueOf(it[attribute2Index.get("Page count")]); } catch (NumberFormatException e) { }
-				try { pub.TC = Integer.valueOf(it[attribute2Index.get("Cited by")]); } catch (NumberFormatException e) { }
+				try { pub.BP = Integer.valueOf(line[attribute2Index.get("Page start")]); } catch (NumberFormatException e) { }
+				try { pub.EP = Integer.valueOf(line[attribute2Index.get("Page end")]); } catch (NumberFormatException e) { }
+				try { pub.PG = Integer.valueOf(line[attribute2Index.get("Page count")]); } catch (NumberFormatException e) { }
+				try { pub.TC = Integer.valueOf(line[attribute2Index.get("Cited by")]); } catch (NumberFormatException e) { }
 				
 				/* parse list of CRs */
-				if (it[attribute2Index.get("References")] != null) {
-					for (String crString: it[attribute2Index.get("References")].split(";")) {
-						pub.addCR (parseCR (crString, yearRange)); 
+				if (line[attribute2Index.get("References")] != null) {
+					for (String crString: line[attribute2Index.get("References")].split(";")) {
+						pub.addCR (parseCR (crString, yearRange), true); 
 					}
 				}
 				
-				pub.DI = it[attribute2Index.get("DOI")];
-				pub.LI = it[attribute2Index.get("Link")];
-				pub.AB = it[attribute2Index.get("Abstract")];
-				pub.DE = it[attribute2Index.get("Author Keywords")];
-				pub.DT = it[attribute2Index.get("Document Type")];
-				pub.FS = it[attribute2Index.get("Source")];
-				pub.UT = it[attribute2Index.get("EID")];
+				pub.DI = line[attribute2Index.get("DOI")];
+				pub.LI = line[attribute2Index.get("Link")];
+				pub.AB = line[attribute2Index.get("Abstract")];
+				pub.DE = line[attribute2Index.get("Author Keywords")];
+				pub.DT = line[attribute2Index.get("Document Type")];
+				pub.FS = line[attribute2Index.get("Source")];
+				pub.UT = line[attribute2Index.get("EID")];
 				
 				
 				countPub.incrementAndGet();
 				countCR.addAndGet(pub.getSizeCR());
-				
 				StatusBar.get().incProgressbar();
+				
 				return pub;
 			}).filter ( it -> it != null).collect (Collectors.toList()));	// remove null values (abort)
+			
 			
 			// Check for abort by user
 			if (crTab.isAborted()) {
@@ -188,14 +187,17 @@ public class Scopus_csv  {
 			// Check for maximal number of CRs
 			if ((maxCR>0) && (countCR.get()>=maxCR)) {
 				StatusBar.get().setValue("Loading Scopus files aborted (due to maximal number of CRs)");
-				crTab.createCRList();
+//				crTab.createCRList();
 				crTab.updateData(false);
 				throw new FileTooLargeException ((int) countCR.get());
 			}
+			
+			csv.close();
+
 		}
 
 
-		crTab.createCRList();
+//		crTab.createCRList();
 		
 
 		long ts2 = System.currentTimeMillis();

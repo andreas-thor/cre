@@ -1,4 +1,4 @@
-package cre.test.data;
+package cre.test.data.type;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -7,12 +7,11 @@ import java.util.stream.Stream;
 
 public class PubType {
 
-	
 	public String PT;	// Publication Type (WoS only)
 	
 	public List<String> AU	= new ArrayList<String>(); // Authors; each author has format: "<lastname>, <initials_without_dots>"
 	public List<String> AF	= new ArrayList<String>(); // Authors Full Name; format: "<lastname>, <firstnames>
-	public List<String[]> C1 	= new ArrayList<String[]>(); // Authors with Affiliations / Adresses; format: "array ("<lastname>, <firstnames>]", "<affiliation>")
+	public List<String[]> C1 = new ArrayList<String[]>(); // Authors with Affiliations / Adresses; format: "array ("<lastname>, <firstnames>]", "<affiliation>")
 	public List<String>	EM = new ArrayList<String>(); // E-Mail Adressess
 	public List<String>	AA = new ArrayList<String>();	// All affiliations	(Scopus only)
 	
@@ -30,10 +29,8 @@ public class PubType {
 	
 	public Integer TC;	// Times Cited
 	
-	protected HashSet<CRType> crList = new HashSet<CRType>();
-	
 	public String DI;	// Digital Object Identifier (DOI)
-	public String LI;// Link	(Scopus only)
+	public String LI;	// Link	(Scopus only)
 	public String AB;	// Abstract
 	public String DE;	// Author Keywords
 	
@@ -44,6 +41,7 @@ public class PubType {
 	
 	public int length;	// approx. size for import status bar
 
+	private HashSet<CRType> crList = new HashSet<CRType>();
 
 	
 	public Integer getPY () {
@@ -61,15 +59,39 @@ public class PubType {
 	}
 
 
-	public void addCR(CRType cr) {
-		if (cr != null) {
-			this.crList.add(cr);
-			cr.addPub(this);
+	/**
+	 * Adds a CR to a PUB
+	 * @param cr to be added
+	 * @param inverse true, if this PUB should also be added to the publist of the CR
+	 */
+	
+	public void addCR(CRType cr, boolean inverse) {
+		if (inverse) {
+			cr.addPub(this, false);
 		}
+		this.crList.add(cr);
 	}
 	
-	public boolean removeCR (CRType cr) {
+	
+	/**
+	 * Removes a CR from a PUB
+	 * @param cr to be removed
+	 * @param inverse true, if this PUB should also be removed from the publist of the CR
+	 */
+	public boolean removeCR (CRType cr, boolean inverse) {
+		if (inverse) {
+			cr.removePub(this, false);
+		}
 		return this.crList.remove(cr);
+	}
+	
+	
+	
+	public void removeAllCRs (boolean inverse) {
+		if (inverse) {
+			crList.forEach(cr -> cr.removePub(this, false));
+		}
+		this.crList.clear();
 	}
 	
 }

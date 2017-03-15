@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import cre.test.data.type.CRType;
+import cre.test.data.type.PubType;
 import javafx.util.Pair;
 
 
@@ -26,7 +28,7 @@ public class Indicators {
 		for (CRType cr: crSet) {
 			
 			// Count #citations per PY
-			Map<Integer, Long> mapPY_Count = cr.pubList.stream().filter(pub -> pub.PY != null).collect(
+			Map<Integer, Long> mapPY_Count = cr.getPub().filter(pub -> pub.PY != null).collect(
 					Collectors.groupingBy(PubType::getPY, Collectors.counting()));
 			
 			for (Entry<Integer, Long> pyCount: mapPY_Count.entrySet()) { 
@@ -59,7 +61,7 @@ public class Indicators {
 	}
 	
 	
-	public static void computeNPCT (ArrayList<CRType> crData, int minPY, int maxPY, int range) {
+	public static void computeNPCT (Set<CRType> crData, int minPY, int maxPY, int range) {
 		
 		
 		// Group CRs by RPY
@@ -104,7 +106,7 @@ public class Indicators {
 				
 				
 				for (CRType cr: group.getValue()) {
-					long count = cr.pubList.stream().filter(pub -> (pub.PY != null) && (pub.PY.intValue() == py)).count();
+					long count = cr.getPub().filter(pub -> (pub.PY != null) && (pub.PY.intValue() == py)).count();
 					if (percBorder[0]<count) cr.setN_PCT50(cr.getN_PCT50()+1);
 					if (percBorder[1]<count) cr.setN_PCT75(cr.getN_PCT75()+1);
 					if (percBorder[2]<count) cr.setN_PCT90(cr.getN_PCT90()+1);

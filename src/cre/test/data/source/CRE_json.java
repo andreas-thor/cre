@@ -22,8 +22,8 @@ import cre.test.Exceptions.AbortedException;
 import cre.test.data.CRCluster;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
-import cre.test.data.CRType;
-import cre.test.data.PubType;
+import cre.test.data.type.CRType;
+import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
 
 public class CRE_json {
@@ -63,7 +63,7 @@ public class CRE_json {
 					
 					switch (parser.next()) {
 					case START_OBJECT: 	cr = new CRType(); break; 
-					case END_OBJECT: 	crTab.add(cr); break;
+					case END_OBJECT: 	crTab.addCR(cr); break;
 					case KEY_NAME:		key = parser.getString(); break;
 					case VALUE_STRING: 
 						switch (key) {
@@ -116,7 +116,7 @@ public class CRE_json {
 					
 					switch (parser.next()) {
 					case START_OBJECT: 	pub = new PubType(); break; 
-					case END_OBJECT: 	crTab.addPub(pub); break;
+					case END_OBJECT: 	/* crTab.addPub(pub); */ break;
 					case KEY_NAME:		key = parser.getString(); break;
 					case START_ARRAY:	
 						arrayLevel++;
@@ -173,7 +173,7 @@ public class CRE_json {
 						case "EP": 	pub.EP = parser.getInt(); break;
 						case "PG": 	pub.PG = parser.getInt(); break;
 						case "TC": 	pub.TC = parser.getInt(); break;
-						case "CRLISTID":	pub.addCR(mapId2CR.get(parser.getInt())); break;
+						case "CRLISTID":	pub.addCR(mapId2CR.get(parser.getInt()), true); break;
 						// local mapping: case "CRLISTID":	crTab.crData.get(crTab.crMatch.crId2Index.get(parser.getInt()))); break;
 						default: System.out.println("PUBDATA.json >> Unknow Key with Number Value: " + key); 
 						}

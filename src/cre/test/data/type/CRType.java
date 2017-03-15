@@ -1,8 +1,9 @@
-package cre.test.data;
+package cre.test.data.type;
 
 import java.util.HashSet;
 import java.util.stream.Stream;
 
+import cre.test.data.CRCluster;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -13,6 +14,7 @@ public class CRType {
 	public static byte TYPE_WOS = 1;
 	public static byte TYPE_SCOPUS = 2;
 
+	
 	private SimpleIntegerProperty ID;
 	private SimpleStringProperty CR;
 	private SimpleStringProperty AU;
@@ -51,7 +53,7 @@ public class CRType {
 	private byte type = 0;	
 	
 
-	protected HashSet<PubType> pubList;
+	private HashSet<PubType> pubList;
 	
 //	public int mergedTo = -1;
 	public boolean removed = false;	
@@ -75,7 +77,7 @@ public class CRType {
 		J = new SimpleStringProperty();
 		J_N = new SimpleStringProperty();
 		J_S = new SimpleStringProperty();
-		N_CR = new SimpleIntegerProperty(1);
+		N_CR = null;
 		RPY = new SimpleIntegerProperty();
 		isNullRPY = true;
 		PAG = new SimpleStringProperty();
@@ -99,6 +101,8 @@ public class CRType {
 		pubList = new HashSet<PubType>();
 	}
 	
+	
+
 
 	public byte getType() {
 		return type;
@@ -112,14 +116,45 @@ public class CRType {
 		return pubList.stream();
 	}
     
-	public void addPub(PubType pub) {
+	
+	/**
+	 * Adds a PUB to the CR
+	 * @param pub to be added
+	 * @param inverse true, if this CR should also be added to the PUB
+	 */
+	public void addPub(PubType pub, boolean inverse) {
+		if (inverse) {
+			pub.addCR(this, false);
+		}
+		N_CR=null;	// invalidate N_CR --> updated on next get access
 		this.pubList.add(pub);
 	}
 
-	public boolean removePub(PubType pub) {
+
+	/**
+	 * Removes a PUB from the CR
+	 * @param pub to be removed
+	 * @param inverse true, if this CR should also be remove from the PUB
+	 * @return if the PUB was in the publist
+	 */
+	public boolean removePub(PubType pub, boolean inverse) {
+		if (inverse) {
+			pub.removeCR(this, false);
+		}
+		N_CR=null;	// invalidate N_CR --> updated on next get access
 		return this.pubList.remove(pub);
 	}
-
+	
+	
+	public void removeAllPubs(boolean inverse) {
+		if (inverse) {
+			pubList.forEach(pub -> pub.removeCR(this, false));
+		}
+		N_CR = null;
+		pubList.clear();
+		
+	}
+	
 	
 	public int getID() {
 		return ID.get();
@@ -232,16 +267,16 @@ public class CRType {
 	
 	
 	public int getN_CR() {
-		return pubList.size();
-//		return N_CR.get();
+		return getN_CRProp().get();
 	}
+	
 	public SimpleIntegerProperty getN_CRProp() {
-		return new SimpleIntegerProperty(getN_CR());
-//		return N_CR;
+		if (N_CR == null) {
+			N_CR = new SimpleIntegerProperty(pubList.size());
+		}
+		return N_CR;
 	}
-//	public void setN_CR(int n_CR) {
-//		N_CR.set(n_CR);;
-//	}
+
 	
 	
 	public Integer getRPY() {
@@ -471,6 +506,9 @@ public class CRType {
 		// TODO Auto-generated method stub
 		return result.toString();
 	}
+
+
+
 
 	
 }
