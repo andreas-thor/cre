@@ -45,7 +45,6 @@ public class CRE_json {
 		
 		Map<Integer, CRType> mapId2CR = new HashMap<Integer, CRType>();
 		
-		
 		JsonParser parser;
 //		while ( (entry = zip.getNextEntry()) != null ) {
 		while ( zipEntries.hasMoreElements()) {
@@ -63,7 +62,7 @@ public class CRE_json {
 					
 					switch (parser.next()) {
 					case START_OBJECT: 	cr = new CRType(); break; 
-					case END_OBJECT: 	crTab.addCR(cr); break;
+					case END_OBJECT: 	mapId2CR.put(cr.getID(), cr); crTab.addCR(cr); break;
 					case KEY_NAME:		key = parser.getString(); break;
 					case VALUE_STRING: 
 						switch (key) {
@@ -85,7 +84,7 @@ public class CRE_json {
 						break;
 					case VALUE_NUMBER:
 						switch (key) {
-						case "ID": 		cr.setID(parser.getInt()); mapId2CR.put(cr.getID(), cr); break;
+						case "ID": 		cr.setID(parser.getInt());  break;
 						case "N_CR": 	/*cr.setN_CR(parser.getInt());*/ break;
 						case "RPY": 	cr.setRPY(parser.getInt()); break;
 						case "CID_S": 	cr.setCID_S(parser.getInt()); break;
@@ -245,6 +244,7 @@ public class CRE_json {
 			StatusBar.get().setValue("Loading CRE file aborted (due to user request)");
 			throw new AbortedException();
 		}
+		
 		
 		crTab.updateData(true);
 		StatusBar.get().setValue("Loading CRE file done");

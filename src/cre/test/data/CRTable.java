@@ -1,6 +1,5 @@
 package cre.test.data;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -21,12 +19,9 @@ public class CRTable {
 
 	private static CRTable crTab = null;
 	
+	private Set<CRType> crData;
+	private Map<Character, HashMap<String, CRType>> crDup; // first character -> (crString -> CR )
 
-//	protected ArrayList<CRType> crData = new ArrayList<CRType>();
-	
-	protected Set<CRType> crData = new HashSet<CRType>();
-	
-//	protected List<PubType> pubData = new ArrayList<PubType>();	// all Publication data
 	protected CRMatch crMatch;
 	
 	
@@ -35,7 +30,6 @@ public class CRTable {
 	private boolean showNull = false;
 	
 	
-	private Map<Character, HashMap<String,CRType>> crDup; // first character -> (crString -> CR )
 
 	
 	private Map<Integer, Integer> sumPerYear = new HashMap<Integer, Integer>();	// year -> sum of CRs (also for years without any CR)
@@ -50,14 +44,7 @@ public class CRTable {
 	}
 	
 	
-	
-	/**
-	 * @param stat status panel
-	 */
-	private CRTable () {
-		this.crMatch = new CRMatch(this);
-//		this.crStats = new CRStats(this);
-	}
+	private CRTable () { }
 	
 
 
@@ -68,6 +55,7 @@ public class CRTable {
 	
 	public void init() {
 //		crData.clear ();
+		
 		crData = new HashSet<CRType>();
 		crDup = new HashMap<Character,  HashMap<String, CRType>>();
 				
@@ -89,12 +77,18 @@ public class CRTable {
 		return crData.stream().flatMap(cr -> cr.getPub()).distinct();
 	}
 	
-//	public Stream<PubType> getPub () {
-//		return this.pubData.stream();
-//	}
+
 	
 
 	
+	
+	public void addCR(CRType cr) {
+		String crS = cr.getCR();
+		char cr1 = crS.charAt(0);
+		crDup.putIfAbsent(cr1, new HashMap<String,CRType>());
+		crDup.get(cr1).put(crS, cr);
+		crData.add(cr);
+	}
 	
 	
 	
@@ -115,7 +109,7 @@ public class CRTable {
 				cr.setCID_S(1);
 			} else {
 				// merge current CR with main CR
-				cr.getPub().collect(Collectors.toList()).stream().forEach(crPub -> {		// make a copy to avoid concurrent modifcation
+				cr.getPub().collect(Collectors.toList()).stream().forEach(crPub -> {		// make a copy to avoid concurrent modification
 					crPub.addCR(crMain, true);
 					crPub.removeCR(cr, true);
 				});
@@ -125,68 +119,6 @@ public class CRTable {
 	
 	
 
-	
-	/*
-	
-	public void createCRList () {
-		
-		// TODO: initialize crDup  when "no init" mode  
-		HashMap<Character,  HashMap<String,Integer>> crDup = new HashMap<Character,  HashMap<String,Integer>>(); // first character -> (crString -> id )
-		int indexCount = 0;
-	
-		for (PubType pub: pubData) {
-				
-			int crPos = 0;
-			
-			HashSet<CRType> crList = new HashSet<CRType>(pub.crList);
-			pub.crList = new HashSet<CRType>();
-			
-			for (CRType cr: crList) {
-					
-				// if CR already in database: increase N_CR by 1; else add new record
-				crDup.putIfAbsent(cr.getCR().charAt(0), new HashMap<String,Integer>());
-				Integer id = crDup.get(cr.getCR().charAt(0)).get(cr.getCR());
-				if (id != null) {
-//					crData.get(id).setN_CR(crData.get(id).getN_CR() + 1);
-//					pub.crList.set(crPos, crData.get(id));
-					
-					pub.crList.add(crData.get(id));
-					crData.get(id).addPub(pub);
-					
-				} else {
-					
-					
-					crDup.get(cr.getCR().charAt(0)).put (cr.getCR(), indexCount);
-					
-
-					
-					// todo: add new CR as separate function (make clusterId2Objects private again)
-					
-					cr.setID(indexCount+1);
-					cr.setCID2(new CRCluster (indexCount+1, 1));
-					cr.setCID_S(1);
-					crData.add (cr);
-					
-					HashSet<Integer> tmp = new HashSet<Integer>();
-					tmp.add(indexCount+1);
-					crMatch.clusterId2Objects.put(cr.getCID2(), tmp);
-//								crTab.crMatch.clusterId2Objects[cr.CID2] = [indexCount+1];
-					indexCount++;
-					
-					pub.crList.add(cr);
-					cr.addPub(pub);
-				}
-				crPos++;
-					
-			} 
-				
-//						this.noOfPubs++
-//					this.noOfPubs += parser.noOfPubs
-
-		};
-	}
-	
-	*/
 	
 	/**
 	 * Update computation of percentiles for all CRs
@@ -362,41 +294,7 @@ public class CRTable {
 		
 		System.out.println("d" + System.currentTimeMillis());
 		
-		/*
-		crData.parallelStream().forEach( (CRType cr) -> {
-			cr.propID = new SimpleIntegerProperty (cr.ID).asObject();
-			cr.propCR = new SimpleStringProperty (cr.CR);
-			cr.propAU = new SimpleStringProperty (cr.AU);
-			cr.propAU_F = new SimpleStringProperty (cr.AU_F); 
-			cr.propAU_L = new SimpleStringProperty (cr.AU_L);
-			cr.propAU_A = new SimpleStringProperty (cr.AU_A);	
-			cr.propTI = new SimpleStringProperty (cr.TI); 		
-			cr.propJ = new SimpleStringProperty (cr.J);
-			cr.propJ_N = new SimpleStringProperty (cr.J_N);
-			cr.propJ_S = new SimpleStringProperty (cr.J_S);
-			cr.propN_CR = new SimpleIntegerProperty (cr.N_CR).asObject();
-			cr.propRPY = new SimpleIntegerProperty (cr.RPY).asObject();
-			cr.propPAG = new SimpleStringProperty (cr.PAG);
-			cr.propVOL = new SimpleStringProperty (cr.VOL);
-			
-			
-			cr.propDOI = new SimpleStringProperty (cr.DOI);
-			cr.propCID_S = new SimpleIntegerProperty (cr.CID_S).asObject();
-			cr.propVI = new SimpleIntegerProperty (cr.VI).asObject();	
-			cr.propCO = new SimpleIntegerProperty (cr.CO).asObject();	
-			cr.propPERC_YR = new SimpleDoubleProperty (cr.PERC_YR).asObject();
-			
-			// DIE PROPERTIES ALS Werte???
-			
-			cr.propPERC_ALL = new SimpleDoubleProperty (cr.PERC_ALL).asObject();
-			cr.propN_PYEARS = new SimpleIntegerProperty (cr.N_PYEARS).asObject();	
-			cr.propPYEAR_PERC = new SimpleDoubleProperty (cr.PYEAR_PERC).asObject();
-			cr.propN_PCT50 = new SimpleIntegerProperty (cr.N_PCT50).asObject();
-			cr.propN_PCT75 = new SimpleIntegerProperty (cr.N_PCT75).asObject();
-			cr.propN_PCT90 = new SimpleIntegerProperty (cr.N_PCT90).asObject();
-			cr.propN_PYEARS2 = new SimpleIntegerProperty (cr.N_PYEARS2).asObject();	
-		});
-		*/
+
 		
 //		generateChart();
 		duringUpdate = false;
@@ -568,7 +466,7 @@ public class CRTable {
 	
 	
 	private void removePub (Predicate<PubType> cond) {
-		getPub().filter(cond).forEach(pub -> pub.removeAllCRs(true));
+		getPub().filter(cond).collect(Collectors.toList()).forEach(pub -> pub.removeAllCRs(true));
 		removeCR(cr -> cr.getN_CR()==0);
 	}
 	
@@ -630,9 +528,7 @@ public class CRTable {
 
 
 	
-	public void addCR(CRType cr) {
-		crData.add(cr);
-	}
+
 
 	
 

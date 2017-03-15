@@ -85,13 +85,13 @@ public class Scopus_csv  {
 			*/
 			String[] attributes = Arrays.stream(content.get(0)).map(it ->  it.trim()).toArray(size -> new String[size]);
 			if (attributes[0].startsWith("\uFEFF")) attributes[0] = attributes[0].substring(1);
-			Map<String, Integer> attribute2Index = IntStream.range(0, attributes.length).mapToObj (i -> Integer.valueOf(i)).collect(Collectors.toMap(i -> attributes[i], i -> i));
+			Map<String, Integer> attribute2Index = IntStream.range(0, attributes.length).mapToObj (i -> Integer.valueOf(i)).collect(Collectors.toMap(i -> attributes[i].toUpperCase(), i -> i));
 
 
 			
 			content.remove(0);
 			AtomicLong countPub = new AtomicLong(0);
-			crTab.addPubs(content.parallelStream().map ( (String[] line) -> {
+			crTab.addPubs(content.stream().map ( (String[] line) -> {
 	
 				StatusBar.get().incProgressbar (Arrays.stream(line).mapToInt (v -> v.length()+1).sum());
 				
@@ -105,8 +105,8 @@ public class Scopus_csv  {
 						
 				// Scopus Authors: Lastname1 I1., Lastname2 I2.I2. ...
 				pub.AU = new ArrayList<String>();
-				if (line[attribute2Index.get("Authors")]!=null) {
-					for (String name: line[attribute2Index.get("Authors")].split("\\., ")) {
+				if ((attribute2Index.get("AUTHORS")!=null) && (line[attribute2Index.get("AUTHORS")]!=null)) {
+					for (String name: line[attribute2Index.get("AUTHORS")].split("\\., ")) {
 						name = name.replaceAll("\\.", ""); 
 						int pos = name.lastIndexOf(" ");
 						pub.AU.add ((pos>0) ? name.substring(0, pos) + "," + name.substring (pos) : name);
@@ -118,9 +118,9 @@ public class Scopus_csv  {
 				// Authors with affiliations: "<lastname>, <initials with dots>, affiliation"
 				pub.C1 = new ArrayList<String[]>();
 				pub.EM = new ArrayList<String>();
-				if (line[attribute2Index.get("Authors with affiliations")] != null) {
+				if ((attribute2Index.get("AUTHORS WITH AFFILIATIONS") != null) && (line[attribute2Index.get("AUTHORS WITH AFFILIATIONS")] != null)) {
 				
-					for (String author: line[attribute2Index.get("Authors with affiliations")].split("; ")) {
+					for (String author: line[attribute2Index.get("AUTHORS WITH AFFILIATIONS")].split("; ")) {
 						String[] split = author.split(", ", 3);
 						if (split.length == 3) {
 							pub.C1.add (new String[] { (split[0]+", "+split[1].replaceAll("\\.", "")), split[2] });
@@ -137,35 +137,37 @@ public class Scopus_csv  {
 				}
 					
 				pub.AA = new ArrayList<String>();
-				for (String aff: line[attribute2Index.get("Affiliations")].split("; ")) pub.AA.add(aff); 
+				if ((attribute2Index.get("AFFILIATIONS") != null) && (line[attribute2Index.get("AFFILIATIONS")] != null)) {
+					for (String aff: line[attribute2Index.get("AFFILIATIONS")].split("; ")) pub.AA.add(aff);
+				}
 						
-				pub.TI = line[attribute2Index.get("Title")];
-				try { pub.PY = Integer.valueOf(line[attribute2Index.get("Year")]); } catch (NumberFormatException e) { }
+				pub.TI = attribute2Index.get("TITLE") != null ? line[attribute2Index.get("TITLE")] : null;
+				try { pub.PY = Integer.valueOf(line[attribute2Index.get("YEAR")]); } catch (Exception e) { }
 
-				pub.SO = line[attribute2Index.get("Source title")];
-				pub.VL = line[attribute2Index.get("Volume")];
-				pub.IS = line[attribute2Index.get("Issue")];
-				pub.AR = line[attribute2Index.get("Art. No.")];
+				pub.SO = attribute2Index.get("SOURCE TITLE") != null ? line[attribute2Index.get("SOURCE TITLE")] : null;
+				pub.VL = attribute2Index.get("VOLUME") != null ? line[attribute2Index.get("VOLUME")] : null;
+				pub.IS = attribute2Index.get("ISSUE") != null ? line[attribute2Index.get("ISSUE")] : null;
+				pub.AR = attribute2Index.get("ART. NO.") != null ? line[attribute2Index.get("ART. NO.")] : null;
 				
-				try { pub.BP = Integer.valueOf(line[attribute2Index.get("Page start")]); } catch (NumberFormatException e) { }
-				try { pub.EP = Integer.valueOf(line[attribute2Index.get("Page end")]); } catch (NumberFormatException e) { }
-				try { pub.PG = Integer.valueOf(line[attribute2Index.get("Page count")]); } catch (NumberFormatException e) { }
-				try { pub.TC = Integer.valueOf(line[attribute2Index.get("Cited by")]); } catch (NumberFormatException e) { }
+				try { pub.BP = Integer.valueOf(line[attribute2Index.get("PAGE START")]); } catch (Exception e) { }
+				try { pub.EP = Integer.valueOf(line[attribute2Index.get("PAGE END")]); } catch (Exception e) { }
+				try { pub.PG = Integer.valueOf(line[attribute2Index.get("PAGE COUNT")]); } catch (Exception e) { }
+				try { pub.TC = Integer.valueOf(line[attribute2Index.get("CITED BY")]); } catch (Exception e) { }
 				
 				/* parse list of CRs */
-				if (line[attribute2Index.get("References")] != null) {
-					for (String crString: line[attribute2Index.get("References")].split(";")) {
+				if ((attribute2Index.get("REFERENCES") != null) && (line[attribute2Index.get("REFERENCES")] != null)) {
+					for (String crString: line[attribute2Index.get("REFERENCES")].split(";")) {
 						pub.addCR (parseCR (crString, yearRange), true); 
 					}
 				}
 				
-				pub.DI = line[attribute2Index.get("DOI")];
-				pub.LI = line[attribute2Index.get("Link")];
-				pub.AB = line[attribute2Index.get("Abstract")];
-				pub.DE = line[attribute2Index.get("Author Keywords")];
-				pub.DT = line[attribute2Index.get("Document Type")];
-				pub.FS = line[attribute2Index.get("Source")];
-				pub.UT = line[attribute2Index.get("EID")];
+				pub.DI = attribute2Index.get("DOI") != null ? line[attribute2Index.get("DOI")] : null;
+				pub.LI = attribute2Index.get("LINK") != null ? line[attribute2Index.get("LINK")] : null;
+				pub.AB = attribute2Index.get("ABSTRACT") != null ? line[attribute2Index.get("ABSTRACT")] : null;
+				pub.DE = attribute2Index.get("AUTHOR KEYWORDS") != null ? line[attribute2Index.get("AUTHOR KEYWORDS")] : null;
+				pub.DT = attribute2Index.get("DOCUMENT TYPE") != null ? line[attribute2Index.get("DOCUMENT TYPE")] : null;
+				pub.FS = attribute2Index.get("SOURCE") != null ? line[attribute2Index.get("SOURCE")] : null;
+				pub.UT = attribute2Index.get("EID") != null ? line[attribute2Index.get("EID")] : null;
 				
 				
 				countPub.incrementAndGet();

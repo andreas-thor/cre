@@ -66,6 +66,7 @@ public class PubType {
 	 */
 	
 	public void addCR(CRType cr, boolean inverse) {
+		if (cr==null) return;
 		if (inverse) {
 			cr.addPub(this, false);
 		}
@@ -79,6 +80,7 @@ public class PubType {
 	 * @param inverse true, if this PUB should also be removed from the publist of the CR
 	 */
 	public boolean removeCR (CRType cr, boolean inverse) {
+		if (cr==null) return false;
 		if (inverse) {
 			cr.removePub(this, false);
 		}

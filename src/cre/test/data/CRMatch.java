@@ -64,7 +64,7 @@ public class CRMatch {
 	private TreeMap <Long, ArrayList<Pair>> timestampedPairs;
 	
 	
-	private Map<Integer, Integer> crId2Index = new HashMap<Integer, Integer>();						// object Id -> index in crData list
+	private Map<Integer, Long> crId2Index = new HashMap<Integer, Long>();						// object Id -> index in crData list
 	public Map<CRCluster, Set<Integer>> clusterId2Objects = new HashMap<CRCluster, Set<Integer>>();		// clusterId->[object ids]
 
 	public boolean hasMatches () {
@@ -103,10 +103,11 @@ public class CRMatch {
 		// refresh mapping crId -> index
 		crId2Index.clear();
 		
-		int idx = 0;
-		for (Iterator<CRType> it = crTab.crData.iterator(); it.hasNext();) {
-			crId2Index.put(it.next().getID(), idx++);
-		}
+//		int idx = 0;
+		AtomicLong idx = new AtomicLong(0);
+		CRTable.get().getCR().forEach(cr -> { 
+			crId2Index.put(cr.getID(), idx.incrementAndGet());
+		});
 		
 		System.out.println(System.currentTimeMillis());
 		System.out.println("CRID2Index ist " + crId2Index.size());

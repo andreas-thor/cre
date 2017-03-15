@@ -37,7 +37,7 @@ public class CRStats {
 	 * @return [min, max]
 	 */
 	public static int[] getMaxRangeNCR () {
-		IntSummaryStatistics stats = CRTable.get().crData.stream().map((CRType it) -> it.getN_CR()).mapToInt(Integer::intValue).summaryStatistics();
+		IntSummaryStatistics stats = CRTable.get().getCR().map((CRType it) -> it.getN_CR()).mapToInt(Integer::intValue).summaryStatistics();
 		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
 	}
 
@@ -46,12 +46,12 @@ public class CRStats {
 	 * @return [min, max]
 	 */
 	public static int[] getMaxRangeYear () {
-		IntSummaryStatistics stats = CRTable.get().crData.stream().filter (cr -> cr.getRPY() != null).mapToInt(it -> it.getRPY()).summaryStatistics();
+		IntSummaryStatistics stats = CRTable.get().getCR().filter (cr -> cr.getRPY() != null).mapToInt(it -> it.getRPY()).summaryStatistics();
 		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
 	}
 
 	public static int getNumberOfDistinctRPY () {
-		return (int)CRTable.get().crData.stream().filter (it -> it.getRPY() != null).mapToInt(it -> it.getRPY()).distinct().count();
+		return (int)CRTable.get().getCR().filter (it -> it.getRPY() != null).mapToInt(it -> it.getRPY()).distinct().count();
 	}
 	
 
@@ -62,7 +62,7 @@ public class CRStats {
 
 	
 	public static int getNumberByVisibility (boolean visible) {
-		return (int) CRTable.get().crData.stream().filter(cr -> (cr.getVI() == visible)).count(); 
+		return (int) CRTable.get().getCR().filter(cr -> (cr.getVI() == visible)).count(); 
 	}
 	
 	
@@ -73,7 +73,7 @@ public class CRStats {
 	 */
 	
 	public static long getNumberByNCR (int[] range) {
-		return CRTable.get().crData.stream().filter(cr -> ((range[0] <= cr.getN_CR()) && (cr.getN_CR() <= range[1]))).count();
+		return CRTable.get().getCR().filter(cr -> ((range[0] <= cr.getN_CR()) && (cr.getN_CR() <= range[1]))).count();
 	}
 
 	/**
@@ -85,11 +85,11 @@ public class CRStats {
 	
 	public static long getNumberByPercentYear (String comp, double threshold) {
 		switch (comp) {
-			case "<" : return CRTable.get().crData.stream().filter( cr -> cr.getPERC_YR() <  threshold ).count(); 
-			case "<=": return CRTable.get().crData.stream().filter( cr -> cr.getPERC_YR() <= threshold ).count();
-			case "=" : return CRTable.get().crData.stream().filter( cr -> cr.getPERC_YR() == threshold ).count();
-			case ">=": return CRTable.get().crData.stream().filter( cr -> cr.getPERC_YR() >= threshold ).count();
-			case ">" : return CRTable.get().crData.stream().filter( cr -> cr.getPERC_YR() >  threshold ).count();
+			case "<" : return CRTable.get().getCR().filter( cr -> cr.getPERC_YR() <  threshold ).count(); 
+			case "<=": return CRTable.get().getCR().filter( cr -> cr.getPERC_YR() <= threshold ).count();
+			case "=" : return CRTable.get().getCR().filter( cr -> cr.getPERC_YR() == threshold ).count();
+			case ">=": return CRTable.get().getCR().filter( cr -> cr.getPERC_YR() >= threshold ).count();
+			case ">" : return CRTable.get().getCR().filter( cr -> cr.getPERC_YR() >  threshold ).count();
 		}
 		return 0;
 	}
@@ -102,7 +102,7 @@ public class CRStats {
 	 */
 	
 	public static long getNumberByYear (int[] range) {
-		return CRTable.get().crData.stream().filter( cr -> ((cr.getRPY()!=null) && (range[0] <= cr.getRPY()) && (cr.getRPY() <= range[1]))).count();
+		return CRTable.get().getCR().filter( cr -> ((cr.getRPY()!=null) && (range[0] <= cr.getRPY()) && (cr.getRPY() <= range[1]))).count();
 	}
 
 	public static long getNumberOfPubs () {
