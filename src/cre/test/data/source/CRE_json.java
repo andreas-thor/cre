@@ -19,9 +19,9 @@ import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 
 import cre.test.Exceptions.AbortedException;
-import cre.test.data.CRCluster;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
+import cre.test.data.match.CRCluster;
 import cre.test.data.type.CRType;
 import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;

@@ -1,4 +1,4 @@
-package cre.test.data;
+package cre.test.data.match;
 
 import java.io.Serializable;
 import java.util.Observable;

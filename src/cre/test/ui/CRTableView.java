@@ -3,8 +3,8 @@ package cre.test.ui;
 import java.util.Optional;
 import java.util.function.Function;
 
-import cre.test.data.CRCluster;
 import cre.test.data.UserSettings;
+import cre.test.data.match.CRCluster;
 import cre.test.data.type.CRType;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.SelectionMode;

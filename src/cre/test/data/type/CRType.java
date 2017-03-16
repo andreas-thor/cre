@@ -3,7 +3,7 @@ package cre.test.data.type;
 import java.util.HashSet;
 import java.util.stream.Stream;
 
-import cre.test.data.CRCluster;
+import cre.test.data.match.CRCluster;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;

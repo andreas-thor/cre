@@ -11,7 +11,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import cre.test.data.CRMatch.ManualMatchType;
+import cre.test.data.match.CRCluster;
+import cre.test.data.match.CRMatch;
+import cre.test.data.match.CRMatch.ManualMatchType;
 import cre.test.data.type.CRType;
 import cre.test.data.type.PubType;
 

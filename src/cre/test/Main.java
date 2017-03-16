@@ -14,11 +14,12 @@ import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
-import cre.test.data.CRMatch.ManualMatchType;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
 import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
+import cre.test.data.match.CRMatch2;
+import cre.test.data.match.CRMatch2.ManualMatchType2;
 import cre.test.data.source.CRE_csv;
 import cre.test.data.source.CRE_json;
 import cre.test.data.source.Scopus_csv;
@@ -155,16 +156,16 @@ public class Main {
 			}
 
 			@Override
-			public void onMatchManual(ManualMatchType type, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
+			public void onMatchManual(ManualMatchType2 type, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
 				
 				List<CRType> toMatch = getSelectedCRs();
-				if ((toMatch.size()==0) || ((toMatch.size()==1) && (type != ManualMatchType.EXTRACT))) {
+				if ((toMatch.size()==0) || ((toMatch.size()==1) && (type != ManualMatchType2.EXTRACT))) {
 					new ConfirmAlert("Error during clustering!", true, new String[] {"Too few Cited References selected!"}).showAndWait();
 				} else {
-					if ((toMatch.size()>5) && (type != ManualMatchType.EXTRACT)) {
+					if ((toMatch.size()>5) && (type != ManualMatchType2.EXTRACT)) {
 						new ConfirmAlert("Error during clustering!", true, new String[] {"Too many Cited References selected (at most 5)!"}).showAndWait();
 					} else {
-						crTable.matchManual (toMatch, type, threshold, useVol, usePag, useDOI);
+						CRMatch2.get().matchManual (toMatch, type, threshold, useVol, usePag, useDOI);
 						refreshTable();
 					}
 				}
@@ -706,6 +707,9 @@ public class Main {
 	@FXML public void OnMenuStdCluster() {
 		
 		new Thread( () -> {
+			
+			CRMatch2.get().generateAutoMatching();
+			
 			crTable.matchDoBlocking();
 			matchView.setVisible(true);
 			tablePane.requestLayout();
