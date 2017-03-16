@@ -45,7 +45,7 @@ public class CRMatch2 {
 	/**
 	 * clusterResult
 	 */
-	
+	private Set<CRCluster> clustering; // ???
 	
 	
 	private CRMatch2 () {

@@ -107,7 +107,7 @@ public class CRTable {
 				crDup.get(cr1).put(crS, cr);
 				crData.add(cr);
 				cr.setID(crData.size());
-				cr.setCID2(new CRCluster (cr.getID(), 1));
+				cr.setCID2(new CRCluster (cr));
 				cr.setCID_S(1);
 			} else {
 				// merge current CR with main CR

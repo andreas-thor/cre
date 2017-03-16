@@ -1,8 +1,11 @@
 package cre.test.data.match;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Observable;
+import java.util.Set;
 
+import cre.test.data.type.CRType;
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -15,6 +18,15 @@ public class CRCluster extends Observable implements Serializable, Comparable<CR
 
 	public int c1;
 	public int c2;
+	
+	private Set<CRType> crSet;
+	
+	public CRCluster (CRType cr) {
+		this.crSet = new HashSet<CRType>();
+		this.crSet.add(cr);
+		this.c1 = cr.getID();
+		this.c2 = 1;
+	}
 	
 	public CRCluster(int c1, int c2) {
 		this.c1 = c1;
