@@ -116,7 +116,7 @@ public class StatusBar extends GridPane {
 	
 	public void initProgressbar (long maxSize, String label) {
 		
-		System.out.println("MaxSize = " + maxSize);
+//		System.out.println("MaxSize = " + maxSize);
 		this.maxSize = maxSize;
 		this.blockSize = maxSize/20;
 		this.blockCount = 0;
@@ -139,7 +139,7 @@ public class StatusBar extends GridPane {
 	public void updateProgressbar (long count) {
 		this.count = count;
 		if (blockCount*blockSize<count) {
-			System.out.println("Count = " + count);
+//			System.out.println("Count = " + count);
 			setValue(label, count, "", date);
 			blockCount++;
 		}

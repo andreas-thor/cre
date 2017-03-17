@@ -12,8 +12,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import cre.test.data.match.CRCluster;
-import cre.test.data.match.CRMatch;
-import cre.test.data.match.CRMatch.ManualMatchType;
+import cre.test.data.match.CRMatch2;
 import cre.test.data.type.CRType;
 import cre.test.data.type.PubType;
 
@@ -24,7 +23,7 @@ public class CRTable {
 	private Set<CRType> crData;
 	private Map<Character, HashMap<String, CRType>> crDup; // first character -> (crString -> CR )
 
-	protected CRMatch crMatch;
+//	protected CRMatch crMatch;
 	
 	
 	private boolean duringUpdate = false;
@@ -46,7 +45,9 @@ public class CRTable {
 	}
 	
 	
-	private CRTable () { }
+	private CRTable () { 
+		init();
+	}
 	
 
 
@@ -64,7 +65,7 @@ public class CRTable {
 				
 		showNull = true;
 //		crMatch.clear();
-		crMatch = new CRMatch(this);
+//		crMatch = new CRMatch(this);
 //		pubData.clear();
 //		pubData = new ArrayList<PubType>();
 		setAborted(false);
@@ -108,7 +109,6 @@ public class CRTable {
 				crData.add(cr);
 				cr.setID(crData.size());
 				cr.setCID2(new CRCluster (cr));
-				cr.setCID_S(1);
 			} else {
 				// merge current CR with main CR
 				cr.getPub().collect(Collectors.toList()).stream().forEach(crPub -> {		// make a copy to avoid concurrent modification
@@ -121,6 +121,38 @@ public class CRTable {
 	
 	
 
+	public void merge () {
+		
+		// get all clusters with size > 1
+		Set<CRCluster> clusters = getCR().filter(cr -> cr.getCID_S()>1).map(cr -> cr.getCID2()).distinct().collect(Collectors.toSet());
+		
+		// merge clusters
+		clusters.forEach(cl -> {
+			
+			// get mainCR = CR with highest number of citations
+			CRType crMain = cl.getMainCR();
+			Set<CRType> crMerge = cl.getCR().collect(Collectors.toSet());
+			crMerge.remove(crMain);
+
+			// merge CRs with main CR
+			for (CRType cr:crMerge) {
+				cr.getPub().collect(Collectors.toList()).stream().forEach(crPub -> {		// make a copy to avoid concurrent modification
+					crPub.addCR(crMain, true);
+					crPub.removeCR(cr, true);
+				});
+			}
+			
+			// remove merged CRs
+			this.crData.removeAll(crMerge);
+		});
+		
+		
+		// reset clusters and match result
+		getCR().forEach(cr -> cr.setCID2(new CRCluster(cr)));
+		CRMatch2.get().init();
+	}
+	
+	
 	
 	/**
 	 * Update computation of percentiles for all CRs
@@ -137,7 +169,7 @@ public class CRTable {
 		
 		// update match
 		
-		crMatch.updateData (removed);
+//		crMatch.updateData (removed);
 		
 		
 		System.out.println("match done:" + System.currentTimeMillis());
@@ -507,17 +539,17 @@ public class CRTable {
 		crData.stream().forEach ( it -> { if (it.getRPY() == null) it.setVI(showNull);  });
 	}
 	
-	public void setMapping (Integer id1, Integer id2, Double s, boolean isManual, boolean add, Long timestamp) {
-		this.crMatch.setMapping(id1, id2, s, isManual, add, timestamp);
-	}
-
-	public void setMapping (Integer id1, Integer id2, Double s, boolean isManual, boolean add) {
-		this.crMatch.setMapping(id1, id2, s, isManual, add, null);
-	}
-		
-	public Map<Integer, Double> getMapping (Integer id1, Boolean isManual) {
-		return this.crMatch.getMapping (id1, isManual); 
-	}
+//	public void setMapping (Integer id1, Integer id2, Double s, boolean isManual, boolean add, Long timestamp) {
+//		this.crMatch.setMapping(id1, id2, s, isManual, add, timestamp);
+//	}
+//
+//	public void setMapping (Integer id1, Integer id2, Double s, boolean isManual, boolean add) {
+//		this.crMatch.setMapping(id1, id2, s, isManual, add, null);
+//	}
+//		
+//	public Map<Integer, Double> getMapping (Integer id1, Boolean isManual) {
+//		return this.crMatch.getMapping (id1, isManual); 
+//	}
 	
 	
 
@@ -537,9 +569,9 @@ public class CRTable {
 
 
 	
-	public Stream<Entry<Integer, Map<Integer, Double>>> getMatch (boolean manual) {
-		return this.crMatch.match.get(manual).entrySet().stream();
-	}
+//	public Stream<Entry<Integer, Map<Integer, Double>>> getMatch (boolean manual) {
+//		return this.crMatch.match.get(manual).entrySet().stream();
+//	}
 
 
 
@@ -549,37 +581,37 @@ public class CRTable {
 
 
 
-	public void matchManual(List<CRType> toMatch, ManualMatchType type, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
-		this.crMatch.matchManual(toMatch, type, threshold, useVol, usePag, useDOI);
-	}
-
-	public void matchUndo(double threshold, boolean useVol, boolean usePag, boolean useDOI) {
-		this.crMatch.matchUndo(threshold, useVol, usePag, useDOI);
-	}
-
-
-
-
-	public void matchUpdateClusterId(double threshold, boolean useClustering, boolean useVol, boolean usePag, boolean useDOI) {
-		this.crMatch.updateClusterId(threshold, useClustering, useVol, usePag, useDOI);
-		
-	}
-
-
-	public void matchMerge() {
-		this.crMatch.merge();
-	}
-
-
-
-
-	public void matchDoBlocking() {
-		this.crMatch.doBlocking();
-	}
-
-	public boolean hasMatches () {
-		return this.crMatch.hasMatches();
-	}
+//	public void matchManual(List<CRType> toMatch, ManualMatchType type, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
+//		this.crMatch.matchManual(toMatch, type, threshold, useVol, usePag, useDOI);
+//	}
+//
+//	public void matchUndo(double threshold, boolean useVol, boolean usePag, boolean useDOI) {
+//		this.crMatch.matchUndo(threshold, useVol, usePag, useDOI);
+//	}
+//
+//
+//
+//
+//	public void matchUpdateClusterId(double threshold, boolean useClustering, boolean useVol, boolean usePag, boolean useDOI) {
+//		this.crMatch.updateClusterId(threshold, useClustering, useVol, usePag, useDOI);
+//		
+//	}
+//
+//
+//	public void matchMerge() {
+//		this.crMatch.merge();
+//	}
+//
+//
+//
+//
+//	public void matchDoBlocking() {
+//		this.crMatch.doBlocking();
+//	}
+//
+//	public boolean hasMatches () {
+//		return this.crMatch.hasMatches();
+//	}
 	
 	public boolean isAborted() {
 		return aborted;

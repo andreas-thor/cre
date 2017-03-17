@@ -2,6 +2,7 @@ package cre.test.data;
 
 import java.util.IntSummaryStatistics;
 
+import cre.test.data.match.CRMatch2;
 import cre.test.data.type.CRType;
 
 public class CRStats {
@@ -17,8 +18,8 @@ public class CRStats {
 		return CRTable.get().getPub().count();
 	}
 	
-	public static int getSizeMatch (boolean manual) {
-		return CRTable.get().crMatch.match.get(manual).size();
+	public static long getSizeMatch (boolean manual) {
+		return CRMatch2.get().getSize(manual);
 	}
 
 	public static int[] getMaxRangeCitingYear () {
@@ -56,8 +57,8 @@ public class CRStats {
 	
 
 	
-	public static int getNoOfClusters() {
-		return CRTable.get().crMatch.getNoOfClusters();
+	public static long getNoOfClusters() {
+		return CRTable.get().getCR().map(cr -> cr.getCID2()).distinct().count();
 	}
 
 	

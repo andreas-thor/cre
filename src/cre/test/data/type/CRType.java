@@ -34,7 +34,6 @@ public class CRType {
 	private SimpleStringProperty VOL;
 	private SimpleStringProperty DOI;
 	private CRCluster CID2;
-	private SimpleIntegerProperty CID_S;
 	
 	private SimpleBooleanProperty VI;	// visible
 	private SimpleIntegerProperty CO;	// background color
@@ -84,7 +83,7 @@ public class CRType {
 		VOL = new SimpleStringProperty();
 		DOI = new SimpleStringProperty();
 		CID2 = null;
-		CID_S = new SimpleIntegerProperty();
+//		CID_S = new SimpleIntegerProperty();
 		PERC_YR = new SimpleDoubleProperty();
 		PERC_ALL = new SimpleDoubleProperty();
 		
@@ -338,14 +337,14 @@ public class CRType {
 	
 	
 	public int getCID_S() {
-		return CID_S.get();
+		return CID2.getCID_SProp().get();
 	}
 	public SimpleIntegerProperty getCID_SProp() {
-		return CID_S;
+		return CID2.getCID_SProp();
 	}
-	public void setCID_S(int cID_S) {
-		CID_S.set(cID_S);
-	}
+//	public void setCID_S(int cID_S) {
+//		CID_S.set(cID_S);
+//	}
 	
 	
 	public boolean getVI() {

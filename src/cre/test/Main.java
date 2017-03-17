@@ -149,7 +149,7 @@ public class Main {
 			public void onUpdateClustering(double threshold, boolean useClustering, boolean useVol, boolean usePag, boolean useDOI) {
 				if (t!=null) t.interrupt();
 				t = new Thread( () -> { 
-					crTable.matchUpdateClusterId(threshold, true, useVol, usePag, useDOI);
+					CRMatch2.get().updateClustering(CRMatch2.ClusteringType2.REFRESH, null, threshold, useVol, usePag, useDOI);
 					refreshTable();
 				});
 				t.start();
@@ -165,7 +165,7 @@ public class Main {
 					if ((toMatch.size()>5) && (type != ManualMatchType2.EXTRACT)) {
 						new ConfirmAlert("Error during clustering!", true, new String[] {"Too many Cited References selected (at most 5)!"}).showAndWait();
 					} else {
-						CRMatch2.get().matchManual (toMatch, type, threshold, useVol, usePag, useDOI);
+						CRMatch2.get().addManuMatching (toMatch, type, threshold, useVol, usePag, useDOI);
 						refreshTable();
 					}
 				}
@@ -173,7 +173,9 @@ public class Main {
 
 			@Override
 			public void onMatchUnDo(double threshold, boolean useVol, boolean usePag, boolean useDOI) {
-				crTable.matchUndo(threshold, useVol, usePag, useDOI);
+				CRMatch2.get().undoManuMatching (threshold, useVol, usePag, useDOI);
+
+//				crTable.matchUndo(threshold, useVol, usePag, useDOI);
 				refreshTable();
 			}
 			
@@ -336,7 +338,7 @@ public class Main {
 						case CRE_JSON: 
 							CRE_json.load (files.get(0), crTable); 
 							creFile = files.get(0); 		// save file name for window title and save operation
-							if (crTable.hasMatches()) {		// show match panel if applicable
+							if ((CRMatch2.get().getSize(true)+CRMatch2.get().getSize(false))>0) {		// show match panel if applicable
 								matchView.setVisible(true);
 								matchView.updateClustering();
 							}
@@ -707,10 +709,7 @@ public class Main {
 	@FXML public void OnMenuStdCluster() {
 		
 		new Thread( () -> {
-			
 			CRMatch2.get().generateAutoMatching();
-			
-			crTable.matchDoBlocking();
 			matchView.setVisible(true);
 			tablePane.requestLayout();
 			matchView.updateClustering(); 
@@ -729,7 +728,7 @@ public class Main {
 			.ifPresent( btn -> {
 				if (btn==ButtonType.YES) {
 					new Thread( () -> {
-						crTable.matchMerge();
+						crTable.merge();
 						matchView.setVisible(false);
 						updateData(null);
 //						tablePane.requestLayout();

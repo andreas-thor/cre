@@ -2,7 +2,7 @@ package cre.test.data.match;
 
 import cre.test.data.type.CRType;
 
-class CRPair2 {
+public class CRPair2 {
 	CRType cr1;
 	CRType cr2;
 	Double s;

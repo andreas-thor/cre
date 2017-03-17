@@ -22,6 +22,8 @@ import cre.test.Exceptions.AbortedException;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
 import cre.test.data.match.CRCluster;
+import cre.test.data.match.CRMatch2;
+import cre.test.data.match.CRPair2;
 import cre.test.data.type.CRType;
 import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
@@ -87,7 +89,7 @@ public class CRE_json {
 						case "ID": 		cr.setID(parser.getInt());  break;
 						case "N_CR": 	/*cr.setN_CR(parser.getInt());*/ break;
 						case "RPY": 	cr.setRPY(parser.getInt()); break;
-						case "CID_S": 	cr.setCID_S(parser.getInt()); break;
+						case "CID_S": 	/*cr.setCID_S(parser.getInt()); */ break;
 						case "VI": 		cr.setVI(parser.getInt()==1); break;
 						case "CO": 		cr.setCO(parser.getInt()); break;
 						case "type": 	cr.setType (parser.getInt()); break;
@@ -211,7 +213,7 @@ public class CRE_json {
 						}
 						break;
 					case VALUE_NUMBER:
-						crTab.setMapping(id1, id2, parser.getBigDecimal().doubleValue(), isManual, false);
+						CRMatch2.get().addPair(new CRPair2 (mapId2CR.get(id1), mapId2CR.get(id2), parser.getBigDecimal().doubleValue()), isManual, false, null);
 						break;
 					default:break;  
 					}
@@ -358,12 +360,12 @@ public class CRE_json {
 		for (boolean loop: new boolean[] { false, true }) {
 			jgenMatch.writeStartObject(loop?"MATCH_MANU":"MATCH_AUTO");
 //			for (Entry<Integer, Map<Integer, Double>> it: crTab.crMatch.match.get(loop).entrySet()) {
-			crTab.getMatch(loop).forEach(it -> {
-				if (it.getValue().size()>0) {
-					jgenMatch.writeStartObject(String.valueOf(it.getKey()));
-					for (Entry<Integer, Double> pair: it.getValue().entrySet()) {
-						jgenMatch.write(String.valueOf(pair.getKey()), pair.getValue());
-					}
+			CRMatch2.get().matchResult.get(loop).forEach((cr1, pairs) -> {
+				if (pairs.size()>0) {
+					jgenMatch.writeStartObject(String.valueOf(cr1.getID()));
+					pairs.forEach((cr2, sim) -> {
+						jgenMatch.write(String.valueOf(cr2.getID()), sim);
+					});
 					jgenMatch.writeEnd();
 				}
 				
