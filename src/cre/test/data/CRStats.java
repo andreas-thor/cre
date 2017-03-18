@@ -47,7 +47,11 @@ public class CRStats {
 	 * @return [min, max]
 	 */
 	public static int[] getMaxRangeYear () {
-		IntSummaryStatistics stats = CRTable.get().getCR().filter (cr -> cr.getRPY() != null).mapToInt(it -> it.getRPY()).summaryStatistics();
+		return getMaxRangeYear(false);
+	}
+
+	public static int[] getMaxRangeYear (boolean visibleOnly) {
+		IntSummaryStatistics stats = CRTable.get().getCR().filter (cr -> (cr.getRPY()!= null) && (!visibleOnly || cr.getVI())).mapToInt(it -> it.getRPY()).summaryStatistics();
 		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
 	}
 

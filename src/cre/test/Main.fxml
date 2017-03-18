@@ -78,9 +78,12 @@
 					
 					<SeparatorMenuItem />
 					
+					<CheckMenuItem text="Show Cited References w/o Years" onAction="#OnMenuViewShowCRsWOYears" selected="true" fx:id="showWOYear"/>
+					<MenuItem text="Filter by Cited Reference Year..." onAction="#OnMenuViewFilterByRPY"/>
+					<MenuItem text="Show Cited References of selected cluster(s) only" onAction="#OnMenuViewShowCluster"/>
+					<MenuItem text="Search Cited References..." disable="true" onAction="#OnMenuViewSearch"/>
 					
-					<CheckMenuItem text="Show Cited References w/o Years" onAction="#OnMenuDataShowCRswoYears" selected="true" />
-					<MenuItem text="Filter by Cited Reference Year..." onAction="#OnMenuDataFilterByRPY"/>
+					<MenuItem text="Show All Cited References" fx:id="noOfVisibleCRs" disable="true" onAction="#OnMenuViewShowAll"/>
 					
 				</items>
 			</Menu>

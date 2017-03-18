@@ -1,11 +1,13 @@
 package cre.test.ui;
 
 import java.util.Date;
+import java.util.function.Consumer;
 
 import cre.test.data.CRStats;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -28,6 +30,7 @@ public class StatusBar extends GridPane {
 	
 	private long count;
 
+	private Consumer<Void> onUpdateInfo;
 
 	public static StatusBar get() {
 		if (stat == null) {
@@ -37,9 +40,15 @@ public class StatusBar extends GridPane {
 	}
 	
 	
+	public void setOnUpdateInfo (Consumer<Void> onUpdateInfo) {
+		this.onUpdateInfo = onUpdateInfo;
+	}
+	
 	
 	private StatusBar() {
 		super();
+		
+		this.onUpdateInfo = null;
 		
 		GridPane.setColumnIndex(this,  0);
 		GridPane.setRowIndex(this,  0);
@@ -86,17 +95,24 @@ public class StatusBar extends GridPane {
 
 	public void updateInfo () {
 		int[] yearsRPY = CRStats.getMaxRangeYear();
+		int[] yearsRPYVisible = CRStats.getMaxRangeYear(true);
 		int[] yearsPY  = CRStats.getMaxRangeCitingYear();
 
-		sbinfo.setText (String.format("#CRs: %d (%d shown), #Clusters: %d, RPY: %d-%d, PY: %d-%d",
+		sbinfo.setText (String.format("#CRs: %d (%d shown), #Clusters: %d, RPY: %d-%d (%d-%d shown), PY: %d-%d",
 			CRStats.getSize(),
 			CRStats.getNumberByVisibility(true),
 			CRStats.getNoOfClusters(), 
 			yearsRPY[0], 
 			yearsRPY[1],
+			yearsRPYVisible[0], 
+			yearsRPYVisible[1],
 			yearsPY[0], 
 			yearsPY[1]
 			));
+		
+		if (this.onUpdateInfo!=null) {
+			this.onUpdateInfo.accept(null);
+		}
 	}
 		
 	

@@ -533,6 +533,14 @@ public class CRTable {
 		}
 	}
 	
+
+	
+	public void filterByCluster (List<CRType> sel) {
+		Set<CRCluster> clusters = sel.stream().map(cr -> cr.getCID2()).distinct().collect(Collectors.toSet());
+		crData.stream().forEach ( it -> it.setVI( clusters.contains(it.getCID2()) ));
+	}
+	
+	
 	
 //	public void filterByYear () {
 //		filterByYear (this.getMaxRangeYear());
@@ -543,6 +551,12 @@ public class CRTable {
 		this.showNull = showNull;
 		crData.stream().forEach ( it -> { if (it.getRPY() == null) it.setVI(showNull);  });
 	}
+	
+	public void showAll() {
+		this.showNull = true;
+		crData.stream().forEach ( it -> it.setVI(true) );
+	}
+	
 	
 //	public void setMapping (Integer id1, Integer id2, Double s, boolean isManual, boolean add, Long timestamp) {
 //		this.crMatch.setMapping(id1, id2, s, isManual, add, timestamp);
@@ -625,6 +639,9 @@ public class CRTable {
 	public void setAborted(boolean aborted) {
 		this.aborted = aborted;
 	}
+
+
+
 
 
 
