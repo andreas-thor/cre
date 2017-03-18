@@ -72,7 +72,7 @@
 			</Menu>
 			<Menu text="_View"  >
 				<items>
-					<MenuItem text="Info" onAction="#OnMenuDataInfo" accelerator="Shortcut+I" />
+					<MenuItem text="Info" onAction="#OnMenuViewInfo" accelerator="Shortcut+I" />
 					<MenuItem text="Cited Reference (Details)" onAction="#OnMenuViewCR" accelerator="Shortcut+D" />
 					<MenuItem text="Citing Publications" onAction="#OnMenuViewPub" accelerator="Shortcut+P" />
 					

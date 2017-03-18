@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import javax.jws.soap.SOAPBinding.Use;
-
 import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
 
 import cre.test.Exceptions.AbortedException;
@@ -53,6 +51,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.input.Clipboard;
@@ -62,17 +61,13 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.WindowEvent;
-import javafx.scene.control.MenuItem;
 
 public class Main {
 
 	public static enum ImportFormat {
-		CRE_JSON("Open CRE File", false,
-				new ExtensionFilter("Cited References Explorer", Arrays.asList(new String[] { "*.cre" }))), WOS_TXT(
-						"Import Web of Science Files", true,
-						new ExtensionFilter("Web of Science", Arrays.asList(new String[] { "*.txt" }))), SCOPUS_CSV(
-								"Import Scopus Files", true,
-								new ExtensionFilter("Scopus", Arrays.asList(new String[] { "*.csv" })));
+		CRE_JSON("Open CRE File", false, new ExtensionFilter("Cited References Explorer", Arrays.asList(new String[] { "*.cre" }))), 
+		WOS_TXT("Import Web of Science Files", true, new ExtensionFilter("Web of Science", Arrays.asList(new String[] { "*.txt" }))), 
+		SCOPUS_CSV("Import Scopus Files", true,	new ExtensionFilter("Scopus", Arrays.asList(new String[] { "*.csv" })));
 
 		public final String label;
 		public boolean multiple;
@@ -197,8 +192,6 @@ public class Main {
 			@Override
 			public void onMatchUnDo(double threshold, boolean useVol, boolean usePag, boolean useDOI) {
 				CRMatch2.get().undoManuMatching(threshold, useVol, usePag, useDOI);
-
-				// crTable.matchUndo(threshold, useVol, usePag, useDOI);
 				refreshTableValues();
 			}
 
@@ -242,12 +235,6 @@ public class Main {
 			exit.setHeaderText("Save before exit?");
 			exit.getDialogPane().getButtonTypes().clear();
 			exit.getDialogPane().getButtonTypes().addAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
-			// ((Button)
-			// exit.getDialogPane().lookupButton(ButtonType.YES)).setDefaultButton
-			// (false);
-			// ((Button)
-			// exit.getDialogPane().lookupButton(ButtonType.CANCEL)).setDefaultButton
-			// (true);
 
 			exit.showAndWait().ifPresent(button -> {
 
@@ -296,8 +283,7 @@ public class Main {
 			tableView.getSortOrder().forEach(it -> oldSort.add(it));
 	
 			// ... update rows ...
-			tableView.setItems(FXCollections
-					.observableArrayList(crTable.getCR().filter(cr -> cr.getVI()).collect(Collectors.toList())));
+			tableView.setItems(FXCollections.observableArrayList(crTable.getCR().filter(cr -> cr.getVI()).collect(Collectors.toList())));
 	
 			// ... reset old sort order
 			for (TableColumn<CRType, ?> x : oldSort) {
@@ -340,8 +326,7 @@ public class Main {
 	 * AUCH NICHT
 	 */
 	private List<CRType> getSelectedCRs() {
-		return tableView.getSelectionModel().getSelectedItems().stream().filter(cr -> cr != null)
-				.collect(Collectors.toList());
+		return tableView.getSelectionModel().getSelectedItems().stream().filter(cr -> cr != null).collect(Collectors.toList());
 	}
 
 	private void openFile(ImportFormat source) throws IOException {
@@ -361,8 +346,7 @@ public class Main {
 			fileChooser.setTitle(source.label);
 			fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
 			fileChooser.getExtensionFilters().add(source.filter);
-			fileChooser.getExtensionFilters()
-					.add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
+			fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
 
 			if (source.multiple) {
 				List<File> selFiles = fileChooser.showOpenMultipleDialog(CitedReferencesExplorer.stage);
@@ -377,15 +361,9 @@ public class Main {
 
 		if (files.size() > 0) {
 			this.creFile = null;
-			UserSettings.get().setLastFileDir(files.get(0).getParentFile()); // save
-																				// last
-																				// directory
-																				// to
-																				// be
-																				// used
-																				// as
-																				// initial
-																				// directory
+			// save last directory to be uses as initial directory
+			UserSettings.get().setLastFileDir(files.get(0).getParentFile()); 
+
 			Wait wait = new Wait();
 			new Thread(() -> {
 				try {
@@ -393,13 +371,11 @@ public class Main {
 					switch (source) {
 					case CRE_JSON:
 						CRE_json.load(files.get(0), crTable);
-						creFile = files.get(0); // save file name for window
-												// title and save operation
-						if ((CRMatch2.get().getSize(true) + CRMatch2.get().getSize(false)) > 0) { // show
-																									// match
-																									// panel
-																									// if
-																									// applicable
+						// save file name for window title and save operation 
+						creFile = files.get(0); 
+						
+						// show match panel if applicable
+						if ((CRMatch2.get().getSize(true) + CRMatch2.get().getSize(false)) > 0) { 
 							matchView.setVisible(true);
 							matchView.updateClustering();
 						}
@@ -446,7 +422,7 @@ public class Main {
 				Platform.runLater(() -> {
 					wait.close();
 					if (!crTable.isAborted()) {
-						OnMenuDataInfo();
+						OnMenuViewInfo();
 						updateTableCRList();
 						CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title
 								+ ((creFile == null) ? "" : " - " + creFile.getAbsolutePath()));
@@ -605,26 +581,11 @@ public class Main {
 	}
 
 	/*
-	 * DATA Menu
+	 * VIEW Menu
 	 */
 
 	@FXML
-	public void OnMenuDataInfo() {
-
-		System.out.println("So viele Pubs haben doppelte CRs");
-		System.out.println(crTable.getPub().filter(p -> p.getCR().count() != p.getCR().distinct().count()).count());
-
-		System.out.println("So viele CRs haben doppelte Pubs");
-		// System.out.println(crTable.getCR().filter(cr -> cr.pubList.size() !=
-		// cr.pubList.stream().distinct().count()).count());
-
-		// crTable.getPub().filter(p -> p.getCR().count() !=
-		// p.getCR().distinct().count()).forEach(p -> {
-		// System.out.print("[");
-		// p.getCR().forEach(cr -> { System.out.print(cr.getID() + ",");} );
-		// System.out.println("]");
-		// });
-
+	public void OnMenuViewInfo() {
 		new Info().showAndWait();
 	}
 
@@ -685,6 +646,11 @@ public class Main {
 	
 	
 	@FXML
+	public void OnMenuViewSearch() {
+	}
+
+	
+	@FXML
 	public void OnMenuViewShowAll() {
 		showWOYear.setSelected(true);
 		crTable.showAll();
@@ -692,6 +658,10 @@ public class Main {
 	}
 	
 
+	/*
+	 * DATA Menu
+	 */
+	
 	@FXML
 	public void OnMenuDataRemoveSelected() {
 
@@ -908,8 +878,5 @@ public class Main {
 	}
 
 
-	@FXML
-	public void OnMenuViewSearch() {
-	}
-
+	
 }
