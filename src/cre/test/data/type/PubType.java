@@ -1,8 +1,9 @@
 package cre.test.data.type;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public class PubType {
@@ -41,8 +42,13 @@ public class PubType {
 	
 	public int length;	// approx. size for import status bar
 
-	private HashSet<CRType> crList = new HashSet<CRType>();
+	private Set<CRType> crList = new LinkedHashSet<CRType>();
 
+	
+	public String toLineString () {
+		return String.format("%s: %s (%d)", String.join(", ", AU), TI, PY);
+	}
+	
 	
 	public Integer getPY () {
 		return this.PY;

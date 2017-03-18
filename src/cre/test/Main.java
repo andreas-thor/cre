@@ -33,6 +33,7 @@ import cre.test.ui.MatchPanel;
 import cre.test.ui.StatusBar;
 import cre.test.ui.dialog.About;
 import cre.test.ui.dialog.CRInfo;
+import cre.test.ui.dialog.CRPubInfo;
 import cre.test.ui.dialog.ConfirmAlert;
 import cre.test.ui.dialog.ExceptionStacktrace;
 import cre.test.ui.dialog.Info;
@@ -523,6 +524,25 @@ public class Main {
 		new Info().showAndWait();	
 	}
 	
+	@FXML public void OnMenuViewCR() {
+		List<CRType> sel = getSelectedCRs();
+		if (sel.size()==1) {
+			new CRInfo(sel.get(0)).showAndWait();	
+		} else {
+			new ConfirmAlert("Remove Cited References",true, new String[] { String.format("%s Cited References selected.", (sel.size()==0) ? "No" : "Too many") }).showAndWait();
+		}
+	}
+
+
+	@FXML public void OnMenuViewPub() {
+		List<CRType> sel = getSelectedCRs();
+		if (sel.size()==1) {
+			new CRPubInfo(sel.get(0)).showAndWait();	
+		} else {
+			new ConfirmAlert("Remove Cited References",true, new String[] { String.format("%s Cited References selected.", (sel.size()==0) ? "No" : "Too many") }).showAndWait();
+		}
+	}
+
 	
 	@FXML public void OnMenuDataShowCRswoYears(ActionEvent event) {
 		crTable.setShowNull(((CheckMenuItem)event.getSource()).isSelected());
@@ -557,8 +577,14 @@ public class Main {
 	@FXML public void OnMenuDataCopySelected() {
 
 		StringBuffer buf = new StringBuffer();
+
 		tableView.getSelectionModel().getSelectedItems().stream().forEach((CRType cr) -> {
-			buf.append(cr.toString());
+			tableView.getColumns().filtered(c -> c.isVisible()).forEach(c -> {
+				buf.append("\"");
+				buf.append(c.getCellData(cr));
+				buf.append("\"\t");
+			});
+			buf.append("\n");
 		});
 		
 		final ClipboardContent clipboardContent = new ClipboardContent();
@@ -750,6 +776,8 @@ public class Main {
 	@FXML public void OnMenuHelpAbout() {
 		new About().showAndWait();
 	}
+
+
 
 
 	

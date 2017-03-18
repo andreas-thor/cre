@@ -1,6 +1,9 @@
 package cre.test.data.type;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import cre.test.data.match.CRCluster;
@@ -52,7 +55,7 @@ public class CRType {
 	private byte type = 0;	
 	
 
-	private HashSet<PubType> pubList;
+	private Set<PubType> pubList;
 	
 //	public int mergedTo = -1;
 	public boolean removed = false;	

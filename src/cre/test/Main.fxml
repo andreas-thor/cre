@@ -46,13 +46,8 @@
 					<MenuItem text="Exit" onAction="#OnMenuFileExit"/>
 				</items>
 			</Menu>
-			<Menu text="_Data"  >
+			<Menu text="_Edit"  >
 				<items>
-					<MenuItem text="Info" onAction="#OnMenuDataInfo" accelerator="Shortcut+I" />
-					<CheckMenuItem text="Show Cited References w/o Years" onAction="#OnMenuDataShowCRswoYears" selected="true" />
-					<MenuItem text="Filter by Cited Reference Year..." onAction="#OnMenuDataFilterByRPY"/>
-					
-					<SeparatorMenuItem />
 					
 					<MenuItem text="Remove Selected Cited Reference..." onAction="#OnMenuDataRemoveSelected" />
 					<MenuItem text="Remove Cited References w/o Year..." onAction="#OnMenuDataRemovewoYears"/>
@@ -71,7 +66,21 @@
 					
 					<SeparatorMenuItem />
 					
-					<MenuItem text="Copy Selected Cited Reference" onAction="#OnMenuDataCopySelected" />
+					<MenuItem text="Copy Selected Cited Reference" onAction="#OnMenuDataCopySelected" accelerator="Shortcut+C"/>
+					
+				</items>
+			</Menu>
+			<Menu text="_View"  >
+				<items>
+					<MenuItem text="Info" onAction="#OnMenuDataInfo" accelerator="Shortcut+I" />
+					<MenuItem text="Cited Reference (Details)" onAction="#OnMenuViewCR" accelerator="Shortcut+D" />
+					<MenuItem text="Citing Publications" onAction="#OnMenuViewPub" accelerator="Shortcut+P" />
+					
+					<SeparatorMenuItem />
+					
+					
+					<CheckMenuItem text="Show Cited References w/o Years" onAction="#OnMenuDataShowCRswoYears" selected="true" />
+					<MenuItem text="Filter by Cited Reference Year..." onAction="#OnMenuDataFilterByRPY"/>
 					
 				</items>
 			</Menu>

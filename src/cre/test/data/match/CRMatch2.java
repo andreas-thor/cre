@@ -33,8 +33,7 @@ public class CRMatch2 {
 	
 	public static enum ClusteringType2 {
 		INIT ("Init"), 
-		REFRESH ("Refresh"), 
-		REFINE ("Refine");
+		REFRESH ("Refresh");
 		
 		public final String label;
 		ClusteringType2 (String label) {
@@ -241,7 +240,7 @@ public class CRMatch2 {
 			((changeCR == null) ? CRTable.get().getCR() : changeCR.stream()).forEach(cr -> cr.setCID2(new CRCluster(cr, cr.getCID2().c1)));
 		}
 
-		StatusBar.get().initProgressbar(pbSize, String.format("Clustering %d objects (%s)", CRStats.getSize(), type.label));
+		StatusBar.get().initProgressbar(pbSize, String.format("Clustering %d objects (%s) with threshold %.2f", CRStats.getSize(), type.label, threshold));
 		
 		// automatic matches
 		matchResult.get(false).forEach((cr1, pairs) -> {

@@ -1,10 +1,9 @@
 package cre.test.data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -15,12 +14,13 @@ import cre.test.data.match.CRCluster;
 import cre.test.data.match.CRMatch2;
 import cre.test.data.type.CRType;
 import cre.test.data.type.PubType;
+import cre.test.ui.StatusBar;
 
 public class CRTable {
 
 	private static CRTable crTab = null;
 	
-	private Set<CRType> crData;
+	private List<CRType> crData;
 	private Map<Character, HashMap<String, CRType>> crDup; // first character -> (crString -> CR )
 
 //	protected CRMatch crMatch;
@@ -59,7 +59,7 @@ public class CRTable {
 	public void init() {
 //		crData.clear ();
 		
-		crData = new HashSet<CRType>();
+		crData = new ArrayList<CRType>();
 		crDup = new HashMap<Character,  HashMap<String, CRType>>();
 				
 				
@@ -126,8 +126,13 @@ public class CRTable {
 		// get all clusters with size > 1
 		Set<CRCluster> clusters = getCR().filter(cr -> cr.getCID_S()>1).map(cr -> cr.getCID2()).distinct().collect(Collectors.toSet());
 		
+		StatusBar.get().setValue(String.format("Merging of %d clusters...", clusters.size()));
+
+		
 		// merge clusters
 		clusters.forEach(cl -> {
+			
+			StatusBar.get().incProgressbar();
 			
 			// get mainCR = CR with highest number of citations
 			CRType crMain = cl.getMainCR();

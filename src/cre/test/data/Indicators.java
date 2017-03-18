@@ -3,6 +3,7 @@ package cre.test.data;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -61,7 +62,7 @@ public class Indicators {
 	}
 	
 	
-	public static void computeNPCT (Set<CRType> crData, int minPY, int maxPY, int range) {
+	public static void computeNPCT (List<CRType> crData, int minPY, int maxPY, int range) {
 		
 		
 		// Group CRs by RPY
