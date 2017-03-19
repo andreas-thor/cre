@@ -42,10 +42,10 @@ public class CRTableView extends TableView<CRType> {
 		CID2 ("CID2", "ClusterID", ColGroup.CLUSTER, ColDataType.CRCLUSTER, CRType::getCID2),
 		CID_S ("CID_S", "Cluster Size", ColGroup.CLUSTER, ColDataType.INT, CRType::getCID_SProp),
 		N_PYEARS ("N_PYEARS", "N_PYEARS", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PYEARSProp),
-		PYEAR_PERC ("PYEAR_PERC", "PYEAR_PERC", ColGroup.INDICATOR, ColDataType.DOUBLE, CRType::getPYEAR_PERCProp),
-		N_PCT50 ("N_PCT50", "N_PCT50", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT50Prop),
-		N_PCT75 ("N_PCT75", "N_PCT75", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT75Prop),
-		N_PCT90 ("N_PCT90", "N_PCT90", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT90Prop),
+		PYEAR_PERC ("PERC_PYEARS", "PERC_PYEARS", ColGroup.INDICATOR, ColDataType.DOUBLE, CRType::getPYEAR_PERCProp),
+		N_PCT50 ("N_TOP50", "N_TOP50", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT50Prop),
+		N_PCT75 ("N_TOP75", "N_TOP75", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT75Prop),
+		N_PCT90 ("N_TOP90", "N_TOP90", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT90Prop),
 		N_PYEARS2 ("N_PYEARS2", "N_PYEARS2", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PYEARS2Prop);
 		
 		public String id;

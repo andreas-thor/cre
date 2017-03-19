@@ -6,11 +6,13 @@ public class Exceptions {
 		
 		private static final long serialVersionUID = 1L;
 
-		int numberOfCRs;
+		long numberOfCRs;
+		long numberOfPubs;
 
-		public FileTooLargeException(int numberOfCRs) {
+		public FileTooLargeException(long numberOfCRs, long numberOfPubs) {
 			super();
 			this.numberOfCRs = numberOfCRs;
+			this.numberOfPubs = numberOfPubs;
 		}
 		
 		

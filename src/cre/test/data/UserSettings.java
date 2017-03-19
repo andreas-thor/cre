@@ -39,6 +39,7 @@ public class UserSettings {
 
 	// import restrictions
 	private int maxCR = 0;
+	private int maxPub = 0;
 	private double[] window = new double[] {800, 600, 0, 0};
 
 	private int chartEngine;
@@ -88,6 +89,7 @@ public class UserSettings {
 		npctRange = userPrefs.getInt("npctRange", npctRange);
 
 		maxCR = userPrefs.getInt("maxCR", maxCR);
+		maxPub = userPrefs.getInt("maxPub", maxPub);
 		chartEngine = userPrefs.getInt("chartEngine", 0);
 		
 		window = new double[] {
@@ -124,6 +126,7 @@ public class UserSettings {
 		userPrefs.putInt("npctRange", npctRange);
 		userPrefs.putInt("medianRange", medianRange);
 		userPrefs.putInt("maxCR", maxCR);
+		userPrefs.putInt("maxPub", maxPub);
 		userPrefs.putInt("chartEngine", chartEngine);
 		
 		userPrefs.putDouble("WindowWidth", windowWidth);
@@ -299,7 +302,6 @@ public class UserSettings {
 		return 0;
 	}
 	
-	
 	public int setMaxCR (String maxCR) {
 		try {
 			return setMaxCR (Integer.parseInt(maxCR));
@@ -307,6 +309,28 @@ public class UserSettings {
 			return 1;
 		}
 	}
+	
+	public int getMaxPub() {
+		return maxPub;
+	}
+
+	public int setMaxPub (int maxPub) {
+		this.maxPub = maxPub;
+		if (this.maxPub<0) {
+			this.maxPub = 0;
+			return 1;
+		}
+		return 0;
+	}
+	
+	public int setMaxPub (String maxPub) {
+		try {
+			return setMaxPub (Integer.parseInt(maxPub));
+		} catch (NumberFormatException e) {
+			return 1;
+		}
+	}
+
 
 	public int getChartEngine() {
 		return this.chartEngine;

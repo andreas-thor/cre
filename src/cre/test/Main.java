@@ -292,8 +292,10 @@ public class Main {
 	
 			// set Domain Range for charts
 			Stream.of(crChart).forEach(it -> {
-				it.updateData(crTable.getChartData());
-				it.setDomainRange(CRStats.getMaxRangeYear(true));
+				if (it.isVisible()) {
+					it.updateData(crTable.getChartData());
+					it.setDomainRange(CRStats.getMaxRangeYear(true));
+				}
 			});
 	
 			refreshTableValues();
@@ -381,11 +383,11 @@ public class Main {
 						}
 						break;
 					case WOS_TXT:
-						WoS_txt.load(files, crTable, UserSettings.get().getMaxCR(),
+						WoS_txt.load(files, crTable, UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), 
 								UserSettings.get().getRange(RangeType.ImportYearRange));
 						break;
 					case SCOPUS_CSV:
-						Scopus_csv.load(files, crTable, UserSettings.get().getMaxCR(),
+						Scopus_csv.load(files, crTable, UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), 
 								UserSettings.get().getRange(RangeType.ImportYearRange));
 						break;
 					}
@@ -393,8 +395,8 @@ public class Main {
 					Platform.runLater(() -> {
 						new ConfirmAlert("Error during file import!", true,
 								new String[] { String.format(
-										"You try to import too many cited references. Import was aborted after loading %d Cited References. You can change the maximum number in the File > Settings > Import menu. ",
-										e1.numberOfCRs) }).showAndWait();
+										"You try to import too many cited references. Import was aborted after loading %d Cited References and %d Citing Publications. You can change the maximum number in the File > Settings > Import menu. ",
+										e1.numberOfCRs, e1.numberOfPubs) }).showAndWait();
 					});
 				} catch (UnsupportedFileFormatException e4) {
 					Platform.runLater(() -> {
@@ -567,9 +569,7 @@ public class Main {
 			for (int i = 0; i < crChart.length; i++) {
 				crChart[i].setVisible(UserSettings.get().getChartEngine() == i);
 			}
-			crTable.updateData(false);
 			updateTableCRList();
-
 			// TODO: Apply settings changes
 		});
 	}

@@ -58,7 +58,7 @@ public class Scopus_csv  {
 
 	
 	
-	public static void load (List<File> files, CRTable crTab, int maxCR, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
+	public static void load (List<File> files, CRTable crTab, int maxCR, int maxPub, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 		
 		long ts1 = System.currentTimeMillis();
 		
@@ -68,6 +68,8 @@ public class Scopus_csv  {
 		crTab.init();
 		
 		AtomicLong countCR = new AtomicLong(0);
+		AtomicLong countPub = new AtomicLong(0);
+
 		int idx=0;
 		for (File file: files) {
 
@@ -90,7 +92,6 @@ public class Scopus_csv  {
 
 			
 			content.remove(0);
-			AtomicLong countPub = new AtomicLong(0);
 			crTab.addPubs(content.stream().map ( (String[] line) -> {
 	
 				StatusBar.get().incProgressbar (Arrays.stream(line).mapToInt (v -> v.length()+1).sum());
@@ -170,8 +171,8 @@ public class Scopus_csv  {
 				pub.UT = attribute2Index.get("EID") != null ? line[attribute2Index.get("EID")] : null;
 				
 				
-				countPub.incrementAndGet();
 				countCR.addAndGet(pub.getSizeCR());
+				countPub.incrementAndGet();
 				StatusBar.get().incProgressbar();
 				
 				return pub;
@@ -181,31 +182,26 @@ public class Scopus_csv  {
 			// Check for abort by user
 			if (crTab.isAborted()) {
 				crTab.init();
-				crTab.updateData(false);
 				StatusBar.get().setValue ("Loading Scopus files aborted (due to user request)");
 				throw new AbortedException();
 			}
 
-			// Check for maximal number of CRs
-			if ((maxCR>0) && (countCR.get()>=maxCR)) {
-				StatusBar.get().setValue("Loading Scopus files aborted (due to maximal number of CRs)");
-//				crTab.createCRList();
-				crTab.updateData(false);
-				throw new FileTooLargeException ((int) countCR.get());
+			// check for maximum number of CRs / Pubs
+			if (((maxCR>0) && (countCR.get()>=maxCR)) || ((maxPub>0) && (countPub.get()>=maxPub))) {
+				crTab.updateData();
+				StatusBar.get().setValue("Loading Scopus files aborted (due to maximal number of CRs / Pubs)");
+				throw new FileTooLargeException (countCR.get(), countPub.get());
 			}
 			
 			csv.close();
 
 		}
 
-
-//		crTab.createCRList();
-		
+		crTab.updateData();
 
 		long ts2 = System.currentTimeMillis();
 		System.out.println("Load time is " + ((ts2-ts1)/1000d) + " seconds");
 
-		crTab.updateData(false);
 		StatusBar.get().setValue("Loding Scopus files done");
 
 	}

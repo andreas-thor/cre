@@ -242,13 +242,12 @@ public class CRE_json {
 		// Check for abort by user
 		if (crTab.isAborted()) {
 			crTab.init();
-			crTab.updateData(false);
 			StatusBar.get().setValue("Loading CRE file aborted (due to user request)");
 			throw new AbortedException();
 		}
 		
 		
-		crTab.updateData(true);
+		crTab.updateData();
 		StatusBar.get().setValue("Loading CRE file done");
 	}
 

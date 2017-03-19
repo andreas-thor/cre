@@ -35,7 +35,7 @@ public class Settings extends Dialog<Integer> {
 	private final CheckBox[] cbLine = new CheckBox[2];
 	private final TextField[] tfLine = new TextField[2];
 	private final TextField tfMedian = new TextField();
-	private final TextField[] tfImport = new TextField[3];
+	private final TextField[] tfImport = new TextField[4];
 	private final RadioButton[] rbChart = new RadioButton[2];
 	
 	public Settings() throws IOException {
@@ -83,7 +83,8 @@ public class Settings extends Dialog<Integer> {
 		    	noOfErrors += UserSettings.get().setChartSize(new String[] { tfLine[0].getText(), tfLine[1].getText() });
 		    	noOfErrors += UserSettings.get().setMedianRange(tfMedian.getText());
 		    	noOfErrors += UserSettings.get().setMaxCR(tfImport[0].getText());
-		    	noOfErrors += UserSettings.get().setRange(UserSettings.RangeType.ImportYearRange, new String[] { tfImport[1].getText(), tfImport[2].getText()} );
+		    	noOfErrors += UserSettings.get().setMaxPub(tfImport[1].getText());
+		    	noOfErrors += UserSettings.get().setRange(UserSettings.RangeType.ImportYearRange, new String[] { tfImport[2].getText(), tfImport[3].getText()} );
 		    	noOfErrors += UserSettings.get().setNPCTRange(tfNPCT.getText());
 		    	UserSettings.get().setChartEngine(rbChart[0].isSelected() ? 0 : 1);
 		    	
@@ -167,10 +168,11 @@ public class Settings extends Dialog<Integer> {
 		result.setVgap(10);
 		result.setPadding(new Insets(20, 20, 20, 20));
 		
-		String[] label = new String[] { "Maximum Number", "Minimum Publication Year", "Maximum Publication Year" };
+		String[] label = new String[] { "Maximum Number of CRs", "Maximum Number of Pubs", "Minimum Publication Year", "Maximum Publication Year" };
+		long[] value = new long[] { UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), UserSettings.get().getRange(RangeType.ImportYearRange)[0], UserSettings.get().getRange(RangeType.ImportYearRange)[1] };
 		for (int i=0; i<label.length; i++) {
 			result.add(new Label(label[i]), 0, i);
-			tfImport[i] = new TextField((i==0) ? String.valueOf(UserSettings.get().getMaxCR()) : String.valueOf(UserSettings.get().getRange(RangeType.ImportYearRange)[i-1]));
+			tfImport[i] = new TextField(String.valueOf(value[i]));
 			tfImport[i].setMaxWidth(50);
 			result.add(tfImport[i], 1, i);
 		}
@@ -191,7 +193,7 @@ public class Settings extends Dialog<Integer> {
 		tfDigits.setText(UserSettings.get().getFormatDigits());
 		result.add(tfDigits, 1, 0);
 		
-		result.add(new Label("NPCT Range"), 0, 1);
+		result.add(new Label("Top Range"), 0, 1);
 		tfNPCT.setMaxWidth(50);
 		tfNPCT.setText(String.valueOf(UserSettings.get().getNPCTRange()));
 		result.add(tfNPCT, 1, 1);
