@@ -45,8 +45,8 @@ public class CRTableView extends TableView<CRType> {
 		PYEAR_PERC ("PERC_PYEARS", "PERC_PYEARS", ColGroup.INDICATOR, ColDataType.DOUBLE, CRType::getPYEAR_PERCProp),
 		N_PCT50 ("N_TOP50", "N_TOP50", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT50Prop),
 		N_PCT75 ("N_TOP75", "N_TOP75", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT75Prop),
-		N_PCT90 ("N_TOP90", "N_TOP90", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT90Prop),
-		N_PYEARS2 ("N_PYEARS2", "N_PYEARS2", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PYEARS2Prop);
+		N_PCT90 ("N_TOP90", "N_TOP90", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT90Prop);
+//		N_PYEARS2 ("N_PYEARS2", "N_PYEARS2", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PYEARS2Prop);
 		
 		public String id;
 		public String title;

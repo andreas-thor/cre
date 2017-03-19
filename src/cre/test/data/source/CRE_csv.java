@@ -10,17 +10,21 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.opencsv.CSVWriter;
+
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
 import cre.test.data.UserSettings;
 import cre.test.data.type.CRType;
 import cre.test.data.type.PubType;
+import cre.test.ui.CRTableView.CRColumn;
 import cre.test.ui.StatusBar;
 
 public class CRE_csv {
 
 	private static String[] csvColumnsCR = new String[] {"CRID", "CR", "AU", "AU_F", "AU_L", "AU_A", "TI", "J", "J_N", "J_S", "N_CR", "RPY", "PAG", "VOL", "DOI", "PERC_YR", "PERC_ALL"};
 	private static String[] csvColumnsPub = new String[] {"PUBID", "PT", "AU", "AF", "C1", "EM", "AA", "TI", "PY", "SO", "VL", "IS", "AR", "BP", "EP", "PG", "TC", "DI", "LI", "AB", "DE", "DT", "FS", "UT"}; 
+	
+	
 	
 	private static int pubId;
 	
@@ -53,29 +57,29 @@ public class CRE_csv {
 		
 		HashMap<String, String> result = new HashMap<String, String>();
 		result.put ("PUBID",							 String.valueOf(++pubId));
-		result.put ("PT", 		(pub.PT==null)?""		:pub.PT);
-		result.put ("AU", 		(pub.AU==null)?""		:String.join("; ", pub.AU));
-		result.put ("AF", 		(pub.AF==null)?""		:String.join("; ", pub.AF));
-		result.put ("C1", 		(pub.C1==null)?""		:String.join("; ", pub.C1.stream().map(it -> "["+String.join("; ", it)+"]").collect(Collectors.toList())));
-		result.put ("EM", 		(pub.EM==null)?""		:String.join("; ", pub.EM));
-		result.put ("AA", 		(pub.AA==null)?""		:String.join("; ", pub.AA));
-		result.put ("TI", 		(pub.TI==null)?""		:pub.TI);
-		result.put ("PY", 		(pub.PY==null)?""		:pub.PY.toString());
-		result.put ("SO", 		(pub.SO==null)?""		:pub.SO);
-		result.put ("VL", 		(pub.VL==null)?""		:pub.VL);
-		result.put ("IS", 		(pub.IS==null)?""		:pub.IS);
-		result.put ("AR", 		(pub.AR==null)?""		:pub.AR);
-		result.put ("BP", 		(pub.BP==null)?""		:pub.BP.toString());
-		result.put ("EP", 		(pub.EP==null)?""		:pub.EP.toString());
-		result.put ("PG", 		(pub.PG==null)?""	 	:pub.PG.toString());
-		result.put ("TC", 		(pub.TC==null)?"0"		:pub.TC.toString());
-		result.put ("DI", 		(pub.DI==null)?""		:pub.DI);
-		result.put ("LI", 		(pub.LI==null)?""		:pub.LI);
-		result.put ("AB", 		(pub.AB==null)?""		:pub.AB);
-		result.put ("DE", 		(pub.DE==null)?""		:pub.DE);
-		result.put ("DT", 		(pub.DT==null)?""		:pub.DT);
-		result.put ("FS", 		(pub.FS==null)?""		:pub.FS);
-		result.put ("UT", 		(pub.UT==null)?""		:pub.UT);
+		result.put ("PT", 		(pub.getPT()==null)?""		:pub.getPT());
+		result.put ("AU", 		(pub.getAU()==null)?""		:String.join("; ", pub.getAU()));
+		result.put ("AF", 		(pub.getAF()==null)?""		:String.join("; ", pub.getAF()));
+		result.put ("C1", 		(pub.getC1()==null)?""		:String.join("; ", pub.getC1().stream().map(it -> "["+String.join("; ", it)+"]").collect(Collectors.toList())));
+		result.put ("EM", 		(pub.getEM()==null)?""		:String.join("; ", pub.getEM()));
+		result.put ("AA", 		(pub.getAA()==null)?""		:String.join("; ", pub.getAA()));
+		result.put ("TI", 		(pub.getTI()==null)?""		:pub.getTI());
+		result.put ("PY", 		(pub.getPY()==null)?""		:pub.getPY().toString());
+		result.put ("SO", 		(pub.getSO()==null)?""		:pub.getSO());
+		result.put ("VL", 		(pub.getVL()==null)?""		:pub.getVL());
+		result.put ("IS", 		(pub.getIS()==null)?""		:pub.getIS());
+		result.put ("AR", 		(pub.getAR()==null)?""		:pub.getAR());
+		result.put ("BP", 		(pub.getBP()==null)?""		:pub.getBP().toString());
+		result.put ("EP", 		(pub.getEP()==null)?""		:pub.getEP().toString());
+		result.put ("PG", 		(pub.getPG()==null)?""	 	:pub.getPG().toString());
+		result.put ("TC", 		(pub.getTC()==null)?"0"		:pub.getTC().toString());
+		result.put ("DI", 		(pub.getDI()==null)?""		:pub.getDI());
+		result.put ("LI", 		(pub.getLI()==null)?""		:pub.getLI());
+		result.put ("AB", 		(pub.getAB()==null)?""		:pub.getAB());
+		result.put ("DE", 		(pub.getDE()==null)?""		:pub.getDE());
+		result.put ("DT", 		(pub.getDT()==null)?""		:pub.getDT());
+		result.put ("FS", 		(pub.getFS()==null)?""		:pub.getFS());
+		result.put ("UT", 		(pub.getUT()==null)?""		:pub.getUT());
 		return result;
 	}
 	
@@ -90,17 +94,25 @@ public class CRE_csv {
 
 		StatusBar.get().initProgressbar(CRStats.getSize(), "Saving CSV file (Cited References) ...");
 		
+		
+		
 		// add csv extension if necessary
 		String file_name = file.toString();
 		if (!file_name.endsWith(".csv")) file_name += ".csv";
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
-		csv.writeNext(csvColumnsCR); 
+
+		csv.writeNext(Arrays.stream(CRColumn.values()).map(col -> col.id).toArray(String[]::new)); 
+//		csv.writeNext(csvColumnsCR); 
 		
 		crTab.getCR().forEach(cr -> {
 			StatusBar.get().incProgressbar();
 			HashMap<String, String> exportCR = getCRExport(cr);
-			csv.writeNext(Arrays.stream(csvColumnsCR).map (attr -> exportCR.get(attr)).toArray(String[]::new)); 
+			
+			csv.writeNext(Arrays.stream(CRColumn.values()).map(col -> col.prop.apply(cr).getValue()).map(val -> val==null ? "" : String.valueOf(val)).toArray(String[]::new)); 
+
+			
+//			csv.writeNext(Arrays.stream(csvColumnsCR).map (attr -> exportCR.get(attr)).toArray(String[]::new)); 
 		});
 		
 		csv.close();

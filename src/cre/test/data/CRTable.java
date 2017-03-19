@@ -262,7 +262,7 @@ public class CRTable {
 	 * @param range
 	 */
 	public void removePubByCitingYear (int[] range) {
-		removePub (pub -> (pub.PY==null) || (range[0] > pub.PY) || (pub.PY > range[1]));
+		removePub (pub -> (pub.getPY()==null) || (range[0] > pub.getPY()) || (pub.getPY() > range[1]));
 	}
 	
 	

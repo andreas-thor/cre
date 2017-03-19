@@ -23,12 +23,12 @@ public class CRStats {
 	}
 
 	public static int[] getMaxRangeCitingYear () {
-		IntSummaryStatistics stats = CRTable.get().getPub().filter (pub -> pub.PY != null).mapToInt(it -> it.PY).summaryStatistics();
+		IntSummaryStatistics stats = CRTable.get().getPub().filter (pub -> pub.getPY() != null).mapToInt(it -> it.getPY()).summaryStatistics();
 		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
 	}
 
 	public static int getNumberOfDistinctPY () {
-		return (int)CRTable.get().getPub().filter (pub -> pub.PY != null).mapToInt(pub -> pub.PY).distinct().count();
+		return (int)CRTable.get().getPub().filter (pub -> pub.getPY() != null).mapToInt(pub -> pub.getPY()).distinct().count();
 	}
 
 	
@@ -115,7 +115,7 @@ public class CRStats {
 	}
 
 	public static long getNumberOfPubsByCitingYear (int[] range) {
-		return CRTable.get().getPub().filter( pub -> ((pub.PY!=null) && (range[0] <= pub.PY) && (pub.PY <= range[1]))).count();
+		return CRTable.get().getPub().filter( pub -> ((pub.getPY()!=null) && (range[0] <= pub.getPY()) && (pub.getPY() <= range[1]))).count();
 	}
 
 	public static int getNumberWithoutYear () {

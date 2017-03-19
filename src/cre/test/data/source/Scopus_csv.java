@@ -102,29 +102,29 @@ public class Scopus_csv  {
 				
 				PubType pub = new PubType(); // .parseScopus(it, attributes, yearRange);
 				
-				pub.PT = "J"; // TODO: what is the default Publication Type? (No value in scopus!)
+				pub.setPT("J"); // TODO: what is the default Publication Type? (No value in scopus!)
 						
 				// Scopus Authors: Lastname1 I1., Lastname2 I2.I2. ...
-				pub.AU = new ArrayList<String>();
+				pub.setAU(new ArrayList<String>());
 				if ((attribute2Index.get("AUTHORS")!=null) && (line[attribute2Index.get("AUTHORS")]!=null)) {
 					for (String name: line[attribute2Index.get("AUTHORS")].split("\\., ")) {
 						name = name.replaceAll("\\.", ""); 
 						int pos = name.lastIndexOf(" ");
-						pub.AU.add ((pos>0) ? name.substring(0, pos) + "," + name.substring (pos) : name);
+						pub.getAU().add ((pos>0) ? name.substring(0, pos) + "," + name.substring (pos) : name);
 					}
 				}
 				
-				pub.AF = new ArrayList<String>(pub.AU);		// there are no full names in Scopus 
+				pub.setAF(new ArrayList<String>(pub.getAU()));		// there are no full names in Scopus 
 
 				// Authors with affiliations: "<lastname>, <initials with dots>, affiliation"
-				pub.C1 = new ArrayList<String[]>();
-				pub.EM = new ArrayList<String>();
+				pub.setC1(new ArrayList<String[]>());
+				pub.setEM(new ArrayList<String>());
 				if ((attribute2Index.get("AUTHORS WITH AFFILIATIONS") != null) && (line[attribute2Index.get("AUTHORS WITH AFFILIATIONS")] != null)) {
 				
 					for (String author: line[attribute2Index.get("AUTHORS WITH AFFILIATIONS")].split("; ")) {
 						String[] split = author.split(", ", 3);
 						if (split.length == 3) {
-							pub.C1.add (new String[] { (split[0]+", "+split[1].replaceAll("\\.", "")), split[2] });
+							pub.getC1().add (new String[] { (split[0]+", "+split[1].replaceAll("\\.", "")), split[2] });
 						}
 						
 						if (author.contains("@")) System.out.println ("@@@");
@@ -132,28 +132,28 @@ public class Scopus_csv  {
 						Matcher Scopus_matchEMail = sScopus_matchEMail.matcher(author);
 						if (Scopus_matchEMail.find()) {
 							System.out.println (Scopus_matchEMail.group(1));
-							pub.EM.add (Scopus_matchEMail.group(1));
+							pub.getEM().add (Scopus_matchEMail.group(1));
 						}
 					}
 				}
 					
-				pub.AA = new ArrayList<String>();
+				pub.setAA(new ArrayList<String>());
 				if ((attribute2Index.get("AFFILIATIONS") != null) && (line[attribute2Index.get("AFFILIATIONS")] != null)) {
-					for (String aff: line[attribute2Index.get("AFFILIATIONS")].split("; ")) pub.AA.add(aff);
+					for (String aff: line[attribute2Index.get("AFFILIATIONS")].split("; ")) pub.getAA().add(aff);
 				}
 						
-				pub.TI = attribute2Index.get("TITLE") != null ? line[attribute2Index.get("TITLE")] : null;
-				try { pub.PY = Integer.valueOf(line[attribute2Index.get("YEAR")]); } catch (Exception e) { }
+				pub.setTI(attribute2Index.get("TITLE") != null ? line[attribute2Index.get("TITLE")] : null);
+				try { pub.setPY(Integer.valueOf(line[attribute2Index.get("YEAR")])); } catch (Exception e) { }
 
-				pub.SO = attribute2Index.get("SOURCE TITLE") != null ? line[attribute2Index.get("SOURCE TITLE")] : null;
-				pub.VL = attribute2Index.get("VOLUME") != null ? line[attribute2Index.get("VOLUME")] : null;
-				pub.IS = attribute2Index.get("ISSUE") != null ? line[attribute2Index.get("ISSUE")] : null;
-				pub.AR = attribute2Index.get("ART. NO.") != null ? line[attribute2Index.get("ART. NO.")] : null;
+				pub.setSO(attribute2Index.get("SOURCE TITLE") != null ? line[attribute2Index.get("SOURCE TITLE")] : null);
+				pub.setVL(attribute2Index.get("VOLUME") != null ? line[attribute2Index.get("VOLUME")] : null);
+				pub.setIS(attribute2Index.get("ISSUE") != null ? line[attribute2Index.get("ISSUE")] : null);
+				pub.setAR(attribute2Index.get("ART. NO.") != null ? line[attribute2Index.get("ART. NO.")] : null);
 				
-				try { pub.BP = Integer.valueOf(line[attribute2Index.get("PAGE START")]); } catch (Exception e) { }
-				try { pub.EP = Integer.valueOf(line[attribute2Index.get("PAGE END")]); } catch (Exception e) { }
-				try { pub.PG = Integer.valueOf(line[attribute2Index.get("PAGE COUNT")]); } catch (Exception e) { }
-				try { pub.TC = Integer.valueOf(line[attribute2Index.get("CITED BY")]); } catch (Exception e) { }
+				try { pub.setBP(Integer.valueOf(line[attribute2Index.get("PAGE START")])); } catch (Exception e) { }
+				try { pub.setEP(Integer.valueOf(line[attribute2Index.get("PAGE END")])); } catch (Exception e) { }
+				try { pub.setPG(Integer.valueOf(line[attribute2Index.get("PAGE COUNT")])); } catch (Exception e) { }
+				try { pub.setTC(Integer.valueOf(line[attribute2Index.get("CITED BY")])); } catch (Exception e) { }
 				
 				/* parse list of CRs */
 				if ((attribute2Index.get("REFERENCES") != null) && (line[attribute2Index.get("REFERENCES")] != null)) {
@@ -162,13 +162,13 @@ public class Scopus_csv  {
 					}
 				}
 				
-				pub.DI = attribute2Index.get("DOI") != null ? line[attribute2Index.get("DOI")] : null;
-				pub.LI = attribute2Index.get("LINK") != null ? line[attribute2Index.get("LINK")] : null;
-				pub.AB = attribute2Index.get("ABSTRACT") != null ? line[attribute2Index.get("ABSTRACT")] : null;
-				pub.DE = attribute2Index.get("AUTHOR KEYWORDS") != null ? line[attribute2Index.get("AUTHOR KEYWORDS")] : null;
-				pub.DT = attribute2Index.get("DOCUMENT TYPE") != null ? line[attribute2Index.get("DOCUMENT TYPE")] : null;
-				pub.FS = attribute2Index.get("SOURCE") != null ? line[attribute2Index.get("SOURCE")] : null;
-				pub.UT = attribute2Index.get("EID") != null ? line[attribute2Index.get("EID")] : null;
+				pub.setDI(attribute2Index.get("DOI") != null ? line[attribute2Index.get("DOI")] : null);
+				pub.setLI(attribute2Index.get("LINK") != null ? line[attribute2Index.get("LINK")] : null);
+				pub.setAB(attribute2Index.get("ABSTRACT") != null ? line[attribute2Index.get("ABSTRACT")] : null);
+				pub.setDE(attribute2Index.get("AUTHOR KEYWORDS") != null ? line[attribute2Index.get("AUTHOR KEYWORDS")] : null);
+				pub.setDT(attribute2Index.get("DOCUMENT TYPE") != null ? line[attribute2Index.get("DOCUMENT TYPE")] : null);
+				pub.setFS(attribute2Index.get("SOURCE") != null ? line[attribute2Index.get("SOURCE")] : null);
+				pub.setUT(attribute2Index.get("EID") != null ? line[attribute2Index.get("EID")] : null);
 				
 				
 				countCR.addAndGet(pub.getSizeCR());
@@ -323,39 +323,39 @@ public class Scopus_csv  {
 		crTab.getPub().forEach(pub -> {
 			ArrayList<String> row = new ArrayList<String>();
 			
-			row.add ((pub.AU == null) ? "" :
-				pub.AU.stream().map ( a -> {
+			row.add ((pub.getAU() == null) ? "" :
+				pub.getAU().stream().map ( a -> {
 					String[] split = a.split(", ", 2);
 					String res = (split.length==2) ? split[0] + ", " + split[1].replaceAll("([A-Z])", "$1.") : a; 
 					return res;
 				}).collect (Collectors.joining(", "))
 			);
 
-			row.add (pub.TI == null ? "" : pub.TI);
-			row.add (pub.PY == null ? "" : pub.PY.toString());
-			row.add (pub.SO == null ? "" : pub.SO);
-			row.add (pub.VL == null ? "" : pub.VL);
-			row.add (pub.IS == null ? "" : pub.IS);
-			row.add (pub.AR == null ? "" : pub.AR);
-			row.add (pub.BP == null ? "" : pub.BP.toString());
-			row.add (pub.EP == null ? "" : pub.EP.toString());
-			row.add (pub.PG == null ? "" : pub.PG.toString());
-			row.add (pub.TC == null ? "" : pub.TC.toString());
-			row.add (pub.DI == null ? "" : pub.DI);
-			row.add (pub.LI == null ? "" : pub.LI);
+			row.add (pub.getTI() == null ? "" : pub.getTI());
+			row.add (pub.getPY() == null ? "" : pub.getPY().toString());
+			row.add (pub.getSO() == null ? "" : pub.getSO());
+			row.add (pub.getVL() == null ? "" : pub.getVL());
+			row.add (pub.getIS() == null ? "" : pub.getIS());
+			row.add (pub.getAR() == null ? "" : pub.getAR());
+			row.add (pub.getBP() == null ? "" : pub.getBP().toString());
+			row.add (pub.getEP() == null ? "" : pub.getEP().toString());
+			row.add (pub.getPG() == null ? "" : pub.getPG().toString());
+			row.add (pub.getTC() == null ? "" : pub.getTC().toString());
+			row.add (pub.getDI() == null ? "" : pub.getDI());
+			row.add (pub.getLI() == null ? "" : pub.getLI());
 
-			row.add (pub.AA == null ? "" : pub.AA.stream().collect(Collectors.joining("; ")));
+			row.add (pub.getAA() == null ? "" : pub.getAA().stream().collect(Collectors.joining("; ")));
 			
-			row.add ((pub.C1 == null) ? "" :
-				pub.C1.stream().map(it -> {
+			row.add ((pub.getC1() == null) ? "" :
+				pub.getC1().stream().map(it -> {
 					String[] split = it[0].split(", ", 2);
 					String res = (split.length==2) ? (split[0] + ", " + split[1].replaceAll("([A-Z])", "$1.") + ", " + it[1]) : (it[0] + ", " + it[1]);
 					return res;
 				}).collect(Collectors.joining("; "))
 			);
 				
-			row.add (pub.AB == null ? "" : pub.AB);
-			row.add (pub.DE == null ? "" : pub.DE);
+			row.add (pub.getAB() == null ? "" : pub.getAB());
+			row.add (pub.getDE() == null ? "" : pub.getDE());
 
 			row.add (pub.getCR().map ( cr -> { 
 				
@@ -379,9 +379,9 @@ public class Scopus_csv  {
 				return res;
 			} ).collect (Collectors.joining ("; ")));
 			
-			row.add (pub.DT == null ? "" : pub.DT);
-			row.add (pub.FS == null ? "" : pub.FS);
-			row.add (pub.UT == null ? "" : pub.UT);
+			row.add (pub.getDT() == null ? "" : pub.getDT());
+			row.add (pub.getFS() == null ? "" : pub.getFS());
+			row.add (pub.getUT() == null ? "" : pub.getUT());
 					
 			csv.writeNext ((String[]) row.toArray(new String[row.size()]));
 		

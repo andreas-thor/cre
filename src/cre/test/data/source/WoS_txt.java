@@ -118,7 +118,7 @@ public class WoS_txt {
 				String value = "";
 					
 				PubType pub = new PubType();
-				pub.FS = "WoS";
+				pub.setFS("WoS");
 				pub.length = 0;
 				List<String> C1 = new ArrayList<String>();
 				
@@ -134,35 +134,35 @@ public class WoS_txt {
 					
 					switch (tagBlock) {
 					
-					case "PT": pub.PT = value; break;
+					case "PT": pub.setPT(value); break;
 					
 					/* Concatenated Strings */
-					case "TI": pub.TI = (pub.TI==null) ? value : pub.TI+" "+value; break;
-					case "SO": pub.SO = (pub.SO==null) ? value : pub.SO+" "+value; break;
-					case "VL": pub.VL = (pub.VL==null) ? value : pub.VL+" "+value; break;
-					case "IS": pub.IS = (pub.IS==null) ? value : pub.IS+" "+value; break;
-					case "AR": pub.AR = (pub.AR==null) ? value : pub.AR+" "+value; break;
-					case "DI": pub.DI = (pub.DI==null) ? value : pub.DI+" "+value; break;
-					case "LI": pub.LI = (pub.LI==null) ? value : pub.LI+" "+value; break;
-					case "AB": pub.AB = (pub.AB==null) ? value : pub.AB+" "+value; break;
-					case "DE": pub.DE = (pub.DE==null) ? value : pub.DE+" "+value; break;
-					case "DT": pub.DT = (pub.DT==null) ? value : pub.DT+" "+value; break;
-					case "UT": pub.UT = (pub.UT==null) ? value : pub.UT+" "+value; break;
+					case "TI": pub.setTI((pub.getTI()==null) ? value : pub.getTI()+" "+value); break;
+					case "SO": pub.setSO((pub.getSO()==null) ? value : pub.getSO()+" "+value); break;
+					case "VL": pub.setVL((pub.getVL()==null) ? value : pub.getVL()+" "+value); break;
+					case "IS": pub.setIS((pub.getIS()==null) ? value : pub.getIS()+" "+value); break;
+					case "AR": pub.setAR((pub.getAR()==null) ? value : pub.getAR()+" "+value); break;
+					case "DI": pub.setDI((pub.getDI()==null) ? value : pub.getDI()+" "+value); break;
+					case "LI": pub.setLI((pub.getLI()==null) ? value : pub.getLI()+" "+value); break;
+					case "AB": pub.setAB((pub.getAB()==null) ? value : pub.getAB()+" "+value); break;
+					case "DE": pub.setDE((pub.getDE()==null) ? value : pub.getDE()+" "+value); break;
+					case "DT": pub.setDT((pub.getDT()==null) ? value : pub.getDT()+" "+value); break;
+					case "UT": pub.setUT((pub.getUT()==null) ? value : pub.getUT()+" "+value); break;
 					
 					/* Integer values */
-					case "PY": try { pub.PY = Integer.valueOf(value); } catch (NumberFormatException e) { }; break;
-					case "BP": try { pub.BP = Integer.valueOf(value); } catch (NumberFormatException e) { }; break;
-					case "EP": try { pub.EP = Integer.valueOf(value); } catch (NumberFormatException e) { }; break;
-					case "PG": try { pub.PG = Integer.valueOf(value); } catch (NumberFormatException e) { }; break;
-					case "TC": try { pub.TC = Integer.valueOf(value); } catch (NumberFormatException e) { }; break;
+					case "PY": try { pub.setPY(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
+					case "BP": try { pub.setBP(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
+					case "EP": try { pub.setEP(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
+					case "PG": try { pub.setPG(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
+					case "TC": try { pub.setTC(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
 					
 					/* Parse Cited References */
 					case "CR": pub.addCR(parseCR(value, yearRange), true); break;
 					
 					/* Authors */
-					case "AU": if (pub.AU==null) pub.AU=new ArrayList<String>(); pub.AU.add(value); break;
-					case "AF": if (pub.AF==null) pub.AF=new ArrayList<String>(); pub.AF.add(value); break;
-					case "EM": pub.EM = new ArrayList<String>(Arrays.asList(value.split("; "))); break;
+					case "AU": if (pub.getAU()==null) pub.setAU(new ArrayList<String>()); pub.getAU().add(value); break;
+					case "AF": if (pub.getAF()==null) pub.setAF(new ArrayList<String>()); pub.getAF().add(value); break;
+					case "EM": pub.setEM(new ArrayList<String>(Arrays.asList(value.split("; ")))); break;
 					
 					/* store C1 values in a separate list for further processing */
 					case "C1": C1.add(value); break;
@@ -170,22 +170,22 @@ public class WoS_txt {
 				}
 				
 				it = null;
-				if (pub.PT==null) return null;
+				if (pub.getPT()==null) return null;
 				
-				pub.C1 = new ArrayList<String[]>();
-				pub.AA = new ArrayList<String>();
+				pub.setC1(new ArrayList<String[]>());
+				pub.setAA(new ArrayList<String>());
 				for (String corr: C1) {
 					int pos = corr.indexOf(']');
 					if (pos>0) {
 						String names = corr.substring(1, pos);
 						String affiliation = corr.substring (pos+2);
 						for (String name: names.split("; ")) {
-							pub.C1.add (new String[] { name, affiliation });
-							pub.AA.add (affiliation);
+							pub.getC1().add (new String[] { name, affiliation });
+							pub.getAA().add (affiliation);
 						}
 					} else {
-						pub.C1.add (new String[] { "", corr });
-						pub.AA.add (corr);
+						pub.getC1().add (new String[] { "", corr });
+						pub.getAA().add (corr);
 					}
 				}
 				
@@ -245,20 +245,20 @@ public class WoS_txt {
 		
 		crTab.getPub().forEach (pub -> {
 			try {
-				writeTag(bw, "PT", pub.PT == null ? "J" : pub.PT);	// TODO: Is "J" the correct default for publication type?
-				writeTag(bw, "AU", pub.AU);
-				writeTag(bw, "AF", pub.AF);
-				if (pub.C1 != null) {
-					writeTag(bw, "C1", pub.C1.stream().map(it -> { return "[" + it[0] + "] " + it[1]; }).collect(Collectors.toList()));
+				writeTag(bw, "PT", pub.getPT() == null ? "J" : pub.getPT());	// TODO: Is "J" the correct default for publication type?
+				writeTag(bw, "AU", pub.getAU());
+				writeTag(bw, "AF", pub.getAF());
+				if (pub.getC1() != null) {
+					writeTag(bw, "C1", pub.getC1().stream().map(it -> { return "[" + it[0] + "] " + it[1]; }).collect(Collectors.toList()));
 				}
 				
-				if (pub.EM != null) {
-					writeTag (bw, "EM", pub.EM.stream().distinct().collect(Collectors.joining("; ")));
+				if (pub.getEM() != null) {
+					writeTag (bw, "EM", pub.getEM().stream().distinct().collect(Collectors.joining("; ")));
 				}
 				
 				// make sure TI value is split into lines up to 70 characters (=maxLength)
 				ArrayList<String> linesTI = new ArrayList<String>();
-				String title = new String(pub.TI == null ? "" : pub.TI);
+				String title = new String(pub.getTI() == null ? "" : pub.getTI());
 				int maxLength = 70;
 				while (true) {
 					if (title.length()<=maxLength) { 
@@ -277,15 +277,15 @@ public class WoS_txt {
 				} 
 				writeTag(bw, "TI", linesTI);
 				
-				if (pub.PY != null) writeTag(bw, "PY", pub.PY.toString());
-				writeTag(bw, "SO", pub.SO);
-				writeTag(bw, "VL", pub.VL);
-				writeTag(bw, "IS", pub.IS);
-				writeTag(bw, "AR", pub.AR);
-				if (pub.BP != null) writeTag(bw, "BP", pub.BP.toString());
-				if (pub.EP != null) writeTag(bw, "EP", pub.EP.toString());
-				if (pub.PG != null) writeTag(bw, "PG", pub.PG.toString());
-				if (pub.TC != null) writeTag(bw, "TC", pub.TC.toString());
+				if (pub.getPY() != null) writeTag(bw, "PY", pub.getPY().toString());
+				writeTag(bw, "SO", pub.getSO());
+				writeTag(bw, "VL", pub.getVL());
+				writeTag(bw, "IS", pub.getIS());
+				writeTag(bw, "AR", pub.getAR());
+				if (pub.getBP() != null) writeTag(bw, "BP", pub.getBP().toString());
+				if (pub.getEP() != null) writeTag(bw, "EP", pub.getEP().toString());
+				if (pub.getPG() != null) writeTag(bw, "PG", pub.getPG().toString());
+				if (pub.getTC() != null) writeTag(bw, "TC", pub.getTC().toString());
 				
 				writeTag(bw, "CR", pub.getCR().map(it -> {
 	
@@ -310,11 +310,11 @@ public class WoS_txt {
 				
 				
 				writeTag(bw, "NR", String.valueOf(pub.getSizeCR()));
-				writeTag(bw, "DI", pub.DI);
-				writeTag(bw, "AB", pub.AB);
-				writeTag(bw, "DE", pub.DE);
-				writeTag(bw, "DT", pub.DT);
-				writeTag(bw, "UT", pub.UT);
+				writeTag(bw, "DI", pub.getDI());
+				writeTag(bw, "AB", pub.getAB());
+				writeTag(bw, "DE", pub.getDE());
+				writeTag(bw, "DT", pub.getDT());
+				writeTag(bw, "UT", pub.getUT());
 				
 				bw.write("ER");
 				bw.newLine();

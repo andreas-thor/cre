@@ -67,7 +67,7 @@ public class Indicators {
 		// N_PYEARS = Number of DISTINCT PY (for a CR)
 		int[] rangePub = CRStats.getMaxRangeCitingYear();
 		CRTable.get().getCR().forEach( cr -> {
-			cr.setN_PYEARS((int) cr.getPub().filter(pub -> pub.PY!=null).mapToInt(pub -> pub.PY).distinct().count());
+			cr.setN_PYEARS((int) cr.getPub().filter(pub -> pub.getPY()!=null).mapToInt(pub -> pub.getPY()).distinct().count());
 			cr.setPYEAR_PERC( (cr.getRPY()==null) ? null : ((double)cr.getN_PYEARS()) /  (rangePub[1]-Math.max(rangePub[0], cr.getRPY())+1));
 		});		
 		
@@ -134,7 +134,7 @@ public class Indicators {
 				
 				
 				for (CRType cr: group.getValue()) {
-					long count = cr.getPub().filter(pub -> (pub.PY != null) && (pub.PY.intValue() == py)).count();
+					long count = cr.getPub().filter(pub -> (pub.getPY() != null) && (pub.getPY().intValue() == py)).count();
 					if (percBorder[0]<count) cr.setN_PCT50(cr.getN_PCT50()+1);
 					if (percBorder[1]<count) cr.setN_PCT75(cr.getN_PCT75()+1);
 					if (percBorder[2]<count) cr.setN_PCT90(cr.getN_PCT90()+1);
@@ -158,7 +158,7 @@ public class Indicators {
 		for (CRType cr: crSet) {
 			
 			// Count #citations per PY
-			Map<Integer, Long> mapPY_Count = cr.getPub().filter(pub -> pub.PY != null).collect(
+			Map<Integer, Long> mapPY_Count = cr.getPub().filter(pub -> pub.getPY() != null).collect(
 					Collectors.groupingBy(PubType::getPY, Collectors.counting()));
 			
 			for (Entry<Integer, Long> pyCount: mapPY_Count.entrySet()) { 
