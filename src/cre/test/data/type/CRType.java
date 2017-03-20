@@ -8,9 +8,10 @@ import cre.test.data.match.CRCluster;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class CRType {
+public class CRType implements Comparable<CRType> {
 
 	public static byte TYPE_WOS = 1;
 	public static byte TYPE_SCOPUS = 2;
@@ -28,8 +29,8 @@ public class CRType {
 	private SimpleStringProperty J_S;
 	
 	private SimpleIntegerProperty N_CR;
-	private SimpleIntegerProperty RPY;
-	private boolean isNullRPY;
+	private SimpleObjectProperty<Integer> RPY;
+//	private boolean isNullRPY;
 	
 	private SimpleStringProperty PAG;
 	private SimpleStringProperty VOL;
@@ -56,14 +57,19 @@ public class CRType {
 	private Set<PubType> pubList;
 	
 //	public int mergedTo = -1;
-	public boolean removed = false;	
+	private boolean flag;	
 
-	
-	
-	
-	
+	public boolean isFlag() {
+		return flag;
+	}
 
-	
+	public void setFlag(boolean flag) {
+		this.flag = flag;
+	}
+
+
+
+
 	public CRType() {
 		super();
 		
@@ -78,8 +84,8 @@ public class CRType {
 		J_N = new SimpleStringProperty();
 		J_S = new SimpleStringProperty();
 		N_CR = null;
-		RPY = new SimpleIntegerProperty();
-		isNullRPY = true;
+		RPY = new SimpleObjectProperty<Integer>();
+//		isNullRPY = true;
 		PAG = new SimpleStringProperty();
 		VOL = new SimpleStringProperty();
 		DOI = new SimpleStringProperty();
@@ -99,6 +105,7 @@ public class CRType {
 		CO = new SimpleIntegerProperty(0);
 		
 		pubList = new HashSet<PubType>();
+		flag = false;
 	}
 	
 	
@@ -280,19 +287,21 @@ public class CRType {
 	
 	
 	public Integer getRPY() {
-		return isNullRPY ? null : RPY.get();
+		return RPY.get();
+//		return isNullRPY ? null : RPY.get();
 	}
-	public SimpleIntegerProperty getRPYProp() {
+	public SimpleObjectProperty<Integer> getRPYProp() {
 		return RPY;
 	}
 	public void setRPY(Integer rPY) {
-		if (rPY != null) { 
-			isNullRPY = false;
-			RPY.set(rPY);
-		} else {
-			isNullRPY = true;
-			RPY.set(0);
-		}
+		RPY.set(rPY);
+//		if (rPY != null) { 
+//			isNullRPY = false;
+//			RPY.set(rPY);
+//		} else {
+//			isNullRPY = true;
+//			RPY.set(0);
+//		}
 	}
 	
 	
@@ -505,6 +514,14 @@ public class CRType {
 		
 		// TODO Auto-generated method stub
 		return result.toString();
+	}
+
+
+
+
+	@Override
+	public int compareTo(CRType o) {
+		return this.getID() - o.getID();
 	}
 
 

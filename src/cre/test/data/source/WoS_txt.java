@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import cre.test.Exceptions.AbortedException;
@@ -160,10 +161,9 @@ public class WoS_txt {
 					case "CR": pub.addCR(parseCR(value, yearRange), true); break;
 					
 					/* Authors */
-					case "AU": if (pub.getAU()==null) pub.setAU(new ArrayList<String>()); pub.getAU().add(value); break;
-					case "AF": if (pub.getAF()==null) pub.setAF(new ArrayList<String>()); pub.getAF().add(value); break;
-					case "EM": pub.setEM(new ArrayList<String>(Arrays.asList(value.split("; ")))); break;
-					
+					case "AU": pub.addAU(value); break;
+					case "AF": pub.addAF(value); break;
+					case "EM": Arrays.stream(value.split("; ")).forEach(e -> pub.addEM(e)); break;
 					/* store C1 values in a separate list for further processing */
 					case "C1": C1.add(value); break;
 					}
@@ -172,20 +172,18 @@ public class WoS_txt {
 				it = null;
 				if (pub.getPT()==null) return null;
 				
-				pub.setC1(new ArrayList<String[]>());
-				pub.setAA(new ArrayList<String>());
 				for (String corr: C1) {
 					int pos = corr.indexOf(']');
 					if (pos>0) {
 						String names = corr.substring(1, pos);
 						String affiliation = corr.substring (pos+2);
 						for (String name: names.split("; ")) {
-							pub.getC1().add (new String[] { name, affiliation });
-							pub.getAA().add (affiliation);
+							pub.addC1(new String[] { name, affiliation });
+							pub.addAA(affiliation);
 						}
 					} else {
-						pub.getC1().add (new String[] { "", corr });
-						pub.getAA().add (corr);
+						pub.addC1(new String[] { "", corr });
+						pub.addAA(corr);
 					}
 				}
 				
@@ -249,11 +247,11 @@ public class WoS_txt {
 				writeTag(bw, "AU", pub.getAU());
 				writeTag(bw, "AF", pub.getAF());
 				if (pub.getC1() != null) {
-					writeTag(bw, "C1", pub.getC1().stream().map(it -> { return "[" + it[0] + "] " + it[1]; }).collect(Collectors.toList()));
+					writeTag(bw, "C1", pub.getC1().map(it -> { return "[" + it[0] + "] " + it[1]; }));
 				}
 				
 				if (pub.getEM() != null) {
-					writeTag (bw, "EM", pub.getEM().stream().distinct().collect(Collectors.joining("; ")));
+					writeTag (bw, "EM", pub.getEM().distinct().collect(Collectors.joining("; ")));
 				}
 				
 				// make sure TI value is split into lines up to 70 characters (=maxLength)
@@ -275,7 +273,7 @@ public class WoS_txt {
 						title = title.substring(maxLength);
 					}
 				} 
-				writeTag(bw, "TI", linesTI);
+				writeTag(bw, "TI", linesTI.stream());
 				
 				if (pub.getPY() != null) writeTag(bw, "PY", pub.getPY().toString());
 				writeTag(bw, "SO", pub.getSO());
@@ -306,7 +304,7 @@ public class WoS_txt {
 					
 					return res;
 					
-				}).collect(Collectors.toList()));
+				}));
 				
 				
 				writeTag(bw, "NR", String.valueOf(pub.getSizeCR()));
@@ -343,15 +341,12 @@ public class WoS_txt {
 		bw.newLine();
 	}
 	
-	private static void writeTag (BufferedWriter bw, String tag, List<String> values) throws IOException  {
+	private static void writeTag (BufferedWriter bw, String tag, Stream<String> values) throws IOException  {
 		if (values == null) return;
-		if (values.size()==0) return;
-		int pos = 0;
-		for (String v: values) {
-			bw.write((pos==0) ? tag+" " : "   ");
-			bw.write(v);
-			bw.newLine();
-			pos++;
+		boolean first = true;
+		for (String v: values.collect(Collectors.toList())) {
+			writeTag (bw, first ? tag : "  ", v);
+			first = false;
 		}
 	}
 	

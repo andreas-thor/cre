@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,7 +30,7 @@ public class CRTable {
 	private boolean aborted;
 	private boolean showNull;
 	
-
+	private AtomicInteger countPub;
 	
 	public static CRTable get() {
 		if (crTab == null) {
@@ -55,6 +57,7 @@ public class CRTable {
 		showNull = true;
 		chartData = new int[][] {{0},{0},{0}};
 		setAborted(false);
+		countPub = new AtomicInteger(0);
 	}
 	
 	
@@ -79,7 +82,9 @@ public class CRTable {
 	
 	public void addPubs(List<PubType> pubs) {
 		
-		pubs.stream().flatMap(pub -> pub.getCR()).distinct().collect(Collectors.toList()).stream().forEach(cr -> { // make a copy to avoid concurrent modifcation
+		pubs.stream().forEach(pub -> pub.setID(countPub.incrementAndGet()));
+		
+		pubs.stream().flatMap(pub -> pub.getCR()).distinct().collect(Collectors.toList()).stream().forEach(cr -> { // make a copy to avoid concurrent modification
 			
 			String crS = cr.getCR();
 			char cr1 = crS.charAt(0);
@@ -137,6 +142,9 @@ public class CRTable {
 		// reset clusters and match result
 		getCR().forEach(cr -> cr.setCID2(new CRCluster(cr)));
 		CRMatch2.get().init();
+		
+		StatusBar.get().setValue("Merging done");
+
 	}
 	
 	
@@ -247,7 +255,11 @@ public class CRTable {
 	 * @param selCR list of CRs
 	 */
 	public void removePubByCR (List<CRType> selCR) {
-		removePub (pub -> !selCR.stream().flatMap (cr -> cr.getPub()).distinct().collect(Collectors.toList()).contains(pub));
+		selCR.stream().flatMap (cr -> cr.getPub()).forEach(pub -> pub.setFlag(true));
+		removePub (pub -> !pub.isFlag());
+		getPub().forEach(pub -> pub.setFlag(false));
+		
+//		removePub (pub -> !selCR.stream().flatMap (cr -> cr.getPub()).distinct().collect(Collectors.toList()).contains(pub));
 	}
 	
 	

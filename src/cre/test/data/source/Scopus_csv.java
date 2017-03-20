@@ -105,26 +105,23 @@ public class Scopus_csv  {
 				pub.setPT("J"); // TODO: what is the default Publication Type? (No value in scopus!)
 						
 				// Scopus Authors: Lastname1 I1., Lastname2 I2.I2. ...
-				pub.setAU(new ArrayList<String>());
 				if ((attribute2Index.get("AUTHORS")!=null) && (line[attribute2Index.get("AUTHORS")]!=null)) {
 					for (String name: line[attribute2Index.get("AUTHORS")].split("\\., ")) {
 						name = name.replaceAll("\\.", ""); 
 						int pos = name.lastIndexOf(" ");
-						pub.getAU().add ((pos>0) ? name.substring(0, pos) + "," + name.substring (pos) : name);
+						pub.addAU((pos>0) ? name.substring(0, pos) + "," + name.substring (pos) : name);
 					}
 				}
 				
-				pub.setAF(new ArrayList<String>(pub.getAU()));		// there are no full names in Scopus 
-
+				pub.getAU().forEach (e -> pub.addAF(e));		// there are no full names in Scopus 
+				
 				// Authors with affiliations: "<lastname>, <initials with dots>, affiliation"
-				pub.setC1(new ArrayList<String[]>());
-				pub.setEM(new ArrayList<String>());
 				if ((attribute2Index.get("AUTHORS WITH AFFILIATIONS") != null) && (line[attribute2Index.get("AUTHORS WITH AFFILIATIONS")] != null)) {
 				
 					for (String author: line[attribute2Index.get("AUTHORS WITH AFFILIATIONS")].split("; ")) {
 						String[] split = author.split(", ", 3);
 						if (split.length == 3) {
-							pub.getC1().add (new String[] { (split[0]+", "+split[1].replaceAll("\\.", "")), split[2] });
+							pub.addC1(new String[] { (split[0]+", "+split[1].replaceAll("\\.", "")), split[2] });
 						}
 						
 						if (author.contains("@")) System.out.println ("@@@");
@@ -132,14 +129,13 @@ public class Scopus_csv  {
 						Matcher Scopus_matchEMail = sScopus_matchEMail.matcher(author);
 						if (Scopus_matchEMail.find()) {
 							System.out.println (Scopus_matchEMail.group(1));
-							pub.getEM().add (Scopus_matchEMail.group(1));
+							pub.addEM(Scopus_matchEMail.group(1));
 						}
 					}
 				}
 					
-				pub.setAA(new ArrayList<String>());
 				if ((attribute2Index.get("AFFILIATIONS") != null) && (line[attribute2Index.get("AFFILIATIONS")] != null)) {
-					for (String aff: line[attribute2Index.get("AFFILIATIONS")].split("; ")) pub.getAA().add(aff);
+					for (String aff: line[attribute2Index.get("AFFILIATIONS")].split("; ")) pub.addAA(aff);
 				}
 						
 				pub.setTI(attribute2Index.get("TITLE") != null ? line[attribute2Index.get("TITLE")] : null);
@@ -323,8 +319,8 @@ public class Scopus_csv  {
 		crTab.getPub().forEach(pub -> {
 			ArrayList<String> row = new ArrayList<String>();
 			
-			row.add ((pub.getAU() == null) ? "" :
-				pub.getAU().stream().map ( a -> {
+			row.add ((pub.getAUSize() == 0) ? "" :
+				pub.getAU().map ( a -> {
 					String[] split = a.split(", ", 2);
 					String res = (split.length==2) ? split[0] + ", " + split[1].replaceAll("([A-Z])", "$1.") : a; 
 					return res;
@@ -344,10 +340,10 @@ public class Scopus_csv  {
 			row.add (pub.getDI() == null ? "" : pub.getDI());
 			row.add (pub.getLI() == null ? "" : pub.getLI());
 
-			row.add (pub.getAA() == null ? "" : pub.getAA().stream().collect(Collectors.joining("; ")));
+			row.add (pub.getAASize() == 0 ? "" : pub.getAA().collect(Collectors.joining("; ")));
 			
-			row.add ((pub.getC1() == null) ? "" :
-				pub.getC1().stream().map(it -> {
+			row.add ((pub.getC1Size() == 0) ? "" :
+				pub.getC1().map(it -> {
 					String[] split = it[0].split(", ", 2);
 					String res = (split.length==2) ? (split[0] + ", " + split[1].replaceAll("([A-Z])", "$1.") + ", " + it[1]) : (it[0] + ", " + it[1]);
 					return res;

@@ -124,11 +124,11 @@ public class CRE_json {
 						switch (arrayLevel) {
 						case 2:
 							switch (key) {
-							case "AU":	pub.setAU(new ArrayList<String>()); break;
-							case "AF":	pub.setAF(new ArrayList<String>()); break;
-							case "C1":	pub.setC1(new ArrayList<String[]>()); break;	
-							case "EM":	pub.setEM(new ArrayList<String>()); break;
-							case "AA":	pub.setAA(new ArrayList<String>()); break;
+							case "AU":	break;
+							case "AF":	break;
+							case "C1":	break;	
+							case "EM":	break;
+							case "AA":	break;
 //							case "CRLISTID":	pub.crList = new ArrayList<CRType>(); break;
 							}
 							break;
@@ -136,7 +136,7 @@ public class CRE_json {
 						}
 						break;
 					case END_ARRAY: 	
-						if ((arrayLevel == 3) && (C1List != null)) pub.getC1().add((String[]) C1List.toArray(new String[C1List.size()])); 
+						if ((arrayLevel == 3) && (C1List != null)) pub.addC1((String[]) C1List.toArray(new String[C1List.size()])); 
 						arrayLevel--;
 						break;
 					case VALUE_STRING: 
@@ -144,10 +144,10 @@ public class CRE_json {
 						case 2:
 							switch (key) {
 							case "PT": 	pub.setPT(parser.getString()); break;
-							case "AU":	pub.getAU().add(parser.getString()); break;
-							case "AF":	pub.getAF().add(parser.getString()); break;
-							case "EM":	pub.getEM().add(parser.getString()); break;
-							case "AA":	pub.getAA().add(parser.getString()); break;
+							case "AU":	pub.addAU(parser.getString()); break;
+							case "AF":	pub.addAF(parser.getString()); break;
+							case "EM":	pub.addEM(parser.getString()); break;
+							case "AA":	pub.addAA(parser.getString()); break;
 							case "TI": 	pub.setTI(parser.getString()); break;
 							case "SO": 	pub.setSO(parser.getString()); break;
 							case "VL": 	pub.setVL(parser.getString()); break;
@@ -305,19 +305,19 @@ public class CRE_json {
 			jgenPub.writeStartObject();
 			
 			if (pub.getPT()!=null) 	jgenPub.write("PT", pub.getPT());
-			if (pub.getAU()!=null) {	jgenPub.writeStartArray("AU"); for (String x:pub.getAU()) jgenPub.write(x); jgenPub.writeEnd(); }
-			if (pub.getAF()!=null) {	jgenPub.writeStartArray("AF"); for (String x:pub.getAF()) jgenPub.write(x); jgenPub.writeEnd(); }
-			if (pub.getC1()!=null) {
+			if (pub.getAUSize()>0) {	jgenPub.writeStartArray("AU"); pub.getAU().forEach(x -> jgenPub.write(x)); jgenPub.writeEnd(); }
+			if (pub.getAFSize()>0) {	jgenPub.writeStartArray("AF"); pub.getAF().forEach(x -> jgenPub.write(x)); jgenPub.writeEnd(); }
+			if (pub.getC1Size()>0) {
 				jgenPub.writeStartArray("C1");
-				for (String[] y:pub.getC1()) {
+				pub.getC1().forEach(y -> { 
 					jgenPub.writeStartArray();
 					for (String x:y) jgenPub.write(x); 
 					jgenPub.writeEnd();
-				}
+				});
 				jgenPub.writeEnd();
 			}
-			if (pub.getEM()!=null) {	jgenPub.writeStartArray("EM"); for (String x:pub.getEM()) jgenPub.write(x); jgenPub.writeEnd(); }
-			if (pub.getAA()!=null) {	jgenPub.writeStartArray("AA"); for (String x:pub.getAA()) jgenPub.write(x); jgenPub.writeEnd(); }
+			if (pub.getEMSize()>0) {	jgenPub.writeStartArray("EM"); pub.getEM().forEach(x -> jgenPub.write(x)); jgenPub.writeEnd(); }
+			if (pub.getAASize()>0) {	jgenPub.writeStartArray("AA"); pub.getAA().forEach(x -> jgenPub.write(x)); jgenPub.writeEnd(); }
 			if (pub.getTI()!=null) 	jgenPub.write("TI", pub.getTI());
 			if (pub.getPY()!=null) 	jgenPub.write("PY", pub.getPY());
 			if (pub.getSO()!=null) 	jgenPub.write("SO", pub.getSO());

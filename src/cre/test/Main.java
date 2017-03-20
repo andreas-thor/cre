@@ -461,6 +461,9 @@ public class Main {
 		if (selFile == null)
 			return false;
 
+		// save last directory to be uses as initial directory
+		UserSettings.get().setLastFileDir(selFile.getParentFile()); 
+
 		new Thread(() -> {
 			try {
 				switch (source) {
