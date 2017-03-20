@@ -22,7 +22,7 @@ public class CRPubInfo extends Dialog<Void> {
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK);
 
 		AtomicLong idx = new AtomicLong();
-		TextArea textArea = new TextArea(String.join("\n\n", cr.getPub().map(pub -> String.format("[%d] %s", idx.incrementAndGet(), pub.toLineString())).collect(Collectors.toList())));
+		TextArea textArea = new TextArea(String.join("\n\n", cr.getPub().sorted().map(pub -> String.format("%4d) %s", idx.incrementAndGet(), pub.toLineString())).collect(Collectors.toList())));
 		textArea.setEditable(false);
 		textArea.setWrapText(true);
 

@@ -154,7 +154,7 @@ public class PubType implements Comparable<PubType> {
 	
 	
 	public String toLineString() {
-		return String.format("%s: %s (%d)", getAUProp().getValue(), getTI(), getPY());
+		return String.format("[%d] %s: %s (%d)", getID(), getAUProp().getValue(), getTI(), getPY());
 	}
 
 	public Stream<CRType> getCR() {
