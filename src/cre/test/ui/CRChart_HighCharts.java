@@ -41,6 +41,7 @@ public abstract class CRChart_HighCharts extends CRChart {
 		super();
 		
 		browser = new WebView();
+		setVisible(false);
 		loaded = false;
 		duringUpdate = false;
 		cb = new ChartCallBack();
@@ -54,7 +55,7 @@ public abstract class CRChart_HighCharts extends CRChart {
 
 			@Override
 			public void changed(ObservableValue<? extends State> observable, State oldValue, State newValue) {
-				if (newValue == Worker.State.SUCCEEDED) {
+				if ((newValue == Worker.State.SUCCEEDED) && (isVisible())) {
 					loaded = true;
 					Platform.runLater( () -> {
 						JSObject jsobj = (JSObject) webEngine.executeScript("window");

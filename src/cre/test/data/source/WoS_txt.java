@@ -365,14 +365,14 @@ public class WoS_txt {
 			if (yearS.length() <= 4) {
 				try {
 					int year = Integer.parseInt(yearS);
-					if (((year < yearRange[0]) && (yearRange[0]!=0)) || ((year > yearRange[1]) && (yearRange[1]!=0))) return null;
+					if (((year < yearRange[0]) && (yearRange[0]>0)) || ((year > yearRange[1]) && (yearRange[1]>0))) return null;
 					cr.setRPY(year);
 				} catch (NumberFormatException e) { }
 			}
 			yearPos--;
 		}
 
-		if ((cr.getRPY() == null) && ((yearRange[0]!=0) || (yearRange[1]!=0))) return null;
+		if ((cr.getRPY() == null) && ((yearRange[0]>0) || (yearRange[1]>0))) return null;
 		
 		cr.setAU(crsplit[0].trim());
 		
