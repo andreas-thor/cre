@@ -18,8 +18,7 @@
 		*/
 		
 	    function updateData (data0, data1, xAxisLabel, yAxisLabel, seriesLabel) {
-
-
+			
 	        c = Highcharts.chart('container', {
 	            
 	        	exporting: {
@@ -32,19 +31,20 @@
 	        	chart: {
 	                zoomType: 'xy',
 	                events: {
-	                    redraw: function () {
+	                    redraw: function (e) {
 	                    	var extremes = c.xAxis[0].getExtremes();
+	                    	
 	                    	
 	                    	// if (typeof window.crejava !== 'undefined') {
 	                    		crejava.onRedraw(extremes.min, extremes.max);
 	                    	// }
+	                    },
+	                    click: function(e) {
+	                    	// if (typeof window.crejava !== 'undefined') {
+	                    		crejava.onClick (e.xAxis[0].value);
+	                    	// }
 	                    }
-                    },
-                    click: function(e) {
-                    	// if (typeof window.crejava !== 'undefined') {
-                    		crejava.onClick (e.xAxis[0].value);
-                    	// }
-                    }
+	                }
 	                
 	            },
 	            
@@ -151,6 +151,9 @@
 		        	    } 
 	        	    ]
 	        });
+	        
+
+	        
 		}
 		
 

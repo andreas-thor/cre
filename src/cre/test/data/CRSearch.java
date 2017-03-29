@@ -1,0 +1,92 @@
+package cre.test.data;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Arrays;
+
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.IntPoint;
+import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.Collector;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.store.RAMDirectory;
+
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+
+import cre.test.ui.CRTableView.CRColumn;
+import javafx.beans.value.ObservableValue;
+
+public class CRSearch {
+
+	private static CRSearch crSearch = null;
+	
+	private RAMDirectory idx;
+	
+	public static CRSearch get() {
+		if (crSearch==null) {
+			crSearch = new CRSearch();
+		}
+		return crSearch;
+	}
+	
+	
+	private CRSearch() {
+		idx = null;
+	}
+	
+	
+	public int[] search (String queryString) throws IOException, ParseException {
+		
+		if (idx == null) createIndex();
+		
+		DirectoryReader reader = DirectoryReader.open(idx);
+		IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(idx));
+		
+		QueryParser parser = new QueryParser(CRColumn.CR.id, new StandardAnalyzer());
+	    Query query = parser.parse(queryString);
+		ScoreDoc[] docs = searcher.search(query, Integer.MAX_VALUE).scoreDocs;
+		
+		return Arrays.stream(searcher.search(query, Integer.MAX_VALUE).scoreDocs).mapToInt((doc -> { 
+			try { return searcher.doc(doc.doc).getField(CRColumn.ID.id).numericValue().intValue(); } catch (Exception e) { return -1; }
+		})).toArray();
+	}
+	
+	private void createIndex () throws IOException {
+		
+		 idx = new RAMDirectory();
+		 
+		 final IndexWriter writer = new IndexWriter(idx, new IndexWriterConfig(new StandardAnalyzer()));
+		 
+		 CRTable.get().getCR().forEach(cr -> {
+			 
+			 Document doc = new Document();
+			 doc.add(new StoredField(CRColumn.ID.id, cr.getID()));
+		     doc.add(new TextField(CRColumn.CR.id, cr.getCR(), Store.NO));
+		     
+			 try {
+				writer.addDocument(doc);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			 
+		 });
+		 
+		 writer.close();
+		 
+	}
+	
+	
+}

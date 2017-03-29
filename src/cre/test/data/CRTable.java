@@ -302,7 +302,11 @@ public class CRTable {
 	}
 	
 	
-	
+
+	public void filterByCR(List<CRType> show) {
+		crData.stream().forEach ( it -> it.setVI(false) );
+//		show.stream().forEach ( it -> it.setVI(true) );
+	}
 
 	
 	
@@ -326,6 +330,8 @@ public class CRTable {
 	public void setAborted(boolean aborted) {
 		this.aborted = aborted;
 	}
+
+
 
 
 

@@ -20,11 +20,10 @@ public abstract class CRChart_HighCharts extends CRChart {
 	private WebView browser;
 	private boolean loaded;
 	private ChartCallBack cb;
-	
-	
+
 	public class ChartCallBack  {
 		
-		public void onRedraw(double min, double max) {
+		public void onRedraw(String e, double min, double max) {
 			System.out.println("HighChart On Redraw " + min + "/" + max);
 			onYearRangeFilter(min, max);
 		}

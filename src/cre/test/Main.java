@@ -14,6 +14,7 @@ import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
+import cre.test.data.CRSearch;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
 import cre.test.data.UserSettings;
@@ -36,6 +37,7 @@ import cre.test.ui.dialog.ConfirmAlert;
 import cre.test.ui.dialog.ExceptionStacktrace;
 import cre.test.ui.dialog.Info;
 import cre.test.ui.dialog.Range;
+import cre.test.ui.dialog.Search;
 import cre.test.ui.dialog.Settings;
 import cre.test.ui.dialog.TextInput;
 import cre.test.ui.dialog.Threshold;
@@ -574,6 +576,36 @@ public class Main {
 	
 	@FXML
 	public void OnMenuViewSearch() {
+		
+		try {
+		
+			new Search().showAndWait().ifPresent(query -> {
+			
+				try {
+					
+					
+//					int[] id = CRSearch.get().search(query);
+//					Arrays.stream(id).forEach(it -> System.out.println(it));
+//					List<CRType> show = crTable.getCR().filter(cr -> IntStream.of(id).anyMatch(it -> cr.getID() == it)).collect(Collectors.toList());
+//					
+//					System.out.println("Size = " + show.size());
+					
+					crTable.filterByCR(null); // show);
+					updateTableCRList();
+					
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			});
+			
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	
