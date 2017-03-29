@@ -1,7 +1,6 @@
 package cre.test.ui.dialog;
 
 import cre.test.data.CRStats;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -68,9 +67,7 @@ public class Info extends Dialog<Void> {
 		
 		// Request focus on first field by default.
 
-		Platform.runLater(() -> getDialogPane().lookupButton(ButtonType.OK).requestFocus());
-
-			
+		getDialogPane().lookupButton(ButtonType.OK).requestFocus();
 	}
 	
 	

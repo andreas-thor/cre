@@ -52,6 +52,7 @@ public class CRTable {
 	public void init() {
 		crData = new ArrayList<CRType>();
 		crDup = new HashMap<Character,  HashMap<String, CRType>>();
+		CRMatch2.get().init();
 		duringUpdate = false;
 		aborted = false;
 		showNull = true;

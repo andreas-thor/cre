@@ -9,7 +9,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -19,6 +18,8 @@ import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 
 import cre.test.Exceptions.AbortedException;
+import cre.test.Exceptions.FileTooLargeException;
+import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
 import cre.test.data.match.CRCluster;
@@ -31,9 +32,24 @@ import cre.test.ui.StatusBar;
 public class CRE_json {
 
 	
-	public static void load (File file, CRTable crTab) throws IOException, AbortedException {
+	/**
+	 * 
+	 * @param files only first file is loaded
+	 * @param crTab
+	 * @param maxCR ignored
+	 * @param maxPub ignored 
+	 * @param yearRange ignored
+	 * @throws UnsupportedFileFormatException
+	 * @throws FileTooLargeException
+	 * @throws AbortedException
+	 * @throws OutOfMemoryError
+	 * @throws IOException
+	 */
+	public static void load (List<File> files, CRTable crTab, int maxCR, int maxPub, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 		
 		
+		
+		File file = files.get(0);
 		StatusBar.get().setValue("Loading CRE file ...");
 		
 		

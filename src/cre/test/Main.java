@@ -20,10 +20,8 @@ import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
 import cre.test.data.match.CRMatch2;
 import cre.test.data.match.CRMatch2.ManualMatchType2;
-import cre.test.data.source.CRE_csv;
-import cre.test.data.source.CRE_json;
-import cre.test.data.source.Scopus_csv;
-import cre.test.data.source.WoS_txt;
+import cre.test.data.source.ExportFormat;
+import cre.test.data.source.ImportFormat;
 import cre.test.data.type.CRType;
 import cre.test.ui.CRChart;
 import cre.test.ui.CRChart_HighCharts;
@@ -44,6 +42,9 @@ import cre.test.ui.dialog.Threshold;
 import cre.test.ui.dialog.Wait;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -64,73 +65,33 @@ import javafx.stage.WindowEvent;
 
 public class Main {
 
-	public static enum ImportFormat {
-		CRE_JSON("Open CRE File", false, new ExtensionFilter("Cited References Explorer", Arrays.asList(new String[] { "*.cre" }))), 
-		WOS_TXT("Import Web of Science Files", true, new ExtensionFilter("Web of Science", Arrays.asList(new String[] { "*.txt" }))), 
-		SCOPUS_CSV("Import Scopus Files", true,	new ExtensionFilter("Scopus", Arrays.asList(new String[] { "*.csv" })));
-
-		public final String label;
-		public boolean multiple;
-		public ExtensionFilter filter;
-
-		ImportFormat(String label, boolean multiple, ExtensionFilter filter) {
-			this.label = label;
-			this.multiple = multiple;
-			this.filter = filter;
-		}
-	};
-
-	public static enum ExportFormat {
-		CRE_JSON("Save CRE File", new ExtensionFilter("Cited References Explorer", Arrays.asList(new String[] { "*.cre" }))), 
-		WOS_TXT("Export Web of Science File", new ExtensionFilter("Web of Science", Arrays.asList(new String[] { "*.txt" }))),
-		SCOPUS_CSV("Export Scopus File", new ExtensionFilter("Scopus", Arrays.asList(new String[] { "*.csv" }))), 
-		CRE_CSV_CR("Export Cited References", new ExtensionFilter("Cited References Explorer", Arrays.asList(new String[] { "*.csv" }))), 
-		CRE_CSV_PUB("Export Citing Publications", new ExtensionFilter("Cited References Explorer", Arrays.asList(new String[] { "*.csv" }))), 
-		CRE_CSV_CR_PUB("Export Cited References + Citing Publications",	new ExtensionFilter("Cited References Explorer", Arrays.asList(new String[] {"*.csv" }))), 
-		CRE_CSV_GRAPH("Export Graph", new ExtensionFilter("Cited References Explorer", Arrays.asList(new String[] {"*.csv" })));
-
-		public final String label;
-		public ExtensionFilter filter;
-
-		ExportFormat(String label, ExtensionFilter filter) {
-			this.label = label;
-			this.filter = filter;
-		}
-	};
+	
 
 	CRTable crTable;
 	CRChart crChart[] = new CRChart[2];
 
-	@FXML
-	Label lab;
-	@FXML
-	GridPane mainPane;
-	@FXML
-	ScrollPane scrollTab;
+	@FXML Label lab;
+	@FXML GridPane mainPane;
+	@FXML ScrollPane scrollTab;
 
-	@FXML
-	GridPane chartPane;
-	@FXML
-	GridPane tablePane;
-	@FXML
-	GridPane statPane;
+	@FXML GridPane chartPane;
+	@FXML GridPane tablePane;
+	@FXML GridPane statPane;
 
 	private CRTableView tableView;
-
 	private MatchPanel matchView;
-
 	private Thread t;
-
 	private File creFile;
 
-	@FXML
-	MenuItem noOfVisibleCRs;
-	@FXML
-	CheckMenuItem showWOYear;
+	@FXML MenuItem noOfVisibleCRs;
+	@FXML CheckMenuItem showWOYear;
+
 
 	@FXML
 	public void initialize() throws IOException {
 
+		
+		
 		creFile = null;
 		crTable = CRTable.get();
 		statPane.add(StatusBar.get(), 0, 0);
@@ -207,7 +168,7 @@ public class Main {
 
 			@Override
 			protected void onYearRangeFilter(double min, double max) {
-				filterByRPY(new int[] { (int) Math.ceil(min), (int) Math.floor(max) });
+				filterByRPY(new int[] { (int) Math.ceil(min), (int) Math.floor(max) }, true);
 			}
 		}, new CRChart_HighCharts() {
 			@Override
@@ -217,7 +178,7 @@ public class Main {
 
 			@Override
 			protected void onYearRangeFilter(double min, double max) {
-				filterByRPY(new int[] { (int) Math.ceil(min), (int) Math.floor(max) });
+				filterByRPY(new int[] { (int) Math.ceil(min), (int) Math.floor(max) }, true);
 			}
 		} };
 		for (int i = 0; i < crChart.length; i++) {
@@ -267,15 +228,17 @@ public class Main {
 	}
 
 
-	private void filterByRPY(int[] range) {
+	private void filterByRPY(int[] range, boolean fromChart) {
 		UserSettings.get().setRange(RangeType.FilterByRPYRange, range);
 		crTable.filterByYear(range);
-		updateTableCRList();
+		updateTableCRList(fromChart);
 	}
 	
-	
-
 	private void updateTableCRList() {
+		updateTableCRList(false);
+	}	
+
+	private void updateTableCRList(boolean triggeredByChartZoom) {
 		Platform.runLater(() -> {
 
 			// save sort order ...
@@ -291,12 +254,14 @@ public class Main {
 			}
 	
 			// set Domain Range for charts
-			Stream.of(crChart).forEach(it -> {
-				if (it.isVisible()) {
-					it.updateData(crTable.getChartData());
-					it.setDomainRange(CRStats.getMaxRangeYear(true));
-				}
-			});
+			if (!triggeredByChartZoom) {
+				Stream.of(crChart).forEach(it -> {
+					if (it.isVisible()) {
+						it.updateData(crTable.getChartData());
+						it.setDomainRange(CRStats.getMaxRangeYear(true));
+					}
+				});
+			}
 	
 			refreshTableValues();
 		});
@@ -339,11 +304,9 @@ public class Main {
 
 		final List<File> files = new ArrayList<File>();
 
-		if (fileName != null) { // load specific file (e.g., during appilcation
-								// start)
+		if (fileName != null) { // load specific file (e.g., during appilcation start)
 			files.add(new File(fileName));
 		} else {
-
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle(source.label);
 			fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
@@ -352,86 +315,69 @@ public class Main {
 
 			if (source.multiple) {
 				List<File> selFiles = fileChooser.showOpenMultipleDialog(CitedReferencesExplorer.stage);
-				if (selFiles != null)
-					files.addAll(selFiles);
+				if (selFiles != null) files.addAll(selFiles);
 			} else {
 				File selFile = fileChooser.showOpenDialog(CitedReferencesExplorer.stage);
-				if (selFile != null)
-					files.add(selFile);
+				if (selFile != null) files.add(selFile);
 			}
 		}
 
 		if (files.size() > 0) {
 			this.creFile = null;
-			// save last directory to be uses as initial directory
-			UserSettings.get().setLastFileDir(files.get(0).getParentFile()); 
-
+			UserSettings.get().setLastFileDir(files.get(0).getParentFile()); // save last directory to be uses as initial directory 
+			
 			Wait wait = new Wait();
-			new Thread(() -> {
-				try {
-					matchView.setVisible(false);
-					switch (source) {
-					case CRE_JSON:
-						CRE_json.load(files.get(0), crTable);
-						// save file name for window title and save operation 
-						creFile = files.get(0); 
-						
-						// show match panel if applicable
-						if ((CRMatch2.get().getSize(true) + CRMatch2.get().getSize(false)) > 0) { 
-							matchView.setVisible(true);
+			Service<Void> serv = new Service<Void>() {
+
+				@Override
+				protected Task<Void> createTask() {
+					return new Task<Void>() {
+
+						@Override
+						protected Void call() throws Exception {
+							source.load(files);
+							if (source == ImportFormat.CRE_JSON) creFile = files.get(0); 
+								
+							// show match panel if applicable
+							matchView.setVisible((CRMatch2.get().getSize(true) + CRMatch2.get().getSize(false)) > 0);
 							matchView.updateClustering();
+							
+							return null;
 						}
-						break;
-					case WOS_TXT:
-						WoS_txt.load(files, crTable, UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), 
-								UserSettings.get().getRange(RangeType.ImportYearRange));
-						break;
-					case SCOPUS_CSV:
-						Scopus_csv.load(files, crTable, UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), 
-								UserSettings.get().getRange(RangeType.ImportYearRange));
-						break;
-					}
-				} catch (FileTooLargeException e1) {
-					Platform.runLater(() -> {
-						new ConfirmAlert("Error during file import!", true,
-								new String[] { String.format(
-										"You try to import too many cited references. Import was aborted after loading %d Cited References and %d Citing Publications. You can change the maximum number in the File > Settings > Import menu. ",
-										e1.numberOfCRs, e1.numberOfPubs) }).showAndWait();
-					});
-				} catch (UnsupportedFileFormatException e4) {
-					Platform.runLater(() -> {
-						new ConfirmAlert("Error during file import!", true, new String[] { "Unsupported File Format." })
-								.showAndWait();
-					});
-				} catch (AbortedException e2) {
-					Platform.runLater(() -> {
-						new ConfirmAlert("Error during file import!", true, new String[] { "File Import aborted." })
-								.showAndWait();
-					});
-				} catch (OutOfMemoryError mem) {
-					crTable.init();
-					Platform.runLater(() -> {
-						new ConfirmAlert("Error during file import!", true, new String[] { "Out of Memory Error." })
-								.showAndWait();
-					});
-				} catch (Exception e3) {
-					// e3.printStackTrace();
-					Platform.runLater(() -> {
-						new ExceptionStacktrace("Error during file import!", e3).showAndWait();
-					});
+					};
 				}
+			};
+			
 
-				Platform.runLater(() -> {
-					wait.close();
-					if (!crTable.isAborted()) {
-						OnMenuViewInfo();
-						updateTableCRList();
-						CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title
-								+ ((creFile == null) ? "" : " - " + creFile.getAbsolutePath()));
-					}
-				});
-			}).start();
+			serv.setOnSucceeded((WorkerStateEvent t) -> {
+				OnMenuViewInfo();
+				updateTableCRList();
+				CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title + ((creFile == null) ? "" : " - " + creFile.getAbsolutePath()));
+				wait.close();
+			});
 
+			
+			serv.setOnFailed((WorkerStateEvent t) -> {
+				Throwable e = t.getSource().getException(); 
+				if (e instanceof FileTooLargeException) {
+					new ConfirmAlert("Error during file import!", true, new String[] { String.format(
+						"You try to import too many cited references. Import was aborted after loading %d Cited References and %d Citing Publications. You can change the maximum number in the File > Settings > Import menu. ",
+						((FileTooLargeException)e).numberOfCRs, ((FileTooLargeException)e).numberOfPubs) }).showAndWait();
+				} else if (e instanceof UnsupportedFileFormatException) {
+					new ConfirmAlert("Error during file import!", true, new String[] { "Unsupported File Format." }).showAndWait();
+				} else if (e instanceof AbortedException) {
+					new ConfirmAlert("Error during file import!", true, new String[] { "File Import aborted." }).showAndWait();
+				} else if (e instanceof OutOfMemoryError) {
+					crTable.init();
+					new ConfirmAlert("Error during file import!", true, new String[] { "Out of Memory Error." }).showAndWait();
+				} else {
+					new ExceptionStacktrace("Error during file import!", e).showAndWait();
+				}
+				wait.close();
+			});
+			
+			serv.start();
+			
 			wait.showAndWait().ifPresent(cancel -> {
 				crTable.setAborted(cancel);
 			});
@@ -453,8 +399,7 @@ public class Main {
 			fileChooser.setTitle(source.label);
 			fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
 			fileChooser.getExtensionFilters().add(source.filter);
-			fileChooser.getExtensionFilters()
-					.add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
+			fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
 			selFile = fileChooser.showSaveDialog(CitedReferencesExplorer.stage);
 		}
 
@@ -464,44 +409,30 @@ public class Main {
 		// save last directory to be uses as initial directory
 		UserSettings.get().setLastFileDir(selFile.getParentFile()); 
 
-		new Thread(() -> {
-			try {
-				switch (source) {
-				case CRE_JSON:
-					CRE_json.save(selFile, crTable);
-					creFile = selFile;
-					break;
-				case WOS_TXT:
-					WoS_txt.save(selFile, crTable);
-					break;
-				case SCOPUS_CSV:
-					Scopus_csv.save(selFile, crTable);
-					break;
-				case CRE_CSV_CR:
-					CRE_csv.saveCR(selFile, crTable);
-					break;
-				case CRE_CSV_PUB:
-					CRE_csv.savePub(selFile, crTable);
-					break;
-				case CRE_CSV_CR_PUB:
-					CRE_csv.saveCRPub(selFile, crTable);
-					break;
-				case CRE_CSV_GRAPH:
-					CRE_csv.saveGraph(selFile, crTable);
-					break;
-				}
-
-				Platform.runLater(() -> {
-					CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title
-							+ ((creFile == null) ? "" : " - " + creFile.getAbsolutePath()));
-				});
-
-			} catch (Exception e) {
-				Platform.runLater(() -> {
-					new ExceptionStacktrace("Error during file export!", e).showAndWait();
-				});
+		Service<Void> serv = new Service<Void>() {
+			@Override 
+			protected Task<Void> createTask() {
+				return new Task<Void>() {
+					@Override
+					protected Void call() throws Exception {
+						source.save(selFile);
+						if (source == ExportFormat.CRE_JSON) creFile = selFile;
+						return null;
+					}
+				};
 			}
-		}).start();
+		};
+
+		serv.setOnSucceeded((WorkerStateEvent t) -> {
+			CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title + ((creFile == null) ? "" : " - " + creFile.getAbsolutePath()));
+		});
+
+		serv.setOnFailed((WorkerStateEvent t) -> {
+			Throwable e = t.getSource().getException(); 
+			new ExceptionStacktrace("Error during file import!", e).showAndWait();
+		});
+		
+		serv.start();		
 
 		return true;
 	}
@@ -579,8 +510,7 @@ public class Main {
 
 	@FXML
 	public void OnMenuFileExit() {
-		CitedReferencesExplorer.stage
-				.fireEvent(new WindowEvent(CitedReferencesExplorer.stage, WindowEvent.WINDOW_CLOSE_REQUEST));
+		CitedReferencesExplorer.stage.fireEvent(new WindowEvent(CitedReferencesExplorer.stage, WindowEvent.WINDOW_CLOSE_REQUEST));
 	}
 
 	/*
@@ -598,10 +528,7 @@ public class Main {
 		if (sel.size() == 1) {
 			new CRInfo(sel.get(0)).showAndWait();
 		} else {
-			new ConfirmAlert("Remove Cited References", true,
-					new String[] {
-							String.format("%s Cited References selected.", (sel.size() == 0) ? "No" : "Too many") })
-									.showAndWait();
+			new ConfirmAlert("Remove Cited References", true, new String[] { String.format("%s Cited References selected.", (sel.size() == 0) ? "No" : "Too many") }).showAndWait();
 		}
 	}
 
@@ -611,10 +538,7 @@ public class Main {
 		if (sel.size() == 1) {
 			new CRPubInfo(sel.get(0)).showAndWait();
 		} else {
-			new ConfirmAlert("Remove Cited References", true,
-					new String[] {
-							String.format("%s Cited References selected.", (sel.size() == 0) ? "No" : "Too many") })
-									.showAndWait();
+			new ConfirmAlert("Remove Cited References", true, new String[] { String.format("%s Cited References selected.", (sel.size() == 0) ? "No" : "Too many") }).showAndWait();
 		}
 	}
 
@@ -628,7 +552,7 @@ public class Main {
 	public void OnMenuViewFilterByRPY(ActionEvent event) {
 		new Range("Filter Cited References", "Select Range of Cited References Years",
 				UserSettings.RangeType.FilterByRPYRange, CRStats.getMaxRangeYear()).showAndWait().ifPresent(range -> {
-					filterByRPY(range);
+					filterByRPY(range, false);
 				});
 	}
 
@@ -638,7 +562,7 @@ public class Main {
 		List<CRType> sel = getSelectedCRs();
 		if (sel.size() > 0) {
 
-			CRTable.get().filterByCluster (sel);
+			crTable.filterByCluster (sel);
 			updateTableCRList();
 			
 		} else {
@@ -851,19 +775,17 @@ public class Main {
 	public void OnMenuStdMerge() {
 
 		long n = CRStats.getSize() - CRStats.getNoOfClusters();
-		new ConfirmAlert("Merge clusters", n == 0,
-				new String[] { "No Clusters to merge.",
-						String.format("Merging will aggregate %d Cited References! Are you sure?", n) }).showAndWait()
-								.ifPresent(btn -> {
-									if (btn == ButtonType.YES) {
-										new Thread(() -> {
-											crTable.merge();
-											matchView.setVisible(false);
-											updateTableCRList();
-											// tablePane.requestLayout();
-										}).start();
-									}
-								});
+		new ConfirmAlert("Merge clusters", n == 0, new String[] { "No Clusters to merge.", String.format("Merging will aggregate %d Cited References! Are you sure?", n) }).showAndWait()
+			.ifPresent(btn -> {
+				if (btn == ButtonType.YES) {
+					new Thread(() -> {
+						crTable.merge();
+						matchView.setVisible(false);
+						updateTableCRList();
+						// tablePane.requestLayout();
+					}).start();
+				}
+			});
 	}
 
 	/*

@@ -14,7 +14,7 @@ import javafx.scene.layout.Priority;
 public class ExceptionStacktrace extends Dialog<Void> {
 
 	
-	public ExceptionStacktrace(String header, Exception e) {
+	public ExceptionStacktrace(String header, Throwable e) {
 		
 		setHeaderText(header);
 		setTitle ("Error");
