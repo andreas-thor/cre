@@ -59,6 +59,7 @@ public class CRTable {
 		chartData = new int[][] {{0},{0},{0}};
 		setAborted(false);
 		countPub = new AtomicInteger(0);
+		CRSearch.get().init();
 	}
 	
 	
