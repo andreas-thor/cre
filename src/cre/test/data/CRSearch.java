@@ -3,6 +3,8 @@ package cre.test.data;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -47,7 +49,7 @@ public class CRSearch {
 	}
 	
 	
-	public int[] search (String queryString) throws IOException, ParseException {
+	public void search (String queryString) throws IOException, ParseException {
 		
 		if (idx == null) createIndex();
 		
@@ -58,9 +60,22 @@ public class CRSearch {
 	    Query query = parser.parse(queryString);
 		ScoreDoc[] docs = searcher.search(query, Integer.MAX_VALUE).scoreDocs;
 		
-		return Arrays.stream(searcher.search(query, Integer.MAX_VALUE).scoreDocs).mapToInt((doc -> { 
-			try { return searcher.doc(doc.doc).getField(CRColumn.ID.id).numericValue().intValue(); } catch (Exception e) { return -1; }
-		})).toArray();
+		Map<Integer, Double> searchResult = Arrays.stream(docs).collect((Collectors.toMap(
+				doc -> { try { return searcher.doc(doc.doc).getField(CRColumn.ID.id).numericValue().intValue(); } catch (Exception e) { return -1; }},
+				doc -> (double)doc.score
+				)));
+		
+		
+		
+		CRTable.get().getCR().forEach(cr -> {
+			cr.setSEARCH_SCORE ( searchResult.containsKey(cr.getID()) ? searchResult.get(cr.getID()) : 0 );
+		});
+		
+		
+		
+//		return Arrays.stream(docs).mapToInt((doc -> { 
+//			try { return searcher.doc(doc.doc).getField(CRColumn.ID.id).numericValue().intValue(); } catch (Exception e) { return -1; }
+//		})).toArray();
 	}
 	
 	private void createIndex () throws IOException {

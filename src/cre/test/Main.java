@@ -584,13 +584,15 @@ public class Main {
 				try {
 					
 					
-//					int[] id = CRSearch.get().search(query);
+					CRSearch.get().search(query);
+					tableView.orderBySearchResult();
+					
 //					Arrays.stream(id).forEach(it -> System.out.println(it));
 //					List<CRType> show = crTable.getCR().filter(cr -> IntStream.of(id).anyMatch(it -> cr.getID() == it)).collect(Collectors.toList());
 //					
 //					System.out.println("Size = " + show.size());
 					
-					crTable.filterByCR(null); // show);
+//					crTable.filterByCR(null); // show);
 					updateTableCRList();
 					
 				} catch (Exception e) {

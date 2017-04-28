@@ -17,12 +17,11 @@ import javafx.scene.layout.Priority;
 public class CRTableView extends TableView<CRType> {
 
 	// Column Information
-	public static enum ColGroup { CR, INDICATOR, CLUSTER }
+	public static enum ColGroup { CR, INDICATOR, CLUSTER, INVISIBLE }
 	public static enum ColDataType { INT, DOUBLE, STRING, CRCLUSTER } 
 	public static enum CRColumn {
 		
 		ID 	("ID", "ID", ColGroup.CR, ColDataType.INT, CRType::getIDProp),
-//		CO  ("CO", "CO", ColGroup.CR, ColDataType.INT, CRType::getCOProp), 
 		CR 	("CR", "Cited Reference", ColGroup.CR, ColDataType.STRING, CRType::getCRProp),
 		RPY ("RPY", "Cited Reference Year", ColGroup.CR, ColDataType.INT, CRType::getRPYProp),
 		N_CR ("N_CR", "Number of Cited References", ColGroup.CR, ColDataType.INT, CRType::getN_CRProp),
@@ -45,7 +44,14 @@ public class CRTableView extends TableView<CRType> {
 		PYEAR_PERC ("PERC_PYEARS", "PERC_PYEARS", ColGroup.INDICATOR, ColDataType.DOUBLE, CRType::getPYEAR_PERCProp),
 		N_PCT50 ("N_TOP50", "N_TOP50", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT50Prop),
 		N_PCT75 ("N_TOP75", "N_TOP75", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT75Prop),
-		N_PCT90 ("N_TOP90", "N_TOP90", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT90Prop);
+		N_PCT90 ("N_TOP90", "N_TOP90", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT90Prop),
+
+		
+		SEARCH_SCORE  ("SEARCH_SCORE", "SEARCH_SCORE", ColGroup.INVISIBLE, ColDataType.DOUBLE, CRType::getSEARCH_SCOREProp) 
+		
+//		CO  ("CO", "CO", ColGroup.INVISIBLE, ColDataType.INT, CRType::getCOProp), 
+
+		;
 //		N_PYEARS2 ("N_PYEARS2", "N_PYEARS2", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PYEARS2Prop);
 		
 		public String id;
@@ -116,7 +122,12 @@ public class CRTableView extends TableView<CRType> {
 				default: assert false;
 			}
 			
-			columns[i].visibleProperty().bindBidirectional(UserSettings.get().getColumnVisibleProperty(i));
+			if (col.group != ColGroup.INVISIBLE) {
+				columns[i].visibleProperty().bindBidirectional(UserSettings.get().getColumnVisibleProperty(i));
+			} else {
+				columns[i].visibleProperty().setValue(false);
+			}
+			
 			if (i==0) {
 				((TableColumn<CRType, Number>) columns[ 0]).setCellValueFactory(cellData -> (ObservableValue<Number>) col.prop.apply (cellData.getValue()));
 			}
@@ -173,6 +184,19 @@ public class CRTableView extends TableView<CRType> {
 
 
 
+	public void orderBySearchResult () {
+		/* sort by year ASC, n_cr desc */
+		columns[CRColumn.SEARCH_SCORE.ordinal()].setSortType(TableColumn.SortType.DESCENDING);
+		getSortOrder().clear();
+		getSortOrder().add(columns[CRColumn.SEARCH_SCORE.ordinal()]);
+		sort();
+		Optional<CRType> first = getItems().stream().findFirst();
+		if (first.isPresent()) {
+			getSelectionModel().clearSelection();
+			getSelectionModel().select(first.get());
+			scrollTo(first.get());
+		}
+	}
 
 
 	public void orderByYearAndSelect (int year) {

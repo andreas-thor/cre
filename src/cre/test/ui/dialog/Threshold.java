@@ -36,7 +36,7 @@ public class Threshold extends Dialog<Pair<String, Double>> {
 
 		setResultConverter(dialogButton -> {
 		    if (dialogButton == ButtonType.OK) {
-		        return new Pair<String, Double>(cb.getValue(), Double.valueOf(tf.getText()));
+		        return new Pair<String, Double>(cb.getValue(), Double.valueOf(tf.getText())/100);
 		    }
 		    return null;
 		});		

@@ -39,6 +39,8 @@ public class CRType implements Comparable<CRType> {
 	
 	private SimpleBooleanProperty VI;	// visible
 	private SimpleIntegerProperty CO;	// background color
+	private SimpleDoubleProperty SEARCH_SCORE;
+	
 	
 	private SimpleDoubleProperty PERC_YR;
 	private SimpleDoubleProperty PERC_ALL;
@@ -103,6 +105,7 @@ public class CRType implements Comparable<CRType> {
 		
 		VI = new SimpleBooleanProperty(true);
 		CO = new SimpleIntegerProperty(0);
+		SEARCH_SCORE = new SimpleDoubleProperty(0);
 		
 		pubList = new HashSet<PubType>();
 		flag = false;
@@ -471,6 +474,17 @@ public class CRType implements Comparable<CRType> {
 		N_PYEARS2.set(n_PYEARS2);
 	}
 			
+
+	public Double getSEARCH_SCORE() {
+		return SEARCH_SCORE.getValue();
+	}
+	public SimpleDoubleProperty getSEARCH_SCOREProp() {
+		return SEARCH_SCORE;
+	}
+	public void setSEARCH_SCORE(Double sEARCH_SCORE) {
+		SEARCH_SCORE.setValue(sEARCH_SCORE);
+	}
+	
     
   
 	@Override

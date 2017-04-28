@@ -24,6 +24,8 @@
     <jar href="CitedReferencesExplorer.jar" main="true"/>
   	<property name="swing.defaultlaf" value="com.sun.java.swing.plaf.windows.WindowsLookAndFeel"/>
   
+  	<jar href="lib/lucene-core-6.4.2.jar"/>
+	<jar href="lib/lucene-queryparser-6.4.2.jar"/>
     <jar href="lib/commons-math3-3.6.1.jar"/>
   	<jar href="lib/bsf-2.4.0.jar"/>
 	<jar href="lib/groovy-all-2.4.3.jar"/>
