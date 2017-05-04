@@ -1,0 +1,2931 @@
+﻿FN Thomson Reuters Web of Science™
+VR 1.0
+PT J
+AU Milojevic, S
+   Sugimoto, CR
+   Lariviere, V
+   Thelwall, M
+   Dinga, Y
+AF Milojevic, Stasa
+   Sugimoto, Cassidy R.
+   Lariviere, Vincent
+   Thelwall, Mike
+   Dinga, Ying
+TI The role of handbooks in knowledge creation and diffusion: A case of
+   science and technology studies
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Genres; STS; Handbooks
+ID SOCIAL-SCIENCES; HUMANITIES; BASE; COMMUNICATION; INFORMATION;
+   COCITATION; INDEX
+AB Genre is considered to be an important element in scholarly communication and in the practice of scientific disciplines. However, scientometric studies have typically focused on a single genre, the journal article. The goal of this study is to understand the role that handbooks play in knowledge creation and diffusion and their relationship with the genre of journal articles, particularly in highly interdisciplinary and emergent social science and humanities disciplines. To shed light on these questions we focused on handbooks and journal articles published over the last four decades belonging to the research area of science and technology studies (STS), broadly defined. To get a detailed picture we used the full-text of five handbooks (500,000 words) and a well-defined set of 11,700 STS articles. We confirmed the methodological split of STS into qualitative and quantitative (scientometric) approaches. Even when the two traditions explore similar topics (e.g., science and gender) they approach them from different starting points. The change in cognitive foci in both handbooks and articles partially reflects the changing trends in STS research, often driven by technology. Using text similarity measures we found that, in the case of STS, handbooks play no special role in either focusing the research efforts or marking their decline. In general, they do not represent the summaries of research directions that have emerged since the previous edition of the handbook. (C) 2014 Elsevier Ltd. All rights reserved.
+C1 [Milojevic, Stasa; Sugimoto, Cassidy R.; Dinga, Ying] Indiana Univ, Sch Informat & Comp, Bloomington, IN 47405 USA.
+   [Lariviere, Vincent] Univ Montreal, Ecole Bibliothecon & Sci Informat, Montreal, PQ H3C 3J7, Canada.
+   [Thelwall, Mike] Wolverhampton Univ, Sch Technol, Wolverhampton WV1 1LY, W Midlands, England.
+RP Milojevic, S (reprint author), Indiana Univ, Sch Informat & Comp, Bloomington, IN 47405 USA.
+EM smilojev@indiana.edu; sugimoto@indiana.edu;
+   vincent.lariviere@umontreal.ca; m.thelwall@wlv.ac.uk;
+   dingying@indiana.edu
+RI Golwal, Madansing/A-1097-2015
+CR Ahlgren P, 2003, J AM SOC INF SCI TEC, V54, P550, DOI 10.1002/asi.10242
+   Astrom F, 2002, EMERGING FRAMEWORKS, P185
+   Bazerman Charles, 1988, SHAPING WRITTEN KNOW
+   Bucchi M., 2008, HDB SCI TECHNOLOGY S, P449
+   Elkana Y., 1978, METRIC SCI ADVENT SC
+   Engels TCE, 2012, SCIENTOMETRICS, V93, P373, DOI 10.1007/s11192-012-0680-2
+   Etzkowitz H., 1997, U GLOBAL KNOWLEDGE E
+   Fagerberg J, 2012, RES POLICY, V41, P1132, DOI 10.1016/j.respol.2012.03.008
+   Gibbons M., 1994, NEW PRODUCTION KNOWL
+   Gorraiz J, 2013, J AM SOC INF SCI TEC, V64, P1388, DOI 10.1002/asi.22875
+   Gross P L, 1927, Science, V66, P385, DOI 10.1126/science.66.1713.385
+   Hackett E. J., 2008, HDB SCI TECHNOLOGY S, P429
+   Hargens L. L., 1991, AM SOCIOL, V22, P147
+   Hess D., 1997, SCI STUDIES ADV INTR
+   Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   Jasanoff S., 2010, OXFORD HDB INTERDISC, P191
+   Jasanoff S., 1995, HDB SCI TECHNOLOGY S
+   Knorr-Cetina K., 1999, EPISTEMIC CULTURES S
+   Kousha K., 2014, J ASS INFOR IN PRESS
+   Kratus J., 1993, B COUNCIL RES MUSIC, V118, P21
+   Landstrom H, 2012, RES POLICY, V41, P1154, DOI 10.1016/j.respol.2012.03.009
+   Lariviere V, 2006, J AM SOC INF SCI TEC, V57, P997, DOI 10.1002/asi.20349
+   Latour B., 1986, LAB LIFE CONSTRUCTIO
+   Lattuca LR, 2002, J HIGH EDUC, V73, P711, DOI 10.1353/jhe.2002.0054
+   LEMING JS, 1995, THEOR RES SOC EDUC, V23, P169
+   Lenoir T., 1997, I SCI CULTURAL PRODU
+   Leydesdorff L, 1997, SCIENTOMETRICS, V38, P155, DOI 10.1007/BF02461129
+   Leydesdorff L., 1997, U GLOBAL KNOWLEDGE E, P155
+   Leydesdorff L., 2015, INT ENCY SOCIAL BEHA
+   Martin BR, 2012, RES POLICY, V41, P1182, DOI 10.1016/j.respol.2012.03.010
+   Milojevic S, 2011, J AM SOC INF SCI TEC, V62, P1933, DOI 10.1002/asi.21602
+   Milojevic S, 2013, SCIENTOMETRICS, V95, P141, DOI 10.1007/s11192-012-0861-z
+   Moed H., 2005, HDB QUANTITATIVE SCI
+   Nalimov V. V., 1971, MEASUREMENT SCI STUD
+   Nederhof AJ, 2006, SCIENTOMETRICS, V66, P81, DOI 10.1007/s11192-006-0007-2
+   Pickering A., 1992, SCI PRACTICE CULTURE
+   Randes C, 2010, B COUN RES MUSIC ED, P65
+   Rousseau R, 2013, J INFORMETR, V7, P294, DOI 10.1016/j.joi.2012.11.012
+   Sismondo S, 2008, HDB SCI TECHNOLOGY S, P13
+   Spiegel-Rosing I., 1977, SCI TECHNOLOGY SOC C
+   STAR SL, 1989, SOC STUD SCI, V19, P387, DOI 10.1177/030631289019003001
+   Swales J. M., 2004, RES GENRES EXPLORATI
+   van Raan A. F. J., 1988, HDB QUANTITATIVE STU
+   Van den Besselaar P, 2001, SCIENTOMETRICS, V51, P441, DOI 10.1023/A:1012714020453
+   van den Besselaar P, 2000, SCIENTOMETRICS, V47, P169, DOI 10.1023/A:1005686123917
+   Van Den Besselaar P, 2006, SCIENTOMETRICS, V68, P377, DOI 10.1007/s11192-006-0118-9
+   Van House NA, 2004, ANNU REV INFORM SCI, V38, P3
+   Vickery B. C., 2000, SCI COMMUNICATION HI
+   WHITE HD, 1982, J DOC, V38, P255, DOI 10.1108/eb026731
+NR 49
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD JUL
+PY 2014
+VL 8
+IS 3
+BP 693
+EP 709
+DI 10.1016/j.joi.2014.064.003
+PG 17
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AO5IE
+UT WOS:000341376700022
+ER
+
+PT J
+AU Stare, J
+   Kejzar, N
+AF Stare, Janez
+   Kejzar, Natasa
+TI On standardization of the Activity Index
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Relative Specialization Index; Activity Index
+AB Relative Specialization Index (RSI) was introduced as a simple transformation of the Activity Index (AI), the aim of this transformation being standardization of AI, and therefore more straightforward interpretation. RSI is believed to have values between -1 and 1, with -1 meaning no activity of the country (institution) in a certain scientific field, and 1 meaning that the country is only active in the given field. While it is obvious from the definition of RSI that it can never be 1, it is less obvious, and essentially unknown, that its upper limit can be quite far from 1, depending on the scientific field. This is a consequence of the fact that AI has different upper limits for different scientific fields. This means that comparisons of RSIs, or AIs, across fields can be misleading. We therefore believe that RSI should not be used at all. We also show how an appropriate standardization of AI can be achieved. (C) 2014 Elsevier Ltd. All rights reserved.
+C1 [Stare, Janez; Kejzar, Natasa] Univ Ljubljana, Fac Med, Inst Biostat & Med Informat, SI-1000 Ljubljana, Slovenia.
+RP Kejzar, N (reprint author), Univ Ljubljana, Fac Med, Inst Biostat & Med Informat, Vrazov Trg 2, SI-1000 Ljubljana, Slovenia.
+EM janez.stare@mf.uni-lj.si; natasa.kejzar@mf.uni-lj.si
+CR FRAME J D, 1977, Interciencia, V2, P143
+   Glanzel W, 2000, SCIENTOMETRICS, V49, P357, DOI 10.1023/A:1010559323943
+   Glanzel W, 2000, SCIENTOMETRICS, V48, P121, DOI 10.1023/A:1005640604267
+   Hu XJ, 2009, SCIENTOMETRICS, V81, P475, DOI 10.1007/s11192-008-2202-9
+   InCites<SUP>&TRADE;</SUP>, 2011, ESS SCI IND
+   REIST-2, 1997, 17639 EUR
+   Schneider J, 2010, OAW DENKSCHRIFTEN, V394, P3
+NR 7
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD JUL
+PY 2014
+VL 8
+IS 3
+BP 503
+EP 507
+DI 10.1016/j.joi.2014.04.004
+PG 5
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AO5IE
+UT WOS:000341376700006
+ER
+
+PT J
+AU Woeginger, GJ
+AF Woeginger, Gerhard J.
+TI Investigations on the step-based research indices of Chambers and Miller
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Scientific impact measure; Citation analysis; Axiomatization
+ID HIRSCH-INDEX; AXIOMATIC CHARACTERIZATION; IMPACT MEASURES; H-INDEX
+AB In a recent paper, Chambers and Miller introduced two fundamental axioms for scientific research indices. We perform a detailed analysis of these two axioms, thereby providing clean combinatorial characterizations of the research indices that satisfy these axioms and of the so-called step-based indices. We single out the staircase indices as a particularly simple subfamily of the step-based indices, and we provide a simple axiomatic characterization for them. (C) 2014 Elsevier Ltd. All rights reserved.
+C1 Tech Univ Eindhoven, Dept Math & Comp Sci, NL-5600 MB Eindhoven, Netherlands.
+RP Woeginger, GJ (reprint author), Tech Univ Eindhoven, Dept Math & Comp Sci, POB 513, NL-5600 MB Eindhoven, Netherlands.
+EM gwoegi@win.tue.nl
+CR Alonso S, 2009, J INFORMETR, V3, P273, DOI 10.1016/j.joi.2009.04.001
+   Bouyssou D, 2014, J INFORMETR, V8, P449, DOI 10.1016/j.joi.2014.03.001
+   Bouyssou D, 2010, J INFORMETR, V4, P365, DOI 10.1016/j.joi.2010.03.003
+   Chambers CP, 2014, J ECON THEORY, V151, P571, DOI 10.1016/j.jet.2014.01.001
+   Christensen F, 1999, ECON LETT, V63, P33, DOI 10.1016/S0165-1765(99)00007-5
+   Deineko VG, 2009, SCIENTOMETRICS, V80, P819, DOI 10.1007/s11192-009-2130-0
+   Egghe L, 2010, ANNU REV INFORM SCI, V44, P65
+   Egghe L, 2006, SCIENTOMETRICS, V69, P131, DOI 10.1007/s11192-006-0144-7
+   Egghe L., 2006, ISSI NEWSLETTER, V2, P8
+   Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   Kosmulski M., 2006, ISSI NEWSLETTER, V2, P4
+   Marchant T, 2009, SCIENTOMETRICS, V80, P325, DOI 10.1007/s11192-008-2075-y
+   Marchant T, 2009, J AM SOC INF SCI TEC, V60, P1132, DOI 10.1002/asi.21059
+   Miroiu A, 2013, J INFORMETR, V7, P10, DOI 10.1016/j.joi.2012.08.003
+   Norris M, 2010, J DOC, V66, P681, DOI 10.1108/00220411011066790
+   Quesada A, 2011, J INFORMETR, V5, P476, DOI 10.1016/j.joi.2011.01.009
+   Schreiber M, 2011, RES EVALUAT, V20, P397, DOI 10.3152/095820211X13176484436131
+   Woeginger GJ, 2008, MATH SOC SCI, V56, P224, DOI 10.1016/j.mathsocsci.2008.03.001
+   Woeginger GJ, 2008, J INFORMETR, V2, P364, DOI 10.1016/j.joi.2008.05.002
+   Woeginger GJ, 2008, J INFORMETR, V2, P298, DOI 10.1016/j.joi.2008.09.001
+NR 20
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD JUL
+PY 2014
+VL 8
+IS 3
+BP 659
+EP 666
+DI 10.1016/j.joi.2014.06.001
+PG 8
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AO5IE
+UT WOS:000341376700019
+ER
+
+PT J
+AU Wu, Y
+   Fu, TZJ
+   Chiu, DM
+AF Wu, Yan
+   Fu, Tom Z. J.
+   Chiu, Dah Ming
+TI Generalized preferential attachment considering aging
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Preferential attachment; Aging effect; Citation network
+ID CITATION NETWORKS; EVOLVING NETWORKS; CITING BEHAVIOR; PUBLICATION;
+   STATISTICS; EMERGENCE; EVOLUTION; TOPOLOGY; MODELS; AGE
+AB Preferential Attachment (PA) models the scientific citation process. In the PA model, a new paper attaches itself to the citation network based only on the popularity of the currently existing papers. This invariably leads to a network whose degree distribution satisfies the Power Law. Yet, empirical results show that paper age should also play a role in the citation process. In other words, when references are chosen for a new paper, the age of an existing paper may also affect the choice for citing. In this paper, we derive a generalized PA model that includes the effect of aging, with analytical solution. Such a model can be used to analyze the competing influence of preferential attachment and aging effect quantitatively in citation process and explain differences in various research domains by the extent of aging. It may also serve as a general model of network formation. (C) 2014 Elsevier Ltd. All rights reserved.
+C1 [Wu, Yan; Chiu, Dah Ming] Chinese Univ Hong Kong, Dept Informat Engn, Shatin, Hong Kong, Peoples R China.
+   [Fu, Tom Z. J.] Illinois Singapore Pte Ltd, Adv Digital Sci Ctr, Singapore, Singapore.
+RP Chiu, DM (reprint author), Chinese Univ Hong Kong, Dept Informat Engn, Shatin, Hong Kong, Peoples R China.
+EM wy011@ie.cuhk.edu.hk; fuzhengjia@gmail.com; dmchiu@ie.cuhk.edu.hk
+CR Albert R, 2000, PHYS REV LETT, V85, P5234, DOI 10.1103/PhysRevLett.85.5234
+   Amaral LAN, 2000, P NATL ACAD SCI USA, V97, P11149, DOI 10.1073/pnas.200327197
+   Barabasi AL, 1999, SCIENCE, V286, P509, DOI 10.1126/science.286.5439.509
+   Bethard S., 2010, P 19 ACM INT C INF K, P609, DOI 10.1145/1871437.1871517
+   Bianconi G, 2005, EUROPHYS LETT, V71, P1029, DOI 10.1209/epl/i2005-10167-2
+   Bianconi G, 2001, EUROPHYS LETT, V54, P436, DOI 10.1209/epl/i2001-00260-6
+   Blei D. M., 2006, P 23 INT C MACH LEAR, P113, DOI DOI 10.1145/1143844.1143859
+   Blei DM, 2012, COMMUN ACM, V55, P77, DOI 10.1145/2133806.2133826
+   Bornmann L, 2008, J DOC, V64, P45, DOI 10.1108/00220410810844150
+   Bouabid H, 2011, SCIENTOMETRICS, V88, P199, DOI 10.1007/s11192-011-0370-5
+   Chakrabarti D, 2006, ACM COMPUT SURV, V38, P1, DOI DOI 10.1145/1132952.1132954
+   Chiu DM, 2010, ACM SIGCOMM COMP COM, V40, P34
+   Ding Y, 2013, J INFORMETR, V7, P583, DOI 10.1016/j.joi.2013.03.003
+   Dorogovtsev S., 2004, CONDMAT0408343 ARXIV
+   Dorogovtsev SN, 2001, PHYS REV E, V64, DOI 10.1103/PhysRevE.64.025101
+   Dorogovtsev SN, 2000, PHYS REV E, V62, P1842, DOI 10.1103/PhysRevE.62.1842
+   Egghe L, 2007, J INFORMETR, V1, P115, DOI 10.1016/j.joi.2006.10.003
+   Eom YH, 2011, PLOS ONE, V6, DOI 10.1371/journal.pone.0024926
+   Geng XM, 2012, COMPLEXITY, V17, P16, DOI 10.1002/cplx.20330
+   Hajra KB, 2006, PHYSICA A, V368, P575, DOI 10.1016/j.physa.2005.12.044
+   Hajra KB, 2005, PHYSICA A, V346, P44, DOI 10.1016/j.physa.2004.08.048
+   Jeffreys H., 1988, METHODS MATH PHYS
+   Kleinberg JM, 1999, J ACM, V46, P604, DOI 10.1145/324133.324140
+   Krapivsky PL, 2001, PHYS REV E, V63, DOI 10.1103/PhysRevE.63.066123
+   Kumar R, 2000, ANN IEEE SYMP FOUND, P57
+   Kumar R., 1999, INT C VER LARG DAT B
+   Leskovec J., 2005, P 11 ACM SIGKDD INT, P177, DOI DOI 10.1145/1081870.1081893
+   Martin T, 2013, PHYS REV E, V88, DOI 10.1103/PhysRevE.88.012814
+   Newman MEJ, 2011, NETWORKS INTRO
+   Newman MEJ, 2009, EPL-EUROPHYS LETT, V86, DOI 10.1209/0295-5075/86/68001
+   Pandurangan G., 2002, COMPUTING COMBINATOR, V2387, P330, DOI 10.1007/3-540-45655-4_36
+   Peterson GJ, 2010, P NATL ACAD SCI USA, V107, P16023, DOI 10.1073/pnas.1010757107
+   Pollmann T, 2000, SCIENTOMETRICS, V47, P43, DOI 10.1023/A:1005613725039
+   PRICE DJD, 1965, SCIENCE, V149, P510
+   Redner S, 2005, PHYS TODAY, V58, P49, DOI 10.1063/1.1996475
+   Schabenberger O, 2002, CONT STAT MODELS PLA
+   Wang MY, 2009, PHYSICA A, V388, P4273, DOI 10.1016/j.physa.2009.05.008
+   Wang MY, 2008, PHYSICA A, V387, P4692, DOI 10.1016/j.physa.2008.03.017
+   White MD, 1997, LIBR QUART, V67, P122
+   Zhu H, 2003, PHYS REV E, V68, DOI 10.1103/PhysRevE.68.056121
+NR 40
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD JUL
+PY 2014
+VL 8
+IS 3
+BP 650
+EP 658
+DI 10.1016/j.joi.2014.06.002
+PG 9
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AO5IE
+UT WOS:000341376700018
+ER
+
+PT J
+AU Xiao, Y
+   Lu, LYY
+   Liu, JS
+   Zhou, ZL
+AF Xiao, Yu
+   Lu, Louis Y. Y.
+   Liu, John S.
+   Zhou, Zhili
+TI Knowledge diffusion path analysis of data quality literature: A main
+   path analysis
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Data quality; Main path analysis; Knowledge diffusion; Citation
+   analysis; Social network analysis; Big data
+ID ACCOUNTING INFORMATION-SYSTEMS; G-INDEX; FRAMEWORK; PRODUCT; CONTEXT;
+   TRAJECTORIES; METHODOLOGY; ATTRIBUTES; MANAGEMENT; NETWORKS
+AB This study presents a unique approach in investigating the knowledge diffusion structure for the field of data quality through an analysis of the main paths. We study a dataset of 1880 papers to explore the knowledge diffusion path, using citation data to build the citation network. The main paths are then investigated and visualized via social network analysis. This paper takes three different main path analyses, namely local, global, and key-route, to depict the knowledge diffusion path and additionally implements the g-index and h-index to evaluate the most important journals and researchers in the data quality domain. (C) 2014 Elsevier Ltd. All rights reserved.
+C1 [Xiao, Yu; Zhou, Zhili] Xi An Jiao Tong Univ, Sch Management, Xian 710049, Peoples R China.
+   [Lu, Louis Y. Y.] Yuan Ze Univ, Coll Management, Taoyuan 32003, Taiwan.
+   [Lu, Louis Y. Y.] Yuan Ze Univ, Innovat Ctr Big Data & Digital Convergence, Taoyuan 32003, Taiwan.
+   [Liu, John S.] Natl Taiwan Univ Sci & Technol, Grad Inst Technol Management, Taipei 10607, Taiwan.
+RP Lu, LYY (reprint author), Yuan Ze Univ, Coll Management, 135 Yuan Tung Rd, Taoyuan 32003, Taiwan.
+EM xiaoyu1029@stu.xjtu.edu.cn; louislu@saturn.yzu.edu.tw;
+   johnliu@mail.ntust.edu.tw; zlzhou@mail.xjtu.edu.cn
+CR Bagchi S., 2006, IEEE SCC, P398
+   Bai X, 2012, INFORMS J COMPUT, V24, P648, DOI 10.1287/ijoc.1110.0475
+   Bai X, 2012, INFORM SYST RES, V23, P453, DOI 10.1287/isre.1110.0371
+   Ballou D, 1998, MANAGE SCI, V44, P462, DOI 10.1287/mnsc.44.4.462
+   BALLOU DP, 1989, COMMUN ACM, V32, P320, DOI 10.1145/62065.62068
+   BALLOU DP, 1985, MANAGE SCI, V31, P150, DOI 10.1287/mnsc.31.2.150
+   BALLOU DP, 1995, INFORM SYST RES, V6, P51, DOI 10.1287/isre.6.1.51
+   Bardaki C, 2011, J STRATEGIC INF SYST, V20, P268, DOI 10.1016/j.jsis.2011.03.004
+   Batagelj V., 2003, PREPRINT SERIES, V41, P897
+   Batagelj V, 1998, CONNECTIONS, V21, P47
+   Batini C, 2009, ACM COMPUT SURV, V41, DOI 10.1145/1541880.1541883
+   Batini C., 2006, DATA QUALITY CONCEPT
+   Caballero I, 2009, FOURTH INTERNATIONAL CONFERENCE ON COOPERATION AND PROMOTION OF INFORMATION RESOURCES IN SCIENCE AND TECHNOLOGY (COINFO 2009), P210, DOI 10.1109/COINFO.2009.49
+   Caro A, 2008, SOFTWARE QUAL J, V16, P513, DOI 10.1007/s11219-008-9046-7
+   Caro A, 2011, IEEE INTERNET COMPUT, V15, P43, DOI 10.1109/MIC.2010.126
+   Costas R, 2008, SCIENTOMETRICS, V77, P267, DOI 10.1007/s11192-007-1997-0
+   de Nooy W., 2005, EXPLORATORY SOCIAL N, V27
+   Du J, 2012, DECIS SUPPORT SYST, V54, P76, DOI 10.1016/j.dss.2012.04.016
+   Egghe L, 2006, SCIENTOMETRICS, V69, P131, DOI 10.1007/s11192-006-0144-7
+   Even A, 2010, DECIS SUPPORT SYST, V50, P152, DOI 10.1016/j.dss.2010.07.011
+   GARFIELD E, 1970, NATURE, V227, P669, DOI 10.1038/227669a0
+   Han J., 2011, WEB AGE INFORM MANAG
+   Harris JK, 2009, AM J PREV MED, V36, P538, DOI 10.1016/j.amepre.2009.01.039
+   Heinrich B, 2011, J INF SCI, V37, P86, DOI 10.1177/0165551510392653
+   Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   HUH YU, 1990, INFORM SOFTWARE TECH, V32, P559, DOI 10.1016/0950-5849(90)90146-I
+   HUMMON NP, 1990, SOC NETWORKS, V12, P273, DOI 10.1016/0378-8733(90)90011-W
+   HUMMON NP, 1993, SOC NETWORKS, V15, P71, DOI 10.1016/0378-8733(93)90022-D
+   HUMMON NP, 1989, SOC NETWORKS, V11, P39, DOI 10.1016/0378-8733(89)90017-8
+   Huner KM, 2011, ELECTRON MARK, V21, P141, DOI 10.1007/s12525-011-0059-x
+   Kahn B.K., 2002, COMMUN ACM, V45, P184
+   Krishnan R, 2005, INFORM SYST RES, V16, P307, DOI 10.1287/isre.1050.0063
+   LAUDON KC, 1986, COMMUN ACM, V29, P4, DOI 10.1145/5465.5466
+   Lee YW, 2003, J MANAGE INFORM SYST, V20, P93
+   Lee YW, 2002, INFORM MANAGE-AMSTER, V40, P133, DOI 10.1016/S0378-7206(02)00043-5
+   Lee YW, 2003, J MANAGE INFORM SYST, V20, P13
+   Liu J. S., 2013, OMEGA, V41, P3
+   Liu JS, 2012, J AM SOC INF SCI TEC, V63, P528, DOI 10.1002/asi.21692
+   Lu LYY, 2013, SCIENTOMETRICS, V94, P225, DOI 10.1007/s11192-012-0744-3
+   Lucas A., 2010, 5 IB C INF SYST TECH, P1
+   Lucio-Arias D, 2008, J AM SOC INF SCI TEC, V59, P1948, DOI 10.1002/asi.20903
+   Madnick S. E., 2009, ACM JOURNAL OF DATA, V1, P1
+   Meyer PS, 1999, TECHNOL FORECAST SOC, V61, P247, DOI 10.1016/S0040-1625(99)00021-9
+   Mina A, 2007, RES POLICY, V36, P789, DOI 10.1016/j.respol.2006.12.007
+   Moraga C, 2009, INT CONF QUAL SOFTW, P117, DOI 10.1109/QSIC.2009.23
+   Moraga C, 2009, LECT NOTES COMPUT SC, V5648, P251, DOI 10.1007/978-3-642-02818-2_20
+   MOREY RC, 1982, COMMUN ACM, V25, P337, DOI 10.1145/358506.358520
+   Narman P, 2011, ENTERP INF SYST-UK, V5, P37, DOI 10.1080/17517575.2010.507878
+   Nelson RR, 2005, J MANAGE INFORM SYST, V21, P199
+   Pipino L.L., 2002, COMMUN ACM, V45, P211, DOI [10.1145/505999.506010, DOI 10.1145/505248.506010]
+   REDMAN TC, 1995, SLOAN MANAGE REV, V36, P99
+   Rohrer E., 2010, SOFTWARE SERVICES E
+   Strong DM, 1997, COMMUN ACM, V40, P103, DOI 10.1145/253769.253804
+   Verspagen B, 2007, ADV COMPLEX SYST, V10, P93, DOI 10.1142/S0219525907000945
+   Wand Y, 1996, COMMUN ACM, V39, P86, DOI 10.1145/240455.240479
+   Wang R. Y., 1990, P INT C VER LARG DAT, P519
+   WANG RY, 1993, NINTH INTERNATIONAL CONFERENCE ON DATA ENGINEERING : PROCEEDINGS, P670
+   WANG RY, 1995, IEEE T KNOWL DATA EN, V7, P623, DOI 10.1109/69.404034
+   Wang R. Y., 1996, Journal of Management Information Systems, V12
+   Wang RY, 1998, SLOAN MANAGE REV, V39, P95
+   WANG RY, 1995, DECIS SUPPORT SYST, V13, P349, DOI 10.1016/0167-9236(93)E0050-N
+   Watts S, 2009, DECIS SUPPORT SYST, V48, P202, DOI 10.1016/j.dss.2009.07.012
+   Wu CS, 2012, IEEE T INF TECHNOL B, V16, P745, DOI 10.1109/TITB.2012.2195498
+   Zheng H, 2011, COMM COM INF SC, V159, P265
+   Zhu H., 2010, ASSESSING QUALITY DA, V108
+   Zhu HW, 2011, ELECTRON MARK, V21, P129, DOI 10.1007/s12525-011-0060-4
+NR 66
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD JUL
+PY 2014
+VL 8
+IS 3
+BP 594
+EP 605
+DI 10.1016/j.joi.2014.05.001
+PG 12
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AO5IE
+UT WOS:000341376700013
+ER
+
+PT J
+AU Xu, H
+   Martin, E
+   Mahidadia, A
+AF Xu, Han
+   Martin, Eric
+   Mahidadia, Ashesh
+TI Contents and time sensitive document ranking of scientific literature
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Scientific document ranking; PageRank; Latent Dirichlet Allocation;
+   Topical longevity; Information freshness; Local damping factor
+ID PAGERANK ALGORITHM; CITATION ANALYSIS; IMPACT
+AB A new link-based document ranking framework is devised with at its heart, a contents and time sensitive random literature explorer designed to more accurately model the behaviour of readers of scientific documents. In particular, our ranking framework dynamically adjusts its random walk parameters according to both contents and age of encountered documents, thus incorporating the diversity of topics and how they evolve over time into the score of a scientific publication. Our random walk framework results in a ranking of scientific documents which is shown to be more effective in facilitating literature exploration than PageRank measured against a proxy gold standard based on papers' potential usefulness in facilitating later research. One of its many strengths lies in its practical value in reliably retrieving and placing promisingly useful papers at the top of its ranking. (C) 2014 Elsevier Ltd. All rights reserved.
+C1 [Xu, Han; Martin, Eric; Mahidadia, Ashesh] Univ New S Wales, Sch Comp Sci & Engn, Sydney, NSW, Australia.
+RP Xu, H (reprint author), Univ New S Wales, Sch Comp Sci & Engn, Sydney, NSW, Australia.
+EM hanx@cse.unsw.edu.au; emartin@cse.unsw.edu.au; ashesh@cse.unsw.edu.au
+CR Blei DM, 2003, J MACH LEARN RES, V3, P993, DOI 10.1162/jmlr.2003.3.4-5.993
+   Boldi P., 2005, P 14 INT WORLD WID W, P557, DOI 10.1145/1060745.1060827
+   BONZI S, 1982, J AM SOC INFORM SCI, V33, P208
+   Bressan Marco, 2010, Journal of Discrete Algorithms, V8, DOI 10.1016/j.jda.2009.11.001
+   Brin S, 1998, COMPUT NETWORKS ISDN, V30, P107, DOI 10.1016/S0169-7552(98)00110-X
+   BROOKES BC, 1971, NATURE, V232, P458, DOI 10.1038/232458a0
+   Chen P, 2007, J INFORMETR, V1, P8, DOI 10.1016/j.joi.2006.06.001
+   Diodato V., 1994, DICT BIBLIOMETRICS
+   Egghe L., 1990, DOCUMENTATION INFORM
+   GARFIELD E, 1972, SCIENCE, V178, P471, DOI 10.1126/science.178.4060.471
+   Garfield E., 1979, INFORM SCI SERIES
+   Gleich D. F., 2010, P 19 INT C WORLD WID, P381, DOI 10.1145/1772690.1772730
+   Griffiths TL, 2004, P NATL ACAD SCI USA, V101, P5228, DOI 10.1073/pnas.0307752101
+   Hall D., 2008, P C EMP METH NAT LAN, P363, DOI 10.3115/1613715.1613763
+   King B., 2013, T ASS COMPUTATIONAL
+   Kumar R., 2010, P 19 INT C WORLD WID, P571, DOI 10.1145/1772690.1772749
+   LI X, 2008, 2008 8 IEEE INT C DA, P893, DOI 10.1109/ICDM.2008.155
+   Ma N, 2008, INFORM PROCESS MANAG, V44, P800, DOI 10.1016/j.ipm.2007.06.006
+   Mann G.S., 2006, P 6 ACM IEEE CS JOIN, P65, DOI 10.1145/1141753.1141765
+   Maslov S, 2008, J NEUROSCI, V28, P11103, DOI 10.1523/JNEUROSCI.0002-08.2008
+   MORAVCSIK MJ, 1975, SOC STUD SCI, V5, P86, DOI 10.1177/030631277500500106
+   Page L., 1999, 199966 STANF INFOLAB
+   Radev D. R., 2009, P 2009 WORKSH TEXT C, P54, DOI DOI 10.3115/1699750.1699759
+   Sayyadi H., 2009, P 9 SIAM INT C DAT M, P533
+   Walker D, 2007, J STAT MECH-THEORY E, DOI 10.1088/1742-5468/2007/06/P06010
+   Weingart P, 2005, SCIENTOMETRICS, V62, P117, DOI 10.1007/s11192-005-0007-7
+   Wissner-Gross A., 2006, 6 INT C ADV LEARN TE, P825, DOI 10.1109/ICALT.2006.1652568
+   Xu H., 2013, P 13 C PAC ASS COMP
+   Yu P. S., 2005, Proceedings. The 2005 IEEE/WIC/ACM International Conference on Web Intelligence
+   Zhou D, 2007, IEEE DATA MINING, P739
+NR 30
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD JUL
+PY 2014
+VL 8
+IS 3
+BP 546
+EP 561
+DI 10.1016/j.joi.2014.04.006
+PG 16
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AO5IE
+UT WOS:000341376700009
+ER
+
+PT J
+AU Yang, GL
+   Rousseau, R
+   Yang, LY
+   Liu, WB
+AF Yang, Guo-liang
+   Rousseau, Ronald
+   Yang, Li-ying
+   Liu, Wen-bin
+TI A study on directional returns to scale
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Returns to scale (RTS); Directional returns to scale; Congestion;
+   Directional congestion; Evaluation of research institutes
+ID DATA ENVELOPMENT ANALYSIS; SCIENTIFIC-RESEARCH SYSTEM;
+   RESEARCH-AND-DEVELOPMENT; OPEN LABS; KEY LABS; CONGESTION; DEA; SIZE;
+   PERFORMANCE; INDICATORS
+AB This paper investigates directional returns to scale (RTS) and illustrates this approach by studying biological institutes of the Chinese Academy of Sciences (CAS). Using the following input-output indicators are proposed: senior professional and technical staffs, middle level and junior professional and technical staffs, research expenditure on personnel salaries and other expenditures, SCI papers, high-quality papers, graduates training and intellectual properties, the paper uses the methods recently proposed by Yang to analyze the directional returns to scale and the effect of directional congestion of biological institutes in Chinese Academy of Sciences. Based on our analysis we come to the following findings: (1) we detect the regime of directional returns to scale (increasing, constant, decreasing) for each biological institute. This information can be used as the basis for decision-making about organizational adjustment; (2) congestion and directional congestion occurs in several biological institutes. In such cases the outputs of these institutes decrease when the inputs increase. Such institutes should analyze the underlying reason for the occurrence of congestion so that S&T resources can be used more efficiently. (C) 2014 Elsevier Ltd. All rights reserved.
+C1 [Yang, Guo-liang] Chinese Acad Sci, Inst Policy & Management, Beijing 100190, Peoples R China.
+   [Rousseau, Ronald] Univ Antwerp, IBW, Inst Educ & Informat Sci, B-2000 Antwerp, Belgium.
+   [Rousseau, Ronald] Katholieke Univ Leuven, Dept Math, B-3000 Leuven, Belgium.
+   [Yang, Li-ying] Chinese Acad Sci, Natl Sci Lib, Beijing 100190, Peoples R China.
+   [Liu, Wen-bin] Univ Kent, Kent Sch Business, Canterbury CT2 7PE, Kent, England.
+RP Yang, GL (reprint author), Chinese Acad Sci, Inst Policy & Management, Beijing 100190, Peoples R China.
+EM glyang@casipm.ac.cn
+CR Bai C. L., 2012, BULLETIN OF CHINESE, V27, P407
+   BANKER RD, 1984, MANAGE SCI, V30, P1078, DOI 10.1287/mnsc.30.9.1078
+   BANKER RD, 1993, MANAGE SCI, V39, P1265, DOI 10.1287/mnsc.39.10.1265
+   BANKER RD, 1984, EUR J OPER RES, V17, P35, DOI 10.1016/0377-2217(84)90006-7
+   Bonaccorsi A, 2005, SCIENTOMETRICS, V63, P87, DOI 10.1007/s11192-005-0205-3
+   Brandt T, 2013, SCIENTOMETRICS, V94, P541, DOI 10.1007/s11192-012-0834-2
+   Charnes A., 1962, NAVAL RES LOG QUART, V9, P181, DOI DOI 10.1002/NAV.3800090303
+   Cooper W. W., 2004, HANDBOOK ON DATA ENV
+   Cooper WW, 1996, ANN OPER RES, V66, P279, DOI 10.1007/BF02187302
+   Cooper WW, 2001, EUR J OPER RES, V132, P62, DOI 10.1016/S0377-2217(00)00113-2
+   FARE R, 1983, Z NATIONALOKONOMIE, V43, P257, DOI 10.1007/BF01283574
+   FARE R, 1985, SCAND J ECON, V87, P594, DOI 10.2307/3439974
+   Fare R., 1985, THE MEASUREMENT OF E
+   Fox K. J., 2002, EFFICIENCY IN THE PU
+   Geisler E., 2000, THE METRICS OF SCIEN
+   Guan JC, 2010, SCIENTOMETRICS, V82, P165, DOI 10.1007/s11192-009-0030-1
+   Haynes R. M., 1983, LIBRARY AND INFORMAT, V5, P291
+   Jin BH, 2006, SCIENTOMETRICS, V67, P3, DOI 10.1007/s11192-006-0047-7
+   Jin BH, 2005, RES EVALUAT, V14, P103, DOI 10.3152/147154405781776184
+   JOHNES G, 1992, SCIENTOMETRICS, V25, P353, DOI 10.1007/BF02028091
+   Kao C, 1999, LIBRI, V49, P150, DOI 10.1515/libr.1999.49.3.150
+   Kao C, 2010, INT J PROD ECON, V123, P257, DOI 10.1016/j.ijpe.2009.06.044
+   Keeney RL, 2005, OPER RES, V53, P1, DOI 10.1287/opre.1040.0158
+   Liu WB, 2011, OMEGA-INT J MANAGE S, V39, P472, DOI 10.1016/j.omega.2010.10.005
+   Mingers J, 2009, J OPER RES SOC, V60, P168, DOI 10.1057/palgrave.jors.2602542
+   Pindyck R. S., 2000, MICROECONOMICS, V4th
+   Poister T. H., 2003, MEASURING PERFORMANC
+   Roper S, 2004, RES POLICY, V33, P487, DOI 10.1016/j.respol.2003.10.002
+   Rousseau S, 1997, SCIENTOMETRICS, V40, P45, DOI 10.1007/BF02459261
+   Rousseau S, 1998, SCIENTOMETRICS, V42, P75, DOI 10.1007/BF02465013
+   Roy S., 2001, PROCEEDINGS OF THE 8, P629
+   Schubert T, 2014, SCIENTOMETRICS, V99, P393, DOI 10.1007/s11192-013-1207-1
+   Shim W, 1998, P ASIS ANN, V35, P400
+   Smith P, 1997, ANN OPER RES, V73, P233, DOI 10.1023/A:1018981212364
+   Tone K, 2004, EUR J OPER RES, V158, P755, DOI 10.1016/S0377-2217(03)00370-9
+   Wei QL, 2004, EUR J OPER RES, V153, P641, DOI 10.1016/S0377-2217(02)00799-3
+   Yang GL, 2013, PRO INT CONF SCI INF, P551
+   Yang G. L., 2012, THESIS
+   Yang HH, 2009, TELECOMMUN POLICY, V33, P98, DOI 10.1016/j.telpol.2008.11.001
+   Zhang D. Q., 2011, STUDIES IN SCIENCE O, V29, P1835
+   Zhang DQ, 2011, RES POLICY, V40, P875, DOI 10.1016/j.respol.2011.03.010
+NR 41
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD JUL
+PY 2014
+VL 8
+IS 3
+BP 628
+EP 641
+DI 10.1016/j.joi.2014.05.004
+PG 14
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AO5IE
+UT WOS:000341376700016
+ER
+
+PT J
+AU Akhmat, G
+   Zaman, K
+   Shukui, T
+   Javed, Y
+   Khan, MM
+AF Akhmat, Ghulam
+   Zaman, Khalid
+   Shukui, Tan
+   Javed, Yasir
+   Khan, Muhammad Mushtaq
+TI Relationship between educational indicators and research outcomes in a
+   panel of top twenty nations: Windows of opportunity
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Higher education; Research outputs; R&D expenditures; Panel
+   cointegration
+ID UNIT-ROOT TESTS; FINITE-SAMPLE PROPERTIES; RESEARCH PRODUCTIVITY;
+   HETEROGENEOUS PANELS; ECONOMIC-GROWTH; COINTEGRATION
+AB The objective of the study is to examine the empirical relationship between educational indicators and research outcomes in top twenty nations of the World in terms of number of publications, citations and patents. The literature on higher education is useful in expressing the general and visible characteristics of a research domain, but cannot reveal the possible interaction between educational reforms and research outcomes. In order to overcome this limitation, the current study employed a panel cointegration technique to evaluate the long-run relationship between educational indicators and research productivity over a period of 1980-2011. The results reveal that educational indicators act as an important driver to increase research productivity in the panel of selected countries. The most promising educational factors i.e., higher education enrolment increases GDP and number of publications by 0.898% and 1.425%, respectively. Similarly, higher education expenditures per student increases research and development (R&D) expenditures, number of citations and number of patents by 1.128%, 0.968% and 0.714%, respectively. Finally, increasing school-life expectancy contributed to researchers in R&D by 0.401%. The study concludes that there is a window of opportunity to equip the youth with necessary skills to ensure a sustainable future for the nations. Higher education empowers and enables students to compete in a highly competitive and interconnected world through research and innovations, which are the drivers of new ideas, businesses and economic growth. (C) 2014 Elsevier Ltd. All rights reserved.
+C1 [Akhmat, Ghulam; Shukui, Tan] Huazhong Univ Sci & Technol, Coll Publ Adm, Wuhan, Peoples R China.
+   [Zaman, Khalid; Javed, Yasir] COMSATS Inst Informat Technol, Dept Management Sci, Abbottabad, Pakistan.
+   [Khan, Muhammad Mushtaq] COMSATS Inst Informat Technol, Dept Humanities, Abbottabad, Pakistan.
+RP Zaman, K (reprint author), COMSATS Inst Informat Technol, Dept Management Sci, Abbottabad, Pakistan.
+EM ahmad_choudary@hotmail.com; khalidzaman@ciit.net.pk; tansk@126.com;
+   yjaved@ciit.net.pk; khanmm@ciit.net.pk
+CR Abramo G, 2012, HIGH EDUC, V63, P701, DOI 10.1007/s10734-011-9471-6
+   Agasisti T., 2013, STUDIES HIGHER ED
+   Akhmat G., 2013, SCIENTOMETRICS
+   Anninos L. N., 2013, STUDIES HIGHER ED
+   Banerjee A, 1999, OXFORD B ECON STAT, V61, P607, DOI 10.1111/1468-0084.0610s1607
+   Bank World, 2012, WORLD DEV IND DAT BA
+   Bochove C. A., 2013, SCIENTOMETRICS, V96, P799
+   Breitung J, 2000, ADV ECONOMETRICS, V15, P161
+   Bryant T., 2012, J EDUC ADMIN, V51, P618
+   Corbyn Z., 2008, TIMES HIGHER ED NEWS
+   Delgado M. S., 2013, OXFORD B ECON STAT, P0305
+   Duderstadt J. J., 2012, GLOBAL EC 21 CENTURY
+   EASH M, 1983, AM EDUC RES J, V20, P5, DOI 10.3102/00028312020001005
+   Eid A., 2012, ED EC, V20, P53
+   ESI, 2012, ESS SCI IND
+   EUROPA, 2003, MEAS IMPR HIGH ED RE
+   Gibney E., 2013, TIMES HIGHER ED
+   Goswami C, 2013, INT J COMMERCE MANAG, V23, P148
+   Hadri K, 2000, ECONOMET J, V3, P148, DOI DOI 10.1111/1368-423X.00043
+   Im KS, 2003, J ECONOMETRICS, V115, P53, DOI 10.1016/S0304-4076(03)00092-7
+   Jung J., 2013, HIGHER ED Q, P0951
+   Kao C, 1998, ECONOMET REV, V17, P57
+   Leirin A., 1992, ECONOMETRICA, V61, P783
+   Leslie LL, 2012, RES HIGH EDUC, V53, P614, DOI 10.1007/s11162-011-9248-x
+   Levin A, 2002, J ECONOMETRICS, V108, P1, DOI 10.1016/S0304-4076(01)00098-7
+   Levin A., 1993, UNIT ROOT TESTS PANE
+   Lips D., 2008, BACKGROUNDER, V2179, P1
+   LUCAS RE, 1988, J MONETARY ECON, V22, P3, DOI 10.1016/0304-3932(88)90168-7
+   Lupton R., 2013, 3 LOND SCH EC POL SC
+   Maddala GS, 1999, OXFORD B ECON STAT, V61, P631, DOI 10.1111/1468-0084.61.s1.13
+   Maitra B., 2012, ASIA PACIFIC DEV J, V19, P19
+   Mark NC, 2002, 287 NBER
+   Musila J. W., 2004, J DEV AREAS, V38, P123, DOI 10.1353/jda.2005.0015
+   NSF, 2012, ACAD RES DEV
+   OECD, 2013, ED IND FOC
+   Old K., 2013, GLOBALIZING HIGEHR E
+   Pedroni P, 1999, OXFORD B ECON STAT, V61, P653, DOI 10.1111/1468-0084.61.s1.14
+   Pedroni P, 2000, ADV ECONOMETRICS, V15, P93
+   Pedroni P, 2004, ECONOMET THEOR, V20, P597, DOI 10.1017/S0266466604203073
+   PHILLIPS PCB, 1988, BIOMETRIKA, V75, P335, DOI 10.1093/biomet/75.2.335
+   PHILLIPS PCB, 1995, ECONOMETRICA, V63, P1023, DOI 10.2307/2171721
+   Pouris A., 2013, SCIENTOMETRICS, V95, P129
+   Prodan I., 2005, APPL ECONOMETRICS IN, V5, P5
+   Romer P. M., 1990, J POLITICAL EC, V98, P71, DOI DOI 10.1086/261725
+   ROMER PM, 1986, J POLIT ECON, V94, P1002, DOI 10.1086/261420
+   SAIKKONEN P, 1991, ECONOMET THEOR, V7, P1
+   SOLOW RM, 1956, Q J ECON, V70, P65, DOI 10.2307/1884513
+   STOCK JH, 1993, ECONOMETRICA, V61, P783, DOI 10.2307/2951763
+   STOKEY NL, 1991, Q J ECON, V106, P587, DOI 10.2307/2937948
+   Swan T., 1956, ECON REC, V32, P334, DOI DOI 10.1111/J.1475-4932.1956.TB004-34.X
+   Todose D., 2000, WSPOLCZESNA EKONOMIA, V3, P109
+   Toivanen O., 2013, DOES ED LEAD MORE IN
+   Tseng YH, 2013, SCIENTOMETRICS, V95, P1141, DOI 10.1007/s11192-013-0966-z
+   UNESCO, 2009, ED IND TECHN GUID
+   United Way, 2009, GOALS COMM GOOD EXPL
+   Wang DHM, 2013, J BUS RES, V66, P1990, DOI 10.1016/j.jbusres.2013.02.023
+   Westerlund J., 2003, 200316 U LUND DEP EC
+   Diem A, 2013, RES HIGH EDUC, V54, P86, DOI 10.1007/s11162-012-9264-5
+   Xhaferri R., 2013, DAWN NEWS
+   Young J., 2011, TOP 20 COUNTRIES SCI
+NR 60
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD APR
+PY 2014
+VL 8
+IS 2
+BP 349
+EP 361
+DI 10.1016/j.joi.2014.01.007
+PG 13
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AG7PK
+UT WOS:000335609900006
+ER
+
+PT J
+AU Brzezinski, M
+AF Brzezinski, Michal
+TI Empirical modeling of the impact factor distribution
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Impact factor; Two-exponent law; Dagum model; Singh-Maddala model;
+   Maximum likelihood estimation; Model selection
+ID MADDALA INCOME DISTRIBUTIONS; SIZE DISTRIBUTION
+AB The distribution of impact factors has been modeled in the recent informetric literature using two-exponent law proposed by Mansilla, Koppen, Cocho, and Miramontes (2007). This paper shows that two distributions widely-used in economics, namely the Dagum and Singh-Maddala models, possess several advantages over the two-exponent model. Compared to the latter, the former models give as good as or slightly better fit to data on impact factors in eight important scientific fields. In contrast to the two-exponent model, both proposed distributions have closed-from probability density functions and cumulative distribution functions, which facilitates fitting these distributions to data and deriving their statistical properties. (C) 2014 Elsevier Ltd. All rights reserved.
+C1 Univ Warsaw, Fac Econ Sci, PL-00325 Warsaw, Poland.
+RP Brzezinski, M (reprint author), Univ Warsaw, Fac Econ Sci, PL-00325 Warsaw, Poland.
+EM mbrzezinski@wne.uw.edu.pl
+CR Albarran P, 2011, J AM SOC INF SCI TEC, V62, P40, DOI 10.1002/asi.21448
+   Bandourian R., 2003, ESTADISTICA, V55, P135
+   Burr IW, 1942, ANN MATH STAT, V13, P215, DOI 10.1214/aoms/1177731607
+   Campanario JM, 2010, SCIENTOMETRICS, V84, P35, DOI 10.1007/s11192-009-0094-y
+   Clauset A, 2009, SIAM REV, V51, P661, DOI 10.1137/070710111
+   DAGUM C, 1977, ECON APPL, V30, P413
+   Egghe L, 2011, SCIENTOMETRICS, V87, P683, DOI 10.1007/s11192-011-0338-5
+   Egghe L, 2005, LIBR INFORM SCI SER, P1
+   Egghe L, 2011, INFORM PROCESS MANAG, V47, P238, DOI 10.1016/j.ipm.2010.03.009
+   Egghe L, 2009, J INFORMETR, V3, P290, DOI 10.1016/j.joi.2009.01.004
+   Hartshorn R., 2007, J ECON INEQUAL, V5, P353, DOI 10.1007/s10888-006-9039-3
+   Jenkins SP, 2009, REV INCOME WEALTH, V55, P392, DOI 10.1111/j.1475-4991.2009.00318.x
+   Kleiber C, 1996, ECON LETT, V53, P265, DOI 10.1016/S0165-1765(96)00937-8
+   Kleiber C, 2008, ECON STUD INEQUAL SO, V5, P97, DOI 10.1007/978-0-387-72796-7_6
+   Kleiber C., 2003, STAT SIZE DISTRIBUTI
+   Lavalette D., 1996, U35091405 INSERM I C
+   Lee A., 2006, AUSTR NZ J STAT, V48, P67
+   Mansilla R, 2007, J INFORMETR, V1, P155, DOI 10.1016/j.joi.2007.01.001
+   MCDONALD JB, 1984, ECONOMETRICA, V52, P647, DOI 10.2307/1913469
+   Mishra S. K., 2010, NOTE EMPIRICAL SAMPL
+   Sarabia JM, 2012, J INFORMETR, V6, P66, DOI 10.1016/j.joi.2011.09.005
+   SINGH SK, 1976, ECONOMETRICA, V44, P963, DOI 10.2307/1911538
+   VUONG QH, 1989, ECONOMETRICA, V57, P307, DOI 10.2307/1912557
+   Waltman L, 2009, J INFORMETR, V3, P363, DOI 10.1016/j.joi.2009.05.004
+   WILFLING B, 1993, ECON LETT, V43, P53, DOI 10.1016/0165-1765(93)90134-X
+NR 25
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD APR
+PY 2014
+VL 8
+IS 2
+BP 362
+EP 368
+DI 10.1016/j.joi.2014.01.009
+PG 7
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AG7PK
+UT WOS:000335609900007
+ER
+
+PT J
+AU Gomez-Nunez, AJ
+   Batagelj, V
+   Vargas-Quesada, B
+   Moya-Anegon, F
+   Chinchilla-Rodriguez, Z
+AF Gomez-Nunez, Antonio J.
+   Batagelj, Vladimir
+   Vargas-Quesada, Benjamin
+   Moya-Anegon, Felix
+   Chinchilla-Rodriguez, Zaida
+TI Optimizing SCImago Journal & Country Rank classification by community
+   detection
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Community detection; Clustering; SCImago Journal & Country Rank; Journal
+   classification; Citation-based network
+ID SUBJECT CLASSIFICATION; SCIENCE; CITATION; INFORMATION; TEXT
+AB Subject classification arises as an important topic for bibliometrics and scientometrics, searching to develop reliable and consistent tools and outputs. Such objectives also call for a well delimited underlying subject classification scheme that adequately reflects scientific fields. Within the broad ensemble of classification techniques, clustering analysis is one of the most successful.
+   Two clustering algorithms based on modularity the VOS and Louvain methods are presented here for the purpose of updating and optimizing the journal classification of the SCImago Journal & Country Rank (SJR) platform. We used network analysis and Pajek visualization software to run both algorithms on a network of more than 18,000 SJR journals combining three citation-based measures of direct citation, co-citation and bibliographic coupling. The set of clusters obtained was termed through category labels assigned to SJR journals and significant words from journal titles.
+   Despite the fact that both algorithms exhibited slight differences in performance, the results show a similar behaviour in grouping journals. Consequently, they are deemed to be appropriate solutions for classification purposes. The two newly generated algorithm-based classifications were compared to other bibliometric classification systems, including the original SJR and WoS Subject Categories, in order to validate their consistency, adequacy and accuracy. In addition to some noteworthy differences, we found a certain coherence and homogeneity among the four classification systems analysed. (C) 2014 Elsevier Ltd. All rights reserved.
+C1 [Gomez-Nunez, Antonio J.] CSIC, SCImago Res Grp Associated Unit, Fac Commun & Documentat, Granada 18071, Spain.
+   [Batagelj, Vladimir] Univ Ljubljana, Fac Math & Phys, Ljubljana 1000, Slovenia.
+   [Vargas-Quesada, Benjamin] Univ Granada, Dept Informat & Commun, Fac Commun & Documentat, E-18071 Granada, Spain.
+   [Moya-Anegon, Felix; Chinchilla-Rodriguez, Zaida] CSIC, Inst Publ Goods & Policies, Madrid 28037, Spain.
+RP Gomez-Nunez, AJ (reprint author), CSIC, SCImago Res Grp Associated Unit, Fac Commun & Documentat, Campus Cartuja S-N, Granada 18071, Spain.
+EM anxusgo@gmail.com; vladimir.batagelj@fmf.uni-lj.si; benjamin@ugr.es;
+   felix.demoya@csic.es; zaida.chinchilla@csic.es
+RI Batagelj, Vladimir/B-9105-2008; Vargas-Quesada, Benjamin/L-7222-2014;
+   Chinchilla-Rodriguez, Zaida/B-5231-2012
+OI Batagelj, Vladimir/0000-0002-0240-9446; Chinchilla-Rodriguez,
+   Zaida/0000-0002-1608-4478
+CR Ahlgren P, 2009, J INFORMETR, V3, P49, DOI 10.1016/j.joi.2008.11.003
+   Archambault E, 2011, PRO INT CONF SCI INF, P66
+   Batagelj V., 2003, DENSITY BASED APPROA
+   Batagelj V., 2011, PAJEK PROGRAM ANAL V
+   Batagelj V., 1997, PAJEK PROGRAM LARGE
+   Blondel VD, 2008, J STAT MECH-THEORY E, DOI 10.1088/1742-5468/2008/10/P10008
+   Borner K, 2012, PLOS ONE, V7, DOI 10.1371/journal.pone.0039464
+   Boyack KW, 2011, PLOS ONE, V6, DOI 10.1371/journal.pone.0018029
+   Boyack KW, 2013, J AM SOC INF SCI TEC, V64, P1759, DOI 10.1002/asi.22896
+   Boyack KW, 2010, J AM SOC INF SCI TEC, V61, P2389, DOI 10.1002/asi.21419
+   Cantos-Mateos G, 2012, ASLIB PROC, V64, P561, DOI 10.1108/00012531211281698
+   Chang YF, 2011, J AM SOC INF SCI TEC, V62, P2404, DOI 10.1002/asi.21634
+   De Nooy W., 2012, EXPLORATORY SOCIAL N
+   Elsevier, 2004, SCOPUS
+   Garland K., 1982, INFORM PROCESSING MA, V19, P113
+   Glanzel W, 2012, PROF INFORM, V21, P194, DOI 10.3145/epi.2012.mar.11
+   Gomez I, 1996, SCIENTOMETRICS, V35, P223, DOI 10.1007/BF02018480
+   Gomez-Nunez AJ, 2011, SCIENTOMETRICS, V89, P741, DOI 10.1007/s11192-011-0485-8
+   Hu J.-M., 2011, SCIENTOMETRICS, V91, P203
+   Jacso P, 2013, PROF INFORM, V22, P459, DOI 10.3145/epi.2013.sep.12
+   Janssens F, 2009, INFORM PROCESS MANAG, V45, P683, DOI 10.1016/j.ipm.2009.06.003
+   Klavans R, 2009, J AM SOC INF SCI TEC, V60, P455, DOI 10.1002/asi.20991
+   Leydesdorff L, 2012, J INFORMETR, V6, P318, DOI 10.1016/j.joi.2011.11.003
+   Leydesdorff L, 2011, J AM SOC INF SCI TEC, V62, P2414, DOI 10.1002/asi.21636
+   LUHN HP, 1957, IBM J RES DEV, V1, P309
+   Newman M. E. J., 2004, PHYS REV E, V69, DOI [10.1103/PhysRevE.69.026113, DOI 10.1103/PHYSREVE.69.026113]
+   Persson O, 2010, J INFORMETR, V4, P415, DOI 10.1016/j.joi.2010.03.006
+   Pudovkin AI, 2002, J AM SOC INF SCI TEC, V53, P1113, DOI 10.1002/asi.10153
+   Rafols I, 2009, J AM SOC INF SCI TEC, V60, P1823, DOI 10.1002/asi.21086
+   Rafols I, 2010, J AM SOC INF SCI TEC, V61, P1871, DOI 10.1002/asi.21368
+   Rockwell G., 2009, HERMENEUTI CA RHETOR
+   Rousseau R, 2004, J AM SOC INF SCI TEC, V55, P513, DOI 10.1002/asi.10401
+   SALTON G, 1988, INFORM PROCESS MANAG, V24, P513, DOI 10.1016/0306-4573(88)90021-0
+   SCImago, 2007, SCIMAGO J COUNTRY RA
+   Small H, 1999, J AM SOC INFORM SCI, V50, P799, DOI 10.1002/(SICI)1097-4571(1999)50:9<799::AID-ASI9>3.0.CO;2-G
+   Thomson Reuters, 2009, ISI WEB KNOWLEDGE
+   van Eck NJ, 2010, SCIENTOMETRICS, V84, P523, DOI 10.1007/s11192-009-0146-3
+   Vargas-Quesada B., NEW SJR J CLAS UNPUB
+   Vargas-Quesada B., 2007, VISUALIZING STRUCTUR
+   Waltman L, 2010, J INFORMETR, V4, P629, DOI 10.1016/j.joi.2010.07.002
+   Waltman L, 2012, J AM SOC INF SCI TEC, V63, P2378, DOI 10.1002/asi.22748
+   Thijs B, 2013, PRO INT CONF SCI INF, P237
+   Zhang L, 2010, SCIENTOMETRICS, V82, P687, DOI 10.1007/s11192-010-0180-1
+   Zhang L, 2009, SCIENTOMETRICS, V81, P821, DOI 10.1007/s11192-008-2245-y
+NR 44
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD APR
+PY 2014
+VL 8
+IS 2
+BP 369
+EP 383
+DI 10.1016/j.joi.2014.01.011
+PG 15
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AG7PK
+UT WOS:000335609900008
+ER
+
+PT J
+AU Kaur, J
+   Radicchi, F
+   Menczer, F
+AF Kaur, Jasleen
+   Radicchi, Filippo
+   Menczer, Filippo
+TI On the use of sampling statistics to advance bibliometrics
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Letter
+ID UNIVERSALITY; INDICATORS; IMPACT
+C1 [Kaur, Jasleen; Radicchi, Filippo; Menczer, Filippo] Indiana Univ, Sch Informat & Comp, Ctr Complex Networks & Syst Res, Bloomington, IN 47405 USA.
+RP Kaur, J (reprint author), Indiana Univ, Sch Informat & Comp, Ctr Complex Networks & Syst Res, Bloomington, IN 47405 USA.
+EM jakaur@umail.iu.edu
+RI Radicchi, Filippo/B-4407-2009
+CR Bornmann L, 2014, J INFORMETR, V8, P273, DOI 10.1016/j.joi.2013.12.006
+   Castellano C, 2009, ARCH IMMUNOL THER EX, V57, P85, DOI 10.1007/s00005-009-0014-0
+   Radicchi F, 2012, PLOS ONE, V7, DOI 10.1371/journal.pone.0033833
+   Harzing A. W., 2012, PUBLISH PERISH
+   Kaur J, 2012, PLOS ONE, V7, DOI 10.1371/journal.pone.0043235
+   Kaur J, 2013, J INFORMETR, V7, P924, DOI 10.1016/j.joi.2013.09.002
+   Menczer F., 2010, P WEB SCI C EXT FRON
+   Pudovkin AI, 2002, J AM SOC INF SCI TEC, V53, P1113, DOI 10.1002/asi.10153
+   Radicchi F, 2011, PHYS REV E, V83, DOI 10.1103/PhysRevE.83.046116
+   Radicchi F, 2008, P NATL ACAD SCI USA, V105, P17268, DOI 10.1073/pnas.0806977105
+   Radicchi F, 2013, SCIENTOMETRICS, V97, P627, DOI 10.1007/s11192-013-1027-3
+   Sun XL, 2013, INFORM PROCESS MANAG, V49, P454, DOI 10.1016/j.ipm.2012.09.001
+   Sun XL, 2013, SCI REPORTS, V3
+NR 13
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD APR
+PY 2014
+VL 8
+IS 2
+BP 419
+EP 420
+DI 10.1016/j.joi.2014.01.010
+PG 2
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AG7PK
+UT WOS:000335609900012
+ER
+
+PT J
+AU Klavans, R
+   Boyack, KW
+AF Klavans, Richard
+   Boyack, Kevin W.
+TI Mapping altruism
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Altruism; Non-profit organizations; Topic modeling; Science mapping
+ID SCIENCE; COOPERATION; PERSONALITY; PUNISHMENT; EVOLUTION; EMPATHY
+AB A great deal of work has been done to understand how science contributes to technological innovation and medicine. This is no surprise given the amount of money invested annually in R&D. However, what is not well known is that US science (R&D) investment is only one-sixth that of the annual revenue received by non-profit organizations (NPOs) in the US. The large majority of NPO revenues are devoted to the remaining landscape of altruistic causes - those not relying as heavily on scientific inquiry. Given this broader context, one might reasonably expect the non-profit world to have been as well characterized as that of scientific research. The unfortunate truth is that no map of altruistic missions and causes exists; the landscape of altruistic activity is virtually unknown. In this paper, we present the first maps of altruistic mission space. These maps were created using the text from websites of 125,000 non-profit organizations (NPOs) in the US. The maps consist of 357 topics covering areas such as religion, education, sports, culture, human services, public policy and medical care. The role of science in this altruistic landscape is examined. Possible applications are discussed.
+C1 [Klavans, Richard] SciTech Strategies Inc, Berwyn, PA 19312 USA.
+   [Boyack, Kevin W.] SciTech Strategies Inc, Albuquerque, NM 87122 USA.
+RP Boyack, KW (reprint author), SciTech Strategies Inc, Albuquerque, NM 87122 USA.
+EM rklavans@mapofscience.com; kboyack@mapofscience.com
+CR Andreoni J, 2002, ECONOMETRICA, V70, P737, DOI 10.1111/1468-0262.00302
+   ANDREONI J, 1990, ECON J, V100, P464, DOI 10.2307/2234133
+   BATSON CD, 1986, J PERS SOC PSYCHOL, V50, P212, DOI 10.1037//0022-3514.50.1.212
+   Bennett R., 2003, INT J NONPROFIT VOLU, V8, P12, DOI DOI 10.1002/NVSM.198
+   Blei DM, 2007, ANN APPL STAT, V1, P17, DOI 10.1214/07-AOAS114
+   Bollen J, 2009, PLOS ONE, V4, DOI 10.1371/journal.pone.0004803
+   Borner K, 2003, ANNU REV INFORM SCI, V37, P179, DOI 10.1002/aris.1440370106
+   Boyack KW, 2011, PLOS ONE, V6, DOI 10.1371/journal.pone.0018029
+   Boyack K. W., 2013, J AM SOC INFORM SCI
+   Boyack K. W., 2014, IDENTIFYING EMERGING
+   Boyd R, 2010, SCIENCE, V328, P617, DOI 10.1126/science.1183665
+   DAVIS MH, 1983, J PERS SOC PSYCHOL, V44, P113, DOI 10.1037//0022-3514.44.1.113
+   de Waal FBM, 2008, ANNU REV PSYCHOL, V59, P279, DOI 10.1146/annurev.psych.59.103006.093625
+   Eisenberg N., 1990, EMPATHY ITS DEV, P292
+   Fehr E, 2003, NATURE, V425, P785, DOI 10.1038/nature02043
+   Fehr E, 2002, NATURE, V415, P137, DOI 10.1038/415137a
+   Grueber M., 2013, 2014 GLOBAL R D FUND
+   Klavans R, 2006, J AM SOC INF SCI TEC, V57, P251, DOI 10.1002/asi.20274
+   Klavans R, 2009, J AM SOC INF SCI TEC, V60, P455, DOI 10.1002/asi.20991
+   Klavans R, 2010, SCIENTOMETRICS, V82, P539, DOI 10.1007/s11192-010-0188-6
+   Lehmann L, 2006, J EVOLUTION BIOL, V19, P1365, DOI 10.1111/j.1420-9101.2006.01119.x
+   Levine D. K., 1998, REV ECON DYNAM, V1, P593, DOI [10.1006/redy.1998.0023, DOI 10.1006/REDY.1998.0023]
+   DellaVigna S, 2012, Q J ECON, V127, P1, DOI 10.1093/qje/qjr050
+   Martin S, 2011, PROC SPIE, V7868, DOI 10.1117/12.871402
+   McCallum AK, 2002, MALLET MACHINE LEARN
+   RUSHTON JP, 1981, PERS INDIV DIFFER, V2, P293
+   West SA, 2007, J EVOLUTION BIOL, V20, P415, DOI 10.1111/j.1420-9101.2006.01258.x
+NR 27
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD APR
+PY 2014
+VL 8
+IS 2
+BP 431
+EP 447
+DI 10.1016/j.joi.2014.02.002
+PG 17
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AG7PK
+UT WOS:000335609900014
+ER
+
+PT J
+AU Tsai, CF
+AF Tsai, Chih-Fong
+TI Citation impact analysis of top ranked computer science journals and
+   their rankings
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Journal ranking; Impact factor; h-Index; Correlation coefficient;
+   Computer science
+ID H-INDEX; DATA FUSION; QUALITY; PSYCHIATRY; BUSINESS
+AB Citation based approaches, such as the impact factor and h-index, have been used to measure the influence or impact of journals for journal rankings. A survey of the related literature for different disciplines shows that the level of correlation between these citation based approaches is domain dependent. We analyze the correlation between the impact factors and h-indices of the top ranked computer science journals for five different subjects. Our results show that the correlation between these citation based approaches is very low. Since using a different approach can result in different journal rankings, we further combine the different results and then re-rank the journals using a combination method. These new ranking results can be used as a reference for researchers to choose their publication outlets. (C) 2014 Elsevier Ltd. All rights reserved.
+C1 Natl Cent Univ, Dept Informat Management, Taipei, Taiwan.
+RP Tsai, CF (reprint author), Natl Cent Univ, Dept Informat Management, Taipei, Taiwan.
+EM cftsai@mgt.ncu.edu.tw
+CR Bador P, 2010, SCIENTOMETRICS, V84, P65, DOI 10.1007/s11192-009-0058-2
+   Garfield E, 2006, JAMA-J AM MED ASSOC, V295, P90, DOI 10.1001/jama.295.1.90
+   Han WD, 2010, J ANIM VET ADV, V9, P1552
+   Harzing AW, 2009, J AM SOC INF SCI TEC, V60, P41, DOI 10.1002/asi.20953
+   Harzing A. W., 2011, PUBLISH PERISH BOOK
+   Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   Hodge DR, 2011, RES SOCIAL WORK PRAC, V21, P222, DOI 10.1177/1049731510369141
+   Hunt GE, 2010, HARVARD REV PSYCHIAT, V18, P207, DOI 10.3109/10673229.2010.493742
+   Katerattanakul P, 2003, COMMUN ACM, V46, P111, DOI 10.1145/944217.944221
+   LEE J, 1997, ACM SIGIR, P267
+   Mingers J, 2012, INFORM PROCESS MANAG, V48, P234, DOI 10.1016/j.ipm.2011.03.009
+   Mylonopoulos NA, 2001, COMMUN ACM, V44, P29, DOI 10.1145/383694.383701
+   Nuray R, 2006, INFORM PROCESS MANAG, V42, P595, DOI 10.1016/j.ipm.2005.03.023
+   Peffers K., 2003, J INFORMATION TECHNO, V5, P63
+   Vanclay JK, 2008, J INFORMETR, V2, P326, DOI 10.1016/j.joi.2008.07.002
+   Wu SL, 2006, LECT NOTES COMPUT SC, V4182, P642
+   Zhang L, 2012, ENG ED MANAGEMENT, V112, P191
+NR 17
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD APR
+PY 2014
+VL 8
+IS 2
+BP 318
+EP 328
+DI 10.1016/j.joi.2014.01.002
+PG 11
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AG7PK
+UT WOS:000335609900003
+ER
+
+PT J
+AU Vinkler, P
+AF Vinkler, Peter
+TI The use of the Percentage Rank Position index for comparative evaluation
+   of journals
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Citation rank; Elite set; Field differences; Percentage Rank Position;
+   Eminence of journals
+ID IMPACT INDICATOR
+AB In the present paper the Percentage Rank Position (PRP) index concluding from the principle of Similar Distribution of Information Impact in different fields of science (Vinkler, 2013), is suggested to assess journals in different research fields comparatively. The publications in the journals dedicated to a field are ranked by citation frequency, and the PRP-index of the papers in the elite set of the field is calculated. The PRP-index relates the citation rank number of the paper to the total number of papers in the corresponding set. The sum of the PRP-index of the elite papers in a journal, PRP(j,F) may represent the eminence of the journal in the field. The non-parametric and non-dimensional PRP(j,F) index of journals is believed to be comparable across fields. (C) 2014 Elsevier Ltd. All rights reserved.
+C1 Hungarian Acad Sci, Res Ctr Nat Sci, H-1117 Budapest, Hungary.
+RP Vinkler, P (reprint author), Hungarian Acad Sci, Res Ctr Nat Sci, Magyar Tudosok Krt 2, H-1117 Budapest, Hungary.
+EM vinkler.peter@ttk.mta.hu
+CR Bornmann L, 2010, PLOS ONE, V5, DOI 10.1371/journal.pone.0011344
+   Bornmann L, 2010, J INFORMETR, V4, P441, DOI 10.1016/j.joi.2010.04.004
+   Bornmann L, 2011, J INFORMETR, V5, P228, DOI 10.1016/j.joi.2010.10.009
+   Bornmann L., 2014, J AM SOC I IN PRESS
+   Egghe L, 2006, SCIENTOMETRICS, V69, P131, DOI 10.1007/s11192-006-0144-7
+   GARFIELD E, 1976, NATURE, V264, P609, DOI 10.1038/264609a0
+   Glanzel W, 2011, SCIENTOMETRICS, V88, P297, DOI 10.1007/s11192-011-0347-4
+   Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   Kosmulski M, 2013, J INFORMETR, V7, P313, DOI 10.1016/j.joi.2012.12.002
+   Kosmulski M, 2011, J INFORMETR, V5, P481, DOI 10.1016/j.joi.2011.03.001
+   Leydesdorff L, 2012, SCIENTOMETRICS, V92, P355, DOI 10.1007/s11192-012-0660-6
+   Leydesdorff L, 2011, J AM SOC INF SCI TEC, V62, P1370, DOI 10.1002/asi.21534
+   Vinkler P, 2011, J AM SOC INF SCI TEC, V62, P1963, DOI 10.1002/asi.21600
+   Vinkler P, 2013, J INFORMETR, V7, P712, DOI 10.1016/j.joi.2013.04.006
+   Vinkler P, 2009, J INF SCI, V35, P602, DOI 10.1177/0165551509103601
+   Vinkler P, 2010, CHANDOS INF PROF SER, P1, DOI 10.1533/9781780630250
+   Vinkler P, 2012, SCIENTOMETRICS, V92, P471, DOI 10.1007/s11192-012-0688-7
+   Vinkler P, 2012, J INFORMETR, V6, P254, DOI 10.1016/j.joi.2011.12.004
+   Vinkler P, 2010, SCIENTOMETRICS, V82, P461, DOI 10.1007/s11192-010-0182-z
+   Wagner CS, 2012, RES EVALUAT, V21, P183, DOI 10.1093/reseval/rvs012
+NR 20
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD APR
+PY 2014
+VL 8
+IS 2
+BP 340
+EP 348
+DI 10.1016/j.joi.2014.01.001
+PG 9
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AG7PK
+UT WOS:000335609900005
+ER
+
+PT J
+AU Walters, WH
+AF Walters, William H.
+TI Do Article Influence scores overestimate the citation impact of social
+   science journals in subfields that are related to higher-impact natural
+   science disciplines?
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Bias; Eigenfactor; Interdisciplinary; Journal Citation Reports;
+   Multidisciplinary; Web of Science
+ID EIGENFACTOR; INDICATOR; ECONOMICS; GEOGRAPHY; PRESTIGE; RANKING;
+   METRICS; INDEXES
+AB Unlike Impact Factors (IF), Article Influence (AI) scores assign greater weight to citations that appear in highly cited journals. The natural sciences tend to have higher citation rates than the social sciences. We might therefore expect that relative to IF, AI overestimates the citation impact of social science journals in subfields that are related to (and presumably cited in) higher-impact natural science disciplines. This study evaluates that assertion through a set of simple and multiple regressions covering seven social science disciplines: anthropology, communication, economics, education, library and information science, psychology, and sociology. Contrary to expectations. AI underestimates 5IF (five-year Impact Factor) for journals in science-related subfields such as scientific communication, science education, scientometrics, biopsychology, and medical sociology. journals in these subfields have low AI scores relative to their 5IF values. Moreover, the effect of science-related status is considerable typically 0.60 5IF units or 0.50 SD. This effect is independent of the more general finding that AI scores underestimate 5IF for higher-impact journals. It is also independent of the very modest curvilinearity in the relationship between AI and 5IF. (C) 2014 Elsevier Ltd. All rights reserved.
+C1 Menlo Coll, Bowman Lib, Atherton, CA 94027 USA.
+RP Walters, WH (reprint author), Menlo Coll, Bowman Lib, 1000 El Camino Real, Atherton, CA 94027 USA.
+EM wwalters@menlo.edu
+RI Walters, William/K-8188-2012
+OI Walters, William/0000-0002-7358-5244
+CR Abramo G, 2012, SCIENTOMETRICS, V93, P1005, DOI 10.1007/s11192-012-0714-9
+   Althouse BM, 2009, J AM SOC INF SCI TEC, V60, P27, DOI 10.1002/asi.20936
+   Balaban AT, 2012, SCIENTOMETRICS, V92, P241, DOI 10.1007/s11192-012-0637-5
+   Bar-Ilan J, 2012, SCIENTOMETRICS, V92, P249, DOI 10.1007/s11192-012-0671-3
+   Bergstrom CT, 2008, J NEUROSCI, V28, P11433, DOI 10.1523/JNEUROSCI.0003-08.2008
+   Chang CL, 2011, J ECON SURV, V25, P326, DOI 10.1111/j.1467-6419.2010.00648.x
+   Chang CL, 2011, SCIENTOMETRICS, V87, P17, DOI 10.1007/s11192-010-0335-0
+   Colledge L, 2010, SERIALS, V23, P215, DOI 10.1629/23215
+   Davis PM, 2008, J AM SOC INF SCI TEC, V59, P2186, DOI 10.1002/asi.20943
+   Ding Y, 2011, INFORM PROCESS MANAG, V47, P80, DOI 10.1016/j.ipm.2010.01.002
+   Elkins MR, 2010, SCIENTOMETRICS, V85, P81, DOI 10.1007/s11192-010-0262-0
+   Engemann KM, 2009, FED RESERVE BANK ST, V91, P127
+   Fersht A, 2009, P NATL ACAD SCI USA, V106, P6883, DOI 10.1073/pnas.0903307106
+   Franceschet M, 2010, J INFORMETR, V4, P239, DOI 10.1016/j.joi.2009.12.002
+   Franceschet M, 2010, INFORM PROCESS MANAG, V46, P555, DOI 10.1016/j.ipm.2010.01.001
+   Garfield E, 2007, INT MICROBIOL, V10, P65, DOI 10.2436/20.1501.01.10
+   Harrison S, 2004, AREA, V36, P435, DOI 10.1111/j.0004-0894.2004.00243.x
+   Jacso P, 2010, ONLINE INFORM REV, V34, P339, DOI 10.1108/14684521011037034
+   Jacso P, 2010, ONLINE INFORM REV, V34, P496, DOI 10.1108/14684521011054099
+   Kochen M., 1974, PRINCIPLES INFORM RE, P63
+   Levitt JM, 2008, J AM SOC INF SCI TEC, V59, P1973, DOI 10.1002/asi.20914
+   Leydesdorff L, 2008, J AM SOC INF SCI TEC, V59, P278, DOI 10.1002/asi.20743
+   LIEBOWITZ SJ, 1984, J ECON LIT, V22, P77
+   Moed HF, 2010, J INFORMETR, V4, P265, DOI 10.1016/j.joi.2010.01.002
+   PINSKI G, 1976, INFORM PROCESS MANAG, V12, P297, DOI 10.1016/0306-4573(76)90048-0
+   Postma E, 2007, PLOS ONE, V2, DOI 10.1371/journal.pone.0000999
+   Rousseau R., 2009, NANJ U
+   Smolinsky L, 2012, SCIENTOMETRICS, V91, P911, DOI 10.1007/s11192-012-0647-3
+   So CYK, 1998, SCIENTOMETRICS, V41, P325, DOI 10.1007/BF02459049
+   Turner BL, 2002, ANN ASSOC AM GEOGR, V92, P52, DOI 10.1111/1467-8306.00279
+   Vanclay JK, 2009, SCIENTOMETRICS, V78, P3, DOI 10.1007/s11192-008-1778-4
+   van Leeuwen T, 2012, SCIENTOMETRICS, V92, P443, DOI 10.1007/s11192-012-0677-x
+   Viles H, 2004, AREA, V36, P337, DOI 10.1111/j.0004-0894.2004.00234.x
+   Vilhena D., 2012, CORRELATION ARTICLE
+   Waltman L, 2013, J INFORMETR, V7, P272, DOI 10.1016/j.joi.2012.11.011
+   Waltman L, 2010, J AM SOC INF SCI TEC, V61, P1476, DOI 10.1002/asi.21354
+   West J, 2010, J AM SOC INF SCI TEC, V61, P1800, DOI 10.1002/asi.21374
+   West J. D., 2012, MODEL RES
+   West J. D., 2012, WHY EIGENFACTOR
+   West JD, 2010, COLL RES LIBR, V71, P236
+   Yan E, 2010, J AM SOC INF SCI TEC, V61, P1635, DOI 10.1002/asi.21349
+   Yin CY, 2011, CURR SCI INDIA, V100, P648
+NR 42
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD APR
+PY 2014
+VL 8
+IS 2
+BP 421
+EP 430
+DI 10.1016/j.joi.2014.02.001
+PG 10
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AG7PK
+UT WOS:000335609900013
+ER
+
+PT J
+AU Cerovsek, T
+   Mikos, M
+AF Cerovsek, Tomo
+   Mikos, Matjaz
+TI A comparative study of cross-domain research output and citations:
+   Research impact cubes and binary citation frequencies
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE h-Index; Fields of science; Research impact cube; Binary citation index;
+   Scientometrics; Lorenz curves
+ID SCIENTIFIC-RESEARCH OUTPUT; H-INDEX; BIBLIOMETRIC INDICATORS; JOURNALS;
+   HUMANITIES; SCIENCES
+AB Across the various scientific domains, significant differences occur with respect to research publishing formats, frequencies and citing practices, the nature and organisation of research and the number and impact of a given domain's academic journals. Consequently, differences occur in the citations and h-indices of the researchers. This paper attempts to identify cross-domain differences using quantitative and qualitative measures. The study focuses on the relationships among citations, most-cited papers and h-indices across domains and for research group sizes. The analysis is based on the research output of approximately 10,000 researchers in Slovenia, of which we focus on 6536 researchers working in 284 research group programmes in 2008-2012.
+   As comparative measures of cross-domain research output, we propose the research impact cube (RIC) representation and the analysis of most-cited papers, highest impact factors and citation distribution graphs (Lorenz curves). The analysis of Lotka's model resulted in the proposal of a binary citation frequencies (BCF) distribution model that describes well publishing frequencies. The results may be used as a model to measure, compare and evaluate fields of science on the global, national and research community level to streamline research policies and evaluate progress over a definite time period. (C) 2013 Elsevier Ltd. All rights reserved.
+C1 [Cerovsek, Tomo; Mikos, Matjaz] Univ Ljubljana, Fac Civil & Geodet Engn, Ljubljana 1000, Slovenia.
+RP Cerovsek, T (reprint author), Univ Ljubljana, Fac Civil & Geodet Engn, Jamova 2, Ljubljana 1000, Slovenia.
+EM Tomo.Cerovsek@fgg.uni-lj.si
+CR Alonso S, 2009, J INFORMETR, V3, P273, DOI 10.1016/j.joi.2009.04.001
+   Althouse BM, 2009, J AM SOC INF SCI TEC, V60, P27, DOI 10.1002/asi.20936
+   Bornmann L, 2008, J AM SOC INF SCI TEC, V59, P830, DOI 10.1002/asi.20806
+   Bornmann L, 2011, J INFORMETR, V5, P346, DOI 10.1016/j.joi.2011.01.006
+   Bourke P, 1996, SCIENTOMETRICS, V37, P473, DOI 10.1007/BF02019259
+   Braun T, 2006, SCIENTOMETRICS, V69, P169, DOI 10.1007/s11192-006-0147-4
+   Burrell QL, 2005, INFORM PROCESS MANAG, V41, P1317, DOI 10.1016/j.ipm.2005.03.016
+   Costas R, 2007, J INFORMETR, V1, P193, DOI 10.1016/j.joi.2007.02.001
+   Cronin B, 2006, J AM SOC INF SCI TEC, V57, P1275, DOI 10.1002/asi.20354
+   Dorta-Gonzalez P, 2011, SCIENTOMETRICS, V88, P729, DOI 10.1007/s11192-011-0453-3
+   Egghe L, 2009, INFORM PROCESS MANAG, V45, P484, DOI 10.1016/j.ipm.2009.04.001
+   Glaser J, 2004, J SOCIOL, V40, P261, DOI 10.1177/1440783304046370
+   Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   Horwitz SK, 2007, J MANAGE, V33, P987, DOI 10.1177/0149206307308587
+   Huang MH, 2008, J AM SOC INF SCI TEC, V59, P1819, DOI 10.1002/asi.20885
+   Jacso P, 2009, ONLINE INFORM REV, V33, P831, DOI 10.1108/14684520910985756
+   Jin BH, 2007, CHINESE SCI BULL, V52, P855, DOI 10.1007/s11434-007-0145-9
+   Kelly CD, 2006, TRENDS ECOL EVOL, V21, P167, DOI 10.1016/j.tree.2006.01.005
+   Laudel G., 2006, J HIGHER ED POLICY M, V28, P289, DOI 10.1080/13600800600980130
+   Leydesdorff L, 2010, J INFORMETR, V4, P644, DOI 10.1016/j.joi.2010.05.003
+   Li YR, 2013, J INFORMETR, V7, P746, DOI 10.1016/j.joi.2013.06.001
+   Lorenz MO, 1905, PUBL AM STAT ASSOC, V9, P209, DOI 10.2307/2276207
+   lzum, 2013, SICRIS
+   Moreland R. L., 1992, ADV GROUP PROCESSES, P237
+   Mutz R, 2013, RES EVALUAT, V22, P118, DOI 10.1093/reseval/rvs038
+   NEDERHOF AJ, 1991, J AM SOC INFORM SCI, V42, P332, DOI 10.1002/(SICI)1097-4571(199106)42:5<332::AID-ASI3>3.0.CO;2-8
+   Opthof T, 2010, J INFORMETR, V4, P423, DOI 10.1016/j.joi.2010.02.003
+   Prathap G, 2006, CURR SCI INDIA, V91, P1439
+   Radicchi F, 2012, J INFORMETR, V6, P121, DOI 10.1016/j.joi.2011.09.002
+   Saad G, 2006, SCIENTOMETRICS, V69, P117, DOI 10.1007/s11192-006-0142-9
+   Sarabia JM, 2012, J INFORMETR, V6, P66, DOI 10.1016/j.joi.2011.09.005
+   Seljak M, 1996, INTERLEND DOC SUPPLY, V24, P17, DOI 10.1108/02641619610155175
+   Van Raan AFJ, 2006, SCIENTOMETRICS, V67, P491, DOI 10.1556/Scient.67.2006.3.10
+   van Raan AFJ, 2010, J INFORMETR, V4, P431, DOI 10.1016/j.joi.2010.03.008
+   Vinkler P, 2010, CHANDOS INF PROF SER, P1, DOI 10.1533/9781780630250
+   Vinkler P, 2006, SCIENTOMETRICS, V68, P629, DOI 10.1007/s11192-006-0123-z
+NR 36
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD JAN
+PY 2014
+VL 8
+IS 1
+BP 147
+EP 161
+DI 10.1016/j.joi.2013.11.004
+PG 15
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AB4PH
+UT WOS:000331771900014
+ER
+
+PT J
+AU Jablonska-Sabuka, M
+   Sitarz, R
+   Kraslawski, A
+AF Jablonska-Sabuka, Matylda
+   Sitarz, Robert
+   Kraslawski, Andrzej
+TI Forecasting research trends using population dynamics model with
+   Burgers' type interaction
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Research trends; Population dynamics; Momentum; Burgers' equation
+ID RESEARCH-AND-DEVELOPMENT; DECISION-SUPPORT SYSTEM; PORTFOLIO SELECTION;
+   NETWORK ANALYSIS; TECHNOLOGY; PROJECTS; WEB
+AB The increasing costs of research and the decreasing lifetime of products and processes make the decisions on allocation of R&D funds strategically important. Therefore, ability to predict research trends is crucial in minimizing risks of R&D expenditure planning. The purpose of this paper is to propose a model for efficient prediction of research trends in a chosen branch of science. The approach is based on population dynamics with Burgers' type global interaction and selective neighborhood. The model is estimated based on a training set. Then, an out-of-sample forecast is performed. The research trends of filtration and rectification processes were analyzed in this paper. The simulation results show that the model is able to predict the trends with a considerable accuracy and should, therefore, be tested on a wider range of research fields. (C) 2013 Elsevier Ltd. All rights reserved.
+C1 [Jablonska-Sabuka, Matylda] Lappeenranta Univ Technol, Dept Math & Phys, FI-53851 Lappeenranta, Finland.
+   [Sitarz, Robert; Kraslawski, Andrzej] Lappeenranta Univ Technol, Sch Ind Engn & Management, FI-53851 Lappeenranta, Finland.
+   [Sitarz, Robert] Rzeszow Univ Technol, Fac Chem, PL-35959 Rzeszow, Poland.
+   [Kraslawski, Andrzej] Lodz Univ Technol, Dept Proc Engn, Lodz, Poland.
+RP Jablonska-Sabuka, M (reprint author), Lappeenranta Univ Technol, Dept Math & Phys, POB 20, FI-53851 Lappeenranta, Finland.
+EM matylda.jablonska-sabuka@lut.fi
+RI Cong , Gao/A-3726-2011
+CR Baskurt OK, 2011, SCIENTOMETRICS, V86, P645, DOI 10.1007/s11192-010-0298-1
+   Callon M., 1991, SCIENTOMETRICS, V22, P153
+   Chu PYV, 1996, COMPUT IND, V32, P141, DOI 10.1016/S0166-3615(96)00067-X
+   Ding Y., 2001, INFORM PROCESSING MA, V37
+   Evans R, 2009, NAT REV DRUG DISCOV, V8, P189, DOI 10.1038/nrd2744
+   Fabry B., 2006, World Patent Information, V28, DOI 10.1016/j.wpi.2005.10.004
+   Hinich MJ, 2003, J AM SOC INF SCI TEC, V54, P161, DOI 10.1002/asi.10176
+   Hossain MD, 2012, SCIENTOMETRICS, V90, P57, DOI 10.1007/s11192-011-0507-6
+   Huang MH, 2012, J INFORMETR, V6, P457, DOI 10.1016/j.joi.2012.03.003
+   Hull D., 2001, World Patent Information, V23, DOI 10.1016/S0172-2190(01)00024-2
+   Jablonska M., 2011, THESIS LAPPEENRANTA
+   Jablonska M., 2011, LECT NOTES EC MATH S, V652, P3
+   Kim H, 2012, J INFORMETR, V6, P97, DOI 10.1016/j.joi.2011.05.006
+   Kim J, 2009, J AM SOC INF SCI TEC, V60, P679, DOI 10.1002/asi.21035
+   Klapka J, 2002, EUR J OPER RES, V140, P434, DOI 10.1016/S0377-2217(02)00081-4
+   Krampen G, 2011, SCIENTOMETRICS, V87, P687, DOI 10.1007/s11192-011-0357-2
+   Linton JD, 2002, R&D MANAGE, V32, P139, DOI 10.1111/1467-9310.00246
+   Liu X., 2013, J INFORMETR, V7, P435
+   Lv PH, 2011, SCIENTOMETRICS, V88, P399, DOI 10.1007/s11192-011-0386-x
+   Ma ZY, 2013, J AM SOC INF SCI TEC, V64, P1399, DOI 10.1002/asi.22844
+   Mierswa I., 2006, P 12 ACM SIGKDD INT
+   MILLER GA, 1995, COMMUN ACM, V38, P39, DOI 10.1145/219717.219748
+   Morale D., 2004, ANT COLONIES NATURE
+   Oksendal B., 1995, STOCHASTIC DIFFERENT
+   Rajapakse A, 2005, COMPUT CHEM ENG, V29, P1357, DOI 10.1016/j.compchemeng.2005.02.010
+   Ringuest JL, 2004, EUR J OPER RES, V154, P157, DOI 10.1016/S0377-2217(02)00708-7
+   SALTON G, 1975, COMMUN ACM, V18, P613, DOI 10.1145/361219.361220
+   Shelton RD, 2012, J AM SOC INF SCI TEC, V63, P498, DOI 10.1002/asi.21677
+   Sitarz R, 2012, COMPUT-AIDED CHEM EN, V30, P437
+   Tsai HH, 2011, SCIENTOMETRICS, V87, P425, DOI 10.1007/s11192-011-0353-6
+   VOORHEES EM, 1986, INFORM PROCESS MANAG, V22, P465, DOI 10.1016/0306-4573(86)90097-X
+   Xiao CJ, 2013, J AM SOC INF SCI TEC, V64, P1284, DOI 10.1002/asi.22865
+   Zapata JC, 2008, COMPUT CHEM ENG, V32, P307, DOI 10.1016/j.compchemeng.2007.03.024
+   Zhang Y, 2009, J AM SOC INF SCI TEC, V60, P557, DOI 10.1002/asi.20993
+NR 34
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD JAN
+PY 2014
+VL 8
+IS 1
+BP 111
+EP 122
+DI 10.1016/j.joi.2013.11.003
+PG 12
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AB4PH
+UT WOS:000331771900011
+ER
+
+PT J
+AU Karpov, A
+AF Karpov, Alexander
+TI Equal weights coauthorship sharing and the Shapley value are equivalent
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Coauthorship; Collaboration; Shapley value
+ID MULTIPLE AUTHORSHIP; CREDIT; QUALITY
+AB The publication credit allocation problem is one of the fundamental problems in bibliometrics. There are two solutions which do not use any additional information: equal weights measure and the Shapley value. The paper justifies the equal weights measure by showing equivalence with the Shapley value approach for sharing co-authors performance in specific games. (C) 2013 Elsevier Ltd. All rights reserved.
+C1 Natl Res Univ, Higher Sch Econ, Moscow 101000, Russia.
+RP Karpov, A (reprint author), Natl Res Univ, Higher Sch Econ, 20 Myasnitskaya Ulitsa, Moscow 101000, Russia.
+EM akarpov@hse.ru
+CR Abbas AM, 2011, SCIENTOMETRICS, V88, P107, DOI 10.1007/s11192-011-0389-7
+   Akhabue E, 2010, ANN EPIDEMIOL, V20, P868, DOI 10.1016/j.annepidem.2010.08.004
+   Chen RR, 2010, OPER RES LETT, V38, P539, DOI 10.1016/j.orl.2010.08.011
+   Chun Y., 1989, GAME ECON BEHAV, V1, P119, DOI 10.1016/0899-8256(89)90014-6
+   Egghe L, 2013, SCIENTOMETRICS, V95, P55, DOI 10.1007/s11192-012-0832-4
+   Egghe L, 2000, J AM SOC INFORM SCI, V51, P145, DOI 10.1002/(SICI)1097-4571(2000)51:2<145::AID-ASI6>3.0.CO;2-9
+   Funaki Y., 1998, DUAL AXIOMATIZ UNPUB
+   Hagen NT, 2013, J INFORMETR, V7, P784, DOI 10.1016/j.joi.2013.06.005
+   HART S, 1989, ECONOMETRICA, V57, P589, DOI 10.2307/1911054
+   Hartmann K, 2013, J MATH BIOL, V67, P1163, DOI 10.1007/s00285-012-0585-y
+   Hirsch JE, 2010, SCIENTOMETRICS, V85, P741, DOI 10.1007/s11192-010-0193-9
+   KALAI E, 1987, INT J GAME THEORY, V16, P205, DOI 10.1007/BF01756292
+   LINDSEY D, 1980, SOC STUD SCI, V10, P145, DOI 10.1177/030631278001000202
+   Lukovits I, 1995, SOC INDIC RES, V36, P91, DOI 10.1007/BF01079398
+   MONDERER D, 1992, INT J GAME THEORY, V21, P27, DOI 10.1007/BF01240250
+   Myerson R. B., 1977, Mathematics of Operations Research, V2, DOI 10.1287/moor.2.3.225
+   Narayanam R, 2011, IEEE T AUTOM SCI ENG, V8, P130, DOI 10.1109/TASE.2010.2052042
+   Papapetrou P, 2011, LECT NOTES ARTIF INT, V6912, P549, DOI 10.1007/978-3-642-23783-6_35
+   Radzik T, 2012, EUR J OPER RES, V223, P407, DOI 10.1016/j.ejor.2012.06.013
+   SAUER RD, 1988, J POLIT ECON, V96, P855, DOI 10.1086/261566
+   Sekercioglu CH, 2008, SCIENCE, V322, P371, DOI 10.1126/science.322.5900.371a
+   Shapley L, 1953, ANN MATH STUD, V28, P307
+   Sie Rory L. L., 2012, International Journal of Technology Enhanced Learning, V4, DOI 10.1504/IJTEL.2012.048314
+   Tao TZ, 2012, SCIENTOMETRICS, V91, P1005, DOI 10.1007/s11192-011-0558-8
+   Tol RSJ, 2011, SCIENTOMETRICS, V89, P291, DOI 10.1007/s11192-011-0451-5
+   Tol RSJ, 2012, SCIENTOMETRICS, V90, P763, DOI 10.1007/s11192-011-0555-y
+   Winter E., 2002, HDB GAME THEORY EC A, V3, P2026
+NR 27
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD JAN
+PY 2014
+VL 8
+IS 1
+BP 71
+EP 76
+DI 10.1016/j.joi.2013.10.008
+PG 6
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AB4PH
+UT WOS:000331771900007
+ER
+
+PT J
+AU Megnigbeto, E
+AF Megnigbeto, Eustache
+TI Efficiency, unused capacity and transmission power as indicators of the
+   Triple Helix of university-industry-government relationships
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Triple Helix; Research collaboration; Mutual information; Transmission
+   power; Information theory
+ID INTERACTION INFORMATION; MATHEMATICAL-THEORY; COMMUNICATION; MODEL
+AB In this paper, we show that an information source composed with n random variables may be split into 2(n) or 2(n) -1 "states"; therefore, one could compute the maximum entropy of the source. We derive the efficiency and the unused capacity of an information source. We demonstrate that in more than two dimensions, the transmission's variability depends on the system configuration; thus, we determine the upper and the lower bounds to the mutual information and propose the transmission power as an indicator of the Triple Helix of university-industry-government relationships. The transmission power is defined as the fraction of the total 'configurational information' produced in a system; it appears like the efficiency of the transmission and may be interpreted as the strength of the variables dependency, the strength of the synergy between the system's variable or the strength of information flow within the system. (C) 2013 Elsevier Ltd. All rights reserved.
+C1 [Megnigbeto, Eustache] Bur Etud & Rech Sci Informat, Cotonou, Benin.
+   [Megnigbeto, Eustache] Univ Antwerp, Inst Educ & Informat Sci, IBW, B-2000 Antwerp, Belgium.
+RP Megnigbeto, E (reprint author), Bur Etud & Rech Sci Informat, 09 BP 477 St Michel, Cotonou, Benin.
+EM eustachem@gmail.com
+RI Megnigbeto, Eustache/K-7878-2013; MEGNIGBETO, Eustache/A-3210-2009
+OI Megnigbeto, Eustache/0000-0003-2687-3726; MEGNIGBETO,
+   Eustache/0000-0003-2687-3726
+CR Arellano-Valle RB, 2013, SCAND J STAT, V40, P42, DOI 10.1111/j.1467-9469.2011.00774.x
+   Batina L, 2011, J CRYPTOL, V24, P269, DOI 10.1007/s00145-010-9084-8
+   Cover T. M., 2006, ELEMENTS INFORM THEO, V2nd
+   Ivanova I. A., 2014, REDUNDANCY IN PRESS
+   Khan F. G., 2011, J AM SOC INFORM SCI, V62, P2443
+   Le Boudec J.-Y., 2013, SCI INFORM
+   Leydesdorff L., 2013, J AM SOC INFORM SCI
+   LEYDESDORFF L, 1991, SOC NETWORKS, V13, P301, DOI 10.1016/0378-8733(91)90001-A
+   Leydesdorff L, 2003, SCIENTOMETRICS, V58, P445, DOI 10.1023/A:1026253130577
+   Leydesdorff L, 2009, INT J GEN SYST, V38, P681, DOI 10.1080/03081070902993038
+   Leydesdorff L, 2009, J AM SOC INF SCI TEC, V60, P778, DOI 10.1002/asi.20997
+   Leydesdorff L, 2008, ENTROPY-SWITZ, V10, P391, DOI 10.3390/e10040391
+   Leydesdorff L, 2010, ENTROPY-SWITZ, V12, P63, DOI 10.3390/e12010063
+   Meyer M., 2012, HELICE TRIPLE HELIX, V1, P4
+   Mori Y., 2006, ELECT TRAITEMENT SIG, V5
+   Mueller P, 2006, RES POLICY, V35, P1499, DOI 10.1016/j.respol.2006.09.023
+   Shannon C. E., 1949, MATH THEORY COMMUNIC
+   SHANNON CE, 1948, AT&T TECH J, V27, P623
+   Von Bertalanffy L., 1973, THEORIE GEN SYSTEMES
+   Ye FY, 2013, J AM SOC INF SCI TEC, V64, P2317, DOI 10.1002/asi.22931
+   Yeung RW, 2008, INFORM TECH TRANS PR, P1
+   Yeung R. W., 2001, 1 COURSE INFORM THEO
+NR 22
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD JAN
+PY 2014
+VL 8
+IS 1
+BP 284
+EP 294
+DI 10.1016/j.joi.2013.12.009
+PG 11
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AB4PH
+UT WOS:000331771900027
+ER
+
+PT J
+AU Rousseau, R
+AF Rousseau, Ronald
+TI A refinement of Egghe's increment studies
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Characterizations of informetric indicators; Increments; Forward
+   differences
+ID INDEX
+AB this contribution we show how results obtained in a series of papers by Egghe can be refined in the sense that we need fewer additional conditions. In these articles Egghe considered a general h-type index which has a value n if n is the largest natural number such that the first n publications (ranked according to the number of received citations) have received at least f(n) citations, with f(n) any increasing function defined on the strictly positive numbers. His results deal with increments I-2 and I-1 defined by: I-2(n)-I-1 (n + 1)-I-1 (n) where I-1 (n) = (n + 1)f(n + 1) - nf(n). Our results differ from Egghe's because we also consider I-k(0), k= 1,2. We, moreover, provide a non-recursive definition of the increment functions I-k(n) (C) 2013 Elsevier Ltd. All rights reserved.
+C1 [Rousseau, Ronald] Univ Antwerp, Inst Educ & Informat Sci, IBW, B-2000 Antwerp, Belgium.
+   [Rousseau, Ronald] Katholieke Univ Leuven, B-3000 Louvain, Belgium.
+RP Rousseau, R (reprint author), Univ Antwerp, Inst Educ & Informat Sci, IBW, Venusstr 35, B-2000 Antwerp, Belgium.
+EM ronald.rousseau@telenet.be
+CR Burrell Q. L., 2013, E COMMUNICATION 1101
+   Egghe L., 2013, GEN THEORY MINIMAL I
+   Egghe L, 2013, J INFORMETR, V7, P388, DOI 10.1016/j.joi.2013.01.005
+   Egghe L, 2013, PRO INT CONF SCI INF, P1159
+   Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   Hosking R. J., 1996, 1 STEPS NUMERICAL AN
+   Rousseau R., 1997, COURSE NOTES KHBO
+   Rousseau R., 2013, REFINEMENT EGGHES IN
+   Wu Q, 2010, J AM SOC INF SCI TEC, V61, P609, DOI 10.1002/asi.21276
+NR 9
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD JAN
+PY 2014
+VL 8
+IS 1
+BP 212
+EP 216
+DI 10.1016/j.joi.2013.12.003
+PG 5
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AB4PH
+UT WOS:000331771900019
+ER
+
+PT J
+AU Thelwall, M
+   Sud, P
+AF Thelwall, Mike
+   Sud, Pardeep
+TI No citation advantage for monograph-based collaborations?
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Collaboration; Citation impact; Co-authorship; Monographs; Humanities;
+   Social sciences
+ID SCIENTIFIC COLLABORATION; SOCIAL-SCIENCES; HUMANITIES; PATTERNS; IMPACT;
+   PUBLICATIONS; AUTHORSHIP; COAUTHORSHIP; PERFORMANCE; INDICATORS
+AB It is widely believed that collaboration is advantageous in science, for example, with collaboratively written articles tending to attract more citations than solo articles and strong arguments for the value of interdisciplinary collaboration. Nevertheless, it is not known whether the same is true for research that produces books. This article tests whether coauthored scholarly monographs attract more citations than solo monographs using books published before 2011 from 30 categories in the Web of Science. The results show that solo monographs numerically dominate collaborative monographs, but give no evidence of a citation advantage for collaboration on monographs. In contrast, for nearly all these subjects (28 out of 30) there was a citation advantage for collaboratively produced journal articles. As a result, research managers and funders should not incentivise collaborative research in book-based subjects or in research that aims to produce monographs, but should allow the researchers themselves to freely decide whether to collaborate or not. (C) 2013 Elsevier Ltd. All rights reserved.
+C1 [Thelwall, Mike; Sud, Pardeep] Wolverhampton Univ, Sch Math & Comp Sci, Stat Cybermetr Res Grp, Wolverhampton WV1 1SB, W Midlands, England.
+RP Thelwall, M (reprint author), Wolverhampton Univ, Sch Math & Comp Sci, Stat Cybermetr Res Grp, Wulfruna St, Wolverhampton WV1 1SB, W Midlands, England.
+EM m.thelwall@wlv.ac.uk; p.sud@wlv.ac.uk
+CR Abdullah A., 2014, J AM SOC IN IN PRESS
+   Acedo FJ, 2006, J MANAGE STUD, V43, P957, DOI 10.1111/j.1467-6486.2006.00625.x
+   Avkiran NK, 1997, SCIENTOMETRICS, V39, P173, DOI 10.1007/BF02457446
+   Bordons M, 1996, SCIENTOMETRICS, V37, P279, DOI 10.1007/BF02093625
+   Bornmann L, 2012, J INFORMETR, V6, P11, DOI 10.1016/j.joi.2011.08.004
+   Cronin B, 2001, J AM SOC INF SCI TEC, V52, P558, DOI 10.1002/asi.1097
+   Cronin B, 2003, J AM SOC INF SCI TEC, V54, P855, DOI 10.1002/asi.10278
+   Cronin B, 2012, INFORM CULT, V47, P18
+   de Beaver D., 1978, SCIENTOMETRICS, V1, P65
+   Didegah F, 2013, J INFORMETR, V7, P861, DOI 10.1016/j.joi.2013.08.006
+   Ede L, 2001, PMLA, V116, P354
+   Engels TCE, 2012, SCIENTOMETRICS, V93, P373, DOI 10.1007/s11192-012-0680-2
+   Felt U., 2012, J SCIENTOMETRIC RES, V1, P28
+   Franceschet M, 2010, J INFORMETR, V4, P540, DOI 10.1016/j.joi.2010.06.003
+   Frenken K., 2005, J ENG TECHNOL MANAGE, V22, P9
+   Gazni A, 2012, J AM SOC INF SCI TEC, V63, P323, DOI 10.1002/asi.21688
+   Gibbons M., 1994, NEW PRODUCTION KNOWL
+   Glanzel W, 2002, LIBR TRENDS, V50, P461
+   Gorraiz J, 2013, J AM SOC INF SCI TEC, V64, P1388, DOI 10.1002/asi.22875
+   Green C., 2001, 3 HAND COLLABORATION
+   Haslam N, 2008, SCIENTOMETRICS, V76, P169, DOI 10.1007/s11192-007-1892-8
+   Hellqvist B, 2010, J AM SOC INF SCI TEC, V61, P310, DOI 10.1002/asi.21256
+   Katz J. S., 1997, SCIENTOMETRICS, V40, P451
+   Katz JS, 1997, RES POLICY, V26, P1, DOI 10.1016/S0048-7333(96)00917-1
+   Kousha K, 2009, J AM SOC INF SCI TEC, V60, P1537, DOI 10.1002/asi.21085
+   Lariviere V, 2006, SCIENTOMETRICS, V68, P519, DOI 10.1007/s11192-006-0127-8
+   Leimu R, 2005, BIOSCIENCE, V55, P438, DOI 10.1641/0006-3568(2005)055[0438:DSCITI]2.0.CO;2
+   Levitt JM, 2010, SCIENTOMETRICS, V85, P171, DOI 10.1007/s11192-010-0197-5
+   Levitt JM, 2009, J AM SOC INF SCI TEC, V60, P434, DOI 10.1002/asi.21000
+   Linmans AJM, 2010, SCIENTOMETRICS, V83, P337, DOI 10.1007/s11192-009-0088-9
+   Ma N, 2005, SCIENTOMETRICS, V65, P343, DOI 10.1007/s11192-005-0278-z
+   Moody J, 2004, AM SOCIOL REV, V69, P213
+   Nederhof AJ, 2006, SCIENTOMETRICS, V66, P81, DOI 10.1007/s11192-006-0007-2
+   Ossenblok T., 2012, P 17 INT C SCI TECHN, P640
+   Pereira JCR, 2000, SCIENTOMETRICS, V49, P307, DOI 10.1023/A:1010525304244
+   Persson O, 2004, SCIENTOMETRICS, V60, P421, DOI 10.1023/B:SCIE.0000034384.35498.7d
+   Price D.J.D.S., 1963, LITTLE SCI BIG SCI
+   Sonnenwald DH, 2007, ANNU REV INFORM SCI, V41, P643, DOI 10.1002/aris.2007.1440410121
+   Sooryamoorthy R, 2009, SCIENTOMETRICS, V81, P177, DOI 10.1007/s11192-009-2126-z
+   Thompson JW, 2002, LIBRI, V52, P121, DOI 10.1515/LIBR.2002.121
+   Torres-Salinas D., 2013, ARXIV13051483
+   Torres-Salinas D, 2013, J INFORMETR, V7, P412, DOI 10.1016/j.joi.2013.01.004
+   Van Raan AFJ, 1998, SCIENTOMETRICS, V42, P423
+   White HD, 2009, J AM SOC INF SCI TEC, V60, P1083, DOI 10.1002/asi.21045
+   Wuchty S, 2007, SCIENCE, V316, P1036, DOI 10.1126/science.1136099
+NR 45
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD JAN
+PY 2014
+VL 8
+IS 1
+BP 276
+EP 283
+DI 10.1016/j.joi.2013.12.008
+PG 8
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AB4PH
+UT WOS:000331771900026
+ER
+
+PT J
+AU Yan, EJ
+AF Yan, Erjia
+TI Research dynamics: Measuring the continuity and popularity of research
+   topics
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Topic analysis; Networks; Popularity; Continuity; Dynamics
+ID LATENT DIRICHLET ALLOCATION; AUTHOR COCITATION ANALYSIS;
+   INFORMATION-SCIENCE; SCIENTIFIC LITERATURE; NETWORK; RETRIEVAL;
+   EVOLUTION; PATTERNS; LIBRARY; FIELDS
+AB Dynamic development is an intrinsic characteristic of research topics. To study this, this paper proposes two sets of topic attributes to examine topic dynamic characteristics: topic continuity and topic popularity. Topic continuity comprises six attributes: steady, concentrating, diluting, sporadic, transforming, and emerging topics; topic popularity comprises three attributes: rising, declining, and fluctuating topics. These attributes are applied to a data set on library and information science publications during the past 11 years (2001-2011). Results show that topics on "web information retrieval", "citation and bibliometrics", "system and technology", and "health science" have the highest average popularity; topics on "h-index", "online communities", "data preservation", "social media", and "web analysis" are increasingly becoming popular in library and information science. (C) 2013 Elsevier Ltd. All rights reserved.
+C1 Drexel Univ, Coll Comp & Informat, Philadelphia, PA 19104 USA.
+RP Yan, EJ (reprint author), Drexel Univ, Coll Comp & Informat, 3141 Chestnut St, Philadelphia, PA 19104 USA.
+EM erjia.yan@drexel.edu
+CR Astrom F, 2007, J AM SOC INF SCI TEC, V58, P947, DOI 10.1002/asi.20567
+   Barabasi AL, 2002, PHYSICA A, V311, P590, DOI 10.1016/S0378-4371(02)00736-7
+   Blei D. M., 2010, ARXIV10030783
+   Blei DM, 2007, ANN APPL STAT, V1, P17, DOI 10.1214/07-AOAS114
+   Blei DM, 2003, J MACH LEARN RES, V3, P993, DOI 10.1162/jmlr.2003.3.4-5.993
+   Bolelli L, 2009, JCDL 09: PROCEEDINGS OF THE 2009 ACM/IEEE JOINT CONFERENCE ON DIGITAL LIBRARIES, P69
+   CALLON M, 1991, SCIENTOMETRICS, V22, P155, DOI 10.1007/BF02019280
+   Chen CM, 2010, J AM SOC INF SCI TEC, V61, P1386, DOI 10.1002/asi.21309
+   Chen CM, 2004, P NATL ACAD SCI USA, V101, P5303, DOI 10.1073/pnas.0307513100
+   Chen CM, 2006, J AM SOC INF SCI TEC, V57, P359, DOI 10.1002/asi.20317
+   Clauset A, 2004, PHYS REV E, V70, DOI 10.1103/PhysRevE.70.066111
+   Ding Y., 2013, P 14 INT C SCIENT IN
+   Ding Y, 2000, J INFORM SCI, V26, P429, DOI 10.1177/016555150002600606
+   Glanzel W, 2003, SCIENTOMETRICS, V56, P357, DOI 10.1023/A:1022378804087
+   Griffiths TL, 2004, P NATL ACAD SCI USA, V101, P5228, DOI 10.1073/pnas.0307752101
+   Hall D., 2008, P C EMP METH NAT LAN, P363, DOI 10.3115/1613715.1613763
+   Janssens F, 2009, INFORM PROCESS MANAG, V45, P683, DOI 10.1016/j.ipm.2009.06.003
+   KESSLER MM, 1963, AM DOC, V14, P10, DOI 10.1002/asi.5090140103
+   Klavans R, 2011, J AM SOC INF SCI TEC, V62, P1, DOI 10.1002/asi.21444
+   Lee L., 2001, ARTIF INTELL, V2001, P65
+   Leydesdorff L, 2006, J AM SOC INF SCI TEC, V57, P1616, DOI 10.1002/asi.20335
+   Li D., 2010, P 19 ACM INT C INF K, P1565, DOI 10.1145/1871437.1871673
+   Milojevic S, 2011, J AM SOC INF SCI TEC, V62, P1933, DOI 10.1002/asi.21602
+   Radicchi F, 2009, PHYS REV E, V80, DOI 10.1103/PhysRevE.80.056103
+   Rafols I, 2009, J AM SOC INF SCI TEC, V60, P1823, DOI 10.1002/asi.21086
+   Ramage D., 2009, P 2009 C EMP METH NA, P248, DOI 10.3115/1699510.1699543
+   Shi X., 2010, NIPS WORKSH COMP SOC
+   SMALL H, 1973, J AM SOC INFORM SCI, V24, P265, DOI 10.1002/asi.4630240406
+   Sugimoto CR, 2011, J AM SOC INF SCI TEC, V62, P185, DOI 10.1002/asi.21435
+   Tang J., 2008, P 14 ACM SIGKDD INT, P990, DOI 10.1145/1401890.1402008
+   Upham SP, 2010, SCIENTOMETRICS, V83, P15, DOI 10.1007/s11192-009-0051-9
+   Wang X., 2006, P 12 ACM SIGKDD INT, P424, DOI 10.1145/1150402.1150450
+   White HD, 2003, J AM SOC INF SCI TEC, V54, P423, DOI 10.1002/asi.10228
+   White HD, 1998, J AM SOC INFORM SCI, V49, P327, DOI 10.1002/(SICI)1097-4571(19980401)49:4<327::AID-ASI4>3.0.CO;2-W
+   Yan E, 2012, J INFORMETR, V6, P140, DOI 10.1016/j.joi.2011.10.001
+   Yan EJ, 2011, J AM SOC INF SCI TEC, V62, P1498, DOI 10.1002/asi.21556
+   Yan EJ, 2009, J AM SOC INF SCI TEC, V60, P2107, DOI 10.1002/asi.21128
+   Zhang L, 2010, J INFORMETR, V4, P185, DOI 10.1016/j.joi.2009.11.005
+   Zhao DZ, 2008, J AM SOC INF SCI TEC, V59, P2070, DOI 10.1002/asi.20910
+NR 39
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PD JAN
+PY 2014
+VL 8
+IS 1
+BP 98
+EP 110
+DI 10.1016/j.joi.2013.10.010
+PG 13
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA AB4PH
+UT WOS:000331771900010
+ER
+
+PT J
+AU Kosmulski, M
+AF Kosmulski, Marek
+TI Are you in h?
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE h-index; Scientific output; Ranking of scientists; Ranking of
+   universities
+ID SCIENTIFIC-RESEARCH OUTPUT; INDEX; JOURNALS
+AB A new method of assessment of scientific papers, scientists, and scientific institutions was defined. The significance of a paper was assessed by the definition of the largest (the most prestigious) set, including that paper in its h-core. The sets of papers were defined by affiliation (country, city, university, department) or by subject (branches and sub-branches of science, journal). The inclusion of a paper in the h-core of certain set(s) was used as an indicator of the significance of that paper, and of the scientific output of its author(s), of their scientific institution(s), etc. An analogous procedure was used to assess the contribution of an individual to the scientific output of his/her scientific institution, branch of science, etc. (C) 2013 Elsevier Ltd. All rights reserved.
+C1 Lublin Univ Technol, Lublin, Poland.
+RP Kosmulski, M (reprint author), Lublin Univ Technol, Lublin, Poland.
+EM mkosmuls@abo.fi
+RI Kosmulski, Marek/F-2326-2010
+CR Braun T, 2006, SCIENTOMETRICS, V69, P169, DOI 10.1007/s11192-006-0147-4
+   Chemistry World, 2007, HIRSCH IND RANKS TOP
+   Csajbok E, 2007, SCIENTOMETRICS, V73, P91, DOI 10.1007/s11192-007-1859-9
+   Harzing AW, 2009, J AM SOC INF SCI TEC, V60, P41, DOI 10.1002/asi.20953
+   Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   Kosmulski M., 2006, FORUM AKAD, V11, P31
+   Meho L, 2006, J AM SOC INFORM SCI, V57, P41
+   Palsberg J., 2013, H INDEX COMPUTER SCI
+   Prathap G, 2006, CURR SCI INDIA, V91, P1439
+   Schreiber M, 2008, J INFORMETR, V2, P211, DOI 10.1016/j.joi.2008.05.001
+   Schubert A, 2007, SCIENTOMETRICS, V70, P201, DOI 10.1007/s11192-007-0112-x
+   Torres-Salinas D, 2011, SCIENTOMETRICS, V88, P771, DOI 10.1007/s11192-011-0418-6
+NR 12
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PY 2013
+VL 7
+IS 3
+BP 693
+EP 698
+DI 10.1016/j.joi.2013.04.007
+PG 6
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 210UH
+UT WOS:000323859700013
+ER
+
+PT J
+AU Kuan, CH
+   Huang, MH
+   Chen, DZ
+AF Kuan, Chung-Huei
+   Huang, Mu-Hsuan
+   Chen, Dar-Zen
+TI Cross-field evaluation of publications of research institutes using
+   their contributions to the fields' MVPs determined by h-index
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Contribution; Cross-field evaluation; h-Index; Most visible
+   publications; Research institutes
+ID RANKING SCIENTIFIC INSTITUTIONS; HIGHLY CITED PAPERS; RESEARCH
+   PERFORMANCE; RESEARCH OUTPUT; HIRSCH-INDEX; IMPACT; INDICATORS;
+   VISIBILITY; CITATIONS; SCIENCE
+AB We propose a cross-field evaluation method for the publications of research institutes. With this approach, we first determine a set of the most visible publications (MVPs) for each field from the publications of all assessed institutes according to the field's h-index. Then, we measure an institute's production in each field by its percentage share (i.e., contribution) to the field's MVPs. Finally, we obtain an institute's cross-field production measure as the average of its contributions to all fields. The proposed approach is proven empirically to be reasonable, intuitive to understand, and uniformly applicable to various sets of institutes and fields of different publication and citation patterns. The field and cross-field production measures obtained by the proposed approach not only allow linear ranking of institutes, but also reveal the degree of their production difference. (c) 2013 Elsevier Ltd. All rights reserved.
+C1 [Kuan, Chung-Huei] Natl Taiwan Univ Sci & Technol, Grad Inst Patent, Taipei, Taiwan.
+   [Huang, Mu-Hsuan] Natl Taiwan Univ, Dept Lib & Informat Sci, Taipei 10617, Taiwan.
+   [Chen, Dar-Zen] Natl Taiwan Univ, Dept Mech Engn, Taipei 10617, Taiwan.
+   [Chen, Dar-Zen] Natl Taiwan Univ, Inst Ind Engn, Taipei 10617, Taiwan.
+RP Chen, DZ (reprint author), Natl Taiwan Univ, Dept Mech Engn, 1,Sec 4,Roosevelt Rd, Taipei 10617, Taiwan.
+EM maxkuan@mail.ntust.edu.tw; mhhuang@ntu.edu.tw; dzchen@ntu.edu.tw
+CR Aksnes DW, 2003, RES EVALUAT, V12, P159, DOI 10.3152/147154403781776645
+   Arencibia-Jorge R, 2008, J AM SOC INF SCI TEC, V59, P155, DOI 10.1002/asi.20729
+   Arencibia-Jorge R, 2009, SCIENTOMETRICS, V79, P507, DOI 10.1007/s11192-007-2025-0
+   Bar-Ilan J, 2008, SCIENTOMETRICS, V75, P591, DOI 10.1007/s11192-007-1880-z
+   Bartneck C, 2011, SCIENTOMETRICS, V87, P85, DOI 10.1007/s11192-010-0306-5
+   Batista PD, 2006, SCIENTOMETRICS, V68, P179, DOI 10.1007/s11192-006-0090-4
+   Bornmann L, 2009, EMBO REP, V10, P2, DOI 10.1038/embor.2008.233
+   Burrell QL, 2007, J INFORMETR, V1, P170, DOI 10.1016/j.joi.2007.01.003
+   COLE S, 1968, AM SOCIOL REV, V33, P397, DOI 10.2307/2091914
+   da Luz MP, 2008, SCIENTOMETRICS, V77, P361, DOI 10.1007/s11192-007-1964-9
+   Egghe L, 2010, ANNU REV INFORM SCI, V44, P65
+   Egghe L, 2006, SCIENTOMETRICS, V69, P131, DOI 10.1007/s11192-006-0144-7
+   Egghe L., 2006, ISSI NEWSLETTER, V2, P8
+   Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   Iglesias JE, 2007, SCIENTOMETRICS, V73, P303, DOI 10.1007/s11192-007-1805-x
+   Jin B., 2007, ISSI NEWSLETTER, V3, P6
+   Jin BH, 2007, CHINESE SCI BULL, V52, P855, DOI 10.1007/s11434-007-0145-9
+   Kinney AL, 2007, P NATL ACAD SCI USA, V104, P17943, DOI 10.1073/pnas.0704416104
+   Lazaridis T, 2010, SCIENTOMETRICS, V82, P211, DOI 10.1007/s11192-009-0048-4
+   Leydesdorff L, 2011, J AM SOC INF SCI TEC, V62, P2133, DOI 10.1002/asi.21609
+   Lovegrove BG, 2008, BIOSCIENCE, V58, P160, DOI 10.1641/B580210
+   Lundberg J, 2007, J INFORMETR, V1, P145, DOI 10.1016/j.joi.2006.09.007
+   Minasny B, 2007, SCIENTOMETRICS, V73, P257, DOI 10.1007/s11192-007-1811-z
+   MOED HF, 1995, SCIENTOMETRICS, V33, P381, DOI 10.1007/BF02017338
+   Molinari A, 2008, SCIENTOMETRICS, V75, P339, DOI 10.1007/s11192-007-1872-z
+   Molinari JF, 2008, SCIENTOMETRICS, V75, P163, DOI 10.1007/s11192-007-1853-2
+   Mugnaini R., 2008, BRAZ J MED BIOL RES, V4, P258
+   PLOMP R, 1990, SCIENTOMETRICS, V19, P185, DOI 10.1007/BF02095346
+   Prathap G, 2006, CURR SCI INDIA, V91, P1439
+   Radicchi F, 2012, J INFORMETR, V6, P121, DOI 10.1016/j.joi.2011.09.002
+   Radicchi F, 2011, PHYS REV E, V83, DOI 10.1103/PhysRevE.83.046116
+   Radicchi F, 2008, P NATL ACAD SCI USA, V105, P17268, DOI 10.1073/pnas.0806977105
+   Egghe L, 2008, J AM SOC INF SCI TEC, V59, P1688, DOI 10.1002/asi.20843
+   Ravallion M, 2011, SCIENTOMETRICS, V88, P321, DOI 10.1007/s11192-011-0375-0
+   Rousseau R, 2010, J INFORMETR, V4, P175, DOI 10.1016/j.joi.2009.11.007
+   Rousseau R., 2006, SCI FOCUS, V1, P23
+   Schubert A, 2007, SCIENTOMETRICS, V70, P201, DOI 10.1007/s11192-007-0112-x
+   Stevens-Rayburn S., 2007, P 5 LIB INF SERV AST, P86
+   Sypsa V, 2009, BMC MED RES METHODOL, V9, DOI 10.1186/1471-2288-9-33
+   Valentinuzzi M E, 2007, Journal of Physics: Conference Series, V90, DOI 10.1088/1742-6596/90/1/012018
+   Van Raan AFJ, 2006, SCIENTOMETRICS, V67, P491, DOI 10.1556/Scient.67.2006.3.10
+   Vinkler P, 2011, J AM SOC INF SCI TEC, V62, P1963, DOI 10.1002/asi.21600
+   Vinkler P, 2009, J INF SCI, V35, P602, DOI 10.1177/0165551509103601
+   Vinkler P, 2010, CHANDOS INF PROF SER, P1, DOI 10.1533/9781780630250
+   Vinkler P, 2010, SCIENTOMETRICS, V82, P461, DOI 10.1007/s11192-010-0182-z
+   Vinkler P, 2011, J AM SOC INF SCI TEC, V62, P1430, DOI 10.1002/asi.21521
+   Waltman L., 2010, ARXIV10041632V1
+   Waltman L., 2011, ARXIV11083901
+   Waltman L., 2009, P 12 INT C SCIENT IN, P1002
+   Waltman L, 2011, J INFORMETR, V5, P37, DOI 10.1016/j.joi.2010.08.001
+   Zhou P, 2011, J INFORMETR, V5, P360, DOI 10.1016/j.joi.2011.01.010
+NR 51
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PY 2013
+VL 7
+IS 2
+BP 455
+EP 468
+DI 10.1016/j.joi.2013.01.008
+PG 14
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 136PY
+UT WOS:000318377100023
+ER
+
+PT J
+AU Ortega, FJ
+   Gavilan, JM
+AF Ortega, Francisco J.
+   Gavilan, Jose M.
+TI The measurement of production efficiency in scientific journals through
+   stochastic frontier analysis models: Application to quantitative
+   economics journals
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Production; Productivity; Efficiency; Scientific production; Frontier
+   production models
+ID DATA ENVELOPMENT ANALYSIS; UNIVERSITIES; PERFORMANCE; INDICATORS;
+   SCIENCE; SYSTEM
+AB The importance of a scientific journal is usually established by considering the number of citations received by the papers that the journal publishes. In this way, the number of citations received by a scientific journal can be considered as a measure of the total production of the journal. In this paper, in order to obtain measures of the efficiency in the production process, the approach provided by stochastic frontier analysis (SFA) is considered, and econometric models are proposed. These models estimate a frontier production, which is the maximum achievable number of citations to the journal based on its resources. The efficiency can then be measured by considering the difference between the actual production and the estimated frontier. This approach is applied to the measurement of the productive efficiency of the journals of the JCR social sciences edition database, which belong simultaneously to the areas of "economics" and "social sciences, mathematical methods". (C) 2013 Elsevier Ltd. All rights reserved.
+C1 [Ortega, Francisco J.; Gavilan, Jose M.] Univ Seville, Dept Appl Econ 1, Fac Econ & Business Studies, Seville 41018, Spain.
+RP Gavilan, JM (reprint author), Univ Seville, Dept Appl Econ 1, Fac Econ & Business Studies, Ave Ramon & Cajal 1, Seville 41018, Spain.
+EM fjortega@us.es; gavi@us.es
+RI Gavilan, Jose M./C-9875-2014
+OI Gavilan, Jose M./0000-0001-6594-2611
+CR Abbott M, 2003, ECON EDUC REV, V22, P89, DOI 10.1016/S0272-7757(01)00068-1
+   Abramo G, 2009, RES EVALUAT, V18, P61, DOI 10.3152/095820209X408869
+   Abramo G, 2011, J INFORMETR, V5, P618, DOI 10.1016/j.joi.2011.06.001
+   Agasisti T, 2012, RES EVALUAT, V21, P2, DOI 10.1093/reseval/rvr001
+   Aigner D.J., 1977, J ECONOMETRICS, V6, P21, DOI DOI 10.1016/0304-4076(77)90052-5
+   Bonaccorsi A, 2003, RES EVALUAT, V12, P47, DOI 10.3152/147154403781776726
+   Callon M., 1995, CIENCIOMETRIA MEDICI
+   Coelli T, 1998, INTRO EFFICIENCY PRO
+   Coelli TJ, 1996, 9607 CEPA U NEW ENGL
+   GARFIELD E, 1955, SCIENCE, V122, P108, DOI 10.1126/science.122.3159.108
+   Guan JC, 2010, SCIENTOMETRICS, V82, P165, DOI 10.1007/s11192-009-0030-1
+   Gupta BM, 1997, SCIENTOMETRICS, V40, P139, DOI 10.1007/BF02459265
+   Liang LM, 2008, J DOC, V64, P229, DOI 10.1108/00220410810858038
+   Lozano S, 2005, SCIENTOMETRICS, V64, P133, DOI 10.1007/s11192-005-0245-8
+   MEEUSEN W, 1977, INT ECON REV, V18, P435, DOI 10.2307/2525757
+   Moed HF, 1998, J DOC, V54, P387, DOI 10.1108/EUM0000000007175
+   Ortega F. J., 2005, SCIENTOMETRICS, V62, P329
+   Ortega F. J., 2003, REV ESP DOC CIENT, V26, P403
+   Petridis K, 2013, J INFORMETR, V7, P505, DOI 10.1016/j.joi.2013.02.002
+   Rousseau S, 1997, SCIENTOMETRICS, V40, P45, DOI 10.1007/BF02459261
+   Rousseau S, 1998, SCIENTOMETRICS, V42, P75, DOI 10.1007/BF02465013
+   Ruiz CF, 2010, SCIENTOMETRICS, V83, P711, DOI 10.1007/s11192-009-0122-y
+   Silverman B., 1986, DENSITY ESTIMATION S
+   Wang JX, 2005, J AM SOC INF SCI TEC, V56, P1217, DOI 10.1002/asi.20225
+NR 24
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PY 2013
+VL 7
+IS 4
+BP 959
+EP 965
+DI 10.1016/j.joi.2013.09.004
+PG 7
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 264ZV
+UT WOS:000327920400020
+ER
+
+PT J
+AU Perez-Hornero, P
+   Arias-Nicolas, JP
+   Pulgarin, AA
+   Pulgarin, A
+AF Perez-Hornero, Patricia
+   Pablo Arias-Nicolas, Jose
+   Pulgarin, Antonio A.
+   Pulgarin, Antonio
+TI An annual JCR impact factor calculation based on Bayesian credibility
+   formulas
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Credibility factor; Impact factor; Posterior impact; Prior impact
+ID CITATION ANALYSIS; SCIENCE; INDICATORS
+AB Our aim deals with appraising the annual impact calculation of journals belonging to the JCR, in terms of the expected citation (with or without selfcitations) by published paper in a range of k-years. A Bayesian approach to the problem, should reflect not only the current prestige of a journal, but also taking into account its recent trajectory. In this wide context, credibility theory becomes an adequate mechanism deciding whether journal's impact factor calculation to be more or less plausible. Under prior belief that journal quality is determined by its impact factor, we model the citation-quality process by choosing a conjugated family of the exponential class in order to obtain a net impact credibility formula. Proposed weighting schema produces the effect of smoothing out any sudden increases or decreases in the year-by-year impact factor. (C) 2012 Elsevier Ltd. All rights reserved.
+C1 [Pulgarin, Antonio A.] Univ Extremadura, Escuela Politecn, Dept Matemat, Caceres 10071, Spain.
+   [Pulgarin, Antonio] Univ Extremadura, Dept Informat & Commun, E-06071 Badajoz, Spain.
+RP Pulgarin, A (reprint author), Univ Extremadura, Escuela Politecn, Dept Matemat, Avda Univ S-N, Caceres 10071, Spain.
+EM pperezho@alumnos.unex.es; jparias@unex.es; aapulgar@unex.es;
+   pulgarin@unex.es
+RI Arias-Nicolas, Jose Pablo /L-3546-2014
+OI Arias-Nicolas, Jose Pablo /0000-0001-6060-1287
+CR Amin M., 2000, PERSPECTIVES PUBLISH, V1, P1
+   Arias-Nicolas JP, 2009, INT J APPROX REASON, V50, P303, DOI 10.1016/j.ijar.2008.03.014
+   Bailey A., 1945, P CAS ACT SOC, V32, P13
+   Berger J. O., 1994, TEST, V3, P5, DOI DOI 10.1007/BF02562676
+   Buhlmann H., 1969, ASTIN BULL, V5, P157
+   Buhlmann H., 1967, ASTIN BULL, V4, p[3, 199]
+   Chen L., 1991, THESIS, P308
+   Cronin B., 1984, THE ROLE AND SIGNIFI
+   EICHENAUER J, 1988, INSUR MATH ECON, V7, P49, DOI 10.1016/0167-6687(88)90096-0
+   GARFIELD E, 1979, SCIENTOMETRICS, V1, P359, DOI 10.1007/BF02019306
+   GARFIELD E, 1955, SCIENCE, V122, P108, DOI 10.1126/science.122.3159.108
+   GILBERT GN, 1978, SCIENTOMETRICS, V1, P9, DOI 10.1007/BF02016837
+   Habibzadeh F, 2008, J INFORMETR, V2, P164, DOI 10.1016/j.joi.2008.02.001
+   HEILMANN WR, 1989, INSUR MATH ECON, V8, P77, DOI 10.1016/0167-6687(89)90050-4
+   Jewell W. S., 1974, ASTIN BULL, V8, P77
+   KING J, 1987, J INFORM SCI, V13, P261, DOI 10.1177/016555158701300501
+   MACROBERTS MH, 1989, J AM SOC INFORM SCI, V40, P342, DOI 10.1002/(SICI)1097-4571(198909)40:5<342::AID-ASI7>3.0.CO;2-U
+   MORRIS CN, 1982, ANN STAT, V10, P65, DOI 10.1214/aos/1176345690
+   Mutz R, 2012, J INFORMETR, V6, P169, DOI 10.1016/j.joi.2011.12.006
+   PORTER AL, 1988, SCIENTOMETRICS, V13, P103, DOI 10.1007/BF02017178
+   Rios Insua D., 2000, LECT NOTES STAT, V152
+   Rios Insua D., 1995, STAT DECISION, V13, P315
+   Thomson Scientific, 2011, THE THOMPSON REUTERS
+   Van Leeuwen T. N., 2012, SCIENTOMETRICS
+   Vanclay J. K., 2012, SCIENTOMETRICS
+   Whitney A. W., 1918, P CASUALTY ACTUARIAL, V4, P274
+NR 26
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PD JAN
+PY 2013
+VL 7
+IS 1
+BP 1
+EP 9
+DI 10.1016/j.joi.2012.08.004
+PG 9
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 065BG
+UT WOS:000313121300001
+ER
+
+PT J
+AU Prathap, G
+AF Prathap, Gangan
+TI Bornmann's alternative to the h index
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Letter
+C1 CSIR Natl Inst Sci Commun & Informat Resources, New Delhi 110012, India.
+RP Prathap, G (reprint author), CSIR Natl Inst Sci Commun & Informat Resources, New Delhi 110012, India.
+EM gp@niscair.res.in
+RI Prathap, Gangan/C-1173-2009
+OI Prathap, Gangan/0000-0003-1472-6358
+CR Bornmann L, 2013, J INFORMETR, V7, P100, DOI 10.1016/j.joi.2012.09.004
+   Bornmann L, 2012, J INFORMETR, V6, P333, DOI 10.1016/j.joi.2011.11.006
+   Prathap G, 2012, SCIENTOMETRICS, V91, P269, DOI 10.1007/s11192-011-0516-5
+NR 3
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PD JAN
+PY 2013
+VL 7
+IS 1
+BP 209
+EP 209
+DI 10.1016/j.joi.2012.11.001
+PG 1
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 065BG
+UT WOS:000313121300025
+ER
+
+PT J
+AU Prathap, G
+AF Prathap, Gangan
+TI Energetics of the h-bubble
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Letter
+C1 CSIR Natl Inst Sci Commun & Informat Resources, New Delhi 110012, India.
+RP Prathap, G (reprint author), CSIR Natl Inst Sci Commun & Informat Resources, New Delhi 110012, India.
+EM gp@niscair.res.in
+CR Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   Prathap G, 2012, SCIENTOMETRICS, V91, P269, DOI 10.1007/s11192-011-0516-5
+   Rousseau R, 2013, J INFORMETR, V7, P294, DOI 10.1016/j.joi.2012.11.012
+NR 3
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PY 2013
+VL 7
+IS 2
+BP 439
+EP 441
+DI 10.1016/j.joi.2013.01.006
+PG 3
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 136PY
+UT WOS:000318377100021
+ER
+
+PT J
+AU Prathap, G
+AF Prathap, Gangan
+TI The S-index and consistency
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Letter
+C1 CSIR Natl Inst Sci Commun & Informat Resources, New Delhi 110012, India.
+RP Prathap, G (reprint author), CSIR Natl Inst Sci Commun & Informat Resources, New Delhi 110012, India.
+EM gp@niscair.res.in
+CR Ko YM, 2013, J INFORMETR, V7, P404, DOI 10.1016/j.joi.2013.01.002
+   Prathap G, 2011, SCIENTOMETRICS, V87, P515, DOI 10.1007/s11192-011-0367-0
+   Prathap G, 2012, SCIENTOMETRICS, V91, P269, DOI 10.1007/s11192-011-0516-5
+NR 3
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PY 2013
+VL 7
+IS 2
+BP 540
+EP 541
+DI 10.1016/j.joi.2013.02.004
+PG 2
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 136PY
+UT WOS:000318377100030
+ER
+
+PT J
+AU Rons, N
+AF Rons, Nadine
+TI Partition-based Field Normalization: An approach to highly specialized
+   publication records (vol 6, pg 1, 2012)
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Correction
+C1 [Rons, Nadine] Vrije Univ Brussel, Res Coordinat Unit, B-1050 Brussels, Belgium.
+   [Rons, Nadine] Vrije Univ Brussel, Ctr R&D Monitoring ECOOM, B-1050 Brussels, Belgium.
+RP Rons, N (reprint author), Vrije Univ Brussel, Res Coordinat Unit, Pl Laan 2, B-1050 Brussels, Belgium.
+EM Nadine.Rons@vub.ac.be
+RI Rons, Nadine/B-9699-2008
+OI Rons, Nadine/0000-0002-0548-4927
+CR Rons N, 2012, J INFORMETR, V6, P1, DOI 10.1016/j.joi.2011.09.008
+NR 1
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PD JAN
+PY 2013
+VL 7
+IS 1
+BP 99
+EP 99
+DI 10.1016/j.joi.2012.09.001
+PG 1
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 065BG
+UT WOS:000313121300011
+ER
+
+PT J
+AU Rousseau, R
+   Hu, XJ
+AF Rousseau, Ronald
+   Hu, Xiaojun
+TI Two time series, their meaning and some applications
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Time series; Social sciences; Informetrics; Chinese universities
+ID LIBRARY CIRCULATION; PUBLICATION; INDICATORS; KNOWLEDGE; INFORMETRICS;
+   PERIODICITY; SCIENTISTS; CITATIONS; DIFFUSION; SEQUENCES
+AB Introducing and studying two types of time series, referred to as R1 and R2, we try to enrich the set of time series available for time dependent informetric studies. In a first part we focus on mathematical properties, while in a second part we check if these properties are visible in real data. This practical application uses data in the social sciences related to top Chinese universities. R1 sequences always increase over time, tending relatively fast to one, while R2 sequences have a decreasing tendency tending to zero in practical cases. They can best be used over relatively short periods of time. R1 sequences can be used to detect the rate with which cumulative data increase, while R2 sequences detect the relative rate of development.
+   The article ends by pointing out that these time series can be used to compare innovative activities in firms. Clearly, this investigation is just a first attempt. More studies are needed, including comparisons with other related sequences. (C) 2013 Elsevier Ltd. All rights reserved.
+C1 [Rousseau, Ronald] VIVES Assoc KU Leuven, Fac Engn Technol, B-8400 Oostende, Belgium.
+   [Rousseau, Ronald] Univ Antwerp, IBW, B-2000 Antwerp, Belgium.
+   [Rousseau, Ronald] Katholieke Univ Leuven, B-3000 Louvain, Belgium.
+   [Hu, Xiaojun] Zhejiang Univ, Sch Med, Med Informat Ctr, Hangzhou 310058, Zhejiang, Peoples R China.
+RP Hu, XJ (reprint author), Zhejiang Univ, Sch Med, Med Informat Ctr, Hangzhou 310058, Zhejiang, Peoples R China.
+EM ronald.rousseau@ua.ac.be; xjhu@zju.edu.cn
+CR Abercrombie RK, 2012, SCIENTOMETRICS, V91, P327, DOI 10.1007/s11192-011-0614-4
+   Amitay E, 2004, J AM SOC INF SCI TEC, V55, P1270, DOI 10.1002/asi.20082
+   Bar-Ilan J, 2008, J INFORMETR, V2, P1, DOI 10.1016/j.joi.2007.11.001
+   Bettencourt LMA, 2009, J INFORMETR, V3, P210, DOI 10.1016/j.joi.2009.03.001
+   Brookes B. C., 1970, Journal of Documentation, V26, DOI 10.1108/eb026500
+   Brunk GG, 2003, SCIENTOMETRICS, V56, P61, DOI 10.1023/A:1021998523825
+   BURRELL Q, 1980, J DOC, V36, P115, DOI 10.1108/eb026693
+   Chen CM, 2009, J INFORMETR, V3, P191, DOI 10.1016/j.joi.2009.03.004
+   Decroos F, 1997, INFORM PROCESS MANAG, V33, P393, DOI 10.1016/S0306-4573(96)00071-4
+   Dore JC, 2001, J AM SOC INF SCI TEC, V52, P763, DOI 10.1002/asi.1130.abs
+   Egghe L, 2010, ANNU REV INFORM SCI, V44, P65
+   Egghe L, 2005, LIBR INFORM SCI SER, P1
+   Franceschini F, 2011, SCIENTOMETRICS, V88, P279, DOI 10.1007/s11192-011-0371-4
+   Franses P. H., 2003, Scientometrics, V56
+   Glanzel W, 2007, J INFORMETR, V1, P92, DOI 10.1016/j.joi.2006.10.001
+   HALL DH, 1992, SCIENTOMETRICS, V24, P237, DOI 10.1007/BF02017911
+   Hood WW, 2001, SCIENTOMETRICS, V52, P291, DOI 10.1023/A:1017919924342
+   Hu XJ, 2011, J INFORMETR, V5, P413, DOI 10.1016/j.joi.2011.02.004
+   Ingwersen P, 2011, PRO INT CONF SCI INF, P327
+   Leydesdorff L, 2008, J AM SOC INF SCI TEC, V59, P1810, DOI 10.1002/asi.20891
+   Liang LM, 2008, J DOC, V64, P229, DOI 10.1108/00220410810858038
+   Liang LM, 2009, SCIENTOMETRICS, V80, P359, DOI 10.1007/s11192-008-2086-8
+   Liu YX, 2012, J DOC, V68, P31, DOI 10.1108/00220411211200310
+   Liu YX, 2010, J AM SOC INF SCI TEC, V61, P340, DOI 10.1002/asi.21248
+   Mahbuba D, 2010, MALAYS J LIBR INF SC, V15, P135
+   McGrath WE, 1996, J AM SOC INFORM SCI, V47, P136, DOI 10.1002/(SICI)1097-4571(199602)47:2<136::AID-ASI5>3.0.CO;2-#
+   Payne N, 2008, J INF SCI, V34, P3, DOI 10.1177/0165551507079417
+   Price, 1963, LITTLE SCI BIG SCI
+   Rafols I, 2010, SCIENTOMETRICS, V82, P263, DOI 10.1007/s11192-009-0041-y
+   Rousseau R, 1999, SCIENTOMETRICS, V44, P521, DOI 10.1007/BF02458493
+   Rousseau R., 2001, P 8 INT C SCI INF SY, P619
+   SWANSON DR, 1993, LIBR TRENDS, V41, P606
+   Vanclay JK, 2012, J INFORMETR, V6, P19, DOI 10.1016/j.joi.2011.08.003
+   Van Looy B, 2006, RES POLICY, V35, P596, DOI 10.1016/j.respol.2006.02.003
+   Ye FY, 2008, J INFORMETR, V2, P288, DOI 10.1016/j.joi.2008.09.002
+NR 35
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PY 2013
+VL 7
+IS 3
+BP 603
+EP 610
+DI 10.1016/j.joi.2013.03.006
+PG 8
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 210UH
+UT WOS:000323859700004
+ER
+
+PT J
+AU Tol, RSJ
+AF Tol, Richard S. J.
+TI Identifying excellent researchers: A new approach
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Quantile kernel regression; Hirsch index; Economics
+ID CROWN INDICATOR; RESEARCH OUTPUT; INDEX; ECONOMISTS; IMPACT
+AB Quantile kernel regression is a flexible way to estimate the percentile of a scholar's quality stratified by a measurable characteristic, without imposing inappropriate assumption about functional form or population distribution. Quantile kernel regression is here applied to identifying the one-in-a-hundred economist per age cohort according to the Hirsch index. (C) 2013 Elsevier Ltd. All rights reserved.
+C1 [Tol, Richard S. J.] Univ Sussex, Dept Econ, Falmer BN1 9SL, England.
+   [Tol, Richard S. J.] Vrije Univ Amsterdam, Inst Environm Studies, Amsterdam, Netherlands.
+   [Tol, Richard S. J.] Vrije Univ Amsterdam, Dept Spatial Econ, Amsterdam, Netherlands.
+   [Tol, Richard S. J.] Tinbergen Inst, Amsterdam, Netherlands.
+RP Tol, RSJ (reprint author), Univ Sussex, Dept Econ, Jubilee Bldg, Falmer BN1 9SL, England.
+EM r.tol@sussex.ac.uk
+RI Tol, Richard/D-5245-2011
+OI Tol, Richard/0000-0002-8012-3988
+CR Beirlant J, 2007, J INFORMETR, V1, P185, DOI 10.1016/j.joi.2007.04.002
+   Burrell QL, 2007, SCIENTOMETRICS, V73, P19, DOI 10.1007/s11192-006-1774-5
+   Ellison G., 2010, 3188 CESIFO
+   FALK M, 1986, STAT PROBABIL LETT, V4, P69, DOI 10.1016/0167-7152(86)90020-9
+   Gingras Y, 2011, J INFORMETR, V5, P226, DOI 10.1016/j.joi.2010.10.005
+   Herranz N, 2012, J INFORMETR, V6, P543, DOI 10.1016/j.joi.2012.02.006
+   Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   Krichel T., 2005, EC ANAL POLICY, V39, P143
+   Leydesdorff L, 2011, J INFORMETR, V5, P224, DOI 10.1016/j.joi.2010.10.003
+   Liang LM, 2006, SCIENTOMETRICS, V69, P153, DOI 10.1007/s11192-006-0145-6
+   Lundberg J, 2007, J INFORMETR, V1, P145, DOI 10.1016/j.joi.2006.09.007
+   Hengl T, 2009, SCIENTOMETRICS, V80, P491, DOI 10.1007/s11192-009-0073-3
+   Moed HF, 2010, J INFORMETR, V4, P436, DOI 10.1016/j.joi.2010.03.009
+   PARZEN E, 1979, J AM STAT ASSOC, V74, P105, DOI 10.2307/2286734
+   Sarabia JM, 2012, J INFORMETR, V6, P66, DOI 10.1016/j.joi.2011.09.005
+   Seiler C, 2012, J INFORMETR, V6, P389, DOI 10.1016/j.joi.2012.01.007
+   SHEATHER SJ, 1990, J AM STAT ASSOC, V85, P410, DOI 10.2307/2289777
+   Takeuchi I, 2006, J MACH LEARN RES, V7, P1231
+   Takezawa K, 2006, INTRODUCTION TO NONPARAMETRIC REGRESSION, P1
+   Tol RSJ, 2013, J INFORMETR, V7, P522, DOI 10.1016/j.joi.2013.02.001
+   Van Raan A.F.J., 2005, HDB QUANTITATIVE SCI, P19
+   van Leeuwen TN, 2003, SCIENTOMETRICS, V57, P257, DOI 10.1023/A:1024141819302
+   van Raan AFJ, 2010, J INFORMETR, V4, P431, DOI 10.1016/j.joi.2010.03.008
+   Waltman L, 2011, SCIENTOMETRICS, V87, P467, DOI 10.1007/s11192-011-0354-5
+   Waltman L, 2011, J INFORMETR, V5, P37, DOI 10.1016/j.joi.2010.08.001
+   Yu KM, 1998, J AM STAT ASSOC, V93, P228, DOI 10.2307/2669619
+   Zimmermann C., 2007, DEP EC WORKING PAPER, V2007-36
+NR 27
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PY 2013
+VL 7
+IS 4
+BP 803
+EP 810
+DI 10.1016/j.joi.2013.06.003
+PG 8
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 264ZV
+UT WOS:000327920400005
+ER
+
+PT J
+AU van Zyl, JM
+AF van Zyl, J. M.
+TI A simulation study to investigate the accuracy of approximating averages
+   of ratios using ratios of averages
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Averages of ratios; Ratio of averages; Power-law; Citations
+ID PARETO DISTRIBUTIONS; LAW
+AB For a number of researchers a number of publications for each author is simulated using the zeta distribution and then for each publication a number of citations per publication simulated. Bootstrap confidence intervals indicate that the difference between the average of ratios and the ratio of averages are not significant. It was found that the log-logistic distribution which is a general form for the ratio of two correlated Pareto random variables, give a good fit to the estimated ratios. (C) 2013 Elsevier Ltd. All rights reserved.
+C1 Univ Orange Free State, Dept Math Stat & Actuarial Sci, Bloemfontein, South Africa.
+RP van Zyl, JM (reprint author), Univ Orange Free State, Dept Math Stat & Actuarial Sci, Bloemfontein, South Africa.
+EM wwjvz@ufs.ac.za
+CR Arnold B. C., 1983, PARETO DISTRIBUTIONS
+   Egghe L, 2012, J INFORMETR, V6, P307, DOI 10.1016/j.joi.2011.12.007
+   Gibbons J. D., 2011, NONPARAMETRIC STATIS
+   Goldstein ML, 2004, EUR PHYS J B, V41, P255, DOI 10.1140/epjb/e2004-00316-5
+   Kleiber C., 2003, STAT SIZE DISTRIBUTI
+   Lariviere, 2011, JOURNAL OF INFORMETR, V5, P392
+   Leydesdorff L., 2011, JOURNAL OF INFORMETR, V4, P423
+   Limbert E., 2001, BIOSCIENCE, V51, P341
+   Lotka A.J., 1926, J WASHINGTON ACAD SC, V16, P317
+   MARDIA KV, 1962, ANN MATH STAT, V33, P1008, DOI 10.1214/aoms/1177704468
+   Markovich N. M., 2009, PROCEEDINGS OF THE V, P35
+   Newman MEJ, 2005, CONTEMP PHYS, V46, P323, DOI 10.1080/00107510500052444
+   Peterson GJ, 2010, P NATL ACAD SCI USA, V107, P16023, DOI 10.1073/pnas.1010757107
+   Radicchi F, 2008, P NATL ACAD SCI USA, V105, P17268, DOI 10.1073/pnas.0806977105
+   Redner S, 2005, PHYS TODAY, V58, P49, DOI 10.1063/1.1996475
+   Redner S, 1998, EUR PHYS J B, V4, P131, DOI 10.1007/s100510050359
+   SCImago, 2007, SJR SCIMAGO JOURNAL
+   Van Zyl J. M., 2012, ARXIV 1210 2246V2
+   Waltman L, 2011, J INFORMETR, V5, P37, DOI 10.1016/j.joi.2010.08.001
+NR 19
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+EI 1875-5879
+J9 J INFORMETR
+JI J. Informetr.
+PY 2013
+VL 7
+IS 4
+BP 907
+EP 913
+DI 10.1016/j.joi.2013.08.008
+PG 7
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 264ZV
+UT WOS:000327920400015
+ER
+
+PT J
+AU Albarran, P
+   Ortuno, I
+   Ruiz-Castillo, J
+AF Albarran, Pedro
+   Ortuno, Ignacio
+   Ruiz-Castillo, Javier
+TI High-and low-impact citation measures: Empirical applications (vol 5, pg
+   122, 2011)
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Correction
+C1 [Albarran, Pedro; Ortuno, Ignacio] Univ Carlos III Madrid, E-28903 Getafe, Spain.
+RP Ruiz-Castillo, J (reprint author), Univ Carlos III Madrid, Madrid 128, E-28903 Getafe, Spain.
+EM jrc@eco.uc3m.es
+CR Albarran P, 2011, J INFORMETR, V5, P122, DOI 10.1016/j.joi.2010.10.001
+NR 1
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PD OCT
+PY 2012
+VL 6
+IS 4
+BP 469
+EP 469
+DI 10.1016/j.joi.2012.04.001
+PG 1
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 003AY
+UT WOS:000308581700002
+ER
+
+PT J
+AU Albarran, P
+   Ortuno, I
+   Ruiz-Castillo, J
+AF Albarran, Pedro
+   Ortuno, Ignacio
+   Ruiz-Castillo, Javier
+TI The measurement of low- and high-impact in citation distributions:
+   Technical results (vol 5, pg 48, 2011)
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Correction
+C1 [Albarran, Pedro; Ortuno, Ignacio; Ruiz-Castillo, Javier] Univ Carlos III Madrid, Dept Econ, Getafe 28903, Spain.
+RP Ruiz-Castillo, J (reprint author), Univ Carlos III Madrid, Dept Econ, Madrid 128, Getafe 28903, Spain.
+EM jrc@eco.uc3m.es
+CR Albarran P, 2011, J INFORMETR, V5, P48, DOI 10.1016/j.joi.2010.08.002
+NR 1
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PD OCT
+PY 2012
+VL 6
+IS 4
+BP 515
+EP 515
+DI 10.1016/j.joi.2012.01.006
+PG 1
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 003AY
+UT WOS:000308581700009
+ER
+
+PT J
+AU Kosmulski, M
+AF Kosmulski, Marek
+TI Nemo iudex in causa sua?
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Bias in assessment of research; h-Index
+ID INDEX
+AB Newly introduced bibliometric indices may be biased by the preference of scientists for bibliometric indices, in which their own research receives a high score. To test such a hypothesis, the publication and citation records of nine scientists who recently proposed new bibliometric indices were analyzed in terms of standard indicators, their own indicators, and indicators recently proposed by other scientists. The result of the test was negative, that is, newly introduced bibliometric indices did not favor their authors. (C) 2012 Elsevier Ltd. All rights reserved.
+C1 Lublin Univ Technol, Lublin, Poland.
+RP Kosmulski, M (reprint author), Lublin Univ Technol, Lublin, Poland.
+EM mkosmuls@abo.fi
+RI Kosmulski, Marek/B-9158-2009; Kosmulski, Marek/F-2326-2010
+CR Egghe L, 2006, SCIENTOMETRICS, V69, P131, DOI 10.1007/s11192-006-0144-7
+   Fu HZ, 2012, J COLLOID INTERF SCI, V379, P148, DOI 10.1016/j.jcis.2012.04.051
+   Garcia-Perez MA, 2009, SCIENTOMETRICS, V81, P779, DOI 10.1007/s11192-009-2290-1
+   Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   Kosmulski M., 2006, ISSI NEWSLETTER, V7, P4
+   Schreiber M, 2008, NEW J PHYS, V10, DOI 10.1088/1367-2630/10/4/040201
+   Tol RSJ, 2009, SCIENTOMETRICS, V80, P317, DOI 10.1007/s11192-008-2079-7
+   Vinkler P, 2010, SCIENTOMETRICS, V82, P461, DOI 10.1007/s11192-010-0182-z
+   Visscher A, 2010, J AM SOC INFORM SCI, V61, P319
+   Wohlin C., 2009, SCIENTOMETRICS, V81, P512
+NR 10
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PD OCT
+PY 2012
+VL 6
+IS 4
+BP 611
+EP 614
+DI 10.1016/j.joi.2012.06.003
+PG 4
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 003AY
+UT WOS:000308581700018
+ER
+
+PT J
+AU Leydesdorff, L
+AF Leydesdorff, Loet
+TI McCall's area transformation versus the integrated impact indicator (I3)
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Letter
+C1 Univ Amsterdam, Amsterdam Sch Commun Res ASCoR, NL-1012 CX Amsterdam, Netherlands.
+RP Leydesdorff, L (reprint author), Univ Amsterdam, Amsterdam Sch Commun Res ASCoR, Kloveniersburgwal 48, NL-1012 CX Amsterdam, Netherlands.
+EM loet@leydesdorff.net
+RI Leydesdorff, Loet/E-2903-2010
+OI Leydesdorff, Loet/0000-0002-7835-3098
+CR Bornmann L, 2011, J INFORMETR, V5, P228, DOI 10.1016/j.joi.2010.10.009
+   KRUS DJ, 1977, EDUC PSYCHOL MEAS, V37, P257, DOI 10.1177/001316447703700134
+   Leydesdorff L, 2011, ATL C SCI INN POL SE
+   Leydesdorff L, 2011, J AM SOC INF SCI TEC, V62, P2133, DOI 10.1002/asi.21609
+   Leydesdorff L., J AM SOC INFORM SCI
+   McCall WA, 1922, MEASURE ED
+   Moed HF, 2010, J INFORMETR, V4, P265, DOI 10.1016/j.joi.2010.01.002
+   Mutz R, 2012, J INFORMETR, V6, P169, DOI 10.1016/j.joi.2011.12.006
+   Rubin DB, 1977, J EDUC STATIST, V2, P1, DOI DOI 10.2307/1164933
+NR 9
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PD OCT
+PY 2012
+VL 6
+IS 4
+BP 513
+EP 514
+DI 10.1016/j.joi.2012.03.002
+PG 2
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 003AY
+UT WOS:000308581700008
+ER
+
+PT J
+AU Perme, MP
+   Stare, J
+   Zaucer, R
+   Zaucer, M
+AF Perme, Maja Pohar
+   Stare, Janez
+   Zaucer, Rok
+   Zaucer, Matjaz
+TI Comparison of the citation distribution and h-index between groups of
+   different sizes
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Research performance; Citation distribution; Reduced Hirsch index;
+   Size-independent comparison; Stochastic method; Probability formulae
+ID HIRSCH-INDEX; INDICATORS; IMPACT; OUTPUT; MODEL
+AB Evaluating the performance of institutions with different resources is not easy, any citation distribution comparisons are strongly affected by the differences in the number of articles published. The paper introduces a method for comparing citation distributions of research groups that differ in size. The citation distribution of a larger group is reduced by a certain factor and compared with the original distribution of a smaller group. Expected values and tolerance intervals of the reduced set of citations are calculated. A comparison of both distributions can be conveniently viewed in a graph. The size-independent reduced Hirsch index - a function of reducing factor that allows the comparison of groups within a scientific field - is calculated in the same way. The method can be used for comparing groups or units differing in full-time equivalent, funding or the number of researchers, for comparing countries by population, gross domestic product, etc. It is shown that for the calculation of the reduced Hirsch index, the upper part of the original citation distribution is sufficient. The method is illustrated through several case comparisons. (C) 2012 Elsevier Ltd. All rights reserved.
+C1 [Perme, Maja Pohar; Stare, Janez] Univ Ljubljana, Fac Med, Inst Biostat & Med Informat, Ljubljana 61000, Slovenia.
+   [Zaucer, Rok] Univ Nova Gorica, Nova Gorica, Slovenia.
+   [Zaucer, Matjaz] Univ Ljubljana, Cent Technol Lib, Ljubljana 61000, Slovenia.
+RP Perme, MP (reprint author), Vrazov Trg 2, Ljubljana 1000, Slovenia.
+EM maja.pohar@mf.uni-lj.si
+CR Aksnes DW, 2004, RES EVALUAT, V13, P33, DOI 10.3152/147154404781776563
+   Albarran P, 2011, J INFORMETR, V5, P48, DOI 10.1016/j.joi.2010.08.002
+   Alonso S, 2009, J INFORMETR, V3, P273, DOI 10.1016/j.joi.2009.04.001
+   Bornmann L, 2011, J INFORMETR, V5, P346, DOI 10.1016/j.joi.2011.01.006
+   Bornmann L, 2010, J INFORMETR, V4, P407, DOI 10.1016/j.joi.2010.03.005
+   Burrell QL, 2007, J INFORMETR, V1, P16, DOI 10.1016/j.joi.2006.07.001
+   Butler L, 2003, RES POLICY, V32, P143, DOI 10.1016/S0048-7333(02)00007-0
+   Coryn C. L. S., 2005, J MULTIDISCIPLINARY, V4, P115
+   Crespo J. A., 2011, EC SERIES, P11
+   Egghe L, 2008, J AM SOC INF SCI TEC, V59, P1276, DOI 10.1002/asi.20809
+   Egghe L, 2010, ANNU REV INFORM SCI, V44, P65
+   Egghe L, 2006, SCIENTOMETRICS, V69, P131, DOI 10.1007/s11192-006-0144-7
+   Egghe L., 2006, ISSI NEWSLETTER, V2, P8
+   Egghe L, 2008, J INFORMETR, V2, P136, DOI 10.1016/j.joi.2007.12.003
+   Egghe L, 2006, SCIENTIST, V20, P14
+   Egghe L, 2006, SCIENTOMETRICS, V69, P121, DOI 10.1007/s11192-006-0143-8
+   Glanzel W, 2006, SCIENTOMETRICS, V67, P67, DOI 10.1556/Scient.67.2006.1.5
+   Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   Iglesias JE, 2007, SCIENTOMETRICS, V73, P303, DOI 10.1007/s11192-007-1805-x
+   Juznic P, 2010, SCIENTOMETRICS, V85, P429, DOI 10.1007/s11192-010-0230-8
+   Leydesdorff L, 2011, J AM SOC INF SCI TEC, V62, P1370, DOI 10.1002/asi.21534
+   Marchant T., 2009, SCIENTOMETRICS, V80, P335
+   Molinari JF, 2008, SCIENTOMETRICS, V75, P163, DOI 10.1007/s11192-007-1853-2
+   R Development Core Team, 2011, R LANG ENV STAT COMP
+   SCHUBERT A, 1986, SCIENTOMETRICS, V9, P281, DOI 10.1007/BF02017249
+   Tijssen RJW, 2002, SCIENTOMETRICS, V54, P381, DOI 10.1023/A:1016082432660
+   Waltman L, 2011, J AM SOC INFORM SCI, V63, P406
+   Woeginger GJ, 2008, MATH SOC SCI, V56, P224, DOI 10.1016/j.mathsocsci.2008.03.001
+NR 28
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PD OCT
+PY 2012
+VL 6
+IS 4
+BP 712
+EP 720
+DI 10.1016/j.joi.2012.07.007
+PG 9
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 003AY
+UT WOS:000308581700030
+ER
+
+PT J
+AU Su, HN
+   Lee, PC
+AF Su, Hsin-Ning
+   Lee, Pei-Chun
+TI Framing the structure of global open innovation research
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Network theory; Open innovation; Knowledge map; Structure; Quantitative
+   analysis
+ID CO-WORD ANALYSIS; NEURAL-NETWORK RESEARCH; BIBLIOMETRIC ANALYSIS;
+   DATABASE TOMOGRAPHY; TECHNOLOGY LITERATURE; SCIENTOMETRICS; CARTOGRAPHY;
+   DYNAMICS; SCIENCE; FIELD
+AB This study proposes a way of mapping open innovation research structure by quantitatively analyzing open innovation research papers retrieved from Web of Science database. A total of 130 papers are retrieved in this study and 62 papers which contain keywords are chosen for research structure visualization. Open innovation research networks are quantitatively investigated by combining network theory and keyword co-occurrence. Contour maps of open innovation are also created on the basis of networks for visualization. The networks and contour maps can be expressed differently by choosing different information as the main actors, such as the paper author, the institute, the country or the author-keywords, to reflect open innovation research structures in micro, meso, and macro-levels, respectively.
+   The quantitative ways of exploring open innovation research structure are investigated to unveil important or emerging open innovation components as well as to demonstrate visualization of the structure of global open innovation research. The quantitative method provided in this project shows a possible way of visualizing and evaluating research community structure and thus a computerized calculation is possible for potential quantitative applications on open innovation research management, e.g. R&D resource allocation, research performance evaluation, and science map. (C) 2011 Elsevier Ltd. All rights reserved.
+C1 [Lee, Pei-Chun] Natl Appl Res Labs, Sci & Technol Policy Res & Informat Ctr, Taipei 106, Taiwan.
+   [Su, Hsin-Ning] Natl Chung Hsing Univ, Inst Technol Management, Taichung 402, Taiwan.
+   [Lee, Pei-Chun] Natl Chengchi Univ, Grad Inst Technol & Innovat Management, Taipei 116, Taiwan.
+RP Lee, PC (reprint author), Natl Appl Res Labs, Sci & Technol Policy Res & Informat Ctr, 14 F,106,Sec 2,He Ping E Rd, Taipei 106, Taiwan.
+EM ning@nchu.edu.tw; pcleephd@gmail.com
+RI Su, Hsin-Ning/H-6209-2011
+OI Su, Hsin-Ning/0000-0002-4325-0793
+CR Analytic Technologies, 2011, SOC NETW AN SOFTW
+   Baldwin C, 2003, INT J GERIATR PSYCH, V18, P41, DOI 10.1002/gps.770
+   Barabasi AL, 1999, SCIENCE, V286, P509, DOI 10.1126/science.286.5439.509
+   Bhattacharya S, 1998, SCIENTOMETRICS, V43, P359, DOI 10.1007/BF02457404
+   Brass D. J., 1992, NETWORKS ORG STRUCTU
+   CALLON M, 1991, SCIENTOMETRICS, V22, P155, DOI 10.1007/BF02019280
+   CAMBROSIO A, 1993, SCIENTOMETRICS, V27, P119, DOI 10.1007/BF02016546
+   Chesbrough H. W., 2003, OPEN INNOVATION NEW
+   Chiu WT, 2004, SCIENTOMETRICS, V61, P69, DOI 10.1023/B:SCIE.0000037363.49623.28
+   Chiu WT, 2007, SCIENTOMETRICS, V73, P3, DOI 10.1007/s11192-005-1523-1
+   Christensen JF, 2005, RES POLICY, V34, P1533, DOI 10.1016/j.respol.2005.07.002
+   Clarke A, 2007, EUR J PUBLIC HEALTH, V17, P24, DOI 10.1093/eurpub/ckm062
+   Coulter N, 1998, J AM SOC INFORM SCI, V49, P1206, DOI 10.1002/(SICI)1097-4571(1998)49:13<1206::AID-ASI7>3.0.CO;2-F
+   COURTIAL JP, 1994, SCIENTOMETRICS, V31, P251, DOI 10.1007/BF02016875
+   Dahlander L, 2010, RES POLICY, V39, P699, DOI 10.1016/j.respol.2010.01.013
+   DeLooze MA, 1997, SCIENTOMETRICS, V39, P267
+   Ding Y, 2001, INFORM PROCESS MANAG, V37, P817, DOI 10.1016/S0306-4573(00)00051-0
+   Dodgson M, 2006, R&D MANAGE, V36, P333, DOI 10.1111/j.1467-9310.2006.00429.x
+   DOSI G, 1982, RES POLICY, V11, P147, DOI 10.1016/0048-7333(82)90016-6
+   FREEMAN LC, 1979, SOC NETWORKS, V1, P215, DOI 10.1016/0378-8733(78)90021-7
+   Gassmann O, 2006, R&D MANAGE, V36, P223, DOI 10.1111/j.1467-9310.2006.00437.x
+   Granovetter M. S., 1970, THESIS HARVARD U BOS
+   GRANOVET.MS, 1973, AM J SOCIOL, V78, P1360, DOI 10.1086/225469
+   Gupta B. M., 2004, DESIDOC Bulletin of Information Technology, V24
+   Hildrum JM, 2009, IND INNOV, V16, P197, DOI 10.1080/13662710902764360
+   HINZE S, 1994, SCIENTOMETRICS, V29, P353, DOI 10.1007/BF02033445
+   Ho YS, 2007, J ENV PROTECTION SCI, V1, P1
+   Hori K, 2004, J UNIVERS COMPUT SCI, V10, P252
+   Hurmelinna P, 2007, TECHNOVATION, V27, P133, DOI 10.1016/j.technovation.2005.09.011
+   Kirschbaum R, 2005, RES TECHNOL MANAGE, V48, P24
+   Kostoff RN, 2007, TECHNOL FORECAST SOC, V74, P1519, DOI 10.1016/j.techfore.2007.02.004
+   Kostoff RN, 1998, INFORM PROCESS MANAG, V34, P69, DOI 10.1016/S0306-4573(97)00066-6
+   Kostoff RN, 2002, J POWER SOURCES, V110, P163, DOI 10.1016/S0378-7753(02)00233-1
+   Kostoff RN, 2008, TECHNOL FORECAST SOC, V75, P165, DOI 10.1016/j.techfore.2007.11.004
+   Kostoff RN, 2005, ENERGY, V30, P709, DOI 10.1016/j.energy.2004.04.058
+   Kuhn T.S., 1962, STRUCTURE SCI REVOLU
+   Lane PJ, 1998, STRATEGIC MANAGE J, V19, P461, DOI 10.1002/(SICI)1097-0266(199805)19:5<461::AID-SMJ953>3.0.CO;2-L
+   Li T, 2008, NEUROSCI LETT, V441, P248, DOI 10.1016/j.neulet.2008.06.044
+   Li Y. R., 2009, TECHNOVATION
+   Lichtenthaler U, 2008, IEEE T ENG MANAGE, V55, P148, DOI 10.1109/TEM.2007.912932
+   MARSDEN PV, 1984, SOC FORCES, V63, P482, DOI 10.2307/2579058
+   Marshakova-Shaikevich I, 2005, INFORM PROCESS MANAG, V41, P1534, DOI 10.1016/j.ipm.2005.03.027
+   Motter A. E., 1999, PHYS REV E, V65
+   Nohria N, 1992, NETWORKS ORG STRUCTU
+   Noyons ECM, 1998, J AM SOC INFORM SCI, V49, P68, DOI 10.1002/(SICI)1097-4571(1998)49:1<68::AID-ASI9>3.0.CO;2-Z
+   NOYONS ECM, 1994, SCIENTOMETRICS, V30, P157, DOI 10.1007/BF02017220
+   Pisano G. P., 1990, ADM SCI Q, V35
+   RIKKEN F, 1995, SCIENTOMETRICS, V33, P367, DOI 10.1007/BF02017337
+   RIP A, 1984, SCIENTOMETRICS, V6, P381, DOI 10.1007/BF02025827
+   Su HN, 2010, SCIENTOMETRICS, V85, P65, DOI 10.1007/s11192-010-0259-8
+   Tian YG, 2008, J INFORMETR, V2, P65, DOI 10.1016/j.joi.2007.10.001
+   Van Eck NJ, 2007, INT J UNCERTAIN FUZZ, V15, P625, DOI 10.1142/S0218488507004911
+   VANRAAN AFJ, 1993, SCIENTOMETRICS, V26, P169
+   VON HIPPEL E., 1988, SOURCES INNOVATION
+   Wasserman S., 1994, ADV SOCIAL NETWORK A
+   Watts DJ, 1998, NATURE, V393, P440, DOI 10.1038/30918
+   Watts Duncan J., 2003, 6 DEGREES SCI CONNEC
+   Wellman B., 1988, SOCIAL STRUCTURES NE
+   West J, 2006, R&D MANAGE, V36, P319, DOI 10.1111/j.1467-9310.2006.00436.x
+   Yoon B, 2005, TECHNOL FORECAST SOC, V72, P145, DOI 10.1016/j.techfore.2004.08.011
+   Yoon B. C., 2004, P 2004 IEEE INT ENG, V2
+NR 61
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PD APR
+PY 2012
+VL 6
+IS 2
+BP 202
+EP 216
+DI 10.1016/j.joi.2011.12.001
+PG 15
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 906RF
+UT WOS:000301364100005
+ER
+
+PT J
+AU Franceschini, F
+   Maisano, D
+AF Franceschini, Fiorenzo
+   Maisano, Domenico
+TI Regularity in the research output of individual scientists: An empirical
+   analysis by recent bibliometric tools
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Research evaluation; Individual scientist; Publication regularity;
+   Citation regularity; Ferrers diagram; h-Index; Citation/publication
+   distribution; Borda's method
+ID INDICATORS; UNIVERSITY; SCIENCE
+AB This paper proposes an empirical analysis of several scientists based on their time regularity, defined as the ability of generating an active and stable research output over time, in terms of both quantity/publications and impact/citations. In particular, we empirically analyse three recent bibliometric tools to perform qualitative/quantitative evaluations under the new perspective of regularity. These tools are respectively (1) the PY/CY diagram, (2) the publication/citation Ferrers diagram and triad indicators, and (3) a year-by-year comparison of the scientists' output (Borda's ranking). Results of the regularity analysis are then compared with those obtained under the classical perspective of overall production.
+   The proposed evaluation tools can be applied to competitive examinations for research position/promotion, as complementary instruments to the commonly adopted bibliometric techniques. (C) 2011 Elsevier Ltd. All rights reserved.
+C1 [Franceschini, Fiorenzo; Maisano, Domenico] Politecn Torino, DISPEA Dept Prod Syst & Business Econ, I-10129 Turin, Italy.
+RP Franceschini, F (reprint author), Politecn Torino, DISPEA Dept Prod Syst & Business Econ, Corso Duca Abruzzi 24, I-10129 Turin, Italy.
+EM fiorenzo.franceschini@polito.it; domenico.maisano@polito.it
+RI MAISANO, Domenico/B-4301-2010
+OI MAISANO, Domenico/0000-0002-8154-4469
+CR Alonso S, 2009, J INFORMETR, V3, P273, DOI 10.1016/j.joi.2009.04.001
+   Amin M., 2000, IMPACT FACTORS USE A
+   Andrews G. E., 1998, THEORY PARTITIONS
+   *ASPHER, 2010, DOCT ED RES CAP PUBL
+   Bar-Ilan J, 2010, SCIENTOMETRICS, V82, P495, DOI 10.1007/s11192-010-0185-9
+   Billaut JC, 2010, SCIENTOMETRICS, V84, P237, DOI 10.1007/s11192-009-0115-x
+   Borda J. C., 1781, ISIS, V44, P42
+   Bornmann L, 2009, J INFORMETR, V3, P27, DOI 10.1016/j.joi.2008.11.001
+   Bornmann L, 2011, SCIENTOMETRICS, V86, P173, DOI 10.1007/s11192-010-0222-8
+   *COLL PRES CORS ST, 2008, CONS PROP REL AGL IN
+   CRONIN B, 1984, CITATION PROC ROLE S
+   EGGHE L, 2010, ANNU REV INFORM SCI, V44, P64
+   Egghe L, 2010, J INFORMETR, V4, P320, DOI 10.1016/j.joi.2010.01.006
+   Franceschini F, 2010, EUR J OPER RES, V203, P494, DOI 10.1016/j.ejor.2009.08.001
+   Franceschini F, 2010, J INFORMETR, V4, P503, DOI 10.1016/j.joi.2010.05.004
+   Franceschini F, 2007, MANAGEMENT MEASUREME
+   Franceschini F, 2011, J INFORMETR, V5, P64, DOI 10.1016/j.joi.2010.08.003
+   FRANCESCHINI F, SCIENTOMETR IN PRESS, DOI DOI 10.1007/S11192-011-0371-4
+   FRANCESCHINI F, 2010, QREI QUALIT IN PRESS, DOI DOI 10.1002/QRE.1174
+   GLANZEL W, 2010, ISSI NEWSLETTER, V6, P66
+   Glanzel W, 2006, SCIENTOMETRICS, V67, P67, DOI 10.1556/Scient.67.2006.1.5
+   Haeffner-Cavaillon N, 2009, ARCH IMMUNOL THER EX, V57, P33, DOI 10.1007/s00005-009-0004-2
+   Harzing A.W., 2007, ETHICS SCI ENV POLIT, V8, P61, DOI DOI 10.3354/esep00076
+   Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   *IPEA, 2009, SIMPL PUBL CALL PROP
+   Labbe C., 2010, ISSI NEWSLETTER, V6, P48
+   Moed H.F., 2005, CITATION ANAL RES EV
+   Neuhaus C, 2008, J DOC, V64, P193, DOI 10.1108/00220410810858010
+   Rousseau R, 2008, P WIS 2008 4 INT C W
+   Saari D. G., 1995, BASIC GEOMETRY VOTIN
+   SNIZEK WE, 1995, SCIENTOMETRICS, V32, P117, DOI 10.1007/BF02016888
+   Stephan PE, 2008, CESIFO ECON STUD, V54, P313, DOI 10.1093/cesifo/ifn014
+   van Raan A.F.J., 2000, WEB KNOWLEDGE FESTSC, P301
+NR 33
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PD JUL
+PY 2011
+VL 5
+IS 3
+BP 458
+EP 468
+DI 10.1016/j.joi.2011.04.004
+PG 11
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 769QF
+UT WOS:000291032500014
+ER
+
+PT J
+AU Bollen, J
+   Fox, G
+   Singhal, PR
+AF Bollen, Johan
+   Fox, Geoffrey
+   Singhal, Prashant Raj
+TI How and where the TeraGrid supercomputing infrastructure benefits
+   science
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+ID INDEX
+AB We investigate how the benefits of the TeraGrid supercomputing infrastructure are distributed across the scientific community. Do mostly high-impact scientists benefit from the TeraGrid? Are some scientific domains more strongly represented than others in TeraGrid-supported work? To answer these questions, we examine the relation between TeraGrid usage and scientific impact for a set of scientists whose projects relied to varying degrees on the TeraGrid infrastructure. For each scientist we measure TeraGrid usage expressed in terms of allocated Service Units (SU) vs. various indicators of their scientific impact such as the h-index, total citations, and citations per article. Our results show a significant correlation between scientific impact and TeraGrid usage. We furthermore examine the distribution of TeraGrid-related publications across various scientific journals. A superposition of these journals over an existing large-scale map of science shows how TeraGrid-supported work is mostly concentrated in Physics and Chemistry, with a lesser focus on biology. (C) 2010 Elsevier Ltd. All rights reserved.
+C1 [Bollen, Johan; Fox, Geoffrey; Singhal, Prashant Raj] Indiana Univ, Sch Informat & Comp, Bloomington, IN 47408 USA.
+RP Bollen, J (reprint author), Indiana Univ, Sch Informat & Comp, 919 E 10th St, Bloomington, IN 47408 USA.
+EM jbollen@indiana.edu
+CR Bollen J, 2009, PLOS ONE, V4, DOI 10.1371/journal.pone.0004803
+   Bollen Johan, 2008, Joint Conference on Digital Libraries (JCDL 2008), DOI 10.1145/1378889.1378928
+   BUTLER D, 2009, NATURE NEWS      MAR
+   Egghe L, 2006, SCIENTOMETRICS, V69, P131, DOI 10.1007/s11192-006-0144-7
+   Harzing A.W., 2007, ETHICS SCI ENV POLIT, V8, P61, DOI DOI 10.3354/esep00076
+   Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   LAWRENCE KA, 2007, JUN 2007 WORKSH SCI
+   ZIMMERMAN A, 2006, TERAGRID USER WORKSH
+NR 8
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PD JAN
+PY 2011
+VL 5
+IS 1
+BP 114
+EP 121
+DI 10.1016/j.joi.2010.09.004
+PG 8
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 698WS
+UT WOS:000285626000010
+ER
+
+PT J
+AU Rousseau, R
+   Wolfram, D
+AF Rousseau, Ronald
+   Wolfram, Dietmar
+TI The ASIS&T-ISSI "metrics" pre-conference seminar and the Global Alliance
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Editorial Material
+C1 [Rousseau, Ronald] KHBO, B-8400 Oostende, Belgium.
+   [Wolfram, Dietmar] Univ Wisconsin, Sch Informat Studies, Milwaukee, WI 53201 USA.
+RP Rousseau, R (reprint author), KHBO, Zeedijk 101, B-8400 Oostende, Belgium.
+EM ronald.rousseau@khbo.be; dwolfram@uwm.edu
+RI Wolfram, Dietmar/A-2449-2008
+NR 0
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PD APR
+PY 2010
+VL 4
+IS 2
+BP 139
+EP 140
+DI 10.1016/j.joi.2009.11.009
+PG 2
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 568II
+UT WOS:000275515500001
+ER
+
+PT J
+AU Gagolewski, M
+AF Gagolewski, Marek
+TI A remark on limit properties of generalized h- and g-indices
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Letter
+C1 Polish Acad Sci, Syst Res Inst, PL-01447 Warsaw, Poland.
+RP Gagolewski, M (reprint author), Polish Acad Sci, Syst Res Inst, Ul Newelska 6, PL-01447 Warsaw, Poland.
+EM gagolews@ibspan.waw.pl
+RI Gagolewski, Marek/C-3575-2012
+OI Gagolewski, Marek/0000-0003-0637-6028
+CR Egghe L, 2006, SCIENTOMETRICS, V69, P131, DOI 10.1007/s11192-006-0144-7
+   GAGOLEWSKI M, SCIENTOMETR IN PRESS
+   Hirsch JE, 2005, P NATL ACAD SCI USA, V102, P16569, DOI 10.1073/pnas.0507655102
+   van Eck NJ, 2008, J INFORMETR, V2, P263, DOI 10.1016/j.joi.2008.09.004
+NR 4
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PD OCT
+PY 2009
+VL 3
+IS 4
+BP 367
+EP 368
+DI 10.1016/j.joi.2009.02.001
+PG 2
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 484VB
+UT WOS:000269075100012
+ER
+
+PT J
+AU van Eck, NJ
+   Waltman, L
+AF van Eck, Nees Jan
+   Waltman, Ludo
+TI On the proper understanding of the limiting behavior of generalizations
+   of the h- and g-indices Reply
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Letter
+C1 [van Eck, Nees Jan; Waltman, Ludo] Erasmus Univ, Erasmus Sch Econ, Inst Econometr, NL-3000 DR Rotterdam, Netherlands.
+   [van Eck, Nees Jan; Waltman, Ludo] Leiden Univ, Ctr Sci & Technol Studies, NL-2300 AX Leiden, Netherlands.
+RP van Eck, NJ (reprint author), Erasmus Univ, Erasmus Sch Econ, Inst Econometr, POB 1738, NL-3000 DR Rotterdam, Netherlands.
+EM nvaneck@ese.eur.nl; lwaltman@ese.eur.nl
+RI van Eck, Nees Jan/B-6042-2008
+OI van Eck, Nees Jan/0000-0001-8448-4521
+CR van Eck NJ, 2008, J INFORMETR, V2, P263, DOI 10.1016/j.joi.2008.09.004
+NR 1
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PD OCT
+PY 2009
+VL 3
+IS 4
+BP 369
+EP 370
+DI 10.1016/j.joi.2009.02.002
+PG 2
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 484VB
+UT WOS:000269075100013
+ER
+
+PT J
+AU Waltman, L
+   van Eck, NJ
+AF Waltman, Ludo
+   van Eck, Nees Jan
+TI Some comments on the journal weighted impact factor proposed by
+   Habibzadeh and Yadollahie
+SO JOURNAL OF INFORMETRICS
+LA English
+DT Article
+DE Impact factor; Weighted impact factor; Journal; Citation
+AB In a recent paper in the Journal of Informetrics, Habibzadeh and Yadollahie [Habibzadeh, F., & Yadollahie, M. (2008). Journal weighted impact factor: A proposal. Journal of Informetrics, 2(2), 164 - 172] propose a journal weighted impact factor (WIF). Unlike the ordinary impact factor, the WIF of a journal takes into account the prestige or the influence of citing journals. In this communication, we show that the way in which Habibzadeh and Yadollahie calculate the WIF of a journal has some serious problems. Due to these problems, a ranking of journals based on WIF can be misleading. We also indicate how the problems can be solved by changing the way in which the WIF of a journal is calculated. (C) 2008 Elsevier Ltd. All rights reserved.
+C1 [Waltman, Ludo; van Eck, Nees Jan] Erasmus Univ, Erasmus Sch Econ, Inst Econometr, NL-3000 DR Rotterdam, Netherlands.
+RP Waltman, L (reprint author), Erasmus Univ, Erasmus Sch Econ, Inst Econometr, POB 1738, NL-3000 DR Rotterdam, Netherlands.
+EM lwaltman@few.eur.nl; nvaneck@few.eur.nl
+RI Waltman, Ludo/B-5561-2008; van Eck, Nees Jan/B-6042-2008
+OI van Eck, Nees Jan/0000-0001-8448-4521
+CR PINSKI G, 1976, INFORM PROCESS MANAG, V12, P297, DOI 10.1016/0306-4573(76)90048-0
+NR 1
+TC 0
+Z9 0
+PU ELSEVIER SCIENCE BV
+PI AMSTERDAM
+PA PO BOX 211, 1000 AE AMSTERDAM, NETHERLANDS
+SN 1751-1577
+J9 J INFORMETR
+JI J. Informetr.
+PD OCT
+PY 2008
+VL 2
+IS 4
+BP 369
+EP 372
+DI 10.1016/j.joi.2008.06.003
+PG 4
+WC Information Science & Library Science
+SC Information Science & Library Science
+GA 372LS
+UT WOS:000260903700013
+ER
+
+EF
