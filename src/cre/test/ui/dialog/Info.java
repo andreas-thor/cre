@@ -53,7 +53,7 @@ public class Info extends Dialog<Void> {
 
 		r = CRStats.getMaxRangeCitingYear();
 		grid.addRow(6, 
-			new Label("Range of Cited Publications Years"),
+			new Label("Range of Citing Publications Years"),
 			createTF (r[0], 1),
 			new Label("-"),
 			createTF (r[1], 1));
