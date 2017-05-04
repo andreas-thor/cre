@@ -62,8 +62,9 @@ public class CRSearch {
 		
 		
 		
+		/* we only store "in search result or not"; ignore search score */ 
 		CRTable.get().getCR().forEach(cr -> {
-			cr.setSEARCH_SCORE ( searchResult.containsKey(cr.getID()) ? searchResult.get(cr.getID()) : 0 );
+			cr.setSEARCH_SCORE ( searchResult.containsKey(cr.getID()) ? searchResult.get(cr.getID()) : 0d );
 		});
 		
 		

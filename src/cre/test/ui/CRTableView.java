@@ -1,5 +1,6 @@
 package cre.test.ui;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -17,7 +18,7 @@ import javafx.scene.layout.Priority;
 public class CRTableView extends TableView<CRType> {
 
 	// Column Information
-	public static enum ColGroup { CR, INDICATOR, CLUSTER, INVISIBLE }
+	public static enum ColGroup { CR, INDICATOR, CLUSTER, SEARCH }
 	public static enum ColDataType { INT, DOUBLE, STRING, CRCLUSTER } 
 	public static enum CRColumn {
 		
@@ -47,7 +48,7 @@ public class CRTableView extends TableView<CRType> {
 		N_PCT90 ("N_TOP90", "N_TOP90", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT90Prop),
 
 		
-		SEARCH_SCORE  ("SEARCH_SCORE", "SEARCH_SCORE", ColGroup.INVISIBLE, ColDataType.DOUBLE, CRType::getSEARCH_SCOREProp) 
+		SEARCH_SCORE  ("SEARCH_SCORE", "SEARCH_SCORE", ColGroup.SEARCH, ColDataType.INT, CRType::getSEARCH_SCOREProp) 
 		
 //		CO  ("CO", "CO", ColGroup.INVISIBLE, ColDataType.INT, CRType::getCOProp), 
 
@@ -122,11 +123,7 @@ public class CRTableView extends TableView<CRType> {
 				default: assert false;
 			}
 			
-			if (col.group != ColGroup.INVISIBLE) {
-				columns[i].visibleProperty().bindBidirectional(UserSettings.get().getColumnVisibleProperty(i));
-			} else {
-				columns[i].visibleProperty().setValue(false);
-			}
+			columns[i].visibleProperty().bindBidirectional(UserSettings.get().getColumnVisibleProperty(i));
 			
 			if (i==0) {
 				((TableColumn<CRType, Number>) columns[ 0]).setCellValueFactory(cellData -> (ObservableValue<Number>) col.prop.apply (cellData.getValue()));
@@ -185,11 +182,19 @@ public class CRTableView extends TableView<CRType> {
 
 
 	public void orderBySearchResult () {
-		/* sort by year ASC, n_cr desc */
+
+		/* remove SEARCH_SCORE as order criteria */
+		for (int i=getSortOrder().size()-1; i>=0; i--) {
+			if (getSortOrder().get(i).getText().equals(CRColumn.SEARCH_SCORE.id)) {
+				getSortOrder().remove(i);
+			}
+		}
+		
+		/* sort by search first; remains other (if existing) search criteria */
 		columns[CRColumn.SEARCH_SCORE.ordinal()].setSortType(TableColumn.SortType.DESCENDING);
-		getSortOrder().clear();
-		getSortOrder().add(columns[CRColumn.SEARCH_SCORE.ordinal()]);
+		getSortOrder().add(0, columns[CRColumn.SEARCH_SCORE.ordinal()]);
 		sort();
+		
 		Optional<CRType> first = getItems().stream().findFirst();
 		if (first.isPresent()) {
 			getSelectionModel().clearSelection();
