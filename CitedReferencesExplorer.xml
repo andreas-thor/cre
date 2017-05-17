@@ -14,12 +14,11 @@
 	<property name="lib.dir" value="./lib/"/>
 	<property name="deploy.dir" value="./deploy/"/>
 
-	<!-- specify if test version or not -->	
+	<!-- specify if test version or not: value="crexplorer_dev" or value="crexplorer" -->	
 	<property name="version.name" value="crexplorer_dev"/>
 
 
 	<!-- clean,create_jws_jar,create_fat_jar,sign,deploy -->
-	<!-- <target name="all" depends="deploy"></target> --> 
 	<target name="all" depends="clean,create_jws_jar,create_fat_jar,sign,deploy"></target>  
 
 	<target name="clean">
