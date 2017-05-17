@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jnlp spec="1.0+" codebase="http://www1.hft-leipzig.de/thor/citationtest/"
+<jnlp spec="1.0+" codebase="http://www1.hft-leipzig.de/thor/##VERSION##/"
   href="CitedReferencesExplorer.jnlp">
   <information>
     <title>Cited References Explorer</title>
@@ -23,20 +23,16 @@
     <j2se version="1.8+" href="http://java.sun.com/products/autodl/j2se"/>
     <jar href="CitedReferencesExplorer.jar" main="true"/>
   	<property name="swing.defaultlaf" value="com.sun.java.swing.plaf.windows.WindowsLookAndFeel"/>
-  
-  	<jar href="lib/lucene-core-6.4.2.jar"/>
+
+
+	<jar href="lib/lucene-core-6.4.2.jar"/>
 	<jar href="lib/lucene-queryparser-6.4.2.jar"/>
-    <jar href="lib/commons-math3-3.6.1.jar"/>
-  	<jar href="lib/bsf-2.4.0.jar"/>
-	<jar href="lib/groovy-all-2.4.3.jar"/>
-	<jar href="lib/ivy-2.3.0.jar"/>
-	<jar href="lib/ivy-2.3.0-sources.jar"/>
-	<jar href="lib/servlet-api-2.4.jar"/>
 	<jar href="lib/opencsv-3.9.jar"/>
 	<jar href="lib/simmetrics_jar_v1_6_2_d07_02_07.jar"/>
 	<jar href="lib/hamcrest-core-1.3.jar"/>
 	<jar href="lib/jcommon-1.0.23.jar"/>
 	<jar href="lib/jfreechart-1.0.19-experimental.jar"/>
+	<jar href="lib/jfreechart-1.0.19-fx.jar"/>
 	<jar href="lib/jfreechart-1.0.19-swt.jar"/>
 	<jar href="lib/jfreechart-1.0.19.jar"/>
 	<jar href="lib/jfreesvg-2.0.jar"/>
@@ -48,5 +44,5 @@
 	<jar href="lib/javax.json-1.0.jar"/>    
   </resources>
 
-  <application-desc main-class="cre.CitedReferencesExplorer"/>
+  <application-desc main-class="cre.test.CitedReferencesExplorer"/>
 </jnlp> 
