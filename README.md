@@ -1,12 +1,12 @@
 # CRE: Cited References Explorer
 
 ## Stable Version
-* via [Java Web Start](http://www1.hft-leipzig.de/thor/citationtest/CitedReferencesExplorer.jnlp)
-* via [Runnable Jar](http://www1.hft-leipzig.de/thor/citationtest/CitedReferencesExplorerFull.jar)
+* via [Java Web Start](http://www1.hft-leipzig.de/thor/crexplorer/CitedReferencesExplorer.jnlp)
+* via [Runnable Jar](http://www1.hft-leipzig.de/thor/crexplorer/CitedReferencesExplorerFull.jar)
   * for large files use heap space options (e.g., -Xms512m -Xmx4g)
 
 ## Developer Version
-* via [Java Web Start](http://www1.hft-leipzig.de/thor/crexplorer_dev/CitedReferencesExplorer_dev.jnlp)
+* via [Java Web Start](http://www1.hft-leipzig.de/thor/crexplorer_dev/CitedReferencesExplorer.jnlp)
 * via [Runnable Jar](http://www1.hft-leipzig.de/thor/crexplorer_dev/CitedReferencesExplorerFull.jar)
 
 
