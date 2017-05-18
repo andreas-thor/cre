@@ -1,0 +1,181 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Highcharts Example</title>
+
+		<script type="text/javascript" src="jquery_1.8.2_jquery.min.js"></script>
+		<!--  <style type="text/css"> {demo.css} </style> -->
+		<script type="text/javascript">
+		
+		var c;
+
+		/*
+		var crejava = {
+				onRedraw : function (a, b) { },
+				onClick  : function (x) { }
+		};
+		*/
+		
+	    function updateData (data0, data1, xAxisLabel, yAxisLabel, seriesLabel) {
+			
+	        c = Highcharts.chart('container', {
+	            
+	        	exporting: {
+	                enabled: false
+	       		},
+		       	 credits: {
+		             enabled: false
+		         },
+	        
+	        	chart: {
+	                zoomType: 'xy',
+	                events: {
+	                    redraw: function (e) {
+	                    	var extremes = c.xAxis[0].getExtremes();
+	                    	
+	                    	
+	                    	// if (typeof window.crejava !== 'undefined') {
+	                    		crejava.onRedraw(extremes.min, extremes.max);
+	                    	// }
+	                    },
+	                    click: function(e) {
+	                    	// if (typeof window.crejava !== 'undefined') {
+	                    		crejava.onClick (e.xAxis[0].value);
+	                    	// }
+	                    }
+	                }
+	                
+	            },
+	            
+	            title: {
+	                text: ''
+	            },
+/*	            
+	            subtitle: {
+	
+	                text: document.ontouchstart === undefined ?
+	                        'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+	            },
+*/
+	            xAxis: {
+	            	type: 'linear', 
+	            	minRange: 1, 
+	                title: {
+	                    text: xAxisLabel
+	                },
+	                gridLineWidth: 1
+	            },
+	            yAxis: {
+	            	type: 'linear',
+	            	minRange: 1, 
+	                title: {
+	                    text: yAxisLabel
+	                },
+	                gridLineWidth: 1
+	            },
+	         
+	            
+	            legend: {
+	                align: 'center',
+	                verticalAlign: 'bottom',
+	                y: 20,
+	                floating: false,
+	                borderWidth: 0
+	            },
+
+	            tooltip: {
+	                shared: true,
+	                crosshairs: true
+	            },
+	            
+	            plotOptions: {
+	            	
+	            	series: {
+	            		animation: false, 
+	            		cursor: 'pointer',
+	            		marker: {
+	                        lineWidth: 1
+	                    },
+	            		point: { 
+	    	            	events: {
+	    	                    click: function() {
+	    	                    	// if (typeof window.crejava !== 'undefined') {
+	    	                    		crejava.onClick (this.x);
+	    	                    	// }
+	    	                    }
+	    	                }
+	    	            }
+	            		
+	            	}
+	            },
+	            	
+/*	            	
+	                area: {
+	                    fillColor: {
+	                        linearGradient: {
+	                            x1: 1,
+	                            y1: 0,
+	                            x2: 1,
+	                            y2: 1
+	                        },
+	                        stops: [
+	                            [0, Highcharts.getOptions().colors[0]],
+	                            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+	                        ]
+	                    },
+	                    marker: {
+	                        radius: 2,
+	                        lineWidth: 1
+	                    },
+	                    lineWidth: 5,
+	                    states: {
+	                        hover: {
+	                            lineWidth: 5
+	                        }
+	                    },
+	                    threshold: null
+	                }
+	            },
+*/
+	            series: [
+	 	            	{
+			                type: 'spline',
+			                name: seriesLabel[0],
+		    	            data: data0
+		        	    }, 
+		            	{
+			                type: 'spline',
+			                name: seriesLabel[1],
+		    	            data: data1
+		        	    } 
+	        	    ]
+	        });
+	        
+
+	        
+		}
+		
+
+		
+    		
+    
+    
+
+
+
+		</script>
+	</head>
+	<body>
+	<!-- 
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+-->
+ 
+<script src="highcharts.js"></script>
+<script src="exporting.js"></script> 
+
+<div id="container" style="position:absolute; height:97%; width:97%"></div>
+
+	</body>
+</html>
