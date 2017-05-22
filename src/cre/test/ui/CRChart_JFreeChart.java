@@ -70,14 +70,28 @@ public abstract class CRChart_JFreeChart extends CRChart {
 		rend.setSeriesShape(1, new Ellipse2D.Double(-shapeSize/2,-shapeSize/2,shapeSize,shapeSize));
 		rend.setSeriesStroke(1, new BasicStroke(strokeSize));
 		
-		// tooltip = CR year with sum of all NCR of this year
-		
-		rend.setSeriesToolTipGenerator(0, new XYToolTipGenerator() {
+		// tooltip = year + CR + difference to median
+		XYToolTipGenerator tooltip = new XYToolTipGenerator() {
 			@Override
 			public String generateToolTip(XYDataset dataset, int series, int item) {
-				return String.format("Year=%d, %s=%d", dataset.getX(0, item).intValue(), series==0 ? "N_CR" : "Diff", dataset.getY(series, item).intValue());
+				return String.format("%d\n* %s: %d\n* %s: %s", 
+						ds.getX(0, item).intValue(), 
+						getSeriesLabel(0), 
+						ds.getY(0, item).intValue(),
+						getSeriesLabel(1),
+						ds.getSeriesCount()>1 ? ds.getY(1, item).intValue() : "");
 			}
-		});
+		};
+		rend.setSeriesToolTipGenerator(0, tooltip);
+		rend.setSeriesToolTipGenerator(1, tooltip);
+		
+		
+//		rend.setSeriesToolTipGenerator(0, new XYToolTipGenerator() {
+//			@Override
+//			public String generateToolTip(XYDataset dataset, int series, int item) {
+//				return String.format("Year=%d\n, %s=%d", dataset.getX(0, item).intValue(), series==0 ? "N_CR" : "Diff", dataset.getY(series, item).intValue());
+//			}
+//		});
 		
 		// update table when zoom changes in chart
 		plot.addChangeListener(pcevent -> {

@@ -828,7 +828,7 @@ public class Main {
 
 	@FXML
 	public void OnMenuHelpManual() {
-		HostServicesFactory.getInstance(CitedReferencesExplorer.app).showDocument(CitedReferencesExplorer.url);
+		HostServicesFactory.getInstance(CitedReferencesExplorer.app).showDocument(CitedReferencesExplorer.manual_url);
 	}
 
 	@FXML

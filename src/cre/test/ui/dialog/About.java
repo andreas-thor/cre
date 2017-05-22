@@ -26,12 +26,13 @@ public class About extends Alert {
 		grid.setPadding(new Insets(20, 20, 20, 20));
 
 		grid.add(new Label("Developed by Andreas Thor <thor@hft-leipzig.de>"), 0, 0);
-		grid.add(new Label("Joint work with Lutz Bornmann, Robin Haunschild, Loet Leydesdorff, Werner Marx, and Rüdiger Mutz."), 0, 1);
+		grid.add(new Label("Joint work with Werner Marx and Lutz Bornmann"), 0, 1);
+		grid.add(new Label("in co-operation with and support of Robin Haunschild, Loet Leydesdorff, and Rüdiger Mutz."), 0, 2);
 		Hyperlink hp = new Hyperlink("Project website: crexplorer.net");
 		hp.setOnAction(e -> {
 			HostServicesFactory.getInstance(CitedReferencesExplorer.app).showDocument(CitedReferencesExplorer.url);
 		});
-		grid.add(hp, 0, 2);
+		grid.add(hp, 0, 3);
 		
 		getDialogPane().setContent(grid);
 			

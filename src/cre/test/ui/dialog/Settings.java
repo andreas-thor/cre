@@ -1,6 +1,7 @@
 package cre.test.ui.dialog;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
@@ -43,17 +44,31 @@ public class Settings extends Dialog<Integer> {
 		
 		super();
 
+		this.setResizable(true);
+		
 		TabPane tpane = new TabPane();
 		tpane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
+		
 		VBox tabTable = new VBox(10);
 		tabTable.setPadding (new Insets(20, 20, 20, 20));
+		
 		tabTable.getChildren().add(new TitledPane("Cited References", createTableColPane(ColGroup.CR)));
 		tabTable.getChildren().add(new TitledPane("Indicators", createTableColPane(ColGroup.INDICATOR)));
 		tabTable.getChildren().add(new TitledPane("Clustering", createTableColPane(ColGroup.CLUSTER)));
-		tabTable.getChildren().add(new TitledPane("Search", createTableColPane(ColGroup.SEARCH)));
+		tabTable.getChildren().add(new TitledPane("Searching", createTableColPane(ColGroup.SEARCH)));
 		tabTable.getChildren().add(new TitledPane("Value Settings", createTableDataPane()));
 		tpane.getTabs().add(new Tab("Table", tabTable));
+
+		tabTable.getChildren().forEach(t -> {
+			TitledPane a = (TitledPane) t; 
+			a.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+				this.setHeight(163 + tabTable.getChildren().stream().mapToInt(n -> 10 + (int) ((TitledPane) n).getHeight()).sum());
+			});
+			a.setAnimated(false);
+		});
+				
+		
 		
 		VBox tabChart = new VBox(10);
 		tabChart.setPadding (new Insets(20, 20, 20, 20));
@@ -65,6 +80,15 @@ public class Settings extends Dialog<Integer> {
 		tabImport.setPadding (new Insets(20, 20, 20, 20));
 		tabImport.getChildren().add(new TitledPane("Restrict Import of Cited References", createImportRestrictionPane()));
 		tpane.getTabs().add(new Tab("Import", tabImport));
+		
+		VBox[] q = {tabTable, tabChart, tabImport};
+		Arrays.asList(q).stream().forEach(it -> it.getChildren().forEach(t -> {
+			TitledPane a = (TitledPane) t; 
+			a.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+				this.setHeight(163 + it.getChildren().stream().mapToInt(n -> 10 + (int) ((TitledPane) n).getHeight()).sum());
+			});
+			a.setAnimated(false);
+		}));
 		
 		
 		// set the dialog
@@ -194,7 +218,7 @@ public class Settings extends Dialog<Integer> {
 		tfDigits.setText(UserSettings.get().getFormatDigits());
 		result.add(tfDigits, 1, 0);
 		
-		result.add(new Label("Top Range"), 0, 1);
+		result.add(new Label("N_PCT Range"), 0, 1);
 		tfNPCT.setMaxWidth(50);
 		tfNPCT.setText(String.valueOf(UserSettings.get().getNPCTRange()));
 		result.add(tfNPCT, 1, 1);
@@ -225,7 +249,8 @@ public class Settings extends Dialog<Integer> {
 		for (CRColumn e: CRTableView.CRColumn.values()) {
 			
 			if (e.group == group) {
-				cbCol[idx] = new CheckBox(e.title);
+				cbCol[idx] = new CheckBox(String.format("%s (%s)", e.title, e.id));
+				cbCol[idx].setMnemonicParsing(false);
 				cbCol[idx].setSelected(UserSettings.get().getColumnVisibleProperty(idx).get());
 				result.add(cbCol[idx], col, row);
 				if (col<2) {

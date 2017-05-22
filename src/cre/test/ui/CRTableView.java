@@ -35,20 +35,20 @@ public class CRTableView extends TableView<CRType> {
 		TI ("TI", "Title", ColGroup.CR, ColDataType.STRING, CRType::getTIProp),
 		J ("J", "Source", ColGroup.CR, ColDataType.STRING, CRType::getJProp),
 		J_N ("J_N", "Source Title", ColGroup.CR, ColDataType.STRING, CRType::getJ_NProp),
-		J_S ("J_S", "Title Short", ColGroup.CR, ColDataType.STRING, CRType::getJ_SProp),
+		J_S ("J_S", "Title short", ColGroup.CR, ColDataType.STRING, CRType::getJ_SProp),
 		VOL ("VOL", "Volume", ColGroup.CR, ColDataType.STRING, CRType::getVOLProp),
 		PAG ("PAG", "Page", ColGroup.CR, ColDataType.STRING, CRType::getPAGProp),
 		DOI ("DOI", "DOI", ColGroup.CR, ColDataType.STRING, CRType::getDOIProp),
 		CID2 ("CID2", "ClusterID", ColGroup.CLUSTER, ColDataType.CRCLUSTER, CRType::getCID2),
-		CID_S ("CID_S", "Cluster Size", ColGroup.CLUSTER, ColDataType.INT, CRType::getCID_SProp),
-		N_PYEARS ("N_PYEARS", "N_PYEARS", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PYEARSProp),
-		PYEAR_PERC ("PERC_PYEARS", "PERC_PYEARS", ColGroup.INDICATOR, ColDataType.DOUBLE, CRType::getPYEAR_PERCProp),
-		N_PCT50 ("N_TOP50", "N_TOP50", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT50Prop),
-		N_PCT75 ("N_TOP75", "N_TOP75", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT75Prop),
-		N_PCT90 ("N_TOP90", "N_TOP90", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT90Prop),
+		CID_S ("CID_S", "ClusterSize", ColGroup.CLUSTER, ColDataType.INT, CRType::getCID_SProp),
+		N_PYEARS ("N_PYEARS", "Number of Citing Years", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PYEARSProp),
+		PYEAR_PERC ("PERC_PYEARS", "Percentage of Citing Years", ColGroup.INDICATOR, ColDataType.DOUBLE, CRType::getPYEAR_PERCProp),
+		N_PCT50 ("N_TOP50", "Top 50% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT50Prop),
+		N_PCT75 ("N_TOP75", "Top 75% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT75Prop),
+		N_PCT90 ("N_TOP90", "Top 90% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT90Prop),
 
 		
-		SEARCH_SCORE  ("SEARCH_SCORE", "SEARCH_SCORE", ColGroup.SEARCH, ColDataType.INT, CRType::getSEARCH_SCOREProp) 
+		SEARCH_SCORE  ("SEARCH_SCORE", "Score from Search Process", ColGroup.SEARCH, ColDataType.INT, CRType::getSEARCH_SCOREProp) 
 		
 //		CO  ("CO", "CO", ColGroup.INVISIBLE, ColDataType.INT, CRType::getCOProp), 
 
