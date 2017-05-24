@@ -163,6 +163,46 @@
 				size if you are processing large files.</li>
 		</ol>
 
+
+		<h2>Releases</h2>
+
+		<p>CRExplorer version 1.7.5 was released on May 31, 2017. This
+			version includes the following new features and improvements:</p>
+		<ul>
+			<li><b>Citing Publications</b>: Users can see the list of citing
+				publications for a selected Cited Reference via menu "View" -
+				"Citing Publications".</li>
+			<li><b>Searching</b>: Users can do a keyword search for Cited
+				References (including wildcards such as *).</li>
+			<li><b>Indicators</b>: ...</li>
+			<li><b>Copy + Paste</b>: Users can copy selected Cited References to clipboard (Ctrl+C) and paste it in Excel.</li> 
+			<li><b>New Chart layout</b>: Beside the standard chart
+				(JFreeChart) CRExplorer now employs a new web-based, interactive
+				chart type (HighCharts). Users can switch between the types in the
+				"File" - "Settings" menu. (Note: This is an experimental feature.)</li>
+			<li><b>User Interface</b>: CRExplorer's GUI is now based on
+				JavaFX.</li>
+
+		</ul>
+
+		<p>CRExplorer version 1.6.8 was released on August 29, 2016. This
+			version includes the following new features and improvements:</p>
+		<ul>
+			<li><b>Co-Citation</b>: If the user marks at least one cited
+				reference in the table and selects “Data” – “Retain Publications
+				Citing Selected Cited References”, all cited references which are
+				co-cited with the marked cited reference in citing publications are
+				kept (all other cited references are dropped). See <a
+				href="http://arxiv.org/abs/1608.07960">Which early works are
+					cited most frequently in climate change research literature? A
+					bibliometric approach based on Reference Publication Year
+					Spectroscopy</a> for a first use case.</li>
+			<li><b>Performance</b>: Performance improvements (e.g., for data
+				clustering) using multiple threads on multi-core machines.</li>
+			<li><b>Java 8</b>: CRExplorer requires a Java 8 run-time.</li>
+
+		</ul>
+
 		<p>
 			CRExplorer version 1.6.7 was released on July 5, 2016. This version
 			includes the following new features and improvements (see <a
@@ -189,25 +229,6 @@
 		</ul>
 
 
-		<p>CRExplorer version 1.6.8 was released on August 29, 2016. This
-			version includes the following new features and improvements:</p>
-		<ul>
-			<li><b>Co-Citation</b>: If the user marks at least one cited
-				reference in the table and selects “Data” – “Retain Publications
-				Citing Selected Cited References”, all cited references which are
-				co-cited with the marked cited reference in citing publications are
-				kept (all other cited references are dropped). See <a
-				href="http://arxiv.org/abs/1608.07960">Which early works are
-					cited most frequently in climate change research literature? A
-					bibliometric approach based on Reference Publication Year
-					Spectroscopy</a> for a first use case.</li>
-			<li><b>Performance</b>: Performance improvements (e.g., for data
-				clustering) using multiple threads on multi-core machines.</li>
-			<li><b>Java 8</b>: CRExplorer requires a Java 8 run-time.</li>
-
-		</ul>
-
-
 	</div>
 
 
@@ -215,15 +236,17 @@
 		<h1>Guide and Datasets</h1>
 
 		<ul>
+			<li><a href="manual.pdf">CitedReferencesExplorer
+					(CRExplorer) Manual</a><br /> by Andreas Thor, Werner Marx, and Lutz
+				Bornmann<br /> <br /></li>
 			<li><a href="http://arxiv.org/abs/1601.01199">Introducing
 					CitedReferencesExplorer (CRExplorer): A program for Reference
 					Publication Year Spectroscopy with Cited References Disambiguation</a><br />by
 				Andreas Thor, Werner Marx, Loet Leydesdorff, and Lutz Bornmann<br />
 				<br /></li>
-			<li><a
-				href="CRE-Instructions.pdf">Analysing
-					cited references via the CRExplorer: A practically oriented short
-					guide</a><br />by Werner Marx<br /> <br /></li>
+			<li><a href="CRE-Instructions.pdf">Analysing cited
+					references via the CRExplorer: A practically oriented short guide</a><br />by
+				Werner Marx<br /> <br /></li>
 			<li><a href="http://arxiv.org/abs/1607.01266">New features
 					of CitedReferencesExplorer (CRExplorer)</a><br />by Andreas Thor,
 				Werner Marx, Loet Leydesdorff, and Lutz Bornmann</li>
@@ -231,12 +254,8 @@
 
 		<p>Datasets:</p>
 		<ul>
-			<li><a
-				href="savedrecs_JOI1.txt">Dataset
-					#1</a> (2MB)</li>
-			<li><a
-				href="savedrecs_JOI2.txt">Dataset
-					#2</a> (150kB)</li>
+			<li><a href="savedrecs_JOI1.txt">Dataset #1</a> (2MB)</li>
+			<li><a href="savedrecs_JOI2.txt">Dataset #2</a> (150kB)</li>
 		</ul>
 	</div>
 
@@ -299,66 +318,57 @@
 	<div class="section">
 		<h1>Author</h1>
 		<p>
-			Andreas Thor<br /> 
-			University of Applied Sciences for Telecommunications Leipzig (HfTL)<br /> 
-			Gustav-Freytag-Str. 43-45<br />
-			04277 Leipzig, Germany<br /> 
-			Email: thor@hft-leipzig.de
+			Andreas Thor<br /> University of Applied Sciences for
+			Telecommunications Leipzig (HfTL)<br /> Gustav-Freytag-Str. 43-45<br />
+			04277 Leipzig, Germany<br /> Email: thor@hft-leipzig.de
 		</p>
-		<p>Questions? Bugs? Feature wishes? <a href='mailto:thor@hft-leipzig.de?subject=Feedback CR Explorer'>Please send us feedback!</a></p>
+		<p>
+			Questions? Bugs? Feature wishes? <a
+				href='mailto:thor@hft-leipzig.de?subject=Feedback CR Explorer'>Please
+				send us feedback!</a>
+		</p>
 
 
 		<h1>Contributors (alphabetically ordered)</h1>
-		
+
 		<p>
-			Lutz Bornmann<br /> 
-			Division for Science and Innovation Studies<br />
+			Lutz Bornmann<br /> Division for Science and Innovation Studies<br />
 			Administrative Headquarters of the Max Planck Society<br />
-			Hofgartenstr. 8<br /> 
-			80539 Munich, Germany<br /> 
-			Email: bornmann@gv.mpg.de<br />
+			Hofgartenstr. 8<br /> 80539 Munich, Germany<br /> Email:
+			bornmann@gv.mpg.de<br />
 		</p>
 		<p>
-			Robin Haunschild<br />
-			Max Planck Institute for Solid State Research<br />
-			Heisenbergstr. 1<br />
-			70569 Stuttgart, Germany<br />
-			Email: R.Haunschild@fkf.mpg.de<br />
-		</p>	
-		<p>
-			Loet Leydesdorff<br /> 
-			Amsterdam School of Communication Research (ASCoR)<br /> 
-			University of Amsterdam<br /> 
-			P.O. Box 15793<br />
-			1001 NG Amsterdam, The Netherlands<br /> 
-			Email: loet@leydesdorff.net <br />
+			Robin Haunschild<br /> Max Planck Institute for Solid State Research<br />
+			Heisenbergstr. 1<br /> 70569 Stuttgart, Germany<br /> Email:
+			R.Haunschild@fkf.mpg.de<br />
 		</p>
 		<p>
-			Werner Marx<br /> 
-			Max Planck Institute for Solid State Research<br />
-			Information Service<br /> 
-			Heisenbergstrasse 1<br /> 
-			70506 Stuttgart, Germany<br /> 
-			Email: w.marx@fkf.mpg.de
+			Loet Leydesdorff<br /> Amsterdam School of Communication Research
+			(ASCoR)<br /> University of Amsterdam<br /> P.O. Box 15793<br />
+			1001 NG Amsterdam, The Netherlands<br /> Email: loet@leydesdorff.net
+			<br />
 		</p>
 		<p>
-			Rüdiger Mutz<br />
-			ETH Zürich<br/>
-			Mühlegasse 21<br />
-			8001 Zurich, Switzerland<br />
-			Email: mutz@gess.ethz.ch<br />
+			Werner Marx<br /> Max Planck Institute for Solid State Research<br />
+			Information Service<br /> Heisenbergstrasse 1<br /> 70506
+			Stuttgart, Germany<br /> Email: w.marx@fkf.mpg.de
+		</p>
+		<p>
+			Rüdiger Mutz<br /> ETH Zürich<br /> Mühlegasse 21<br /> 8001
+			Zurich, Switzerland<br /> Email: mutz@gess.ethz.ch<br />
 		</p>
 	</div>
 
 	<div class="footer">
-		<a href="https://www.hft-leipzig.de/en.html"><img align="middle" height="50em" src="hftl.jpg" /></a> 
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-		<a href="http://www.mpg.de/en"><img align="middle" height="50em" src="mpg.png" /></a> 
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-		<a href="http://www.uva.nl/en/home"><img align="middle" height="25em" src="uva.jpg" /></a>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-		<a href="https://www.ethz.ch/en.html"><img align="middle" height="50em" src="eth.jpg" /></a>
-		
+		<a href="https://www.hft-leipzig.de/en.html"><img align="middle"
+			height="50em" src="hftl.jpg" /></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+			href="http://www.mpg.de/en"><img align="middle" height="50em"
+			src="mpg.png" /></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+			href="http://www.uva.nl/en/home"><img align="middle"
+			height="25em" src="uva.jpg" /></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+			href="https://www.ethz.ch/en.html"><img align="middle"
+			height="50em" src="eth.jpg" /></a>
+
 	</div>
 
 </body>
