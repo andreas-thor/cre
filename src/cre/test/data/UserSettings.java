@@ -35,7 +35,7 @@ public class UserSettings {
 	private int medianRange = 2;
 
 	// PubYear Range (+/-) for NPCT indicators
-	private int npctRange = 5;
+	private int npctRange = 1;
 
 	// import restrictions
 	private int maxCR = 0;

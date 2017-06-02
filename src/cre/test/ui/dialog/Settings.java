@@ -249,7 +249,7 @@ public class Settings extends Dialog<Integer> {
 		for (CRColumn e: CRTableView.CRColumn.values()) {
 			
 			if (e.group == group) {
-				cbCol[idx] = new CheckBox(String.format("%s (%s)", e.title, e.id));
+				cbCol[idx] = new CheckBox(String.format("%s (%s)", e.id, e.title));
 				cbCol[idx].setMnemonicParsing(false);
 				cbCol[idx].setSelected(UserSettings.get().getColumnVisibleProperty(idx).get());
 				result.add(cbCol[idx], col, row);

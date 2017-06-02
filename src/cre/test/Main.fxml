@@ -51,7 +51,7 @@
 					
 					<MenuItem text="Remove Selected Cited Reference..." onAction="#OnMenuDataRemoveSelected" />
 					<MenuItem text="Remove Cited References w/o Year..." onAction="#OnMenuDataRemovewoYears"/>
-					<MenuItem text="Remove by Cited Reference Year..." onAction="#OnMenuDataRemoveByRPY" />
+					<MenuItem text="Remove by Reference Publication Year..." onAction="#OnMenuDataRemoveByRPY" />
 					<MenuItem text="Remove by Number of Cited References..." onAction="#OnMenuDataRemoveByNCR" />
 					<MenuItem text="Remove by Percent in Year..." onAction="#OnMenuDataRemoveByPERC_YEAR" />
 
@@ -76,7 +76,7 @@
 					<SeparatorMenuItem />
 					
 					<CheckMenuItem text="Show Cited References w/o Years" onAction="#OnMenuViewShowCRsWOYears" selected="true" fx:id="showWOYear"/>
-					<MenuItem text="Filter by Cited Reference Year..." onAction="#OnMenuViewFilterByRPY"/>
+					<MenuItem text="Filter by Reference Publication Year..." onAction="#OnMenuViewFilterByRPY"/>
 					<MenuItem text="Show Cited References of selected Cluster(s) only" onAction="#OnMenuViewShowCluster"/>
 					<MenuItem text="Search Cited References..." disable="false" accelerator="Shortcut+F" onAction="#OnMenuViewSearch"/>
 					

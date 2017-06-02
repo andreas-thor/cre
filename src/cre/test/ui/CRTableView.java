@@ -24,7 +24,7 @@ public class CRTableView extends TableView<CRType> {
 		
 		ID 	("ID", "ID", ColGroup.CR, ColDataType.INT, CRType::getIDProp),
 		CR 	("CR", "Cited Reference", ColGroup.CR, ColDataType.STRING, CRType::getCRProp),
-		RPY ("RPY", "Cited Reference Year", ColGroup.CR, ColDataType.INT, CRType::getRPYProp),
+		RPY ("RPY", "Reference Publication Year", ColGroup.CR, ColDataType.INT, CRType::getRPYProp),
 		N_CR ("N_CR", "Number of Cited References", ColGroup.CR, ColDataType.INT, CRType::getN_CRProp),
 		PERC_YR ("PERC_YR", "Percent in Year", ColGroup.INDICATOR, ColDataType.DOUBLE, CRType::getPERC_YRProp),
 		PERC_ALL ("PERC_ALL", "Percent over all Years", ColGroup.INDICATOR, ColDataType.DOUBLE, CRType::getPERC_ALLProp),
