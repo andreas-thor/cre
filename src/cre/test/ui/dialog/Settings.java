@@ -193,7 +193,7 @@ public class Settings extends Dialog<Integer> {
 		result.setVgap(10);
 		result.setPadding(new Insets(20, 20, 20, 20));
 		
-		String[] label = new String[] { "Maximum Number of CRs", "Maximum Number of Pubs", "Minimum Publication Year", "Maximum Publication Year" };
+		String[] label = new String[] { "Maximum Number of CRs", "Maximum Number of Publications ", "Minimum Publication Year", "Maximum Publication Year" };
 		long[] value = new long[] { UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), UserSettings.get().getRange(RangeType.ImportYearRange)[0], UserSettings.get().getRange(RangeType.ImportYearRange)[1] };
 		for (int i=0; i<label.length; i++) {
 			result.add(new Label(label[i]), 0, i);
