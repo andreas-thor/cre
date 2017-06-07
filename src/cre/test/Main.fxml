@@ -86,13 +86,13 @@
 					
 				</items>
 			</Menu>
-			<Menu text="_Standardization"  >
+			<Menu text="_Disambiguation"  >
 				<items>
 					<MenuItem text="Cluster equivalent Cited References" onAction="#OnMenuStdCluster" />
 					<MenuItem text="Merge clustered Cited References" onAction="#OnMenuStdMerge" />
 				</items>
 			</Menu>
-			<Menu text="Help">
+			<Menu text="_Help">
 				<items>
 					<MenuItem text="Online Manual" onAction="#OnMenuHelpManual" />
 					<SeparatorMenuItem />
