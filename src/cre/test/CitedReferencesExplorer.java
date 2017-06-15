@@ -18,8 +18,8 @@ public class CitedReferencesExplorer extends Application {
 	public static Application app;
 	public static String manual_url = "http://andreas-thor.github.io/cre/manual.pdf";
 	public static String url = "http://www.crexplorer.net";
-	public static String title = "CRExplorer (Version 1.75; May-31-2017)";
-//	public static String title = "CRExplorer (DEVELOPMENT; June-07-2017)";
+//	public static String title = "CRExplorer (Version 1.75; May-31-2017)";
+	public static String title = "CRExplorer (DEVELOPMENT; June-15-2017)";
 	public static String loadOnOpen = null;
 	
 	public static void main(String[] args) {
@@ -47,7 +47,9 @@ public class CitedReferencesExplorer extends Application {
 		stage.setHeight(UserSettings.get().getWindowHeight());
 		stage.setX(UserSettings.get().getWindowX());
 		stage.setY(UserSettings.get().getWindowY());
-		stage.getIcons().add(new Image("file:CRE32.png"));
+//		stage.getIcons().add(new Image("file:CRE32.png"));
+		stage.getIcons().add(new Image(getClass().getResourceAsStream("CRE32.png")));
+//		stage.getIcons().add(new Image("file:../../deploy/CRE32.png"));
 		stage.setTitle(CitedReferencesExplorer.title);
 
 		

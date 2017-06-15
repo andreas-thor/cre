@@ -37,7 +37,9 @@ public class Settings extends Dialog<Integer> {
 	private final TextField[] tfLine = new TextField[2];
 	private final TextField tfMedian = new TextField();
 	private final TextField[] tfImport = new TextField[4];
+	private final CheckBox cbIncludePubsWithoutCRs = new CheckBox();
 	private final RadioButton[] rbChart = new RadioButton[2];
+	
 	
 	public Settings() throws IOException {
 		// TODO Auto-generated constructor stub
@@ -79,6 +81,7 @@ public class Settings extends Dialog<Integer> {
 		VBox tabImport = new VBox(10);
 		tabImport.setPadding (new Insets(20, 20, 20, 20));
 		tabImport.getChildren().add(new TitledPane("Restrict Import of Cited References", createImportRestrictionPane()));
+		tabImport.getChildren().add(new TitledPane("Advanced Export Options", createAdvancedExportPane()));
 		tpane.getTabs().add(new Tab("Import", tabImport));
 		
 		VBox[] q = {tabTable, tabChart, tabImport};
@@ -109,6 +112,7 @@ public class Settings extends Dialog<Integer> {
 		    	noOfErrors += UserSettings.get().setMedianRange(tfMedian.getText());
 		    	noOfErrors += UserSettings.get().setMaxCR(tfImport[0].getText());
 		    	noOfErrors += UserSettings.get().setMaxPub(tfImport[1].getText());
+		    	noOfErrors += UserSettings.get().setIncludePubsWithoutCRs(cbIncludePubsWithoutCRs.isSelected());
 		    	noOfErrors += UserSettings.get().setRange(UserSettings.RangeType.ImportYearRange, new String[] { tfImport[2].getText(), tfImport[3].getText()} );
 		    	noOfErrors += UserSettings.get().setNPCTRange(tfNPCT.getText());
 		    	UserSettings.get().setChartEngine(rbChart[0].isSelected() ? 0 : 1);
@@ -186,6 +190,9 @@ public class Settings extends Dialog<Integer> {
 	}
 	
 	
+
+	
+	
 	private GridPane createImportRestrictionPane() {
 
 		GridPane result =  new GridPane();
@@ -206,6 +213,20 @@ public class Settings extends Dialog<Integer> {
 		
 		
 	}
+	
+	private GridPane createAdvancedExportPane() {
+
+		GridPane result =  new GridPane();
+		result.setHgap(10);
+		result.setVgap(10);
+		result.setPadding(new Insets(20, 20, 20, 20));
+		
+		cbIncludePubsWithoutCRs.setText("Include Publications without CRs in export");
+		cbIncludePubsWithoutCRs.setSelected(UserSettings.get().getIncludePubsWithoutCRs());
+		result.add(cbIncludePubsWithoutCRs, 0, 0);
+		return result;
+	}
+	
 	
 	private GridPane createTableDataPane() {
 		GridPane result =  new GridPane();

@@ -504,13 +504,13 @@ public class PubType implements Comparable<PubType> {
 		UT.set(uT);
 	}
 
-	public int getLength() {
-		return length;
-	}
+//	public int getLength() {
+//		return length;
+//	}
 
-	public Set<CRType> getCrList() {
-		return crList;
-	}
+//	public Set<CRType> getCrList() {
+//		return crList;
+//	}
 
 
 

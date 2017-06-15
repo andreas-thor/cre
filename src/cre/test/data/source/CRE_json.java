@@ -133,7 +133,7 @@ public class CRE_json {
 					
 					switch (parser.next()) {
 					case START_OBJECT: 	pub = new PubType(); break; 
-					case END_OBJECT: 	/* crTab.addPub(pub); */ break;
+					case END_OBJECT: 	crTab.addPub(pub);  break;
 					case KEY_NAME:		key = parser.getString(); break;
 					case START_ARRAY:	
 						arrayLevel++;

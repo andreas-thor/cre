@@ -59,7 +59,7 @@ public class CRE_csv {
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(Arrays.stream(PubColumn.values()).map(col -> col.id).toArray(String[]::new)); 
 		
-		crTab.getPub().sorted().forEach(pub -> {
+		crTab.getPub(UserSettings.get().getIncludePubsWithoutCRs()).sorted().forEach(pub -> {
 			StatusBar.get().incProgressbar();
 			csv.writeNext(Arrays.stream(PubColumn.values()).map(col -> col.prop.apply(pub).getValue()).map(val -> val==null ? "" : String.valueOf(val)).toArray(String[]::new)); 
 		});

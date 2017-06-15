@@ -25,6 +25,7 @@ import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
+import cre.test.data.UserSettings;
 import cre.test.data.type.CRType;
 import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
@@ -316,7 +317,7 @@ public class Scopus_csv  {
 		
 		csv.writeNext(new String[] {"Authors","Title","Year","Source title","Volume","Issue","Art. No.","Page start","Page end","Page count","Cited by","DOI","Link","Affiliations","Authors with affiliations","Abstract","Author Keywords","References","Document Type","Source","EID"});
 		
-		crTab.getPub().forEach(pub -> {
+		crTab.getPub(UserSettings.get().getIncludePubsWithoutCRs()).forEach(pub -> {
 			ArrayList<String> row = new ArrayList<String>();
 			
 			row.add ((pub.getAUSize() == 0) ? "" :

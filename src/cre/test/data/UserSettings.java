@@ -37,10 +37,14 @@ public class UserSettings {
 	// PubYear Range (+/-) for NPCT indicators
 	private int npctRange = 1;
 
-	// import restrictions
+	// import / export restrictions
 	private int maxCR = 0;
 	private int maxPub = 0;
+	private boolean includePubsWithoutCRs = false;
+	
+	
 	private double[] window = new double[] {800, 600, 0, 0};
+	
 
 	private int chartEngine;
 	
@@ -90,6 +94,8 @@ public class UserSettings {
 
 		maxCR = userPrefs.getInt("maxCR", maxCR);
 		maxPub = userPrefs.getInt("maxPub", maxPub);
+		includePubsWithoutCRs = userPrefs.getBoolean ("includePubsWithoutCRs", includePubsWithoutCRs);
+		
 		chartEngine = userPrefs.getInt("chartEngine", 0);
 		
 		window = new double[] {
@@ -127,6 +133,7 @@ public class UserSettings {
 		userPrefs.putInt("medianRange", medianRange);
 		userPrefs.putInt("maxCR", maxCR);
 		userPrefs.putInt("maxPub", maxPub);
+		userPrefs.putBoolean ("includePubsWithoutCRs", includePubsWithoutCRs);
 		userPrefs.putInt("chartEngine", chartEngine);
 		
 		userPrefs.putDouble("WindowWidth", windowWidth);
@@ -313,6 +320,9 @@ public class UserSettings {
 	public int getMaxPub() {
 		return maxPub;
 	}
+	
+	
+	
 
 	public int setMaxPub (int maxPub) {
 		this.maxPub = maxPub;
@@ -330,7 +340,15 @@ public class UserSettings {
 			return 1;
 		}
 	}
+	
+	public boolean getIncludePubsWithoutCRs() {
+		return includePubsWithoutCRs;
+	}
 
+	public int setIncludePubsWithoutCRs (boolean includePubsWithoutCRs) {
+		this.includePubsWithoutCRs = includePubsWithoutCRs;
+		return 0;
+	}
 
 	public int getChartEngine() {
 		return this.chartEngine;

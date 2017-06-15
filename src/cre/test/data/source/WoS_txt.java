@@ -24,6 +24,7 @@ import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
+import cre.test.data.UserSettings;
 import cre.test.data.type.CRType;
 import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
@@ -241,7 +242,7 @@ public class WoS_txt {
 		bw.write("VR 1.0");
 		bw.newLine();
 		
-		crTab.getPub().forEach (pub -> {
+		crTab.getPub(UserSettings.get().getIncludePubsWithoutCRs()).forEach (pub -> {
 			try {
 				writeTag(bw, "PT", pub.getPT() == null ? "J" : pub.getPT());	// TODO: Is "J" the correct default for publication type?
 				writeTag(bw, "AU", pub.getAU());

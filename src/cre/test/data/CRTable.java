@@ -2,6 +2,7 @@ package cre.test.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,8 @@ public class CRTable {
 	private static CRTable crTab = null;
 	
 	private List<CRType> crData;
+	private List<PubType> allPubs;
+	
 	private Map<Character, HashMap<String, CRType>> crDup; // first character -> (crString -> CR )
 
 	private int[][] chartData;
@@ -51,6 +54,7 @@ public class CRTable {
 	
 	public void init() {
 		crData = new ArrayList<CRType>();
+		allPubs = new ArrayList<PubType>();
 		crDup = new HashMap<Character,  HashMap<String, CRType>>();
 		CRMatch2.get().init();
 		duringUpdate = false;
@@ -66,9 +70,18 @@ public class CRTable {
 	public Stream<CRType> getCR() {
 		return crData.stream();
 	}
+
+	/**
+	 * 
+	 * @param includePubsWithoutCRs default=false
+	 * @return
+	 */
+	public Stream<PubType> getPub (boolean includePubsWithoutCRs) {
+		return includePubsWithoutCRs ? allPubs.stream() : getCR().flatMap(cr -> cr.getPub()).distinct();
+	}
 	
 	public Stream<PubType> getPub() {
-		return crData.stream().flatMap(cr -> cr.getPub()).distinct();
+		return getPub(false);
 	}
 	
 
@@ -82,9 +95,19 @@ public class CRTable {
 	
 	
 	
+	/*
+	 * We additionally store all pubs in allPubs
+	 * This is later only used for export (to Scopus, WoS, CSV_Pub) when the user setting "include pubs without CRs" is set
+	 */
+	
+	public void addPub (PubType pub) {
+		pub.setID(countPub.incrementAndGet());
+		allPubs.add(pub);
+	}
+	
 	public void addPubs(List<PubType> pubs) {
 		
-		pubs.stream().forEach(pub -> pub.setID(countPub.incrementAndGet()));
+		pubs.stream().forEach(pub -> addPub (pub));
 		
 		pubs.stream().flatMap(pub -> pub.getCR()).distinct().collect(Collectors.toList()).stream().forEach(cr -> { // make a copy to avoid concurrent modification
 			
@@ -291,7 +314,7 @@ public class CRTable {
 	 */
 	public void filterByYear (int[] range) {
 		if (!duringUpdate) {
-			crData.stream().forEach ( it -> { it.setVI(((it.getRPY()!=null) && (range[0]<=it.getRPY()) && (range[1]>=it.getRPY())) || ((it.getRPY()==null) && (this.showNull))); });
+			getCR().forEach ( it -> { it.setVI(((it.getRPY()!=null) && (range[0]<=it.getRPY()) && (range[1]>=it.getRPY())) || ((it.getRPY()==null) && (this.showNull))); });
 		}
 	}
 	
@@ -299,13 +322,13 @@ public class CRTable {
 	
 	public void filterByCluster (List<CRType> sel) {
 		Set<CRCluster> clusters = sel.stream().map(cr -> cr.getCID2()).distinct().collect(Collectors.toSet());
-		crData.stream().forEach ( it -> it.setVI( clusters.contains(it.getCID2()) ));
+		getCR().forEach ( it -> it.setVI( clusters.contains(it.getCID2()) ));
 	}
 	
 	
 
 	public void filterByCR(List<CRType> show) {
-		crData.stream().forEach ( it -> it.setVI(false) );
+		getCR().forEach ( it -> it.setVI(false) );
 //		show.stream().forEach ( it -> it.setVI(true) );
 	}
 
@@ -313,12 +336,12 @@ public class CRTable {
 	
 	public void setShowNull (boolean showNull) {
 		this.showNull = showNull;
-		crData.stream().forEach ( it -> { if (it.getRPY() == null) it.setVI(showNull);  });
+		getCR().forEach ( it -> { if (it.getRPY() == null) it.setVI(showNull);  });
 	}
 	
 	public void showAll() {
 		this.showNull = true;
-		crData.stream().forEach ( it -> it.setVI(true) );
+		getCR().forEach ( it -> it.setVI(true) );
 	}
 	
 	
