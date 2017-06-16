@@ -22,6 +22,7 @@ import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
+import cre.test.data.UserSettings;
 import cre.test.data.match.CRCluster;
 import cre.test.data.match.CRMatch2;
 import cre.test.data.match.CRPair2;
@@ -317,7 +318,7 @@ public class CRE_json {
 		zip.putNextEntry(new ZipEntry("pubdata.json"));
 		JsonGenerator jgenPub = Json.createGenerator(zip);
 		jgenPub.writeStartArray();
-		crTab.getPub().forEach(pub -> {
+		crTab.getPub(UserSettings.get().getIncludePubsWithoutCRs()).forEach(pub -> {
 			jgenPub.writeStartObject();
 			
 			if (pub.getPT()!=null) 	jgenPub.write("PT", pub.getPT());
