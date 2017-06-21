@@ -2,6 +2,7 @@ package cre.test.ui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
@@ -15,6 +16,7 @@ import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.fx.ChartViewer;
 import org.jfree.chart.fx.interaction.ChartMouseEventFX;
 import org.jfree.chart.fx.interaction.ChartMouseListenerFX;
+import org.jfree.chart.labels.XYSeriesLabelGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -22,6 +24,7 @@ import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
 
+import cre.test.data.UserSettings;
 import javafx.scene.Node;
 
 public abstract class CRChart_JFreeChart extends CRChart {
@@ -63,12 +66,14 @@ public abstract class CRChart_JFreeChart extends CRChart {
 		
 		// layout for data rows
 		XYItemRenderer rend = plot.getRenderer();
-		double shapeSize = 6;	// 6
-		float strokeSize = 3;	// 3
-		rend.setSeriesShape(0, new Rectangle2D.Double(-shapeSize/2,-shapeSize/2,shapeSize,shapeSize));
-		rend.setSeriesStroke(0, new BasicStroke(strokeSize));
-		rend.setSeriesShape(1, new Ellipse2D.Double(-shapeSize/2,-shapeSize/2,shapeSize,shapeSize));
-		rend.setSeriesStroke(1, new BasicStroke(strokeSize));
+//		double shapeSize = 6;	// 6
+//		float strokeSize = 3;	// 3
+//		rend.setSeriesShape(0, new Rectangle2D.Double(-shapeSize/2,-shapeSize/2,shapeSize,shapeSize));
+//		rend.setSeriesStroke(0, new BasicStroke(strokeSize));
+//		rend.setSeriesShape(1, new Ellipse2D.Double(-shapeSize/2,-shapeSize/2,shapeSize,shapeSize));
+//		rend.setSeriesStroke(1, new BasicStroke(strokeSize));
+		setFontSize();
+		
 		
 		// tooltip = year + CR + difference to median
 		XYToolTipGenerator tooltip = new XYToolTipGenerator() {
@@ -178,5 +183,37 @@ public abstract class CRChart_JFreeChart extends CRChart {
 	}
 
 
+	
+	@Override
+	public void setFontSize() {
+		
+		XYItemRenderer rend = chart.getXYPlot().getRenderer();
+		float strokeSize = UserSettings.get().getChartSize()[0];;	// 3
+		double shapeSize = UserSettings.get().getChartSize()[1];	// 6
+		
+		rend.setSeriesShape(0, new Rectangle2D.Double(-shapeSize/2,-shapeSize/2,shapeSize,shapeSize));
+		rend.setSeriesStroke(0, new BasicStroke(strokeSize));
+		rend.setSeriesShape(1, new Ellipse2D.Double(-shapeSize/2,-shapeSize/2,shapeSize,shapeSize));
+		rend.setSeriesStroke(1, new BasicStroke(strokeSize));
+		
+		
+		XYPlot plot = chart.getXYPlot();
+		plot.getRangeAxis(0).setLabelFont(new Font(null, Font.PLAIN, UserSettings.get().getChartSize()[2]));
+		plot.getRangeAxis(0).setTickLabelFont(new Font(null, Font.PLAIN, UserSettings.get().getChartSize()[3]));
+
+		plot.getDomainAxis(0).setLabelFont(new Font(null, Font.PLAIN, UserSettings.get().getChartSize()[2]));
+		plot.getDomainAxis(0).setTickLabelFont(new Font(null, Font.PLAIN, UserSettings.get().getChartSize()[3]));
+		
+//		rend.setSeriesItemLabelFont(0, new Font(null, Font.PLAIN, UserSettings.get().getChartSize()[2]));
+//		rend.setSeriesItemLabelFont(1, new Font(null, Font.PLAIN, UserSettings.get().getChartSize()[2]));
+		
+//		plot.getDomainAxis(0).setLabelFont(font3);
+//		plot.getDomainAxis(0).setTickLabelFont(font3);
+		for (int i=0; i<plot.getLegendItems().getItemCount(); i++) {
+			plot.getLegendItems().get(i).setLabelFont(new Font(null, Font.PLAIN, UserSettings.get().getChartSize()[3]));
+		}
+		
+		
+	}
 	
 }

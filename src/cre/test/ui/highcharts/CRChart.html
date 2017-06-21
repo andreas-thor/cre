@@ -21,7 +21,7 @@
 		};
 		*/
 		
-	    function updateData (data0, data1, xAxisLabel, yAxisLabel, seriesLabel) {
+	    function updateData (data0, data1, xAxisLabel, yAxisLabel, seriesLabel, strokeSize, shapeSize, axisFontSize, tickFontSize) {
 			
 	        c = Highcharts.chart('container', {
 	            
@@ -66,16 +66,32 @@
 	            	type: 'linear', 
 	            	minRange: 1, 
 	                title: {
-	                    text: xAxisLabel
+	                    text: xAxisLabel, 
+	                    style: {
+	                        fontSize: axisFontSize+'px'
+	                    }
 	                },
+	                labels: {
+	                    style: {
+	                        fontSize: tickFontSize+'px'
+	                    }
+	                }, 
 	                gridLineWidth: 1
 	            },
 	            yAxis: {
 	            	type: 'linear',
 	            	minRange: 1, 
 	                title: {
-	                    text: yAxisLabel
+	                    text: yAxisLabel,
+	                    style: {
+	                        fontSize: axisFontSize+'px'
+	                    }
 	                },
+	                labels: {
+	                    style: {
+	                        fontSize: tickFontSize+'px'
+	                    }
+	                }, 
 	                gridLineWidth: 1
 	            },
 	         
@@ -99,8 +115,10 @@
 	            		animation: false, 
 	            		cursor: 'pointer',
 	            		marker: {
-	                        lineWidth: 1
+	                        lineWidth: 1,
+	                        radius: shapeSize
 	                    },
+	                    lineWidth: strokeSize, 
 	            		point: { 
 	    	            	events: {
 	    	                    click: function() {
@@ -146,7 +164,13 @@
 	 	            	{
 			                type: 'spline',
 			                name: seriesLabel[0],
-		    	            data: data0
+		    	            data: data0,
+		    	            dataLabels: {
+		    	            	style: {
+			                        fontSize: axisFontSize+'px'
+			                    }
+		    	            	
+		    	            }
 		        	    }, 
 		            	{
 			                type: 'spline',

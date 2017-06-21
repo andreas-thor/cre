@@ -28,6 +28,8 @@ public abstract class CRChart {
 	
 	public abstract void updateData (int[][] data);
 	
+	public abstract void setFontSize ();
+	
 	
 	protected String getSeriesLabel (int idx) {
 		switch (idx) {
@@ -42,5 +44,6 @@ public abstract class CRChart {
 	protected abstract void onYearRangeFilter (double min, double max);
 	
 
+	
 	
 }

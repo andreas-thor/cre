@@ -503,7 +503,9 @@ public class Main {
 
 		new Settings().showAndWait().ifPresent(noOfErrors -> {
 			for (int i = 0; i < crChart.length; i++) {
+				crChart[i].setFontSize();
 				crChart[i].setVisible(UserSettings.get().getChartEngine() == i);
+				
 			}
 			updateTableCRList();
 			// TODO: Apply settings changes

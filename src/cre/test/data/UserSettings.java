@@ -31,7 +31,7 @@ public class UserSettings {
 
 	// chart
 	private boolean[] chartLine = new boolean[] { true, true };
-	private int[] chartSize = new int[] { 1, 3 };
+	private int[] chartSize = new int[] { 1, 3, 20, 12 };
 	private int medianRange = 2;
 
 	// PubYear Range (+/-) for NPCT indicators

@@ -34,7 +34,7 @@ public class Settings extends Dialog<Integer> {
 	private final TextField tfDigits = new TextField();
 	private final TextField tfNPCT = new TextField();
 	private final CheckBox[] cbLine = new CheckBox[2];
-	private final TextField[] tfLine = new TextField[2];
+	private final TextField[] tfLine = new TextField[4];
 	private final TextField tfMedian = new TextField();
 	private final TextField[] tfImport = new TextField[4];
 	private final CheckBox cbIncludePubsWithoutCRs = new CheckBox();
@@ -81,7 +81,7 @@ public class Settings extends Dialog<Integer> {
 		VBox tabImport = new VBox(10);
 		tabImport.setPadding (new Insets(20, 20, 20, 20));
 		tabImport.getChildren().add(new TitledPane("Restrict Import of Cited References", createImportRestrictionPane()));
-		tabImport.getChildren().add(new TitledPane("Advanced Export Options", createAdvancedExportPane()));
+		tabImport.getChildren().add(new TitledPane("Advanced Import/Export Options", createAdvancedExportPane()));
 		tpane.getTabs().add(new Tab("Import", tabImport));
 		
 		VBox[] q = {tabTable, tabChart, tabImport};
@@ -108,7 +108,7 @@ public class Settings extends Dialog<Integer> {
 		    	}
 		    	noOfErrors += UserSettings.get().setFormatDigits(tfDigits.getText());
 		    	noOfErrors += UserSettings.get().setChartLine(new boolean[] { cbLine[0].isSelected(), cbLine[1].isSelected() });
-		    	noOfErrors += UserSettings.get().setChartSize(new String[] { tfLine[0].getText(), tfLine[1].getText() });
+		    	noOfErrors += UserSettings.get().setChartSize(new String[] { tfLine[0].getText(), tfLine[1].getText(), tfLine[2].getText(), tfLine[3].getText() });
 		    	noOfErrors += UserSettings.get().setMedianRange(tfMedian.getText());
 		    	noOfErrors += UserSettings.get().setMaxCR(tfImport[0].getText());
 		    	noOfErrors += UserSettings.get().setMaxPub(tfImport[1].getText());
@@ -177,7 +177,7 @@ public class Settings extends Dialog<Integer> {
 		cbLine[1].setOnAction( event -> { tfMedian.setDisable(!cbLine[1].isSelected());} );
 		result.add(new Label("Years"), 2, 1);
 		
-		label = new String[] { "Stroke Size", "Shape Size"};
+		label = new String[] { "Stroke Size", "Shape Size", "Label Font Size", "Tick Font Size"};
 		for (int i=0; i<label.length; i++) {
 			result.add(new Label(label[i]), 0, i+2);
 			tfLine[i] = new TextField(String.valueOf (UserSettings.get().getChartSize()[i]));

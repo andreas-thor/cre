@@ -3,6 +3,7 @@ package cre.test.ui;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import cre.test.data.UserSettings;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -135,7 +136,15 @@ public abstract class CRChart_HighCharts extends CRChart {
 					jsobj.setMember("crejava", cb);
 				}
 
-				webEngine.executeScript(String.format("updateData($.parseJSON('[%s]'), $.parseJSON('[%s]'), '%s', '%s', ['%s', '%s']);", json[0] ,json[1], CRChart.xAxisLabel, CRChart.yAxisLabel, getSeriesLabel(0), getSeriesLabel(1)));
+				webEngine.executeScript(String.format("updateData($.parseJSON('[%s]'), $.parseJSON('[%s]'), '%s', '%s', ['%s', '%s'], %d, %d, %d, %d);", 
+						json[0] ,json[1], 
+						CRChart.xAxisLabel, CRChart.yAxisLabel, 
+						getSeriesLabel(0), getSeriesLabel(1), 
+						UserSettings.get().getChartSize()[0], 
+						UserSettings.get().getChartSize()[1], 
+						UserSettings.get().getChartSize()[2], 
+						UserSettings.get().getChartSize()[3]
+						));
 				
 			} catch (JSException e) {
 				e.printStackTrace();
@@ -143,6 +152,13 @@ public abstract class CRChart_HighCharts extends CRChart {
 				
 			}
 		}
+	}
+	
+	
+	@Override
+	public void setFontSize() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
