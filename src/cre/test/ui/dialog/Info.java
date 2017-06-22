@@ -48,17 +48,21 @@ public class Info extends Dialog<Void> {
 			createTF (CRStats.getNumberOfDistinctRPY()));
 		
 		grid.addRow(5, 
-			new Label("Number of Citing Publications"), 
-			createTF (CRStats.getSizePub()));
+			new Label("Number of Publications"), 
+			createTF (CRStats.getSizePub(true)));
 
-		r = CRStats.getMaxRangeCitingYear();
 		grid.addRow(6, 
+				new Label("Number of Citing Publications"), 
+				createTF (CRStats.getSizePub()));
+		
+		r = CRStats.getMaxRangeCitingYear();
+		grid.addRow(7, 
 			new Label("Range of Citing Publications Years"),
 			createTF (r[0], 1),
 			new Label("-"),
 			createTF (r[1], 1));
 		
-		grid.addRow(7,
+		grid.addRow(8,
 			new Label("Number of different Citing Publications Years"),
 			createTF (CRStats.getNumberOfDistinctPY()));
 		

@@ -17,6 +17,10 @@ public class CRStats {
 	public static long getSizePub () {
 		return CRTable.get().getPub().count();
 	}
+
+	public static long getSizePub (boolean includePubsWithoutCRs) {
+		return CRTable.get().getPub(includePubsWithoutCRs).count();
+	}
 	
 	public static long getSizeMatch (boolean manual) {
 		return CRMatch2.get().getSize(manual);

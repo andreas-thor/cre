@@ -9,6 +9,8 @@ import cre.test.ui.CRTableView;
 import cre.test.ui.CRTableView.CRColumn;
 import cre.test.ui.CRTableView.ColGroup;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -40,6 +42,8 @@ public class Settings extends Dialog<Integer> {
 	private final CheckBox cbIncludePubsWithoutCRs = new CheckBox();
 	private final RadioButton[] rbChart = new RadioButton[2];
 	
+	private final CheckBox cbSelectAll = new CheckBox("Select/Deselect All");
+	private boolean duringSelectAll = new Boolean(false);
 	
 	public Settings() throws IOException {
 		// TODO Auto-generated constructor stub
@@ -55,6 +59,19 @@ public class Settings extends Dialog<Integer> {
 		VBox tabTable = new VBox(10);
 		tabTable.setPadding (new Insets(20, 20, 20, 20));
 		
+		tabTable.getChildren().add(cbSelectAll);
+		
+		
+		cbSelectAll.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+		    	if (duringSelectAll) return;
+		    	duringSelectAll = true;
+		    	for (CheckBox cb: cbCol) cb.setSelected(newValue);
+		    	duringSelectAll = false;
+		    }
+		});
+		
 		tabTable.getChildren().add(new TitledPane("Cited References", createTableColPane(ColGroup.CR)));
 		tabTable.getChildren().add(new TitledPane("Indicators", createTableColPane(ColGroup.INDICATOR)));
 		tabTable.getChildren().add(new TitledPane("Clustering", createTableColPane(ColGroup.CLUSTER)));
@@ -62,13 +79,15 @@ public class Settings extends Dialog<Integer> {
 		tabTable.getChildren().add(new TitledPane("Value Settings", createTableDataPane()));
 		tpane.getTabs().add(new Tab("Table", tabTable));
 
-		tabTable.getChildren().forEach(t -> {
-			TitledPane a = (TitledPane) t; 
-			a.heightProperty().addListener((obs, oldHeight, newHeight) -> {
-				this.setHeight(163 + tabTable.getChildren().stream().mapToInt(n -> 10 + (int) ((TitledPane) n).getHeight()).sum());
-			});
-			a.setAnimated(false);
-		});
+		
+//		tabTable.getChildren().filtered(it -> it instanceof TitledPane).forEach(t -> {
+//
+//			TitledPane a = (TitledPane) t; 
+//			a.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+//				this.setHeight(163 + tabTable.getChildren().stream().filter(c -> c instanceof TitledPane).mapToInt(n -> 10 + (int) ((TitledPane) n).getHeight()).sum());
+//			});
+//			a.setAnimated(false);
+//		});
 				
 		
 		
@@ -85,15 +104,17 @@ public class Settings extends Dialog<Integer> {
 		tpane.getTabs().add(new Tab("Import", tabImport));
 		
 		VBox[] q = {tabTable, tabChart, tabImport};
-		Arrays.asList(q).stream().forEach(it -> it.getChildren().forEach(t -> {
+		Arrays.asList(q).stream().forEach(it -> it.getChildren().filtered(t -> t instanceof TitledPane).forEach(t -> {
 			TitledPane a = (TitledPane) t; 
 			a.heightProperty().addListener((obs, oldHeight, newHeight) -> {
-				this.setHeight(163 + it.getChildren().stream().mapToInt(n -> 10 + (int) ((TitledPane) n).getHeight()).sum());
+				this.setHeight(183 + it.getChildren().stream().filter(c -> c instanceof TitledPane).mapToInt(n -> 10 + (int) ((TitledPane) n).getHeight()).sum());
 			});
 			a.setAnimated(false);
 		}));
 		
 		
+		setSelectAll();
+
 		// set the dialog
 		setTitle("Settings");
 		getDialogPane().setContent(tpane);
@@ -273,6 +294,14 @@ public class Settings extends Dialog<Integer> {
 				cbCol[idx] = new CheckBox(String.format("%s (%s)", e.id, e.title));
 				cbCol[idx].setMnemonicParsing(false);
 				cbCol[idx].setSelected(UserSettings.get().getColumnVisibleProperty(idx).get());
+				
+				cbCol[idx].selectedProperty().addListener(new ChangeListener<Boolean>() {
+				    @Override
+				    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				    	setSelectAll();
+				    }
+				});
+				
 				result.add(cbCol[idx], col, row);
 				if (col<2) {
 					col++;
@@ -284,5 +313,16 @@ public class Settings extends Dialog<Integer> {
 			idx++;
 		}
 		return result;
+	}
+	
+	
+	private void setSelectAll () {
+		if (duringSelectAll) return;
+		duringSelectAll = true;
+		int sum = 0;
+    	for (CheckBox cb: cbCol) sum += cb.isSelected() ? 1 : 0;
+    	cbSelectAll.setSelected(sum==cbCol.length);
+    	cbSelectAll.setIndeterminate((sum!=0) && (sum!=cbCol.length));
+    	duringSelectAll = false;
 	}
 }
