@@ -5,7 +5,7 @@ import javafx.scene.Node;
 
 public abstract class CRChart {
 
-	public static String xAxisLabel = "Cited Reference Year";
+	public static String xAxisLabel = "Reference Publication Year";
 	public static String yAxisLabel = "Cited References";
 	
 	

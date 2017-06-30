@@ -56,6 +56,7 @@ public abstract class CRChart_JFreeChart extends CRChart {
 		// domain=year -> show year number always with 4 digits
 		NumberAxis dAxis = new NumberAxis();
 		dAxis.setNumberFormatOverride(new DecimalFormat("0000.#"));
+		dAxis.setLabel(CRChart.xAxisLabel);
 		plot.setDomainAxis (dAxis);
 		
 		// general chart layout
