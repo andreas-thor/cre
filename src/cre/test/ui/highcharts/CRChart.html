@@ -35,18 +35,9 @@
 	        	chart: {
 	                zoomType: 'xy',
 	                events: {
-	                    redraw: function (e) {
-	                    	var extremes = c.xAxis[0].getExtremes();
-	                    	
-	                    	
-	                    	// if (typeof window.crejava !== 'undefined') {
-	                    		crejava.onRedraw(extremes.min, extremes.max);
-	                    	// }
-	                    },
-	                    click: function(e) {
-	                    	// if (typeof window.crejava !== 'undefined') {
-	                    		crejava.onClick (e.xAxis[0].value);
-	                    	// }
+	                    redraw: function () {
+	                    	var extremes = this.xAxis[0].getExtremes();
+                    		crejava.onRedraw(extremes.min, extremes.max);
 	                    }
 	                }
 	                
@@ -123,6 +114,7 @@
 	    	            	events: {
 	    	                    click: function() {
 	    	                    	// if (typeof window.crejava !== 'undefined') {
+	    	                    		
 	    	                    		crejava.onClick (this.x);
 	    	                    	// }
 	    	                    }

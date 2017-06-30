@@ -24,7 +24,7 @@ public abstract class CRChart_HighCharts extends CRChart {
 
 	public class ChartCallBack  {
 		
-		public void onRedraw(String e, double min, double max) {
+		public void onRedraw(double min, double max) {
 			System.out.println("HighChart On Redraw " + min + "/" + max);
 			onYearRangeFilter(min, max);
 		}
@@ -168,10 +168,10 @@ public abstract class CRChart_HighCharts extends CRChart {
 			try {
 				WebEngine webEngine = browser.getEngine();
 				
-				JSObject jsobj = (JSObject) webEngine.executeScript("window");
-				if ((jsobj.getMember("crejava")==null) || (jsobj.getMember("crejava").equals("undefined"))) {
-					jsobj.setMember("crejava", cb);
-				}
+//				JSObject jsobj = (JSObject) webEngine.executeScript("window");
+//				if ((jsobj.getMember("crejava")==null) || (jsobj.getMember("crejava").equals("undefined"))) {
+//					jsobj.setMember("crejava", cb);
+//				}
 
 				webEngine.executeScript("c.zoom();");
 				
