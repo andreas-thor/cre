@@ -21,6 +21,7 @@ import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYSplineRenderer;
+import org.jfree.data.Range;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
 
@@ -73,6 +74,9 @@ public abstract class CRChart_JFreeChart extends CRChart {
 //		rend.setSeriesShape(1, new Ellipse2D.Double(-shapeSize/2,-shapeSize/2,shapeSize,shapeSize));
 //		rend.setSeriesStroke(1, new BasicStroke(strokeSize));
 		setFontSize();
+		
+		
+	
 		
 		
 		// tooltip = year + CR + difference to median
@@ -214,6 +218,15 @@ public abstract class CRChart_JFreeChart extends CRChart {
 		}
 		
 		
+	}
+	
+	@Override
+	public void autoRange() {
+		XYPlot plot = chart.getXYPlot();
+		if (plot.getDataRange(plot.getDomainAxis()).getLength()==0) return;
+		
+		plot.getDomainAxis().setRange (Range.expand(plot.getDataRange(plot.getDomainAxis()), 0.025, 0.025));
+		plot.getRangeAxis().setRange (Range.expand(plot.getDataRange(plot.getRangeAxis()), 0.025, 0.025));
 	}
 	
 }

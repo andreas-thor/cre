@@ -83,6 +83,7 @@
 					<SeparatorMenuItem />
 
 					<MenuItem text="Show All Cited References" fx:id="noOfVisibleCRs" disable="true" onAction="#OnMenuViewShowAll"/>
+					<MenuItem text="Reset Chart" onAction="#OnMenuViewResetChart"/>
 					
 				</items>
 			</Menu>

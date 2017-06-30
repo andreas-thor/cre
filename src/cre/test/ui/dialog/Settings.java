@@ -94,14 +94,14 @@ public class Settings extends Dialog<Integer> {
 		VBox tabChart = new VBox(10);
 		tabChart.setPadding (new Insets(20, 20, 20, 20));
 		tabChart.getChildren().add(new TitledPane("Chart Layout", createChartLayoutPane()));
-		tabChart.getChildren().add(new TitledPane("Chart Engine", createChartEnginePane()));
+		tabChart.getChildren().add(new TitledPane("Chart Engine (Switching chart engines requires re-start of CRExplorer!)", createChartEnginePane()));
 		tpane.getTabs().add(new Tab("Chart", tabChart));
 
 		VBox tabImport = new VBox(10);
 		tabImport.setPadding (new Insets(20, 20, 20, 20));
 		tabImport.getChildren().add(new TitledPane("Restrict Import of Cited References", createImportRestrictionPane()));
 		tabImport.getChildren().add(new TitledPane("Advanced Import/Export Options", createAdvancedExportPane()));
-		tpane.getTabs().add(new Tab("Import", tabImport));
+		tpane.getTabs().add(new Tab("Import/Export", tabImport));
 		
 		VBox[] q = {tabTable, tabChart, tabImport};
 		Arrays.asList(q).stream().forEach(it -> it.getChildren().filtered(t -> t instanceof TitledPane).forEach(t -> {

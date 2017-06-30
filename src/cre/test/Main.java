@@ -621,6 +621,16 @@ public class Main {
 	}
 	
 
+	@FXML public void OnMenuViewResetChart() {
+		
+		for (int i = 0; i < crChart.length; i++) {
+			if (crChart[i].isVisible()) {
+				crChart[i].autoRange();
+			}
+		}
+	}
+	
+	
 	/*
 	 * DATA Menu
 	 */
@@ -837,6 +847,9 @@ public class Main {
 	public void OnMenuHelpAbout() {
 		new About().showAndWait();
 	}
+
+
+	
 
 
 	

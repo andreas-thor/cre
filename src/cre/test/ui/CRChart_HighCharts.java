@@ -160,5 +160,25 @@ public abstract class CRChart_HighCharts extends CRChart {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void autoRange() {
+		// call Javascript to render chart
+		if (loaded) {
+			try {
+				WebEngine webEngine = browser.getEngine();
+				
+				JSObject jsobj = (JSObject) webEngine.executeScript("window");
+				if ((jsobj.getMember("crejava")==null) || (jsobj.getMember("crejava").equals("undefined"))) {
+					jsobj.setMember("crejava", cb);
+				}
+
+				webEngine.executeScript("c.zoom();");
+				
+			} catch (JSException e) {
+				e.printStackTrace();
+			}
+		}		
+	}
 
 }

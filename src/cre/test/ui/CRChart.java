@@ -30,6 +30,7 @@ public abstract class CRChart {
 	
 	public abstract void setFontSize ();
 	
+	public abstract void autoRange ();
 	
 	protected String getSeriesLabel (int idx) {
 		switch (idx) {
