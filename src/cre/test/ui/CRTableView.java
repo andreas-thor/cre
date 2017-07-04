@@ -1,6 +1,5 @@
 package cre.test.ui;
 
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -47,8 +46,11 @@ public class CRTableView extends TableView<CRType> {
 		N_PCT75 ("N_TOP75", "Top 75% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT75Prop),
 		N_PCT90 ("N_TOP90", "Top 90% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT90Prop),
 
+		SEQUENCE  ("SEQUENCE", "Sequence", ColGroup.INDICATOR, ColDataType.STRING, CRType::getSEQUENCEProp),
+		TYPE  ("TYPE", "Type", ColGroup.INDICATOR, ColDataType.STRING, CRType::getTYPEProp),
+		SEARCH_SCORE  ("SEARCH_SCORE", "Score from Search Process", ColGroup.SEARCH, ColDataType.INT, CRType::getSEARCH_SCOREProp)
 		
-		SEARCH_SCORE  ("SEARCH_SCORE", "Score from Search Process", ColGroup.SEARCH, ColDataType.INT, CRType::getSEARCH_SCOREProp) 
+		
 		
 //		CO  ("CO", "CO", ColGroup.INVISIBLE, ColDataType.INT, CRType::getCOProp), 
 

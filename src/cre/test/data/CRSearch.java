@@ -48,7 +48,6 @@ public class CRSearch {
 		
 		if (idx == null) createIndex();
 		
-		DirectoryReader reader = DirectoryReader.open(idx);
 		IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(idx));
 		
 		QueryParser parser = new QueryParser(CRColumn.CR.id, new StandardAnalyzer());

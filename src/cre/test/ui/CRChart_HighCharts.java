@@ -157,7 +157,7 @@ public abstract class CRChart_HighCharts extends CRChart {
 	
 	@Override
 	public void setFontSize() {
-		// TODO Auto-generated method stub
+		// TODO Set Font Size in HighCharts
 		
 	}
 	

@@ -52,6 +52,8 @@ public class CRType implements Comparable<CRType> {
 	private SimpleIntegerProperty N_PCT90;
 	private SimpleIntegerProperty N_PYEARS2;	
 	
+	private SimpleStringProperty SEQUENCE;
+	private SimpleStringProperty TYPE;
 	
 	private byte type = 0;	
 	
@@ -107,6 +109,9 @@ public class CRType implements Comparable<CRType> {
 		CO = new SimpleIntegerProperty(0);
 		SEARCH_SCORE = new SimpleIntegerProperty(0);
 		
+		SEQUENCE = new SimpleStringProperty();
+		TYPE = new SimpleStringProperty();
+		
 		pubList = new HashSet<PubType>();
 		flag = false;
 	}
@@ -126,6 +131,10 @@ public class CRType implements Comparable<CRType> {
 		return pubList.stream();
 	}
     
+	public Stream<PubType> getPub(int py) {
+		return pubList.stream().filter(pub -> (pub.getPY()!=null) && (pub.getPY().equals(py)));
+	}
+	
 	
 	/**
 	 * Adds a PUB to the CR
@@ -485,6 +494,27 @@ public class CRType implements Comparable<CRType> {
 		SEARCH_SCORE.setValue(sEARCH_SCORE > 0 ? 1 : 0);
 	}
 	
+	
+	
+	public String getSEQUENCE() {
+		return SEQUENCE.get();
+	}
+	public SimpleStringProperty getSEQUENCEProp() {
+		return SEQUENCE;
+	}
+	public void setSEQUENCE(String sEQUENCE) {
+		SEQUENCE.set(sEQUENCE);
+	}
+	
+	public String getTYPE() {
+		return TYPE.get();
+	}
+	public SimpleStringProperty getTYPEProp() {
+		return TYPE;
+	}
+	public void setTYPE(String tYPE) {
+		TYPE.set(tYPE);
+	}	
     
   
 	@Override

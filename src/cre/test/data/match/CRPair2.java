@@ -10,6 +10,7 @@ public class CRPair2 {
 	public CRPair2(CRType cr1, CRType cr2, Double s) {
 		super();
 		
+		
 		if (cr1.getID()<cr2.getID()) {
 			this.cr1 = cr1;
 			this.cr2 = cr2;

@@ -46,7 +46,6 @@ public class Settings extends Dialog<Integer> {
 	private boolean duringSelectAll = new Boolean(false);
 	
 	public Settings() throws IOException {
-		// TODO Auto-generated constructor stub
 		
 		super();
 
