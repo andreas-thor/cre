@@ -90,9 +90,26 @@ public class WoS_txt {
 	}
 	
 	
+	public static Stream<PubType> getPubs (List<File> files) throws IOException {
+		
+		
+		WoS_Iterator wosIt = new WoS_Iterator(files.get(0));
+		
+		return StreamSupport
+				.stream(wosIt.getIterable().spliterator(), true /*true==parallel*/)
+				.map(it -> {
+					System.out.println("A");
+					return new PubType();
+				});
+	}
+	
+	
 	
 	public static void load (List<File> files, CRTable crTab, int maxCR, int maxPub, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 
+		
+		
+		
 		long ts1 = System.currentTimeMillis();
 		long ms1 = Runtime.getRuntime().totalMemory();
 		
@@ -108,8 +125,9 @@ public class WoS_txt {
 			
 			StatusBar.get().initProgressbar(file.length(), String.format("Loading WoS file %1$d of %2$d ...", (++idx), files.size()));
 			
-			crTab.addPubs(StreamSupport.stream(wosIt.getIterable().spliterator(), true).map ( it -> {
+			crTab.addPubs(StreamSupport.stream(wosIt.getIterable().spliterator(), true /*true==parallel*/).map ( it -> {
 			
+				
 				/* if user abort or maximum number of CRs reached --> do no process anymore */
 				if (crTab.isAborted()) return null;
 				if ((maxCR>0) && (countCR.get()>=maxCR)) return null;
@@ -159,7 +177,7 @@ public class WoS_txt {
 					case "TC": try { pub.setTC(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
 					
 					/* Parse Cited References */
-					case "CR": pub.addCR(parseCR(value, yearRange), true); break;
+					case "CR": pub.addCR(parseCR(value, yearRange), true);  break;
 					
 					/* Authors */
 					case "AU": pub.addAU(value); break;
@@ -190,8 +208,7 @@ public class WoS_txt {
 				
 				StatusBar.get().incProgressbar(pub.length);
 				countCR.addAndGet(pub.getSizeCR());
-				countPub.incrementAndGet();
-				
+				System.out.println(countPub.incrementAndGet());
 				return pub;
 			}).filter ( it -> it != null).collect (Collectors.toList()));	// remove null values (abort)
 			
@@ -226,6 +243,12 @@ public class WoS_txt {
 		StatusBar.get().setValue("Loading WoS files done");		
 		
 	}
+	
+	
+	
+
+	
+	
 	
 	public static void save (File file, CRTable crTab) throws IOException, RuntimeException {
 		
@@ -357,6 +380,8 @@ public class WoS_txt {
 		cr.setCR(line); // [3..-1] // .toUpperCase()
 		cr.setType (CRType.TYPE_WOS);
 		cr.setRPY(null);
+		
+	
 		String[] crsplit = cr.getCR().split (",", 3);
 		
 		

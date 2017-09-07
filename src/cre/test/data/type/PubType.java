@@ -59,6 +59,20 @@ public class PubType implements Comparable<PubType> {
 			this.type = type;
 			this.prop = prop;
 		}
+		
+		public String getSQLCreateTable() {
+			StringBuffer sb = new StringBuffer();
+			sb.append("pub_");
+			sb.append (this.id);
+			sb.append(" ");
+			switch (this.type) {
+				case INT: sb.append ("int"); break;
+				case STRING: sb.append ("varchar"); break;
+				default:
+			}
+			return sb.toString();
+		}
+		
 	}
 	
 

@@ -1,6 +1,14 @@
 package cre.test.data;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.SQLType;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +22,9 @@ import cre.test.data.match.CRCluster;
 import cre.test.data.match.CRMatch2;
 import cre.test.data.type.CRType;
 import cre.test.data.type.PubType;
+import cre.test.data.type.PubType.PubColumn;
 import cre.test.ui.StatusBar;
+import cre.test.ui.CRTableView.ColDataType;
 
 public class CRTable {
 
@@ -33,6 +43,10 @@ public class CRTable {
 	
 	private AtomicInteger countPub;
 	
+	private Connection conn;
+	private PreparedStatement insertPub;
+	private int insertPubBatchSize;
+	
 	public static CRTable get() {
 		if (crTab == null) {
 			crTab = new CRTable();
@@ -42,6 +56,18 @@ public class CRTable {
 	
 	
 	private CRTable () { 
+		
+		 try {
+			Class.forName("org.h2.Driver");
+			conn = DriverManager.getConnection("jdbc:h2:~/cre", "sa", "sa"); 
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		
 		init();
 	}
 	
@@ -62,6 +88,34 @@ public class CRTable {
 		setAborted(false);
 		countPub = new AtomicInteger(0);
 		CRSearch.get().init();
+		
+		try {
+			Statement stmt = conn.createStatement();
+			
+			StringBuffer sql = new StringBuffer();
+			sql.append ("DROP TABLE IF EXISTS PUB;");
+			sql.append ("CREATE TABLE PUB (");
+			sql.append (Arrays.stream(PubColumn.values()).map(col -> { return col.getSQLCreateTable(); } ).collect(Collectors.joining(", ")));
+			sql.append (", PRIMARY KEY (pub_" + PubColumn.ID.id + "));");
+			stmt.execute(sql.toString());
+			
+			sql = new StringBuffer();
+			sql.append ("INSERT INTO PUB (");
+			sql.append (Arrays.stream(PubColumn.values()).map(col -> { return "pub_" + col.id; } ).collect(Collectors.joining(", ")));
+			sql.append (") VALUES (");
+			sql.append (Arrays.stream(PubColumn.values()).map(col -> { return "?"; } ).collect(Collectors.joining(", ")));
+			sql.append (");");
+			insertPub = conn.prepareStatement(sql.toString());
+			insertPubBatchSize = 0;
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+         
+		
 	}
 	
 	
@@ -84,6 +138,7 @@ public class CRTable {
 	
 
 	public void addCR(CRType cr) {
+		
 		String crS = cr.getCR();
 		char cr1 = crS.charAt(0);
 		crDup.putIfAbsent(cr1, new HashMap<String,CRType>());
@@ -100,7 +155,69 @@ public class CRTable {
 	
 	public void addPub (PubType pub) {
 		pub.setID(countPub.incrementAndGet());
-		allPubs.add(pub);
+		
+		try {
+			for (int i=1; i<=PubColumn.values().length; i++) {
+				
+				Object value = PubColumn.values()[i-1].prop.apply(pub).getValue();
+				if (value == null) {
+					switch (PubColumn.values()[i-1].type) {
+					case INT: insertPub.setNull(i, Types.INTEGER); break;
+					case STRING: insertPub.setNull(i, Types.VARCHAR); break;
+					default:	
+					}
+				} else {
+					switch (PubColumn.values()[i-1].type) {
+					case INT: insertPub.setInt(i, (int)value); break;
+					case STRING: insertPub.setString(i, (String)value); break;
+					default:	
+					}
+				}
+				
+			}
+			insertPub.addBatch();
+			insertPubBatchSize++;
+			
+			if (insertPubBatchSize==10000) {
+				insertPub.executeBatch();
+				insertPubBatchSize = 0;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+//		allPubs.add(pub);
+	}
+	
+	
+	public void addPubsStream(Stream<PubType> pubs) {
+		/*
+		pubs.forEach(pub -> addPub (pub));
+		
+		pubs.flatMap(pub -> pub.getCR()).distinct().collect(Collectors.toList()).stream().forEach(cr -> { // make a copy to avoid concurrent modification
+			
+			String crS = cr.getCR();
+			char cr1 = crS.charAt(0);
+			crDup.putIfAbsent(cr1, new HashMap<String,CRType>());
+			CRType crMain = crDup.get(cr1).get(crS); 
+			if (crMain == null) {
+				// add current CR to list
+				crDup.get(cr1).put(crS, cr);
+				crData.add(cr);
+				cr.setID(crData.size());
+				cr.setCID2(new CRCluster (cr));
+			} else {
+				// merge current CR with main CR
+				cr.getPub().collect(Collectors.toList()).stream().forEach(crPub -> {		// make a copy to avoid concurrent modification
+					crPub.addCR(crMain, true);
+					crPub.removeCR(cr, true);
+				});
+			}
+		});
+		*/
 	}
 	
 	public void addPubs(List<PubType> pubs) {

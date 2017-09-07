@@ -26,10 +26,13 @@ public class Indicators {
 	
 	public static int[][] update() {
 
+		System.out.println("1");
+		
 		// Group CRs by RPY
 		mapRPY_CRs = CRTable.get().getCR().filter(cr -> cr.getRPY()!=null).collect(
 				Collectors.groupingBy(CRType::getRPY, Collectors.mapping(Function.identity(), Collectors.toSet()) ));
 		
+		System.out.println("2");
 		
 		// Determine sum citations per RPY
 		int[] rangeRPY = CRStats.getMaxRangeYear();
@@ -42,6 +45,10 @@ public class Indicators {
 			));
 		
 
+		System.out.println("3");
+	
+		/* !!!! LANGE */
+		
 		mapRPY_PY_SumNCR = 
 			IntStream.rangeClosed(rangeRPY[0], rangeRPY[1]).mapToObj(RPY -> new Integer (RPY)).collect(Collectors.toMap(	
 					RPY -> RPY, 
@@ -52,9 +59,15 @@ public class Indicators {
 				)));
 		
 		
+		System.out.println("4");
+		
 		computePERC();
 		
-		computeNPCT(CRStats.getMaxRangeCitingYear(), UserSettings.get().getNPCTRange());
+		System.out.println("5");
+		
+	/* !!!! LANGE */	computeNPCT(CRStats.getMaxRangeCitingYear(), UserSettings.get().getNPCTRange());
+		
+		System.out.println("6");
 		
 		return getChartData(UserSettings.get().getMedianRange());
 	}
@@ -125,9 +138,10 @@ public class Indicators {
 	
 	private static void computeNPCT (int[] rangePY, int range) {
 		
+		mapRPY_CRs.entrySet().parallelStream().forEach(group -> {
+			
 		
-		
-		for (Entry<Integer, Set<CRType>> group: mapRPY_CRs.entrySet()) {
+//		for (Entry<Integer, Set<CRType>> group: mapRPY_CRs.entrySet()) {
 			
 			
 			int rpy = group.getKey();
@@ -177,12 +191,13 @@ public class Indicators {
 				
 				
 				for (CRType cr: group.getValue()) {
-					long count = cr.getPub().filter(pub -> (pub.getPY() != null) && (pub.getPY().intValue() == py)).count();	// number of citations to CR in year PY
+//					long count = cr.getPub().filter(pub -> (pub.getPY() != null) && (pub.getPY().intValue() == py)).count();
+					long count = cr.getPub(py).count(); // number of citations to CR in year PY
 					if (percBorder[0]<count) cr.setN_PCT50(cr.getN_PCT50()+1);
 					if (percBorder[1]<count) cr.setN_PCT75(cr.getN_PCT75()+1);
 					if (percBorder[2]<count) cr.setN_PCT90(cr.getN_PCT90()+1);
 //					System.out.println("\nCR-ID=" + cr.getID() + "; PCT50=" + cr.getN_PCT50());
-				}
+//				}
 				
 				
 				
@@ -195,7 +210,8 @@ public class Indicators {
 				#545: Was ist das t??? Woher kommen die Vergleichswerte 4 und 7?
 				 */
 				
-				for (CRType cr: group.getValue()) {
+//				for (CRType cr: group.getValue()) {
+					
 					double expect=0, z_res=0; 
 					if ((mapRPY_SumNCR.get(rpy) != null) && (mapRPY_SumNCR.get(rpy) > 0)) {
 						// TODO: statt cr.getN_CR() wahrscheinlich hier die N_CR für das aktuelle py
@@ -203,7 +219,7 @@ public class Indicators {
 					}
 					
 					if (expect>0) {
-						z_res = (cr.getPub(py).count() - expect) / Math.sqrt(expect);
+						z_res = (count /*cr.getPub(py).count()*/ - expect) / Math.sqrt(expect);
 					}
 					
 					mapCRID_Sequence.get(cr.getID())[py-seqStart] = (z_res>1) ? '+' : ((z_res<-1) ? '-' : '0');
@@ -217,7 +233,7 @@ public class Indicators {
 					type[4] += ((t<=4)?1:0) * ((z_res< 1)?1:0);
 					type[5] += ((t> 4)?1:0) * ((z_res> 1)?1:0);
 					type[6] += ((t> 7)?1:0) * ((z_res<-1)?1:0);
-					type[7] += (cr.getPub(py).count()>0)?1:0;
+					type[7] += (count /*cr.getPub(py).count()*/ >0)?1:0;
 					type[8] += 1;
 				}
 				
@@ -247,7 +263,8 @@ public class Indicators {
 				
 			}
 			
-		}
+		});
+//		}
 		
 	}
 	

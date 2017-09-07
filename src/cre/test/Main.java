@@ -337,7 +337,7 @@ public class Main {
 
 						@Override
 						protected Void call() throws Exception {
-							source.load(files);
+							source.load2(files);
 							if (source == ImportFormat.CRE_JSON) creFile = files.get(0); 
 								
 							// show match panel if applicable
