@@ -142,6 +142,8 @@ public class WoS_txt {
 				
 				wosIt.close();
 				
+				 /* Total amount of free memory available to the JVM */
+				 System.out.println("Free memory (bytes): " +  Runtime.getRuntime().freeMemory());
 			}
 		}	
 		
@@ -172,15 +174,21 @@ public class WoS_txt {
 				PubType pub = parsePub(it, yearRange, ratio);
 				if (pub==null) return null;
 				
+				if ((ratio<1d) && (pub.getSizeCR() == 0)) return null; 	// do not include pubs w/o CRs when random select
+				
 				StatusBar.get().incProgressbar(pub.length);
 				countCR.addAndGet(pub.getSizeCR());
-				System.out.println(countPub.incrementAndGet());
+//				System.out.println(countPub.incrementAndGet());
 				
 				return pub;
 			}).filter ( it -> it != null).collect (Collectors.toList()));	// remove null values (abort)
 			
 			wosIt.close();
 			
+			 /* Total amount of free memory available to the JVM */
+			 System.out.println("Free memory (bytes): " +  Runtime.getRuntime().freeMemory());
+
+			 
 			// Check for abort by user
 			if (crTab.isAborted()) {
 				crTab.init();
