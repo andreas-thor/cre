@@ -104,16 +104,52 @@ public class WoS_txt {
 	}
 	
 	
+	public static AtomicLong[] getPubCRCount (List<File> files, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
+		
+		AtomicLong countCR = new AtomicLong(0);
+		AtomicLong countPub = new AtomicLong(0);
+		
+		
+		
+		return new AtomicLong[]{countPub, countCR};
+	}
 	
-	public static void load (List<File> files, CRTable crTab, int maxCR, int maxPub, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
+	public static void load (List<File> files, CRTable crTab, int maxCR, int maxPub, int[] yearRange, boolean random) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 
-		
-		
-		
 		long ts1 = System.currentTimeMillis();
 		long ms1 = Runtime.getRuntime().totalMemory();
 		
 		crTab.init();
+		
+		AtomicLong countAllCR = new AtomicLong(0);
+		
+		if (random && (maxCR>0)) {
+			int idx = 0;
+			for (File file: files) {
+				
+				WoS_Iterator wosIt = new WoS_Iterator(file);
+				StatusBar.get().initProgressbar(file.length(), String.format("Analyzing WoS file %1$d of %2$d ...", (++idx), files.size()));
+	
+				StreamSupport.stream(wosIt.getIterable().spliterator(), true /*true==parallel*/).forEach ( it -> {
+				
+					PubType pub = parsePub(it, yearRange, 1d);
+					if (pub==null) return;
+					
+					StatusBar.get().incProgressbar(pub.length);
+					countAllCR.addAndGet(pub.getSizeCR());
+					
+				});
+				
+				wosIt.close();
+				
+			}
+		}	
+		
+		final double ratio = countAllCR.get() > 0 ? ((double)maxCR) / ((double)countAllCR.get()) : 1d;
+		
+		System.out.println("CountAllCR =" + countAllCR.get());
+
+		
 		
 		AtomicLong countCR = new AtomicLong(0);
 		AtomicLong countPub = new AtomicLong(0);
@@ -133,82 +169,13 @@ public class WoS_txt {
 				if ((maxCR>0) && (countCR.get()>=maxCR)) return null;
 				if ((maxPub>0) && (countPub.get()>=maxPub)) return null;
 				
-				String currentTag = "";
-				String tagBlock = "";
-				String value = "";
-					
-				PubType pub = new PubType();
-				pub.setFS("WoS");
-				pub.length = 0;
-				List<String> C1 = new ArrayList<String>();
-				
-				for (String l: it) {
-					pub.length += 1 + l.length();
-					if (l.length()<2) continue;
-					currentTag = l.substring(0, 2);
-					if (currentTag.equals("ER")) continue;
-					if (currentTag.equals("EF")) continue;
-					tagBlock = currentTag.equals("  ") ? tagBlock : new String(currentTag);
-					value = l.substring(3);
-					
-					
-					switch (tagBlock) {
-					
-					case "PT": pub.setPT(value); break;
-					
-					/* Concatenated Strings */
-					case "TI": pub.setTI((pub.getTI()==null) ? value : pub.getTI()+" "+value); break;
-					case "SO": pub.setSO((pub.getSO()==null) ? value : pub.getSO()+" "+value); break;
-					case "VL": pub.setVL((pub.getVL()==null) ? value : pub.getVL()+" "+value); break;
-					case "IS": pub.setIS((pub.getIS()==null) ? value : pub.getIS()+" "+value); break;
-					case "AR": pub.setAR((pub.getAR()==null) ? value : pub.getAR()+" "+value); break;
-					case "DI": pub.setDI((pub.getDI()==null) ? value : pub.getDI()+" "+value); break;
-					case "LI": pub.setLI((pub.getLI()==null) ? value : pub.getLI()+" "+value); break;
-					case "AB": pub.setAB((pub.getAB()==null) ? value : pub.getAB()+" "+value); break;
-					case "DE": pub.setDE((pub.getDE()==null) ? value : pub.getDE()+" "+value); break;
-					case "DT": pub.setDT((pub.getDT()==null) ? value : pub.getDT()+" "+value); break;
-					case "UT": pub.setUT((pub.getUT()==null) ? value : pub.getUT()+" "+value); break;
-					
-					/* Integer values */
-					case "PY": try { pub.setPY(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
-					case "BP": try { pub.setBP(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
-					case "EP": try { pub.setEP(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
-					case "PG": try { pub.setPG(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
-					case "TC": try { pub.setTC(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
-					
-					/* Parse Cited References */
-					case "CR": pub.addCR(parseCR(value, yearRange), true);  break;
-					
-					/* Authors */
-					case "AU": pub.addAU(value); break;
-					case "AF": pub.addAF(value); break;
-					case "EM": Arrays.stream(value.split("; ")).forEach(e -> pub.addEM(e)); break;
-					/* store C1 values in a separate list for further processing */
-					case "C1": C1.add(value); break;
-					}
-				}
-				
-				it = null;
-				if (pub.getPT()==null) return null;
-				
-				for (String corr: C1) {
-					int pos = corr.indexOf(']');
-					if (pos>0) {
-						String names = corr.substring(1, pos);
-						String affiliation = corr.substring (pos+2);
-						for (String name: names.split("; ")) {
-							pub.addC1(new String[] { name, affiliation });
-							pub.addAA(affiliation);
-						}
-					} else {
-						pub.addC1(new String[] { "", corr });
-						pub.addAA(corr);
-					}
-				}
+				PubType pub = parsePub(it, yearRange, ratio);
+				if (pub==null) return null;
 				
 				StatusBar.get().incProgressbar(pub.length);
 				countCR.addAndGet(pub.getSizeCR());
 				System.out.println(countPub.incrementAndGet());
+				
 				return pub;
 			}).filter ( it -> it != null).collect (Collectors.toList()));	// remove null values (abort)
 			
@@ -245,7 +212,84 @@ public class WoS_txt {
 	}
 	
 	
-	
+	private static PubType parsePub (List<String> it, int[] yearRange, double ratio) {
+
+		String currentTag = "";
+		String tagBlock = "";
+		String value = "";
+			
+		PubType pub = new PubType();
+		pub.setFS("WoS");
+		pub.length = 0;
+		List<String> C1 = new ArrayList<String>();
+		
+		for (String l: it) {
+			pub.length += 1 + l.length();
+			if (l.length()<2) continue;
+			currentTag = l.substring(0, 2);
+			if (currentTag.equals("ER")) continue;
+			if (currentTag.equals("EF")) continue;
+			tagBlock = currentTag.equals("  ") ? tagBlock : new String(currentTag);
+			value = l.substring(3);
+			
+			
+			switch (tagBlock) {
+			
+			case "PT": pub.setPT(value); break;
+			
+			/* Concatenated Strings */
+			case "TI": pub.setTI((pub.getTI()==null) ? value : pub.getTI()+" "+value); break;
+			case "SO": pub.setSO((pub.getSO()==null) ? value : pub.getSO()+" "+value); break;
+			case "VL": pub.setVL((pub.getVL()==null) ? value : pub.getVL()+" "+value); break;
+			case "IS": pub.setIS((pub.getIS()==null) ? value : pub.getIS()+" "+value); break;
+			case "AR": pub.setAR((pub.getAR()==null) ? value : pub.getAR()+" "+value); break;
+			case "DI": pub.setDI((pub.getDI()==null) ? value : pub.getDI()+" "+value); break;
+			case "LI": pub.setLI((pub.getLI()==null) ? value : pub.getLI()+" "+value); break;
+			case "AB": pub.setAB((pub.getAB()==null) ? value : pub.getAB()+" "+value); break;
+			case "DE": pub.setDE((pub.getDE()==null) ? value : pub.getDE()+" "+value); break;
+			case "DT": pub.setDT((pub.getDT()==null) ? value : pub.getDT()+" "+value); break;
+			case "UT": pub.setUT((pub.getUT()==null) ? value : pub.getUT()+" "+value); break;
+			
+			/* Integer values */
+			case "PY": try { pub.setPY(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
+			case "BP": try { pub.setBP(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
+			case "EP": try { pub.setEP(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
+			case "PG": try { pub.setPG(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
+			case "TC": try { pub.setTC(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
+			
+			/* Parse Cited References */
+			case "CR": if ((ratio==1d) || (ratio>Math.random())) pub.addCR(parseCR(value, yearRange), true);  break;
+			
+			/* Authors */
+			case "AU": pub.addAU(value); break;
+			case "AF": pub.addAF(value); break;
+			case "EM": Arrays.stream(value.split("; ")).forEach(e -> pub.addEM(e)); break;
+			/* store C1 values in a separate list for further processing */
+			case "C1": C1.add(value); break;
+			}
+		}
+		
+		it = null;
+		if (pub.getPT()==null) return null;
+		
+		for (String corr: C1) {
+			int pos = corr.indexOf(']');
+			if (pos>0) {
+				String names = corr.substring(1, pos);
+				String affiliation = corr.substring (pos+2);
+				for (String name: names.split("; ")) {
+					pub.addC1(new String[] { name, affiliation });
+					pub.addAA(affiliation);
+				}
+			} else {
+				pub.addC1(new String[] { "", corr });
+				pub.addAA(corr);
+			}
+		}	
+		
+		return pub;
+	}
+
 
 	
 	
@@ -358,21 +402,8 @@ public class WoS_txt {
 	}
 	
 	
-	private static void writeTag (BufferedWriter bw, String tag, String v) throws IOException {
-		if (v == null) return;
-		bw.write(tag+" ");
-		bw.write(v);
-		bw.newLine();
-	}
 	
-	private static void writeTag (BufferedWriter bw, String tag, Stream<String> values) throws IOException  {
-		if (values == null) return;
-		boolean first = true;
-		for (String v: values.collect(Collectors.toList())) {
-			writeTag (bw, first ? tag : "  ", v);
-			first = false;
-		}
-	}
+
 	
 	private static CRType parseCR (String line, int[] yearRange) {
 
@@ -457,5 +488,22 @@ public class WoS_txt {
 				
 		
 	}
+	
+	private static void writeTag (BufferedWriter bw, String tag, String v) throws IOException {
+		if (v == null) return;
+		bw.write(tag+" ");
+		bw.write(v);
+		bw.newLine();
+	}
+	
+	
+	private static void writeTag (BufferedWriter bw, String tag, Stream<String> values) throws IOException  {
+		if (values == null) return;
+		boolean first = true;
+		for (String v: values.collect(Collectors.toList())) {
+			writeTag (bw, first ? tag : "  ", v);
+			first = false;
+		}
+	}	
 	
 }

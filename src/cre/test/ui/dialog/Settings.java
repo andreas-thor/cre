@@ -40,6 +40,8 @@ public class Settings extends Dialog<Integer> {
 	private final TextField tfMedian = new TextField();
 	private final TextField[] tfImport = new TextField[4];
 	private final CheckBox cbIncludePubsWithoutCRs = new CheckBox();
+	private final CheckBox cbImportRandom = new CheckBox();
+	
 	private final RadioButton[] rbChart = new RadioButton[2];
 	
 	private final CheckBox cbSelectAll = new CheckBox("Select/Deselect All");
@@ -133,6 +135,7 @@ public class Settings extends Dialog<Integer> {
 		    	noOfErrors += UserSettings.get().setMaxCR(tfImport[0].getText());
 		    	noOfErrors += UserSettings.get().setMaxPub(tfImport[1].getText());
 		    	noOfErrors += UserSettings.get().setIncludePubsWithoutCRs(cbIncludePubsWithoutCRs.isSelected());
+		    	noOfErrors += UserSettings.get().setImportRandom(cbImportRandom.isSelected());
 		    	noOfErrors += UserSettings.get().setRange(UserSettings.RangeType.ImportYearRange, new String[] { tfImport[2].getText(), tfImport[3].getText()} );
 		    	noOfErrors += UserSettings.get().setNPCTRange(tfNPCT.getText());
 		    	UserSettings.get().setChartEngine(rbChart[0].isSelected() ? 0 : 1);
@@ -228,6 +231,10 @@ public class Settings extends Dialog<Integer> {
 			tfImport[i].setMaxWidth(50);
 			result.add(tfImport[i], 1, i);
 		}
+		
+		cbImportRandom.setText("Import Random");
+		cbImportRandom.setSelected(UserSettings.get().getImportRandom());
+		result.add(cbImportRandom, 0, label.length);
 		
 		return result;
 		

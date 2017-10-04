@@ -1,14 +1,6 @@
 package cre.test.data;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.SQLType;
-import java.sql.Statement;
-import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +14,7 @@ import cre.test.data.match.CRCluster;
 import cre.test.data.match.CRMatch2;
 import cre.test.data.type.CRType;
 import cre.test.data.type.PubType;
-import cre.test.data.type.PubType.PubColumn;
 import cre.test.ui.StatusBar;
-import cre.test.ui.CRTableView.ColDataType;
 
 public class CRTable {
 
@@ -43,9 +33,9 @@ public class CRTable {
 	
 	private AtomicInteger countPub;
 	
-	private Connection conn;
-	private PreparedStatement insertPub;
-	private int insertPubBatchSize;
+//	private Connection conn;
+//	private PreparedStatement insertPub;
+//	private int insertPubBatchSize;
 	
 	public static CRTable get() {
 		if (crTab == null) {
@@ -57,6 +47,7 @@ public class CRTable {
 	
 	private CRTable () { 
 		
+		/*
 		 try {
 			Class.forName("org.h2.Driver");
 			conn = DriverManager.getConnection("jdbc:h2:~/cre", "sa", "sa"); 
@@ -67,7 +58,7 @@ public class CRTable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
-		
+		*/
 		init();
 	}
 	
@@ -89,6 +80,7 @@ public class CRTable {
 		countPub = new AtomicInteger(0);
 		CRSearch.get().init();
 		
+		/*
 		try {
 			Statement stmt = conn.createStatement();
 			
@@ -113,7 +105,7 @@ public class CRTable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		*/
          
 		
 	}
@@ -156,6 +148,7 @@ public class CRTable {
 	public void addPub (PubType pub) {
 		pub.setID(countPub.incrementAndGet());
 		
+		/*
 		try {
 			for (int i=1; i<=PubColumn.values().length; i++) {
 				
@@ -186,10 +179,10 @@ public class CRTable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 		
 		
-		
-//		allPubs.add(pub);
+		allPubs.add(pub);
 	}
 	
 	

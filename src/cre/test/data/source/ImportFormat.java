@@ -2,11 +2,9 @@ package cre.test.data.source;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import cre.test.Exceptions.AbortedException;
@@ -15,8 +13,6 @@ import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRTable;
 import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
-import cre.test.data.source.WoS_txt.WoS_Iterator;
-import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
 import javafx.stage.FileChooser.ExtensionFilter;
 
@@ -50,7 +46,7 @@ public enum ImportFormat {
 	}
 	
 	public void load (List<File> files) throws OutOfMemoryError, UnsupportedFileFormatException, FileTooLargeException, AbortedException, IOException {
-		this.load.apply(files, CRTable.get(), UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), UserSettings.get().getRange(RangeType.ImportYearRange));
+		this.load.apply(files, CRTable.get(), UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), UserSettings.get().getRange(RangeType.ImportYearRange), UserSettings.get().getImportRandom());
 	}
 	
 	public void load2 (List<File> files) throws OutOfMemoryError, UnsupportedFileFormatException, FileTooLargeException, AbortedException, IOException {

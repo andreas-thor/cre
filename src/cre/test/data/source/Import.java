@@ -11,5 +11,5 @@ import cre.test.data.CRTable;
 
 @FunctionalInterface
 public interface Import {
-   void apply(List<File> files, CRTable crTab, int maxCR, int maxPub, int[] yearRange) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException;
+   void apply(List<File> files, CRTable crTab, int maxCR, int maxPub, int[] yearRange, boolean random) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException;
 }

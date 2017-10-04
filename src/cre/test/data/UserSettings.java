@@ -41,6 +41,7 @@ public class UserSettings {
 	private int maxCR = 0;
 	private int maxPub = 0;
 	private boolean includePubsWithoutCRs = false;
+	private boolean importRandom = false;
 	
 	
 	private double[] window = new double[] {800, 600, 0, 0};
@@ -95,6 +96,7 @@ public class UserSettings {
 		maxCR = userPrefs.getInt("maxCR", maxCR);
 		maxPub = userPrefs.getInt("maxPub", maxPub);
 		includePubsWithoutCRs = userPrefs.getBoolean ("includePubsWithoutCRs", includePubsWithoutCRs);
+		importRandom = userPrefs.getBoolean ("importRandom", importRandom);
 		
 		chartEngine = userPrefs.getInt("chartEngine", 0);
 		
@@ -134,6 +136,7 @@ public class UserSettings {
 		userPrefs.putInt("maxCR", maxCR);
 		userPrefs.putInt("maxPub", maxPub);
 		userPrefs.putBoolean ("includePubsWithoutCRs", includePubsWithoutCRs);
+		userPrefs.putBoolean ("importRandom", importRandom);
 		userPrefs.putInt("chartEngine", chartEngine);
 		
 		userPrefs.putDouble("WindowWidth", windowWidth);
@@ -350,6 +353,16 @@ public class UserSettings {
 		return 0;
 	}
 
+	public boolean getImportRandom() {
+		return importRandom;
+	}
+
+	public int setImportRandom (boolean importRandom) {
+		this.importRandom = importRandom;
+		return 0;
+	}
+	
+	
 	public int getChartEngine() {
 		return this.chartEngine;
 	}
