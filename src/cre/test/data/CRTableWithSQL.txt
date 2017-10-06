@@ -2,9 +2,13 @@ package cre.test.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,11 +23,13 @@ public class CRTable {
 
 	private static CRTable crTab = null;
 	
-	private HashMap<CRType, CRType> crDataMap;	// map: CR -> CR to get duplicates
+	private HashSet<CRType> crData;
+	
+	private HashMap<CRType, CRType> crDataMap;
 	
 	private List<PubType> allPubs;
 	
-//	private Map<Character, HashMap<String, CRType>> crDup; // first character -> (crString -> CR )
+	private Map<Character, HashMap<String, CRType>> crDup; // first character -> (crString -> CR )
 
 	private int[][] chartData;
 	
@@ -32,6 +38,10 @@ public class CRTable {
 	private boolean showNull;
 	
 	private AtomicInteger countPub;
+	
+//	private Connection conn;
+//	private PreparedStatement insertPub;
+//	private int insertPubBatchSize;
 	
 	public static CRTable get() {
 		if (crTab == null) {
@@ -42,6 +52,19 @@ public class CRTable {
 	
 	
 	private CRTable () { 
+		
+		/*
+		 try {
+			Class.forName("org.h2.Driver");
+			conn = DriverManager.getConnection("jdbc:h2:~/cre", "sa", "sa"); 
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		*/
 		init();
 	}
 	
@@ -51,9 +74,10 @@ public class CRTable {
 	 */
 	
 	public void init() {
+		crData = new HashSet<CRType>();
 		crDataMap = new HashMap<CRType, CRType>();
 		allPubs = new ArrayList<PubType>();
-//		crDup = new HashMap<Character,  HashMap<String, CRType>>();
+		crDup = new HashMap<Character,  HashMap<String, CRType>>();
 		CRMatch2.get().init();
 		duringUpdate = false;
 		aborted = false;
@@ -63,10 +87,39 @@ public class CRTable {
 		countPub = new AtomicInteger(0);
 		CRSearch.get().init();
 		
-	}	
+		/*
+		try {
+			Statement stmt = conn.createStatement();
+			
+			StringBuffer sql = new StringBuffer();
+			sql.append ("DROP TABLE IF EXISTS PUB;");
+			sql.append ("CREATE TABLE PUB (");
+			sql.append (Arrays.stream(PubColumn.values()).map(col -> { return col.getSQLCreateTable(); } ).collect(Collectors.joining(", ")));
+			sql.append (", PRIMARY KEY (pub_" + PubColumn.ID.id + "));");
+			stmt.execute(sql.toString());
+			
+			sql = new StringBuffer();
+			sql.append ("INSERT INTO PUB (");
+			sql.append (Arrays.stream(PubColumn.values()).map(col -> { return "pub_" + col.id; } ).collect(Collectors.joining(", ")));
+			sql.append (") VALUES (");
+			sql.append (Arrays.stream(PubColumn.values()).map(col -> { return "?"; } ).collect(Collectors.joining(", ")));
+			sql.append (");");
+			insertPub = conn.prepareStatement(sql.toString());
+			insertPubBatchSize = 0;
+			
+			stmt.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
+         
+		
+	}
+	
 	
 	public Stream<CRType> getCR() {
-		return crDataMap.keySet().stream();
+		return crData.stream();
 	}
 
 	/**
@@ -84,13 +137,12 @@ public class CRTable {
 	
 
 	public void addCR(CRType cr) {
-		/*
+		
 		String crS = cr.getCR();
 		char cr1 = crS.charAt(0);
 		crDup.putIfAbsent(cr1, new HashMap<String,CRType>());
 		crDup.get(cr1).put(crS, cr);
-		*/
-		crDataMap.put(cr, cr);
+		crData.add(cr);
 	}
 	
 	
@@ -142,23 +194,66 @@ public class CRTable {
 	
 	
 	
-	
-	
-	
-	public void addNewPub (PubType pub) {
+	public void mergeDuplicateCR() {
+		
+		/* Total amount of free memory available to the JVM */
+		 System.out.println("Free memory before mergeDuplicateCR (bytes): " +  Runtime.getRuntime().freeMemory());
+		
+		int pubId = 0;
+		for (PubType pub:allPubs) {
+			pub.setID(pubId++);
+		}
+		
+		Map<CRType, List<CRType>> groupByCR = allPubs.stream().flatMap (pub -> pub.getCR()).collect(Collectors.groupingBy(Function.identity(), Collectors.toList()));
+		
+		int crId = 0;
+		for (Entry<CRType, List<CRType>> group: groupByCR.entrySet()) {
+
+			if (group.getValue().size()>20) System.out.println(group.getValue().size() + ":" + group.getKey().getCR());
+			
+			CRType mainCR = group.getKey();
+			mainCR.setID(crId++);
+			mainCR.setCID2(new CRCluster (mainCR));
+			
+			group.getValue().stream().flatMap (cr -> cr.getPub()).forEach (pub -> {
+				pub.removeCR(mainCR, false);	// removes cr that equals mainCR!
+				pub.addCR(mainCR, false);
+				mainCR.addPub(pub, false);
+			});
+			
+			crData.add(mainCR);
+			
+		}
+		
+
+		
+		for (CRType cr: crData) {
+			if (cr.getPub().count()>20) System.out.println(cr.getPub().count() + ">" + cr.getCR());
+		}
 		
 		
-		this.allPubs.add(pub);
-		pub.setID(this.allPubs.size());
+		/* Total amount of free memory available to the JVM */
+		 System.out.println("Free memory after mergeDuplicateCR (bytes): " +  Runtime.getRuntime().freeMemory());
+
+		
+	}
+	
+	
+	public static synchronized void addNewPub (PubType pub) {
+		
+		CRTable crTable = CRTable.get();
+		
+		crTable.allPubs.add(pub);
+		pub.setID(crTable.allPubs.size());
 		
 		Set<CRType> pubCR = pub.getCR().collect(Collectors.toSet());
 		
 		for(CRType cr:pubCR) {
 			
-			CRType crMain = this.crDataMap.get(cr);
+			CRType crMain = crTable.crDataMap.get(cr);
 			if (crMain == null) {
-				this.crDataMap.put(cr, cr);
-				cr.setID(this.crDataMap.size());
+				crTable.crDataMap.put(cr, cr);
+				cr.setID(crTable.crDataMap.size());
 				cr.setCID2(new CRCluster (cr));
 			} else {
 				pub.removeCR(cr, false);	
@@ -166,9 +261,65 @@ public class CRTable {
 				crMain.addPub(pub, false);	
 			}
 		}
+		
+		
+		
+//		System.out.println(pub.getTI());
 	}
 	
-
+	public void addPubsStream(Stream<PubType> pubs) {
+		/*
+		pubs.forEach(pub -> addPub (pub));
+		
+		pubs.flatMap(pub -> pub.getCR()).distinct().collect(Collectors.toList()).stream().forEach(cr -> { // make a copy to avoid concurrent modification
+			
+			String crS = cr.getCR();
+			char cr1 = crS.charAt(0);
+			crDup.putIfAbsent(cr1, new HashMap<String,CRType>());
+			CRType crMain = crDup.get(cr1).get(crS); 
+			if (crMain == null) {
+				// add current CR to list
+				crDup.get(cr1).put(crS, cr);
+				crData.add(cr);
+				cr.setID(crData.size());
+				cr.setCID2(new CRCluster (cr));
+			} else {
+				// merge current CR with main CR
+				cr.getPub().collect(Collectors.toList()).stream().forEach(crPub -> {		// make a copy to avoid concurrent modification
+					crPub.addCR(crMain, true);
+					crPub.removeCR(cr, true);
+				});
+			}
+		});
+		*/
+	}
+	
+	public void addPubs(List<PubType> pubs) {
+		
+		pubs.stream().forEach(pub -> addPub (pub));
+		
+		pubs.stream().flatMap(pub -> pub.getCR()).distinct().collect(Collectors.toList()).stream().forEach(cr -> { // make a copy to avoid concurrent modification
+			
+			String crS = cr.getCR();
+			char cr1 = crS.charAt(0);
+			crDup.putIfAbsent(cr1, new HashMap<String,CRType>());
+			CRType crMain = crDup.get(cr1).get(crS); 
+			if (crMain == null) {
+				// add current CR to list
+				crDup.get(cr1).put(crS, cr);
+				crData.add(cr);
+				cr.setID(crData.size());
+				cr.setCID2(new CRCluster (cr));
+			} else {
+				// merge current CR with main CR
+				cr.getPub().collect(Collectors.toList()).stream().forEach(crPub -> {		// make a copy to avoid concurrent modification
+					crPub.addCR(crMain, true);
+					crPub.removeCR(cr, true);
+				});
+			}
+		});
+		
+	}	
 	
 	/**
 	 * Merge CRs based on clustering
@@ -199,7 +350,7 @@ public class CRTable {
 			}
 			
 			// remove merged CRs
-			this.crDataMap.keySet().removeAll(crMerge);
+			this.crData.removeAll(crMerge);
 		});
 		
 		// reset clusters and match result
@@ -241,8 +392,7 @@ public class CRTable {
 
 
 	private void removeCR (Predicate<CRType> cond) {
-		
-		crDataMap.keySet().removeIf( cr ->  { 
+		crData.removeIf( cr ->  { 
 			if (cond.test(cr)) {
 				cr.removeAllPubs(true);
 				return true;
@@ -396,34 +546,6 @@ public class CRTable {
 
 
 
-	/*	
-	public void addPubs(List<PubType> pubs) {
-		
-		pubs.stream().forEach(pub -> addPub (pub));
-		
-		pubs.stream().flatMap(pub -> pub.getCR()).distinct().collect(Collectors.toList()).stream().forEach(cr -> { // make a copy to avoid concurrent modification
-			
-			String crS = cr.getCR();
-			char cr1 = crS.charAt(0);
-			crDup.putIfAbsent(cr1, new HashMap<String,CRType>());
-			CRType crMain = crDup.get(cr1).get(crS); 
-			if (crMain == null) {
-				// add current CR to list
-				crDup.get(cr1).put(crS, cr);
-				crData.add(cr);
-				cr.setID(crData.size());
-				cr.setCID2(new CRCluster (cr));
-			} else {
-				// merge current CR with main CR
-				cr.getPub().collect(Collectors.toList()).stream().forEach(crPub -> {		// make a copy to avoid concurrent modification
-					crPub.addCR(crMain, true);
-					crPub.removeCR(cr, true);
-				});
-			}
-		});
-		
-	}	
-*/
 
 
 
@@ -431,4 +553,3 @@ public class CRTable {
 
 	
 }
-

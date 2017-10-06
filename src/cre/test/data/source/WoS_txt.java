@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -163,7 +164,13 @@ public class WoS_txt {
 			
 			StatusBar.get().initProgressbar(file.length(), String.format("Loading WoS file %1$d of %2$d ...", (++idx), files.size()));
 			
-			crTab.addPubs(StreamSupport.stream(wosIt.getIterable().spliterator(), true /*true==parallel*/).map ( it -> {
+			// crTab.addPubs(
+//			System.out.println("STREAMCOUNT=" + 
+			
+			// ACHTUNG: Parallel verliert Daten!!!
+			
+//			CRTable.get().allPubs = 
+			StreamSupport.stream(wosIt.getIterable().spliterator(), false /*true==parallel ==> */).map ( it -> {
 			
 				
 				/* if user abort or maximum number of CRs reached --> do no process anymore */
@@ -178,10 +185,16 @@ public class WoS_txt {
 				
 				StatusBar.get().incProgressbar(pub.length);
 				countCR.addAndGet(pub.getSizeCR());
+				countPub.incrementAndGet();
+				
 //				System.out.println(countPub.incrementAndGet());
 				
 				return pub;
-			}).filter ( it -> it != null).collect (Collectors.toList()));	// remove null values (abort)
+			}).filter ( it -> it != null).forEach(CRTable::addNewPub); //.collect (Collectors.toList()); //);	// remove null values (abort)
+			
+			
+
+
 			
 			wosIt.close();
 			
@@ -207,7 +220,28 @@ public class WoS_txt {
 		}
 
 		
-		crTab.updateData();
+//		CRTable.get().crData.addAll(CRTable.get().crDataMap.keySet());
+//		CRTable.get().crDataMap = null;
+		
+		
+		System.out.println("CountCR=" + countCR.get());
+		System.out.println("CountPub=" + countPub.get());
+
+		System.out.println("CRTable.get().getPub().count()=" + CRTable.get().getPub(true).count());
+		
+		System.out.println("CRTable.get().getPub(true).flatMap(pub -> pub.getCR()).count()=" + CRTable.get().getPub(true).flatMap(pub -> pub.getCR()).count());
+		System.out.println("CRTable.get().getCR().count()=" + CRTable.get().getCR().count());
+		
+		System.out.println("MERGE");
+		
+//		CRTable.get().mergeDuplicateCR();
+		
+		System.out.println("CountCR=" + countCR.get());
+		System.out.println("CountPub=" + countPub.get());
+
+		System.out.println("CRTable.get().getPub().count()=" + CRTable.get().getPub(true).count());
+		System.out.println("CRTable.get().getCR().count()=" + CRTable.get().getCR().count());
+		
 
 		long ts2 = System.currentTimeMillis();
 		long ms2 = Runtime.getRuntime().totalMemory();
@@ -215,6 +249,9 @@ public class WoS_txt {
 		System.out.println("Load time is " + ((ts2-ts1)/1000d) + " seconds");
 		System.out.println("Memory usage " + ((ms2-ms1)/1024d/1024d) + " MBytes");
 
+		crTab.updateData();
+
+		
 		StatusBar.get().setValue("Loading WoS files done");		
 		
 	}
@@ -266,7 +303,12 @@ public class WoS_txt {
 			case "TC": try { pub.setTC(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
 			
 			/* Parse Cited References */
-			case "CR": if ((ratio==1d) || (ratio>Math.random())) pub.addCR(parseCR(value, yearRange), true);  break;
+			case "CR":
+				CRType cr = parseCR(value, yearRange);
+				if (cr != null) {
+					if ((ratio==1d) || (ratio>Math.random())) pub.addCR(cr, true);  
+				}
+				break;
 			
 			/* Authors */
 			case "AU": pub.addAU(value); break;

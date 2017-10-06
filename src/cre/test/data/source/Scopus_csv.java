@@ -93,7 +93,8 @@ public class Scopus_csv  {
 
 			
 			content.remove(0);
-			crTab.addPubs(content.stream().map ( (String[] line) -> {
+			// crTab.addPubs(
+			content.stream().map ( (String[] line) -> {
 	
 				StatusBar.get().incProgressbar (Arrays.stream(line).mapToInt (v -> v.length()+1).sum());
 				
@@ -173,7 +174,7 @@ public class Scopus_csv  {
 				StatusBar.get().incProgressbar();
 				
 				return pub;
-			}).filter ( it -> it != null).collect (Collectors.toList()));	// remove null values (abort)
+			}).filter ( it -> it != null).forEach(CRTable::addNewPub); // .collect (Collectors.toList()));	// remove null values (abort)
 			
 			
 			// Check for abort by user

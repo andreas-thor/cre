@@ -562,6 +562,15 @@ public class CRType implements Comparable<CRType> {
 
 
 
+	@Override
+	public boolean equals(Object obj) {
+		return this.getCR().equals(((CRType)obj).getCR());
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.getCR().hashCode();
+	}
 
 	@Override
 	public int compareTo(CRType o) {
