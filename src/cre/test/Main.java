@@ -21,6 +21,7 @@ import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
 import cre.test.data.match.CRMatch2;
 import cre.test.data.match.CRMatch2.ManualMatchType2;
+import cre.test.data.source.CRE_json;
 import cre.test.data.source.ImportExportFormat;
 import cre.test.data.source.ImportExportFormat;
 import cre.test.data.type.CRType;
@@ -302,6 +303,114 @@ public class Main {
 		openFile(source, null);
 	}
 
+	
+	private void analyzeFiles (ImportExportFormat source, List<File> files) {
+		
+		Wait wait = new Wait();
+		Service<Void> serv = new Service<Void>() {
+
+			@Override
+			protected Task<Void> createTask() {
+				return new Task<Void>() {
+
+					@Override
+					protected Void call() throws Exception {
+						source.analyze(files);
+						return null;
+					}
+				};
+			}
+		};
+		
+
+		serv.setOnSucceeded((WorkerStateEvent t) -> {
+			wait.close();
+		});
+
+		
+		serv.setOnFailed((WorkerStateEvent t) -> {
+			Throwable e = t.getSource().getException(); 
+			if (e instanceof UnsupportedFileFormatException) {
+				new ConfirmAlert("Error during file analysis!", true, new String[] { "Unsupported File Format." }).showAndWait();
+			} else if (e instanceof AbortedException) {
+				new ConfirmAlert("Error during file analysis!", true, new String[] { "File analysis aborted." }).showAndWait();
+			} else if (e instanceof OutOfMemoryError) {
+				crTable.init();
+				new ConfirmAlert("Error during file import!", true, new String[] { "Out of Memory Error." }).showAndWait();
+			} else {
+				new ExceptionStacktrace("Error during file analysis!", e).showAndWait();
+			}
+			wait.close();
+		});
+		
+		serv.start();
+		
+		wait.showAndWait().ifPresent(cancel -> {
+			crTable.setAborted(cancel);
+		});
+		
+	}
+
+	private void openFiles (ImportExportFormat source, List<File> files) {
+		
+		Wait wait = new Wait();
+		Service<Void> serv = new Service<Void>() {
+
+			@Override
+			protected Task<Void> createTask() {
+				return new Task<Void>() {
+
+					@Override
+					protected Void call() throws Exception {
+						source.load(files);
+						if (source == ImportExportFormat.CRE_JSON) creFile = files.get(0); 
+							
+						// show match panel if applicable
+						matchView.setVisible((CRMatch2.get().getSize(true) + CRMatch2.get().getSize(false)) > 0);
+						matchView.updateClustering();
+						
+						return null;
+					}
+				};
+			}
+		};
+		
+
+		serv.setOnSucceeded((WorkerStateEvent t) -> {
+			OnMenuViewInfo();
+			updateTableCRList();
+			CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title + ((creFile == null) ? "" : " - " + creFile.getAbsolutePath()));
+			wait.close();
+		});
+
+		
+		serv.setOnFailed((WorkerStateEvent t) -> {
+			Throwable e = t.getSource().getException(); 
+			if (e instanceof FileTooLargeException) {
+				new ConfirmAlert("Error during file import!", true, new String[] { String.format(
+					"You try to import too many cited references. Import was aborted after loading %d Cited References and %d Citing Publications. You can change the maximum number in the File > Settings > Import menu. ",
+					((FileTooLargeException)e).numberOfCRs, ((FileTooLargeException)e).numberOfPubs) }).showAndWait();
+			} else if (e instanceof UnsupportedFileFormatException) {
+				new ConfirmAlert("Error during file import!", true, new String[] { "Unsupported File Format." }).showAndWait();
+			} else if (e instanceof AbortedException) {
+				new ConfirmAlert("Error during file import!", true, new String[] { "File Import aborted." }).showAndWait();
+			} else if (e instanceof OutOfMemoryError) {
+				crTable.init();
+				new ConfirmAlert("Error during file import!", true, new String[] { "Out of Memory Error." }).showAndWait();
+			} else {
+				new ExceptionStacktrace("Error during file import!", e).showAndWait();
+			}
+			wait.close();
+		});
+		
+		serv.start();
+		
+		wait.showAndWait().ifPresent(cancel -> {
+			crTable.setAborted(cancel);
+		});
+	}
+	
+	
 	private void openFile(ImportExportFormat source, String fileName) throws IOException {
 
 		final List<File> files = new ArrayList<File>();
@@ -326,64 +435,13 @@ public class Main {
 
 		if (files.size() > 0) {
 			this.creFile = null;
-			UserSettings.get().setLastFileDir(files.get(0).getParentFile()); // save last directory to be uses as initial directory 
+			UserSettings.get().setLastFileDir(files.get(0).getParentFile()); // save last directory to be uses as initial directory
 			
-			Wait wait = new Wait();
-			Service<Void> serv = new Service<Void>() {
-
-				@Override
-				protected Task<Void> createTask() {
-					return new Task<Void>() {
-
-						@Override
-						protected Void call() throws Exception {
-							source.load(files);
-							if (source == ImportExportFormat.CRE_JSON) creFile = files.get(0); 
-								
-							// show match panel if applicable
-							matchView.setVisible((CRMatch2.get().getSize(true) + CRMatch2.get().getSize(false)) > 0);
-							matchView.updateClustering();
-							
-							return null;
-						}
-					};
-				}
-			};
+			if (source != ImportExportFormat.CRE_JSON) {
+				analyzeFiles(source, files);
+			}
 			
-
-			serv.setOnSucceeded((WorkerStateEvent t) -> {
-				OnMenuViewInfo();
-				updateTableCRList();
-				CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title + ((creFile == null) ? "" : " - " + creFile.getAbsolutePath()));
-				wait.close();
-			});
-
-			
-			serv.setOnFailed((WorkerStateEvent t) -> {
-				Throwable e = t.getSource().getException(); 
-				if (e instanceof FileTooLargeException) {
-					new ConfirmAlert("Error during file import!", true, new String[] { String.format(
-						"You try to import too many cited references. Import was aborted after loading %d Cited References and %d Citing Publications. You can change the maximum number in the File > Settings > Import menu. ",
-						((FileTooLargeException)e).numberOfCRs, ((FileTooLargeException)e).numberOfPubs) }).showAndWait();
-				} else if (e instanceof UnsupportedFileFormatException) {
-					new ConfirmAlert("Error during file import!", true, new String[] { "Unsupported File Format." }).showAndWait();
-				} else if (e instanceof AbortedException) {
-					new ConfirmAlert("Error during file import!", true, new String[] { "File Import aborted." }).showAndWait();
-				} else if (e instanceof OutOfMemoryError) {
-					crTable.init();
-					new ConfirmAlert("Error during file import!", true, new String[] { "Out of Memory Error." }).showAndWait();
-				} else {
-					new ExceptionStacktrace("Error during file import!", e).showAndWait();
-				}
-				wait.close();
-			});
-			
-			serv.start();
-			
-			wait.showAndWait().ifPresent(cancel -> {
-				crTable.setAborted(cancel);
-			});
-
+			openFiles(source, files);
 		}
 	}
 

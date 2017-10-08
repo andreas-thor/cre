@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.StreamSupport;
 
 import cre.test.Exceptions.AbortedException;
@@ -68,6 +69,31 @@ public enum ImportExportFormat {
 
 	}
 	
+	
+	
+	public void analyze(List<File> files) throws OutOfMemoryError, UnsupportedFileFormatException, FileTooLargeException, AbortedException, IOException {
+		
+		AtomicLong countAllCR = new AtomicLong(0);
+
+		int idx = 0;
+		double ratioCR = 1d;
+		for (File file: files) {
+			
+			StatusBar.get().initProgressbar(file.length(), String.format("Analyzing %4$s file %1$d of %2$d (%3$s) ...", (++idx), files.size(), file.getName(), this.label));
+
+			this.importReader.init(file, UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), UserSettings.get().getRange(RangeType.ImportYearRange), ratioCR);
+			StreamSupport.stream(this.importReader.getIterable().spliterator(), false)
+				.filter(pub -> pub != null)
+				.forEach(pub -> {
+					StatusBar.get().incProgressbar(pub.length);
+					countAllCR.addAndGet(pub.getSizeCR());
+				});
+			this.importReader.close();
+				
+		}
+		
+		System.out.println(countAllCR.get());
+	}
 
 	public void load(List<File> files) throws OutOfMemoryError, UnsupportedFileFormatException, FileTooLargeException, AbortedException, IOException {
 
@@ -77,6 +103,10 @@ public enum ImportExportFormat {
 		CRTable crTab = CRTable.get(); 
 		crTab.init();
 
+		if (this != ImportExportFormat.CRE_JSON) {	// analyze import format files
+			analyze(files);
+		}
+		
 		int idx = 0;
 		double ratioCR = 1d;
 		for (File file: files) {
