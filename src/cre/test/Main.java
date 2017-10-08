@@ -21,7 +21,7 @@ import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
 import cre.test.data.match.CRMatch2;
 import cre.test.data.match.CRMatch2.ManualMatchType2;
-import cre.test.data.source.ExportFormat;
+import cre.test.data.source.ImportFormat;
 import cre.test.data.source.ImportFormat;
 import cre.test.data.type.CRType;
 import cre.test.ui.CRChart;
@@ -206,7 +206,7 @@ public class Main {
 
 				if (button == ButtonType.YES) {
 					try {
-						if (!saveFile(ExportFormat.CRE_JSON, false))
+						if (!saveFile(ImportFormat.CRE_JSON, false))
 							return;
 					} catch (Exception e) {
 						Platform.runLater(() -> {
@@ -306,16 +306,16 @@ public class Main {
 
 		final List<File> files = new ArrayList<File>();
 
-		if (fileName != null) { // load specific file (e.g., during appilcation start)
+		if (fileName != null) { // load specific file (e.g., during application start)
 			files.add(new File(fileName));
 		} else {
 			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle(source.label);
+			fileChooser.setTitle(String.format("%1$s %2$s", (source == ImportFormat.CRE_JSON) ? "Open" : "Import", source.label));
 			fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
-			fileChooser.getExtensionFilters().add(source.filter);
+			fileChooser.getExtensionFilters().add(source.fileExtensionFilter);
 			fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
 
-			if (source.multiple) {
+			if (source.importMultiple) {
 				List<File> selFiles = fileChooser.showOpenMultipleDialog(CitedReferencesExplorer.stage);
 				if (selFiles != null) files.addAll(selFiles);
 			} else {
@@ -387,20 +387,20 @@ public class Main {
 		}
 	}
 
-	private boolean saveFile(ExportFormat source) throws IOException {
+	private boolean saveFile(ImportFormat source) throws IOException {
 		return saveFile(source, true);
 	}
 
-	private boolean saveFile(ExportFormat source, boolean saveAs) throws IOException {
+	private boolean saveFile(ImportFormat source, boolean saveAs) throws IOException {
 
 		File selFile;
-		if ((source == ExportFormat.CRE_JSON) && (creFile != null) && (!saveAs)) {
+		if ((source == ImportFormat.CRE_JSON) && (creFile != null) && (!saveAs)) {
 			selFile = creFile;
 		} else {
 			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle(source.label);
+			fileChooser.setTitle(String.format("%1$s %2$s", (source == ImportFormat.CRE_JSON) ? "Save" : "Export", source.label));
 			fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
-			fileChooser.getExtensionFilters().add(source.filter);
+			fileChooser.getExtensionFilters().add(source.fileExtensionFilter);
 			fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
 			selFile = fileChooser.showSaveDialog(CitedReferencesExplorer.stage);
 		}
@@ -418,7 +418,7 @@ public class Main {
 					@Override
 					protected Void call() throws Exception {
 						source.save(selFile);
-						if (source == ExportFormat.CRE_JSON) creFile = selFile;
+						if (source == ImportFormat.CRE_JSON) creFile = selFile;
 						return null;
 					}
 				};
@@ -460,42 +460,42 @@ public class Main {
 
 	@FXML
 	public void OnMenuFileSave() throws IOException {
-		saveFile(ExportFormat.CRE_JSON, false);
+		saveFile(ImportFormat.CRE_JSON, false);
 	}
 
 	@FXML
 	public void OnMenuFileSaveAs() throws IOException {
-		saveFile(ExportFormat.CRE_JSON, true);
+		saveFile(ImportFormat.CRE_JSON, true);
 	}
 
 	@FXML
 	public void OnMenuFileExportWoS() throws IOException {
-		saveFile(ExportFormat.WOS_TXT);
+		saveFile(ImportFormat.WOS_TXT);
 	}
 
 	@FXML
 	public void OnMenuFileExportScopus() throws IOException {
-		saveFile(ExportFormat.SCOPUS_CSV);
+		saveFile(ImportFormat.SCOPUS_CSV);
 	}
 
 	@FXML
 	public void OnMenuFileExportCSVGraph() throws IOException {
-		saveFile(ExportFormat.CRE_CSV_GRAPH);
+		saveFile(ImportFormat.CRE_CSV_GRAPH);
 	}
 
 	@FXML
 	public void OnMenuFileExportCSVCR() throws IOException {
-		saveFile(ExportFormat.CRE_CSV_CR);
+		saveFile(ImportFormat.CRE_CSV_CR);
 	}
 
 	@FXML
 	public void OnMenuFileExportCSVPub() throws IOException {
-		saveFile(ExportFormat.CRE_CSV_PUB);
+		saveFile(ImportFormat.CRE_CSV_PUB);
 	}
 
 	@FXML
 	public void OnMenuFileExportCSVAll() throws IOException {
-		saveFile(ExportFormat.CRE_CSV_CR_PUB);
+		saveFile(ImportFormat.CRE_CSV_CR_PUB);
 	}
 
 	@FXML

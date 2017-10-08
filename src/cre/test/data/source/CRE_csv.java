@@ -1,6 +1,5 @@
 package cre.test.data.source;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -24,59 +23,43 @@ public class CRE_csv {
 	 * Save CR table to CSV file
 	 * @param file
 	 */
-	public static void saveCR (File file, CRTable crTab) throws IOException {
+	public static void saveCR (String file_name) throws IOException {
 
-		StatusBar.get().initProgressbar(CRStats.getSize(), "Saving CSV file (Cited References) ...");
-		
-		
-		
-		// add csv extension if necessary
-		String file_name = file.toString();
-		if (!file_name.endsWith(".csv")) file_name += ".csv";
+		StatusBar.get().initProgressbar(CRStats.getSize());
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(Arrays.stream(CRColumn.values()).map(col -> col.id).toArray(String[]::new)); 
 		
-		crTab.getCR().sorted().forEach(cr -> {
+		CRTable.get().getCR().sorted().forEach(cr -> {
 			StatusBar.get().incProgressbar();
 			csv.writeNext(Arrays.stream(CRColumn.values()).map(col -> col.prop.apply(cr).getValue()).map(val -> val==null ? "" : String.valueOf(val)).toArray(String[]::new)); 
 		});
 		
 		csv.close();
-		StatusBar.get().setValue("Saving CSV file (Cited References) done");
 	}
 
 
 	
-	public static void savePub (File file, CRTable crTab) throws IOException {
+	public static void savePub (String file_name) throws IOException {
 
-		StatusBar.get().initProgressbar(CRStats.getSizePub(), "Saving CSV file (Citing Publications) ...");
-		
-		// add csv extension if necessary
-		String file_name = file.toString();
-		if (!file_name.endsWith(".csv")) file_name += ".csv";
+		StatusBar.get().initProgressbar(CRStats.getSizePub());
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(Arrays.stream(PubColumn.values()).map(col -> col.id).toArray(String[]::new)); 
 		
-		crTab.getPub(UserSettings.get().getIncludePubsWithoutCRs()).sorted().forEach(pub -> {
+		CRTable.get().getPub(UserSettings.get().getIncludePubsWithoutCRs()).sorted().forEach(pub -> {
 			StatusBar.get().incProgressbar();
 			csv.writeNext(Arrays.stream(PubColumn.values()).map(col -> col.prop.apply(pub).getValue()).map(val -> val==null ? "" : String.valueOf(val)).toArray(String[]::new)); 
 		});
 		
 		csv.close();
-		StatusBar.get().setValue("Saving CSV file (Citing Publications) done");
 	}
 	
 	
 	
-	public static void saveCRPub (File file, CRTable crTab) throws IOException {
+	public static void saveCRPub (String file_name) throws IOException {
 
-		StatusBar.get().initProgressbar(CRStats.getSizePub(), "Saving CSV file (Cited References + Citing Publications) ...");
-		
-		// add csv extension if necessary
-		String file_name = file.toString();
-		if (!file_name.endsWith(".csv")) file_name += ".csv";
+		StatusBar.get().initProgressbar(CRStats.getSizePub());
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext (Stream.concat (
@@ -84,7 +67,7 @@ public class CRE_csv {
 				Arrays.stream(CRColumn.values()).map(col -> col.id))
 		.toArray(String[]::new)); 
 		
-		crTab.getPub().sorted().forEach(pub -> {
+		CRTable.get().getPub().sorted().forEach(pub -> {
 			StatusBar.get().incProgressbar();
 			
 			pub.getCR().sorted().forEach(cr -> {
@@ -96,35 +79,21 @@ public class CRE_csv {
 		});
 		
 		csv.close();
-		StatusBar.get().setValue("Saving CSV file (Cited References + Citing Publications) done");
 	}
 
 	
 	
-	/**
-	 * Save Graph data to CSV file
-	 * @param file
-	 * @throws IOException 
-	 */
-	
-	public static void saveGraph (File file, CRTable crTab) throws IOException {
+	public static void saveGraph (String file_name) throws IOException {
 
-		StatusBar.get().setValue("Saving Graph as CSV file ...");
-		
-		// add csv extension if necessary
-		String file_name = file.toString();
-		if (!file_name.endsWith(".csv")) file_name += ".csv";
-		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(new String[] {"Year", "NCR", String.format("Median-%d", 2*UserSettings.get().getMedianRange()+1)});
 		
-		int[][] data = crTab.getChartData();
+		int[][] data = CRTable.get().getChartData();
 		for (int i=0; i<data[0].length; i++) {
 			csv.writeNext (new String[] {String.valueOf(data[0][i]), String.valueOf(data[1][i]), String.valueOf(data[2][i])});
 		}
 				
 		csv.close();
-		StatusBar.get().setValue("Saving Graph as CSV file done");
 	}
 	
 }

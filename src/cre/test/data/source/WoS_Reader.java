@@ -1,14 +1,23 @@
 package cre.test.data.source;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import cre.test.data.CRStats;
+import cre.test.data.CRTable;
+import cre.test.data.UserSettings;
 import cre.test.data.type.CRType;
 import cre.test.data.type.PubType;
+import cre.test.ui.StatusBar;
 
 /** 
  * Provides iterator over all PubType elements in a list of Scopus files
@@ -226,6 +235,125 @@ public class WoS_Reader extends ImportReader {
 		
 	}
 	
+
 	
+	public static void save (String file_name) throws IOException, RuntimeException {
+		
+		StatusBar.get().initProgressbar(CRStats.getSizePub());
+						
+		BufferedWriter bw = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
+		bw.write("FN Thomson Reuters Web of Science\u0153 modified by CRExplorer");
+		bw.newLine();
+		bw.write("VR 1.0");
+		bw.newLine();
+		
+		CRTable.get().getPub(UserSettings.get().getIncludePubsWithoutCRs()).forEach (pub -> {
+			try {
+				writeTag(bw, "PT", pub.getPT() == null ? "J" : pub.getPT());	// TODO: Is "J" the correct default for publication type?
+				writeTag(bw, "AU", pub.getAU());
+				writeTag(bw, "AF", pub.getAF());
+				if (pub.getC1() != null) {
+					writeTag(bw, "C1", pub.getC1().map(it -> { return "[" + it[0] + "] " + it[1]; }));
+				}
+				
+				if (pub.getEM() != null) {
+					writeTag (bw, "EM", pub.getEM().distinct().collect(Collectors.joining("; ")));
+				}
+				
+				// make sure TI value is split into lines up to 70 characters (=maxLength)
+				ArrayList<String> linesTI = new ArrayList<String>();
+				String title = new String(pub.getTI() == null ? "" : pub.getTI());
+				int maxLength = 70;
+				while (true) {
+					if (title.length()<=maxLength) { 
+						linesTI.add(title);
+						break;
+					}
+					
+					int pos = title.lastIndexOf(' ', maxLength);
+					if (pos > 0) {
+						linesTI.add (title.substring(0,  pos));
+						title = title.substring(pos+1);
+					} else {
+						linesTI.add (title.substring(0,  maxLength));
+						title = title.substring(maxLength);
+					}
+				} 
+				writeTag(bw, "TI", linesTI.stream());
+				
+				if (pub.getPY() != null) writeTag(bw, "PY", pub.getPY().toString());
+				writeTag(bw, "SO", pub.getSO());
+				writeTag(bw, "VL", pub.getVL());
+				writeTag(bw, "IS", pub.getIS());
+				writeTag(bw, "AR", pub.getAR());
+				if (pub.getBP() != null) writeTag(bw, "BP", pub.getBP().toString());
+				if (pub.getEP() != null) writeTag(bw, "EP", pub.getEP().toString());
+				if (pub.getPG() != null) writeTag(bw, "PG", pub.getPG().toString());
+				if (pub.getTC() != null) writeTag(bw, "TC", pub.getTC().toString());
+				
+				writeTag(bw, "CR", pub.getCR().map(it -> {
+	
+					if (it.getType() == CRType.TYPE_WOS) return it.getCR();
+					
+					/* Generate CR-String in WoS format */
+					String res = (it.getAU_L() != null) ? it.getAU_L() + " " : "";
+					if (it.getAU_F() != null) res += it.getAU_F();
+					if (it.getRPY() != null) res += ", " + it.getRPY();
+					if ((it.getVOL()!=null) || (it.getPAG()!=null)) {
+						if (it.getJ_N()!=null) res += ", " + it.getJ_N(); 
+						if (it.getVOL()!=null) res += ", V" + it.getVOL();
+						if (it.getPAG()!=null) res += ", P" + it.getPAG();
+					} else {
+						res += ", " + it.getJ();
+					}
+					if (it.getDOI()!=null) res += ", DOI " + it.getDOI();
+					
+					return res;
+					
+				}));
+				
+				
+				writeTag(bw, "NR", String.valueOf(pub.getSizeCR()));
+				writeTag(bw, "DI", pub.getDI());
+				writeTag(bw, "AB", pub.getAB());
+				writeTag(bw, "DE", pub.getDE());
+				writeTag(bw, "DT", pub.getDT());
+				writeTag(bw, "UT", pub.getUT());
+				
+				bw.write("ER");
+				bw.newLine();
+				bw.newLine();
+			
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		
+			StatusBar.get().incProgressbar();
+		
+		});
+		bw.write("EF"); 
+		bw.newLine();
+		bw.close();
+		StatusBar.get().setValue("Saving WoS file done");
+
+			
+	}
+	
+	private static void writeTag (BufferedWriter bw, String tag, String v) throws IOException {
+		if (v == null) return;
+		bw.write(tag+" ");
+		bw.write(v);
+		bw.newLine();
+	}
+	
+	
+	private static void writeTag (BufferedWriter bw, String tag, Stream<String> values) throws IOException  {
+		if (values == null) return;
+		boolean first = true;
+		for (String v: values.collect(Collectors.toList())) {
+			writeTag (bw, first ? tag : "  ", v);
+			first = false;
+		}
+	}
 	
 }

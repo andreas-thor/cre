@@ -117,7 +117,8 @@ public class StatusBar extends GridPane {
 	
 	
 	
-	public void setValue (String label, long value, String info, Date d) {
+	private void setValue (String label, long value, String info, Date d) {
+		this.label = label;
 		Platform.runLater( () -> {
 			sbdate.setText(d.toString());
 			sblabel.setText(label);
@@ -128,7 +129,11 @@ public class StatusBar extends GridPane {
 		});		
 	}
 	
-	
+
+	public void initProgressbar (long maxSize) {
+		this.initProgressbar(maxSize, this.label);
+	}
+
 	public void initProgressbar (long maxSize, String label) {
 		
 //		System.out.println("MaxSize = " + maxSize);
@@ -139,8 +144,6 @@ public class StatusBar extends GridPane {
 		this.label = label;
 		this.count = 0;
 		setValue(label, 0, "", this.date);
-		
-		
 	}
 	
 	public void incProgressbar () {

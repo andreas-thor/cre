@@ -46,26 +46,17 @@ public class CRE_json {
 	 * @throws OutOfMemoryError
 	 * @throws IOException
 	 */
-	public static void load (List<File> files, CRTable crTab, int maxCR, int maxPub, int[] yearRange, boolean random) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
+	public static void load (File file) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 		
+		CRTable crTab = CRTable.get(); 
 		
-		
-		File file = files.get(0);
-		StatusBar.get().setValue("Loading CRE file ...");
-		
-		
-		crTab.init();
-		
-//		ZipInputStream zip = new ZipInputStream(new FileInputStream(file));
 		ZipEntry entry = null;
-
 		ZipFile zipFile = new ZipFile(file);
 		Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
 		
 		Map<Integer, CRType> mapId2CR = new HashMap<Integer, CRType>();
 		
 		JsonParser parser;
-//		while ( (entry = zip.getNextEntry()) != null ) {
 		while ( zipEntries.hasMoreElements()) {
  
 			entry = zipEntries.nextElement();
@@ -73,7 +64,7 @@ public class CRE_json {
 
 				System.out.println("entry size is " + entry.getSize());
 				StatusBar.get().initProgressbar(entry.getSize(), "Loading CRE file crdata ...");
-				parser = Json.createParser(zipFile.getInputStream(entry) /*zip*/);
+				parser = Json.createParser(zipFile.getInputStream(entry));
 				CRType cr = null;
 				String key = "";
 				while (!crTab.isAborted() && parser.hasNext()) {
@@ -118,7 +109,6 @@ public class CRE_json {
 				
 					StatusBar.get().updateProgressbar(parser.getLocation().getStreamOffset());
 				}
-//				crTab.updateData(true);
 				StatusBar.get().setValue("Loading CRE file crdata done");
 			}
 			
@@ -243,43 +233,17 @@ public class CRE_json {
 		zipFile.close();
 
 		
-				
-//		JsonSlurper slurper = new JsonSlurper();
-//		
-//		crTab.crData.addAll (slurper.parseText(data.get("crdata.json").toString()).collect { new CRType().parseJSON ((JSONObject) it) })
-//		stat.setValue(d + "Loading CRE file ...", 50, "")
-//		
-//		HashMap<Integer, Integer> crId2Index = [:]
-//		crTab.crData.eachWithIndex { CRType cr, int idx -> crId2Index[cr.ID] = idx }
-//		crTab.pubData.addAll (slurper.parseText(data.get("pubdata.json").toString()).collect { new PubType().parseJSON ((JSONObject) it, crTab.crData, crId2Index) })
-//		
-//		crTab.crMatch.parseJSON(slurper.parseText(data.get("crmatch.json").toString()) as JSONObject)
-				
 		
-		// Check for abort by user
-		if (crTab.isAborted()) {
-			crTab.init();
-			StatusBar.get().setValue("Loading CRE file aborted (due to user request)");
-			throw new AbortedException();
-		}
-		
-		
-		crTab.updateData();
-		StatusBar.get().setValue("Loading CRE file done");
 	}
 
 
 
-	public static void save (File file, CRTable crTab) throws IOException {
+	public static void save (String file_name) throws IOException {
 		 
-		StatusBar.get().initProgressbar(CRStats.getSize() + CRStats.getSizePub() + CRStats.getSizeMatch(true) + CRStats.getSizeMatch(false), "Saving CRE file ...");
+		CRTable crTab = CRTable.get();
+		StatusBar.get().initProgressbar(CRStats.getSize() + CRStats.getSizePub() + CRStats.getSizeMatch(true) + CRStats.getSizeMatch(false));
 		
-		// add csv extension if necessary
-		String file_name = file.toString();
-		if (!file_name.endsWith(".cre")) file_name += ".cre";
 		ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(file_name), Charset.forName("UTF-8"));
-				
-		
 		zip.putNextEntry(new ZipEntry("crdata.json"));
 		JsonGenerator jgenCR = Json.createGenerator(zip);
 		jgenCR.writeStartArray();
@@ -396,9 +360,6 @@ public class CRE_json {
 		
 		zip.flush();
 		zip.close();
-		
-		StatusBar.get().setValue("Saving CRE file done");
-
 		
 	}
 	

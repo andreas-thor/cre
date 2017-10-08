@@ -18,42 +18,53 @@ import javafx.stage.FileChooser.ExtensionFilter;
 public enum ImportFormat {
 
 	
-	CRE_JSON("Open CRE File", false, 
-			new ExtensionFilter("Cited References Explorer", Arrays.asList(new String[] { "*.cre" })),CRE_json::load,null),
+	CRE_JSON("Cited References Explorer", false, "cre" , null, CRE_json::save),
 
-	WOS_TXT("Import Web of Science Files", true, 
-			new ExtensionFilter("Web of Science", Arrays.asList(new String[] { "*.txt" })),null, new WoS_Reader()),
+	WOS_TXT("Web of Science", true, "txt", new WoS_Reader(), WoS_Reader::save),
 
-	SCOPUS_CSV("Import Scopus Files", true,	
-			new ExtensionFilter("Scopus", Arrays.asList(new String[] { "*.csv" })),null, new Scopus_Reader());
+	SCOPUS_CSV("Scopus", true,	"csv", new Scopus_Reader(), Scopus_Reader::save),
 
+	CRE_CSV_CR("Cited References", false, "csv", null, CRE_csv::saveCR), 
+	
+	CRE_CSV_PUB("Citing Publications", false, "csv", null, CRE_csv::savePub), 
+
+	CRE_CSV_CR_PUB("Cited References + Citing Publications", false, "csv", null, CRE_csv::saveCRPub), 
+
+	CRE_CSV_GRAPH("CRE Graph", false, "csv", null, CRE_csv::saveGraph);
+	
+	
 	public final String label;
-	public boolean multiple;
-	public ExtensionFilter filter;
-	private Load load; // save function as Consumer
-	public ImportReader reader;
+	public boolean importMultiple;
+	public String fileExtension;
+	public ExtensionFilter fileExtensionFilter;
+	public ImportReader importReader;
+	public Export exportSave;
 
-	interface Load {
-		void apply(List<File> files, CRTable crTab, int maxCR, int maxPub, int[] yearRange, boolean random) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException;
+	
+	ImportFormat(String label, boolean importMultiple, String fileExtension, ImportReader importReader, Export exportSave) {
+		this.label = label;
+		this.importMultiple = importMultiple;
+		this.fileExtension = fileExtension;
+		this.fileExtensionFilter = new ExtensionFilter(label, Arrays.asList(new String[] { "*." + fileExtension}));
+		this.importReader = importReader;
+		this.exportSave = exportSave;
+	}
+
+
+	public void save (File file) throws IOException {
+		
+		// add extension if necessary
+		String file_name = file.toString();
+		if (!file_name.endsWith("." + this.fileExtension)) file_name += "." + this.fileExtension;
+		
+		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s ...", file.getName(), this.label));
+		this.exportSave.apply(file_name);
+		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s done", file.getName(), this.label));
+
 	}
 	
-	ImportFormat(String label, boolean multiple, ExtensionFilter filter, Load load, ImportReader reader) {
-		this.label = label;
-		this.multiple = multiple;
-		this.filter = filter;
-		this.load = load;
-		this.reader = reader;
-	}
-
-	public void load2(List<File> files) throws OutOfMemoryError, UnsupportedFileFormatException, FileTooLargeException, AbortedException, IOException {
-		this.load.apply(files, CRTable.get(), UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), UserSettings.get().getRange(RangeType.ImportYearRange), UserSettings.get().getImportRandom());
-	}
 
 	public void load(List<File> files) throws OutOfMemoryError, UnsupportedFileFormatException, FileTooLargeException, AbortedException, IOException {
-
-		// this.load.apply(files, , UserSettings.get().getMaxCR(),
-		// UserSettings.get().getMaxPub(),
-		// UserSettings.get().getRange(RangeType.ImportYearRange));
 
 		long ts1 = System.currentTimeMillis();
 		long ms1 = Runtime.getRuntime().totalMemory();
@@ -65,20 +76,32 @@ public enum ImportFormat {
 		double ratioCR = 1d;
 		for (File file: files) {
 			
-			StatusBar.get().initProgressbar(file.length(), String.format("Loading file %1$d of %2$d (%3$s) ...", (++idx), files.size(), file.getName()));
+			StatusBar.get().initProgressbar(file.length(), String.format("Loading %4$s file %1$d of %2$d (%3$s) ...", (++idx), files.size(), file.getName(), this.label));
 
-			this.reader.init(file, UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), UserSettings.get().getRange(RangeType.ImportYearRange), ratioCR);
-			StreamSupport.stream(this.reader.getIterable().spliterator(), false)
-				.filter(pub -> pub != null)
-				.filter(pub -> (ratioCR==1d) || (pub.getSizeCR()>0))	// do not include pubs w/o CRs when random select	
-				.forEach(pub -> {
-					StatusBar.get().incProgressbar(pub.length);
-					crTab.addNewPub(pub);
-				});
-			this.reader.close();
+			if (this==ImportFormat.CRE_JSON) {	// load internal CRE format
+				CRE_json.load(file);
+			} else {	// import external data format
+			
+				this.importReader.init(file, UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), UserSettings.get().getRange(RangeType.ImportYearRange), ratioCR);
+				StreamSupport.stream(this.importReader.getIterable().spliterator(), false)
+					.filter(pub -> pub != null)
+					.filter(pub -> (ratioCR==1d) || (pub.getSizeCR()>0))	// do not include pubs w/o CRs when random select	
+					.forEach(pub -> {
+						StatusBar.get().incProgressbar(pub.length);
+						crTab.addNewPub(pub);
+					});
+				this.importReader.close();
+			}
 				
 		}
 
+		
+		// Check for abort by user
+		if (crTab.isAborted()) {
+			crTab.init();
+			StatusBar.get().setValue(String.format("Loading %1$s file%2$s aborted (due to user request)", this.label, files.size()>1 ? "s" : ""));
+			throw new AbortedException();
+		}
 		
 		System.out.println("CRTable.get().getPub().count()=" + CRTable.get().getPub(true).count());
 		System.out.println("CRTable.get().getPub(true).flatMap(pub -> pub.getCR()).count()=" + CRTable.get().getPub(true).flatMap(pub -> pub.getCR()).count());
@@ -91,7 +114,7 @@ public enum ImportFormat {
 		System.out.println("Load time is " + ((ts2-ts1)/1000d) + " seconds");
 		System.out.println("Load Memory usage " + ((ms2-ms1)/1024d/1024d) + " MBytes");
 		
-		CRTable.get().updateData();
+		crTab.updateData();
 
 		long ts3 = System.currentTimeMillis();
 		long ms3 = Runtime.getRuntime().totalMemory();
@@ -100,7 +123,7 @@ public enum ImportFormat {
 		System.out.println("Update Memory usage " + ((ms3-ms2)/1024d/1024d) + " MBytes");
 
 		
-		StatusBar.get().setValue("Loading WoS files done");
+		StatusBar.get().setValue(String.format("Loading %1$s file%2$s done", this.label, files.size()>1 ? "s" : ""));
 	}
 
 };

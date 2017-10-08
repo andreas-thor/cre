@@ -261,19 +261,14 @@ public class Scopus_Reader extends ImportReader {
 
 
 
-	public static void save (File file, CRTable crTab) throws IOException {
+	public static void save (String file_name) throws IOException {
 		
-		StatusBar.get().initProgressbar(CRStats.getSizePub(), "Saving Scopus file ...");
-
-		// add csv extension if necessary
-		String file_name = file.toString();
-		if (!file_name.endsWith(".csv")) file_name += ".csv";
-				
+		StatusBar.get().initProgressbar(CRStats.getSizePub());
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		
 		csv.writeNext(new String[] {"Authors","Title","Year","Source title","Volume","Issue","Art. No.","Page start","Page end","Page count","Cited by","DOI","Link","Affiliations","Authors with affiliations","Abstract","Author Keywords","References","Document Type","Source","EID"});
 		
-		crTab.getPub(UserSettings.get().getIncludePubsWithoutCRs()).forEach(pub -> {
+		CRTable.get().getPub(UserSettings.get().getIncludePubsWithoutCRs()).forEach(pub -> {
 			ArrayList<String> row = new ArrayList<String>();
 			
 			row.add ((pub.getAUSize() == 0) ? "" :
