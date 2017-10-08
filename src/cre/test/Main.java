@@ -21,8 +21,8 @@ import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
 import cre.test.data.match.CRMatch2;
 import cre.test.data.match.CRMatch2.ManualMatchType2;
-import cre.test.data.source.ImportFormat;
-import cre.test.data.source.ImportFormat;
+import cre.test.data.source.ImportExportFormat;
+import cre.test.data.source.ImportExportFormat;
 import cre.test.data.type.CRType;
 import cre.test.ui.CRChart;
 import cre.test.ui.CRChart_HighCharts;
@@ -206,7 +206,7 @@ public class Main {
 
 				if (button == ButtonType.YES) {
 					try {
-						if (!saveFile(ImportFormat.CRE_JSON, false))
+						if (!saveFile(ImportExportFormat.CRE_JSON, false))
 							return;
 					} catch (Exception e) {
 						Platform.runLater(() -> {
@@ -224,7 +224,7 @@ public class Main {
 		});
 
 		if (CitedReferencesExplorer.loadOnOpen != null) {
-			openFile(ImportFormat.CRE_JSON, CitedReferencesExplorer.loadOnOpen);
+			openFile(ImportExportFormat.CRE_JSON, CitedReferencesExplorer.loadOnOpen);
 		}
 
 	}
@@ -298,11 +298,11 @@ public class Main {
 		return tableView.getSelectionModel().getSelectedItems().stream().filter(cr -> cr != null).collect(Collectors.toList());
 	}
 
-	private void openFile(ImportFormat source) throws IOException {
+	private void openFile(ImportExportFormat source) throws IOException {
 		openFile(source, null);
 	}
 
-	private void openFile(ImportFormat source, String fileName) throws IOException {
+	private void openFile(ImportExportFormat source, String fileName) throws IOException {
 
 		final List<File> files = new ArrayList<File>();
 
@@ -310,7 +310,7 @@ public class Main {
 			files.add(new File(fileName));
 		} else {
 			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle(String.format("%1$s %2$s", (source == ImportFormat.CRE_JSON) ? "Open" : "Import", source.label));
+			fileChooser.setTitle(String.format("%1$s %2$s", (source == ImportExportFormat.CRE_JSON) ? "Open" : "Import", source.label));
 			fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
 			fileChooser.getExtensionFilters().add(source.fileExtensionFilter);
 			fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
@@ -338,7 +338,7 @@ public class Main {
 						@Override
 						protected Void call() throws Exception {
 							source.load(files);
-							if (source == ImportFormat.CRE_JSON) creFile = files.get(0); 
+							if (source == ImportExportFormat.CRE_JSON) creFile = files.get(0); 
 								
 							// show match panel if applicable
 							matchView.setVisible((CRMatch2.get().getSize(true) + CRMatch2.get().getSize(false)) > 0);
@@ -387,18 +387,18 @@ public class Main {
 		}
 	}
 
-	private boolean saveFile(ImportFormat source) throws IOException {
+	private boolean saveFile(ImportExportFormat source) throws IOException {
 		return saveFile(source, true);
 	}
 
-	private boolean saveFile(ImportFormat source, boolean saveAs) throws IOException {
+	private boolean saveFile(ImportExportFormat source, boolean saveAs) throws IOException {
 
 		File selFile;
-		if ((source == ImportFormat.CRE_JSON) && (creFile != null) && (!saveAs)) {
+		if ((source == ImportExportFormat.CRE_JSON) && (creFile != null) && (!saveAs)) {
 			selFile = creFile;
 		} else {
 			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle(String.format("%1$s %2$s", (source == ImportFormat.CRE_JSON) ? "Save" : "Export", source.label));
+			fileChooser.setTitle(String.format("%1$s %2$s", (source == ImportExportFormat.CRE_JSON) ? "Save" : "Export", source.label));
 			fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
 			fileChooser.getExtensionFilters().add(source.fileExtensionFilter);
 			fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
@@ -418,7 +418,7 @@ public class Main {
 					@Override
 					protected Void call() throws Exception {
 						source.save(selFile);
-						if (source == ImportFormat.CRE_JSON) creFile = selFile;
+						if (source == ImportExportFormat.CRE_JSON) creFile = selFile;
 						return null;
 					}
 				};
@@ -445,57 +445,57 @@ public class Main {
 
 	@FXML
 	public void OnMenuFileOpen() throws IOException {
-		openFile(ImportFormat.CRE_JSON);
+		openFile(ImportExportFormat.CRE_JSON);
 	}
 
 	@FXML
 	public void OnMenuFileImportWoS(ActionEvent event) throws IOException {
-		openFile(ImportFormat.WOS_TXT);
+		openFile(ImportExportFormat.WOS_TXT);
 	}
 
 	@FXML
 	public void OnMenuFileImportScopus(ActionEvent event) throws IOException {
-		openFile(ImportFormat.SCOPUS_CSV);
+		openFile(ImportExportFormat.SCOPUS_CSV);
 	}
 
 	@FXML
 	public void OnMenuFileSave() throws IOException {
-		saveFile(ImportFormat.CRE_JSON, false);
+		saveFile(ImportExportFormat.CRE_JSON, false);
 	}
 
 	@FXML
 	public void OnMenuFileSaveAs() throws IOException {
-		saveFile(ImportFormat.CRE_JSON, true);
+		saveFile(ImportExportFormat.CRE_JSON, true);
 	}
 
 	@FXML
 	public void OnMenuFileExportWoS() throws IOException {
-		saveFile(ImportFormat.WOS_TXT);
+		saveFile(ImportExportFormat.WOS_TXT);
 	}
 
 	@FXML
 	public void OnMenuFileExportScopus() throws IOException {
-		saveFile(ImportFormat.SCOPUS_CSV);
+		saveFile(ImportExportFormat.SCOPUS_CSV);
 	}
 
 	@FXML
 	public void OnMenuFileExportCSVGraph() throws IOException {
-		saveFile(ImportFormat.CRE_CSV_GRAPH);
+		saveFile(ImportExportFormat.CRE_CSV_GRAPH);
 	}
 
 	@FXML
 	public void OnMenuFileExportCSVCR() throws IOException {
-		saveFile(ImportFormat.CRE_CSV_CR);
+		saveFile(ImportExportFormat.CRE_CSV_CR);
 	}
 
 	@FXML
 	public void OnMenuFileExportCSVPub() throws IOException {
-		saveFile(ImportFormat.CRE_CSV_PUB);
+		saveFile(ImportExportFormat.CRE_CSV_PUB);
 	}
 
 	@FXML
 	public void OnMenuFileExportCSVAll() throws IOException {
-		saveFile(ImportFormat.CRE_CSV_CR_PUB);
+		saveFile(ImportExportFormat.CRE_CSV_CR_PUB);
 	}
 
 	@FXML

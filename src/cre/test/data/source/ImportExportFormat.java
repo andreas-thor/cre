@@ -15,14 +15,14 @@ import cre.test.data.UserSettings.RangeType;
 import cre.test.ui.StatusBar;
 import javafx.stage.FileChooser.ExtensionFilter;
 
-public enum ImportFormat {
+public enum ImportExportFormat {
 
 	
 	CRE_JSON("Cited References Explorer", false, "cre" , null, CRE_json::save),
 
-	WOS_TXT("Web of Science", true, "txt", new WoS_Reader(), WoS_Reader::save),
+	WOS_TXT("Web of Science", true, "txt", new WoS_txt(), WoS_txt::save),
 
-	SCOPUS_CSV("Scopus", true,	"csv", new Scopus_Reader(), Scopus_Reader::save),
+	SCOPUS_CSV("Scopus", true,	"csv", new Scopus_csv(), Scopus_csv::save),
 
 	CRE_CSV_CR("Cited References", false, "csv", null, CRE_csv::saveCR), 
 	
@@ -33,6 +33,11 @@ public enum ImportFormat {
 	CRE_CSV_GRAPH("CRE Graph", false, "csv", null, CRE_csv::saveGraph);
 	
 	
+
+	public interface Export {
+	   void apply(String file_name) throws IOException, RuntimeException;
+	}
+	
 	public final String label;
 	public boolean importMultiple;
 	public String fileExtension;
@@ -41,7 +46,7 @@ public enum ImportFormat {
 	public Export exportSave;
 
 	
-	ImportFormat(String label, boolean importMultiple, String fileExtension, ImportReader importReader, Export exportSave) {
+	ImportExportFormat(String label, boolean importMultiple, String fileExtension, ImportReader importReader, Export exportSave) {
 		this.label = label;
 		this.importMultiple = importMultiple;
 		this.fileExtension = fileExtension;
@@ -78,7 +83,7 @@ public enum ImportFormat {
 			
 			StatusBar.get().initProgressbar(file.length(), String.format("Loading %4$s file %1$d of %2$d (%3$s) ...", (++idx), files.size(), file.getName(), this.label));
 
-			if (this==ImportFormat.CRE_JSON) {	// load internal CRE format
+			if (this==ImportExportFormat.CRE_JSON) {	// load internal CRE format
 				CRE_json.load(file);
 			} else {	// import external data format
 			

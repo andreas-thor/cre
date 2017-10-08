@@ -30,7 +30,7 @@ import cre.test.data.type.CRType;
 import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
 
-public class Scopus_Reader extends ImportReader {
+public class Scopus_csv extends ImportReader {
 
 	static Pattern sScopus_matchEMail = Pattern.compile ("\\s(\\S+@\\w+(\\.\\w+)+)\\W*");
 	

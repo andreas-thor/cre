@@ -22,7 +22,7 @@ import cre.test.ui.StatusBar;
 /** 
  * Provides iterator over all PubType elements in a list of Scopus files
  */
-public class WoS_Reader extends ImportReader {
+public class WoS_txt extends ImportReader {
 
 	static Pattern sWoS_matchAuthor = Pattern.compile("([^ ]*)( )?(.*)?");
 	
