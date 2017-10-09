@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,7 +22,6 @@ public class CRTable {
 	
 	private List<PubType> allPubs;
 	
-//	private Map<Character, HashMap<String, CRType>> crDup; // first character -> (crString -> CR )
 
 	private int[][] chartData;
 	
@@ -31,7 +29,6 @@ public class CRTable {
 	private boolean aborted;
 	private boolean showNull;
 	
-	private AtomicInteger countPub;
 	
 	public static CRTable get() {
 		if (crTab == null) {
@@ -51,16 +48,23 @@ public class CRTable {
 	 */
 	
 	public void init() {
+		
+		if (allPubs != null) {
+			for (PubType pub: allPubs) {
+				pub.removeAllCRs(true);
+			}
+		}
+		
+		
 		crDataMap = new HashMap<CRType, CRType>();
 		allPubs = new ArrayList<PubType>();
-//		crDup = new HashMap<Character,  HashMap<String, CRType>>();
+		
 		CRMatch2.get().init();
 		duringUpdate = false;
 		aborted = false;
 		showNull = true;
 		chartData = new int[][] {{0},{0},{0}};
 		setAborted(false);
-		countPub = new AtomicInteger(0);
 		CRSearch.get().init();
 		
 	}	
@@ -84,12 +88,6 @@ public class CRTable {
 	
 
 	public void addCR(CRType cr) {
-		/*
-		String crS = cr.getCR();
-		char cr1 = crS.charAt(0);
-		crDup.putIfAbsent(cr1, new HashMap<String,CRType>());
-		crDup.get(cr1).put(crS, cr);
-		*/
 		crDataMap.put(cr, cr);
 	}
 	
@@ -100,70 +98,26 @@ public class CRTable {
 	 * This is later only used for export (to Scopus, WoS, CSV_Pub) when the user setting "include pubs without CRs" is set
 	 */
 	
-	public void addPub (PubType pub) {
-		pub.setID(countPub.incrementAndGet());
-		
-		/*
-		try {
-			for (int i=1; i<=PubColumn.values().length; i++) {
-				
-				Object value = PubColumn.values()[i-1].prop.apply(pub).getValue();
-				if (value == null) {
-					switch (PubColumn.values()[i-1].type) {
-					case INT: insertPub.setNull(i, Types.INTEGER); break;
-					case STRING: insertPub.setNull(i, Types.VARCHAR); break;
-					default:	
-					}
-				} else {
-					switch (PubColumn.values()[i-1].type) {
-					case INT: insertPub.setInt(i, (int)value); break;
-					case STRING: insertPub.setString(i, (String)value); break;
-					default:	
-					}
-				}
-				
-			}
-			insertPub.addBatch();
-			insertPubBatchSize++;
-			
-			if (insertPubBatchSize==10000) {
-				insertPub.executeBatch();
-				insertPubBatchSize = 0;
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
-		
-		
-		allPubs.add(pub);
-	}
 	
-	
-	
-	
-	
-	
-	public void addNewPub (PubType pub) {
-		
+	public void addPub (PubType pub, boolean addCRs) {
 		
 		this.allPubs.add(pub);
 		pub.setID(this.allPubs.size());
 		
-		Set<CRType> pubCR = pub.getCR().collect(Collectors.toSet());
+		if (addCRs) {
 		
-		for(CRType cr:pubCR) {
-			
-			CRType crMain = this.crDataMap.get(cr);
-			if (crMain == null) {
-				this.crDataMap.put(cr, cr);
-				cr.setID(this.crDataMap.size());
-				cr.setCID2(new CRCluster (cr));
-			} else {
-				pub.removeCR(cr, false);	
-				pub.addCR(crMain, false);
-				crMain.addPub(pub, false);	
+			for(CRType cr: pub.getCR().collect(Collectors.toSet())) {
+				
+				CRType crMain = this.crDataMap.get(cr);
+				if (crMain == null) {
+					this.crDataMap.put(cr, cr);
+					cr.setID(this.crDataMap.size());
+					cr.setCID2(new CRCluster (cr));
+				} else {
+					pub.removeCR(cr, false);	
+					pub.addCR(crMain, false);
+					crMain.addPub(pub, false);	
+				}
 			}
 		}
 	}
@@ -245,6 +199,7 @@ public class CRTable {
 		crDataMap.keySet().removeIf( cr ->  { 
 			if (cond.test(cr)) {
 				cr.removeAllPubs(true);
+				crDataMap.remove(cr);
 				return true;
 			} else {
 				return false;
@@ -360,27 +315,24 @@ public class CRTable {
 
 	
 	public void filterByCluster (List<CRType> sel) {
-		Set<CRCluster> clusters = sel.stream().map(cr -> cr.getCID2()).distinct().collect(Collectors.toSet());
-		getCR().forEach ( it -> it.setVI( clusters.contains(it.getCID2()) ));
+		if (!duringUpdate) {
+			getCR().forEach(cr -> cr.setVI(false));
+			sel.stream().map(cr -> cr.getCID2()).flatMap(cluster -> cluster.getCR()).forEach ( cr -> cr.setVI(true) );
+		}
 	}
 	
 	
-
-	public void filterByCR(List<CRType> show) {
-		getCR().forEach ( it -> it.setVI(false) );
-//		show.stream().forEach ( it -> it.setVI(true) );
-	}
 
 	
 	
 	public void setShowNull (boolean showNull) {
 		this.showNull = showNull;
-		getCR().forEach ( it -> { if (it.getRPY() == null) it.setVI(showNull);  });
+		getCR().forEach ( cr -> { if (cr.getRPY() == null) cr.setVI(showNull);  });
 	}
 	
 	public void showAll() {
 		this.showNull = true;
-		getCR().forEach ( it -> it.setVI(true) );
+		getCR().forEach ( cr -> cr.setVI(true) );
 	}
 	
 	
@@ -394,41 +346,5 @@ public class CRTable {
 		this.aborted = aborted;
 	}
 
-
-
-	/*	
-	public void addPubs(List<PubType> pubs) {
-		
-		pubs.stream().forEach(pub -> addPub (pub));
-		
-		pubs.stream().flatMap(pub -> pub.getCR()).distinct().collect(Collectors.toList()).stream().forEach(cr -> { // make a copy to avoid concurrent modification
-			
-			String crS = cr.getCR();
-			char cr1 = crS.charAt(0);
-			crDup.putIfAbsent(cr1, new HashMap<String,CRType>());
-			CRType crMain = crDup.get(cr1).get(crS); 
-			if (crMain == null) {
-				// add current CR to list
-				crDup.get(cr1).put(crS, cr);
-				crData.add(cr);
-				cr.setID(crData.size());
-				cr.setCID2(new CRCluster (cr));
-			} else {
-				// merge current CR with main CR
-				cr.getPub().collect(Collectors.toList()).stream().forEach(crPub -> {		// make a copy to avoid concurrent modification
-					crPub.addCR(crMain, true);
-					crPub.removeCR(cr, true);
-				});
-			}
-		});
-		
-	}	
-*/
-
-
-
-
-
-	
 }
 

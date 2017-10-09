@@ -108,6 +108,7 @@ public class CRStatsInfo {
 	public long getNumberOfCRs (int rpyRange[], boolean includeWithoutRPY, int pyRange[], boolean includeWithoutPY) {
 		
 		long result = 0;
+		if (mapPY2RPY2NCR == null) return result;
 		
 		for (Entry<Integer, HashMap<Integer, Integer>> py: mapPY2RPY2NCR.entrySet()) {
 			

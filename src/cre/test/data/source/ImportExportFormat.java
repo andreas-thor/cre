@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.StreamSupport;
-
-import javax.jws.soap.SOAPBinding.Use;
 
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
@@ -38,7 +38,7 @@ public enum ImportExportFormat {
 	
 
 	public interface Export {
-	   void apply(String file_name) throws IOException, RuntimeException;
+	   void save(String file_name) throws IOException, RuntimeException;
 	}
 	
 	public final String label;
@@ -66,7 +66,7 @@ public enum ImportExportFormat {
 		if (!file_name.endsWith("." + this.fileExtension)) file_name += "." + this.fileExtension;
 		
 		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s ...", file.getName(), this.label));
-		this.exportSave.apply(file_name);
+		this.exportSave.save(file_name);
 		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s done", file.getName(), this.label));
 
 	}
@@ -74,6 +74,9 @@ public enum ImportExportFormat {
 	
 	
 	public CRStatsInfo analyze(List<File> files) throws OutOfMemoryError, UnsupportedFileFormatException, FileTooLargeException, AbortedException, IOException {
+		
+		CRTable crTab = CRTable.get(); 
+		crTab.init();
 		
 		CRStatsInfo crStatsInfo = CRStatsInfo.get();
 		crStatsInfo.init();
@@ -83,10 +86,11 @@ public enum ImportExportFormat {
 			
 			StatusBar.get().initProgressbar(file.length(), String.format("Analyzing %4$s file %1$d of %2$d (%3$s) ...", (++idx), files.size(), file.getName(), this.label));
 
-			this.importReader.init(file, 0);
+			this.importReader.init(file);
 			StreamSupport.stream(this.importReader.getIterable().spliterator(), false)
 				.filter(pub -> pub != null)
 				.forEach(pub -> {
+					if (crTab.isAborted()) this.importReader.stop();
 					StatusBar.get().incProgressbar(pub.length);
 					crStatsInfo.updateStats(pub);
 				});
@@ -107,8 +111,17 @@ public enum ImportExportFormat {
 		crTab.init();
 
 
+		final int[] rpyRange = UserSettings.get().getRange(RangeType.ImportRPYRange);
+		boolean importCRsWithoutYear = UserSettings.get().getImportCRsWithoutYear();
+		final int[] pyRange = UserSettings.get().getRange(RangeType.ImportPYRange);
+		boolean importPubsWithoutYear = UserSettings.get().getImportPubsWithoutYear();
+		
+		final long noMaxCRs = UserSettings.get().getMaxCR();
+		AtomicLong noAvailableCRs = new AtomicLong (CRStatsInfo.get().getNumberOfCRs (rpyRange, importCRsWithoutYear, pyRange, importPubsWithoutYear));
+		AtomicLong noToImportCRs = new AtomicLong(noMaxCRs);
+				
+		Random rand = new Random();
 		int idx = 0;
-		double ratioCR = 1d;
 		for (File file: files) {
 			
 			StatusBar.get().initProgressbar(file.length(), String.format("Loading %4$s file %1$d of %2$d (%3$s) ...", (++idx), files.size(), file.getName(), this.label));
@@ -117,28 +130,41 @@ public enum ImportExportFormat {
 				CRE_json.load(file);
 			} else {	// import external data format
 			
-				this.importReader.init(file, UserSettings.get().getMaxCR());
+				this.importReader.init(file);
 				StreamSupport.stream(this.importReader.getIterable().spliterator(), false)
 					.filter(pub -> pub != null)
-					.filter(pub -> (ratioCR==1d) || (pub.getSizeCR()>0))	// do not include pubs w/o CRs when random select	
 					.forEach(pub -> {
+						
+						if (crTab.isAborted()) {
+							this.importReader.stop();
+						}
+
 						StatusBar.get().incProgressbar(pub.length);
 						
 						
 						boolean addPub = true;
 						if (pub.getPY()==null) {
-							addPub = UserSettings.get().getImportPubsWithoutYear(); 
+							addPub = importPubsWithoutYear; 
 						} else {
 							int py = pub.getPY().intValue();
-							int minPY = UserSettings.get().getRange(RangeType.ImportPYRange)[0];
-							if ((minPY != CRStatsInfo.NONE) && (minPY>py)) addPub = false;
-							int maxPY = UserSettings.get().getRange(RangeType.ImportPYRange)[1];
-							if ((maxPY != CRStatsInfo.NONE) && (maxPY<py)) addPub = false;
+							if ((pyRange[0] != CRStatsInfo.NONE) && (pyRange[0]>py)) addPub = false;
+							if ((pyRange[1] != CRStatsInfo.NONE) && (pyRange[1]<py)) addPub = false;
 						}
 						
 						if (addPub) {
-							pub.removeCRByYear(UserSettings.get().getRange(RangeType.ImportRPYRange), UserSettings.get().getImportCRsWithoutYear(), true);
-							crTab.addNewPub(pub);	
+							pub.removeCRByYear(rpyRange, importCRsWithoutYear, true);
+							
+							if ((pub.getSizeCR()>0) && (noMaxCRs>0)) {		// select CRs at random
+								pub.removeCRByRandom(rand, noToImportCRs, noAvailableCRs);
+							}
+					
+							if (pub.getSizeCR()>0) {		
+								crTab.addPub(pub, true);
+								
+//								if ((UserSettings.get().getMaxCR()>0) && (numberOfCRs.addAndGet(pub.getSizeCR()) >= UserSettings.get().getMaxCR())) {
+//									this.importReader.stop(); 
+//								}
+							}
 						}
 						
 						
@@ -148,6 +174,9 @@ public enum ImportExportFormat {
 				
 		}
 
+		System.out.println("noAvailableCRs=" + noAvailableCRs.get());
+		System.out.println("noToImportCRs=" + noToImportCRs.get());
+		
 		
 		// Check for abort by user
 		if (crTab.isAborted()) {

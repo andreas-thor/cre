@@ -3,18 +3,14 @@ package cre.test.ui.dialog;
 import cre.test.data.CRStatsInfo;
 import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -47,7 +43,7 @@ public class ImportStats extends Dialog<Integer> {
 		tfNumber[0] = createTF (UserSettings.get().getMaxCR(), true);
 		tfNumber[1] = createTF (-1, false);
 		grid.addRow(0, 
-			new Label("Number of Cited References"),
+			new Label("Number of non-distinct Cited References"),
 			tfNumber[0],
 			new Label("of"),
 			tfNumber[1]);

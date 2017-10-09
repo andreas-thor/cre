@@ -3,7 +3,9 @@ package cre.test.data.type;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -238,6 +240,23 @@ public class PubType implements Comparable<PubType> {
 			return toBeRemoved;	
 		});
 		
+	}
+	
+	
+	public void removeCRByRandom (Random rand, AtomicLong noToImportCRs, AtomicLong noAvailableCRs) {
+		
+		this.crList.removeIf(cr -> {
+			
+			boolean remove = true;
+			
+			if ((noToImportCRs.get()>0) && (rand.nextFloat()*noAvailableCRs.get() < 1.0f*noToImportCRs.get())) {
+				noToImportCRs.decrementAndGet();
+				remove = false;
+			}
+			noAvailableCRs.decrementAndGet();
+			return remove;
+			
+		});
 	}
 
 	

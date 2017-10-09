@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -24,8 +23,6 @@ import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
 import cre.test.data.match.CRMatch2;
 import cre.test.data.match.CRMatch2.ManualMatchType2;
-import cre.test.data.source.CRE_json;
-import cre.test.data.source.ImportExportFormat;
 import cre.test.data.source.ImportExportFormat;
 import cre.test.data.type.CRType;
 import cre.test.ui.CRChart;
@@ -371,6 +368,9 @@ public class Main {
 
 					@Override
 					protected Void call() throws Exception {
+						
+						tableView.getItems().clear();	// free space (references to CR instances)
+						
 						source.load(files);
 						if (source == ImportExportFormat.CRE_JSON) creFile = files.get(0); 
 							

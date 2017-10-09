@@ -38,17 +38,43 @@ public class Indicators {
 		int[] rangeRPY = CRStats.getMaxRangeYear();
 		int[] rangePY = CRStats.getMaxRangeCitingYear();
 		
-		mapRPY_SumNCR = 
-			IntStream.rangeClosed(rangeRPY[0], rangeRPY[1]).mapToObj(RPY -> new Integer (RPY)).collect(Collectors.toMap(	
-				RPY -> RPY, 
-				RPY -> (mapRPY_CRs.get(RPY) == null) ? 0 : mapRPY_CRs.get(RPY).stream().mapToInt(cr -> cr.getN_CR()).sum()
-			));
+	
+		
+//		mapRPY_SumNCR = 
+//			IntStream.rangeClosed(rangeRPY[0], rangeRPY[1]).mapToObj(RPY -> new Integer (RPY)).collect(Collectors.toMap(	
+//				RPY -> RPY, 
+//				RPY -> (mapRPY_CRs.get(RPY) == null) ? 0 : mapRPY_CRs.get(RPY).stream().mapToInt(cr -> cr.getN_CR()).sum()
+//			));
 		
 
 		System.out.println("3");
 	
 		/* !!!! LANGE */
 		
+		mapRPY_SumNCR = new HashMap<Integer, Integer>();
+		mapRPY_PY_SumNCR = new HashMap<Integer, Map<Integer, Integer>>();
+		
+		for (int rpy = rangeRPY[0]; rpy <= rangeRPY[1]; rpy++) {
+			mapRPY_SumNCR.put(rpy, 0);
+			mapRPY_PY_SumNCR.putIfAbsent(rpy, new HashMap<Integer, Integer>());
+			for (int py = rangePY[0]; py <= rangePY[1]; py++) {
+				mapRPY_PY_SumNCR.get(rpy).put(py, 0);
+			}
+		}
+		
+		CRTable.get().getCR().filter(cr -> cr.getRPY()!=null).forEach(cr -> {
+			int rpy = cr.getRPY().intValue();
+			cr.getPub().filter(pub -> pub.getPY() != null).forEach(pub -> { 
+				mapRPY_PY_SumNCR.get(rpy).compute(pub.getPY().intValue(), (k, v) -> (v==null) ? 1 : v+1);
+			});
+			mapRPY_SumNCR.put(rpy, mapRPY_PY_SumNCR.get(rpy).values().stream().mapToInt(i -> i.intValue()).sum());
+		});
+		
+		
+		System.out.println("3a");
+
+		
+/*		
 		mapRPY_PY_SumNCR = 
 			IntStream.rangeClosed(rangeRPY[0], rangeRPY[1]).mapToObj(RPY -> new Integer (RPY)).collect(Collectors.toMap(	
 					RPY -> RPY, 
@@ -57,7 +83,7 @@ public class Indicators {
 							PY -> (mapRPY_CRs.get(RPY) == null) ? 0 : mapRPY_CRs.get(RPY).stream().mapToInt(cr -> (int)cr.getPub(PY).count()).sum()
 							))
 				)));
-		
+*/		
 		
 		System.out.println("4");
 		
@@ -65,7 +91,7 @@ public class Indicators {
 		
 		System.out.println("5");
 		
-	/* !!!! LANGE */	computeNPCT(CRStats.getMaxRangeCitingYear(), UserSettings.get().getNPCTRange());
+	/* !!!! LANGE */	 computeNPCT(CRStats.getMaxRangeCitingYear(), UserSettings.get().getNPCTRange());
 		
 		System.out.println("6");
 		
@@ -138,7 +164,7 @@ public class Indicators {
 	
 	private static void computeNPCT (int[] rangePY, int range) {
 		
-		mapRPY_CRs.entrySet().parallelStream().forEach(group -> {
+		mapRPY_CRs.entrySet().stream().forEach(group -> {
 			
 		
 //		for (Entry<Integer, Set<CRType>> group: mapRPY_CRs.entrySet()) {
