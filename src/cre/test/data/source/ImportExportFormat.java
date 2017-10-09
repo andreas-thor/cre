@@ -4,12 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.StreamSupport;
+
+import javax.jws.soap.SOAPBinding.Use;
 
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
+import cre.test.data.CRStatsInfo;
 import cre.test.data.CRTable;
 import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
@@ -71,28 +73,29 @@ public enum ImportExportFormat {
 	
 	
 	
-	public void analyze(List<File> files) throws OutOfMemoryError, UnsupportedFileFormatException, FileTooLargeException, AbortedException, IOException {
+	public CRStatsInfo analyze(List<File> files) throws OutOfMemoryError, UnsupportedFileFormatException, FileTooLargeException, AbortedException, IOException {
 		
-		AtomicLong countAllCR = new AtomicLong(0);
+		CRStatsInfo crStatsInfo = CRStatsInfo.get();
+		crStatsInfo.init();
 
 		int idx = 0;
-		double ratioCR = 1d;
 		for (File file: files) {
 			
 			StatusBar.get().initProgressbar(file.length(), String.format("Analyzing %4$s file %1$d of %2$d (%3$s) ...", (++idx), files.size(), file.getName(), this.label));
 
-			this.importReader.init(file, UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), UserSettings.get().getRange(RangeType.ImportYearRange), ratioCR);
+			this.importReader.init(file, 0);
 			StreamSupport.stream(this.importReader.getIterable().spliterator(), false)
 				.filter(pub -> pub != null)
 				.forEach(pub -> {
 					StatusBar.get().incProgressbar(pub.length);
-					countAllCR.addAndGet(pub.getSizeCR());
+					crStatsInfo.updateStats(pub);
 				});
 			this.importReader.close();
 				
 		}
 		
-		System.out.println(countAllCR.get());
+		System.out.println(crStatsInfo);
+		return crStatsInfo;
 	}
 
 	public void load(List<File> files) throws OutOfMemoryError, UnsupportedFileFormatException, FileTooLargeException, AbortedException, IOException {
@@ -103,10 +106,7 @@ public enum ImportExportFormat {
 		CRTable crTab = CRTable.get(); 
 		crTab.init();
 
-		if (this != ImportExportFormat.CRE_JSON) {	// analyze import format files
-			analyze(files);
-		}
-		
+
 		int idx = 0;
 		double ratioCR = 1d;
 		for (File file: files) {
@@ -117,13 +117,31 @@ public enum ImportExportFormat {
 				CRE_json.load(file);
 			} else {	// import external data format
 			
-				this.importReader.init(file, UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), UserSettings.get().getRange(RangeType.ImportYearRange), ratioCR);
+				this.importReader.init(file, UserSettings.get().getMaxCR());
 				StreamSupport.stream(this.importReader.getIterable().spliterator(), false)
 					.filter(pub -> pub != null)
 					.filter(pub -> (ratioCR==1d) || (pub.getSizeCR()>0))	// do not include pubs w/o CRs when random select	
 					.forEach(pub -> {
 						StatusBar.get().incProgressbar(pub.length);
-						crTab.addNewPub(pub);
+						
+						
+						boolean addPub = true;
+						if (pub.getPY()==null) {
+							addPub = UserSettings.get().getImportPubsWithoutYear(); 
+						} else {
+							int py = pub.getPY().intValue();
+							int minPY = UserSettings.get().getRange(RangeType.ImportPYRange)[0];
+							if ((minPY != CRStatsInfo.NONE) && (minPY>py)) addPub = false;
+							int maxPY = UserSettings.get().getRange(RangeType.ImportPYRange)[1];
+							if ((maxPY != CRStatsInfo.NONE) && (maxPY<py)) addPub = false;
+						}
+						
+						if (addPub) {
+							pub.removeCRByYear(UserSettings.get().getRange(RangeType.ImportRPYRange), UserSettings.get().getImportCRsWithoutYear(), true);
+							crTab.addNewPub(pub);	
+						}
+						
+						
 					});
 				this.importReader.close();
 			}
@@ -138,7 +156,8 @@ public enum ImportExportFormat {
 			throw new AbortedException();
 		}
 		
-		System.out.println("CRTable.get().getPub().count()=" + CRTable.get().getPub(true).count());
+		System.out.println("CRTable.get().getPub().count(true)=" + CRTable.get().getPub(true).count());
+		System.out.println("CRTable.get().getPub().count()=" + CRTable.get().getPub().count());
 		System.out.println("CRTable.get().getPub(true).flatMap(pub -> pub.getCR()).count()=" + CRTable.get().getPub(true).flatMap(pub -> pub.getCR()).count());
 		System.out.println("CRTable.get().getCR().count()=" + CRTable.get().getCR().count());
 		

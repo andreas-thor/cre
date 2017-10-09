@@ -136,7 +136,7 @@ public class Settings extends Dialog<Integer> {
 		    	noOfErrors += UserSettings.get().setMaxPub(tfImport[1].getText());
 		    	noOfErrors += UserSettings.get().setIncludePubsWithoutCRs(cbIncludePubsWithoutCRs.isSelected());
 		    	noOfErrors += UserSettings.get().setImportRandom(cbImportRandom.isSelected());
-		    	noOfErrors += UserSettings.get().setRange(UserSettings.RangeType.ImportYearRange, new String[] { tfImport[2].getText(), tfImport[3].getText()} );
+		    	noOfErrors += UserSettings.get().setRange(UserSettings.RangeType.ImportRPYRange, new String[] { tfImport[2].getText(), tfImport[3].getText()} );
 		    	noOfErrors += UserSettings.get().setNPCTRange(tfNPCT.getText());
 		    	UserSettings.get().setChartEngine(rbChart[0].isSelected() ? 0 : 1);
 		    	
@@ -224,7 +224,7 @@ public class Settings extends Dialog<Integer> {
 		result.setPadding(new Insets(20, 20, 20, 20));
 		
 		String[] label = new String[] { "Maximum Number of CRs", "Maximum Number of Publications ", "Minimum Publication Year", "Maximum Publication Year" };
-		long[] value = new long[] { UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), UserSettings.get().getRange(RangeType.ImportYearRange)[0], UserSettings.get().getRange(RangeType.ImportYearRange)[1] };
+		long[] value = new long[] { UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), UserSettings.get().getRange(RangeType.ImportRPYRange)[0], UserSettings.get().getRange(RangeType.ImportRPYRange)[1] };
 		for (int i=0; i<label.length; i++) {
 			result.add(new Label(label[i]), 0, i);
 			tfImport[i] = new TextField(String.valueOf(value[i]));

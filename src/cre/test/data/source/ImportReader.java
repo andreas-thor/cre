@@ -17,21 +17,14 @@ public abstract class ImportReader implements Iterator<PubType> {
 	protected BufferedReader br = null;
 	protected int maxCR = 0;
 	protected int countCR = 0;
-	protected int maxPub = 0;
-	protected int countPub = 0;
-	protected int[] yearRange = new int[] {0,0};
-	protected double ratioCR = 1d;
 	
 	protected abstract void computeNextEntry() throws IOException;
 	
-	public void init(File file, int maxCR, int maxPub, int[] yearRange, double ratioCR) throws IOException {
+	public void init(File file, int maxCR) throws IOException {
+		this.entry = null;
 		this.br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 		this.maxCR = maxCR;
 		this.countCR = 0;
-		this.maxPub = maxPub;
-		this.countPub = 0;
-		this.yearRange = yearRange;
-		this.ratioCR = ratioCR;
 		computeNextEntry();
 	}
 	
@@ -39,9 +32,7 @@ public abstract class ImportReader implements Iterator<PubType> {
 		
 		// check for max number of pubs and CRs
 		if (CRTable.get().isAborted()) return false;
-		if ((this.maxPub>0) && (this.countPub >= this.maxPub)) return false;
 		if ((this.maxCR>0) && (this.countCR >= this.maxCR)) return false;
-		
 		return entry != null;
 	}
 	
@@ -55,7 +46,6 @@ public abstract class ImportReader implements Iterator<PubType> {
 			entry = null;
 		}
 		
-		this.countPub++;
 		this.countCR += result.getSizeCR();
 		return result;
 	}

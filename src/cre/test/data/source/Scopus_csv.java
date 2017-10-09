@@ -1,17 +1,12 @@
 package cre.test.data.source;
  
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -20,9 +15,6 @@ import java.util.stream.IntStream;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
-import cre.test.Exceptions.AbortedException;
-import cre.test.Exceptions.FileTooLargeException;
-import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
 import cre.test.data.UserSettings;
@@ -146,7 +138,11 @@ public class Scopus_csv extends ImportReader {
 		/* parse list of CRs */
 		if ((attribute2Index.get("REFERENCES") != null) && (line[attribute2Index.get("REFERENCES")] != null)) {
 			for (String crString: line[attribute2Index.get("REFERENCES")].split(";")) {
-				pub.addCR (parseCR (crString, yearRange), true); 
+//				pub.addCR (parseCR (crString), true);
+				CRType cr = parseCR(crString);
+				if (cr != null) {
+					pub.addCR(cr, true);  
+				}				
 			}
 		}
 		
@@ -161,7 +157,7 @@ public class Scopus_csv extends ImportReader {
 		return pub;
 	}
 	
-	private static CRType parseCR (String line, int[] yearRange) {
+	private static CRType parseCR (String line) {
 		
 		line = line.trim();
 		if (line.length() == 0) return null;
@@ -218,11 +214,12 @@ public class Scopus_csv extends ImportReader {
 
 		// check if year available and in the given year range
 //		if (res.RPY == null) return null;
-		if (res.getRPY() != null) {
-			if (((res.getRPY() < yearRange[0]) && (yearRange[0]>0)) || ((res.getRPY() > yearRange[1]) && (yearRange[1]>0))) return null;
-		} else {
-			if ((yearRange[0]>0) || (yearRange[1]>0)) return null;
-		}
+		
+//		if (res.getRPY() != null) {
+//			if (((res.getRPY() < yearRange[0]) && (yearRange[0]>0)) || ((res.getRPY() > yearRange[1]) && (yearRange[1]>0))) return null;
+//		} else {
+//			if ((yearRange[0]>0) || (yearRange[1]>0)) return null;
+//		}
 
 		
 		// process Journal names

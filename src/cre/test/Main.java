@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -16,6 +18,7 @@ import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRSearch;
 import cre.test.data.CRStats;
+import cre.test.data.CRStatsInfo;
 import cre.test.data.CRTable;
 import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
@@ -36,6 +39,7 @@ import cre.test.ui.dialog.CRInfo;
 import cre.test.ui.dialog.CRPubInfo;
 import cre.test.ui.dialog.ConfirmAlert;
 import cre.test.ui.dialog.ExceptionStacktrace;
+import cre.test.ui.dialog.ImportStats;
 import cre.test.ui.dialog.Info;
 import cre.test.ui.dialog.Range;
 import cre.test.ui.dialog.Search;
@@ -304,19 +308,20 @@ public class Main {
 	}
 
 	
-	private void analyzeFiles (ImportExportFormat source, List<File> files) {
+	private boolean analyzeFiles (ImportExportFormat source, List<File> files) {
 		
+		final AtomicBoolean result = new AtomicBoolean();
+	
 		Wait wait = new Wait();
-		Service<Void> serv = new Service<Void>() {
+		Service<CRStatsInfo> serv = new Service<CRStatsInfo>() {
 
 			@Override
-			protected Task<Void> createTask() {
-				return new Task<Void>() {
+			protected Task<CRStatsInfo> createTask() {
+				return new Task<CRStatsInfo>() {
 
 					@Override
-					protected Void call() throws Exception {
-						source.analyze(files);
-						return null;
+					protected CRStatsInfo call() throws Exception {
+						return source.analyze(files);
 					}
 				};
 			}
@@ -324,6 +329,7 @@ public class Main {
 		
 
 		serv.setOnSucceeded((WorkerStateEvent t) -> {
+			result.set(new ImportStats(serv.getValue()).showAndWait().isPresent());
 			wait.close();
 		});
 
@@ -345,9 +351,12 @@ public class Main {
 		
 		serv.start();
 		
+		
 		wait.showAndWait().ifPresent(cancel -> {
 			crTable.setAborted(cancel);
 		});
+		
+		return result.get();
 		
 	}
 
@@ -438,10 +447,12 @@ public class Main {
 			UserSettings.get().setLastFileDir(files.get(0).getParentFile()); // save last directory to be uses as initial directory
 			
 			if (source != ImportExportFormat.CRE_JSON) {
-				analyzeFiles(source, files);
+				if (analyzeFiles(source, files)) {
+					openFiles(source, files);
+				}
+			} else {
+				openFiles(source, files);
 			}
-			
-			openFiles(source, files);
 		}
 	}
 

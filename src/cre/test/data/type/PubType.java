@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import cre.test.data.CRStatsInfo;
 import cre.test.ui.CRTableView.ColDataType;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -216,6 +217,30 @@ public class PubType implements Comparable<PubType> {
 		return this.crList.remove(cr);
 	}
 
+	
+	public void removeCRByYear (int[] range, boolean keepCRsWithoutYear, boolean inverse) {
+		
+		
+		this.crList.removeIf(cr -> {
+			
+			boolean toBeRemoved = false;
+			if (cr.getRPY()==null) {
+				toBeRemoved = !keepCRsWithoutYear;
+			} else {
+				int rpy = cr.getRPY().intValue();
+				if ((range[0]!=CRStatsInfo.NONE) && (range[0]>rpy)) toBeRemoved = true;
+				if ((range[1]!=CRStatsInfo.NONE) && (range[1]<rpy)) toBeRemoved = true;
+			}
+			
+			if (toBeRemoved && inverse) {
+				cr.removePub(this, false);
+			}
+			return toBeRemoved;	
+		});
+		
+	}
+
+	
 	public void removeAllCRs(boolean inverse) {
 		if (inverse) {
 			crList.forEach(cr -> cr.removePub(this, false));

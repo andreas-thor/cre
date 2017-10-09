@@ -114,7 +114,7 @@ public class WoS_txt extends ImportReader {
 			case "CR":
 				CRType cr = parseCR(value);
 				if (cr != null) {
-					if ((ratioCR==1d) || (ratioCR>Math.random())) pub.addCR(cr, true);  
+					pub.addCR(cr, true);  
 				}
 				break;
 			
@@ -168,14 +168,14 @@ public class WoS_txt extends ImportReader {
 			if (yearS.length() <= 4) {
 				try {
 					int year = Integer.parseInt(yearS);
-					if (((year < yearRange[0]) && (yearRange[0]>0)) || ((year > yearRange[1]) && (yearRange[1]>0))) return null;
+//					if (((year < rpyRange[0]) && (rpyRange[0]>0)) || ((year > rpyRange[1]) && (rpyRange[1]>0))) return null;
 					cr.setRPY(year);
 				} catch (NumberFormatException e) { }
 			}
 			yearPos--;
 		}
 
-		if ((cr.getRPY() == null) && ((yearRange[0]>0) || (yearRange[1]>0))) return null;
+//		if ((cr.getRPY() == null) && ((rpyRange[0]>0) || (rpyRange[1]>0))) return null;
 		
 		cr.setAU(crsplit[0].trim());
 		

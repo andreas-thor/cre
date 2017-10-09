@@ -18,8 +18,8 @@ public class UserSettings {
 	private Preferences userPrefs;
 
 	// ranges
-	public static enum RangeType { FilterByRPYRange, RemoveByRPYRange, RemoveByNCRRange, RetainByRPYRange, ImportYearRange, CurrentYearRange }
-	private int[][] range = new int[][] { { -1, -1 }, { -1, -1 }, { -1, -1 }, { -1, -1 }, {0, 0}, {-1, -1} };
+	public static enum RangeType { FilterByRPYRange, RemoveByRPYRange, RemoveByNCRRange, RetainByRPYRange, ImportRPYRange, CurrentYearRange, ImportPYRange }
+	private int[][] range = new int[][] { { -1, -1 }, { -1, -1 }, { -1, -1 }, { -1, -1 }, {0, 0}, {-1, -1}, {0, 0} };
 
 	// directory for loading/saving files
 	private File lastFileDir = new File("");
@@ -42,6 +42,9 @@ public class UserSettings {
 	private int maxPub = 0;
 	private boolean includePubsWithoutCRs = false;
 	private boolean importRandom = false;
+	
+	private boolean importCRsWithoutYear = true;
+	private boolean importPubsWithoutYear = true;
 	
 	
 	private double[] window = new double[] {800, 600, 0, 0};
@@ -97,6 +100,9 @@ public class UserSettings {
 		maxPub = userPrefs.getInt("maxPub", maxPub);
 		includePubsWithoutCRs = userPrefs.getBoolean ("includePubsWithoutCRs", includePubsWithoutCRs);
 		importRandom = userPrefs.getBoolean ("importRandom", importRandom);
+		importCRsWithoutYear = userPrefs.getBoolean ("importCRsWithoutYear", importCRsWithoutYear);
+		importPubsWithoutYear = userPrefs.getBoolean ("importPubsWithoutYear", importPubsWithoutYear);
+		
 		
 		chartEngine = userPrefs.getInt("chartEngine", 0);
 		
@@ -137,6 +143,9 @@ public class UserSettings {
 		userPrefs.putInt("maxPub", maxPub);
 		userPrefs.putBoolean ("includePubsWithoutCRs", includePubsWithoutCRs);
 		userPrefs.putBoolean ("importRandom", importRandom);
+		userPrefs.putBoolean ("importCRsWithoutYear", importCRsWithoutYear);
+		userPrefs.putBoolean ("importPubsWithoutYear", importPubsWithoutYear);
+
 		userPrefs.putInt("chartEngine", chartEngine);
 		
 		userPrefs.putDouble("WindowWidth", windowWidth);
@@ -359,6 +368,25 @@ public class UserSettings {
 
 	public int setImportRandom (boolean importRandom) {
 		this.importRandom = importRandom;
+		return 0;
+	}
+	
+
+	public boolean getImportPubsWithoutYear () {
+		return this.importPubsWithoutYear;
+	}
+	
+	public int setImportPubsWithoutYear (boolean importPubsWithoutYear) {
+		this.importPubsWithoutYear = importPubsWithoutYear;
+		return 0;
+	}
+
+	public boolean getImportCRsWithoutYear () {
+		return this.importCRsWithoutYear;
+	}
+
+	public int setImportCRsWithoutYear (boolean importCRsWithoutYear) {
+		this.importCRsWithoutYear = importCRsWithoutYear;
 		return 0;
 	}
 	
