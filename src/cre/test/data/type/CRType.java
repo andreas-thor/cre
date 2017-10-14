@@ -100,9 +100,9 @@ public class CRType implements Comparable<CRType> {
 		
 		N_PYEARS = new SimpleIntegerProperty();
 		PYEAR_PERC = new SimpleDoubleProperty();
-		N_PCT50 = new SimpleIntegerProperty();
-		N_PCT75 = new SimpleIntegerProperty();
-		N_PCT90 = new SimpleIntegerProperty();
+		N_PCT50 = new SimpleIntegerProperty(0);
+		N_PCT75 = new SimpleIntegerProperty(0);
+		N_PCT90 = new SimpleIntegerProperty(0);
 		N_PYEARS2 = new SimpleIntegerProperty();
 		
 		VI = new SimpleBooleanProperty(true);
