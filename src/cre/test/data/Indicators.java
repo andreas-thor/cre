@@ -5,15 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import cre.test.data.type.CRType;
-import cre.test.data.type.PubType;
-import javafx.util.Pair;
 
 
 public class Indicators {
@@ -23,15 +19,13 @@ public class Indicators {
 	
 	private static Map<Integer, List<CRType>> mapRPY_CRs;
 	
-	private static CRType[][] RPY_CRs; 
-	
 	private static int[][] RPY_PY_NCR;
 	private static int[] RPY_SumNCR;
-	private static Map<Integer, Integer> mapRPY_SumNCR;
 	
 	private static int sumNCR;
+	private static int[] rangeRPY;
+	private static int[] rangePY;
 	
-//	private static Map<Integer, Map<Integer, Integer>> mapRPY_PY_SumNCR;
 
 	
 	public static int[][] update() {
@@ -40,26 +34,19 @@ public class Indicators {
 		System.out.println("1");
 		t1 = System.currentTimeMillis();
 		
-		int[] rangeRPY = CRStats.getMaxRangeYear();
-		int[] rangePY  = CRStats.getMaxRangeCitingYear();
-		
+		rangeRPY = CRStats.getMaxRangeYear();
+		rangePY  = CRStats.getMaxRangeCitingYear();
 		
 		t2 = System.currentTimeMillis();;
 		System.out.println("ranges: " + (t2-t1)/1000d);
 		t1 = t2;
 		
 		CRTable.get().getCR().forEach(cr -> {
-//			cr.setPERC_YR(null);
-//			cr.setPERC_ALL(null);
 			cr.setN_PYEARS((int) cr.getPub().filter(pub -> pub.getPY()!=null).mapToInt(pub -> pub.getPY()).distinct().count());
-//			cr.setPYEAR_PERC(null);
-//			cr.setN_PCT50(0);
-//			cr.setN_PCT75(0);
-//			cr.setN_PCT90(0);
 		});
 		
 		t2 = System.currentTimeMillis();;
-		System.out.println("init: " + (t2-t1)/1000d);
+		System.out.println("setN_PYEARS: " + (t2-t1)/1000d);
 		t1 = t2;
 		
 		
@@ -68,74 +55,72 @@ public class Indicators {
 				Collectors.groupingBy(CRType::getRPY, Collectors.mapping(Function.identity(), Collectors.toList())));
 		
 		
-		
 		t2 = System.currentTimeMillis();;
 		System.out.println("mapRPY_CRs: " + (t2-t1)/1000d);
 		t1 = t2;
 
-		RPY_CRs = new CRType[rangeRPY[1]-rangeRPY[0]+1][];
 		RPY_PY_NCR = new int[rangeRPY[1]-rangeRPY[0]+1][rangePY[1]-rangePY[0]+1];
 		RPY_SumNCR = new int[rangeRPY[1]-rangeRPY[0]+1];
 		sumNCR = 0;
 		
-		mapRPY_SumNCR = new HashMap<Integer, Integer>();	// LEGACY ... change to RPY_SumNCR
-		for (int rpy=rangeRPY[0]; rpy<=rangeRPY[1]; rpy++) {
-			mapRPY_SumNCR.put(rpy, 0);
-		}
-		
 		for (Entry<Integer, List<CRType>> rpyGroup: mapRPY_CRs.entrySet()) {
-			int rpy = rpyGroup.getKey();
-			RPY_CRs[rpy-rangeRPY[0]] = (CRType[]) rpyGroup.getValue().toArray(new CRType[rpyGroup.getValue().size()]);
-			for (CRType cr: RPY_CRs[rpy-rangeRPY[0]] /*rpyGroup.getValue()*/ ) {
+			int rpyIdx = rpyGroup.getKey()-rangeRPY[0];
+			
+			for (CRType cr: rpyGroup.getValue()) {
 				cr.getPub().filter(pub -> pub.getPY()!=null).forEach(pub -> {
-					RPY_PY_NCR[rpy-rangeRPY[0]][pub.getPY().intValue()-rangePY[0]]++;
+					RPY_PY_NCR[rpyIdx][pub.getPY().intValue()-rangePY[0]]++;
 				});
-				RPY_SumNCR[rpy-rangeRPY[0]] += cr.getN_CR();
+				RPY_SumNCR[rpyIdx] += cr.getN_CR();
 			}
-			sumNCR += RPY_SumNCR[rpy-rangeRPY[0]];
-			mapRPY_SumNCR.put(rpy, RPY_SumNCR[rpy-rangeRPY[0]]);
+			sumNCR += RPY_SumNCR[rpyIdx];
 		}
 		
 		t2 = System.currentTimeMillis();;
-		System.out.println("mapRPY_PY_NCR: " + (t2-t1)/1000d);
+		System.out.println("RPY_SumNCR: " + (t2-t1)/1000d);
 		t1 = t2;
-		
-		
-		// Determine sum citations per RPY
-		
 		
 		
 
 		
 		int range = UserSettings.get().getNPCTRange();
 		
-//		for (Entry<Integer, List<CRType>> rpyGroup: mapRPY_CRs.entrySet()) {
-		for (int rpyIdx=0; rpyIdx<RPY_CRs.length; rpyIdx++) {
+		for (int rpyIdx=0; rpyIdx<RPY_SumNCR.length; rpyIdx++) {
 			
-			if (RPY_CRs[rpyIdx]==null) continue;
+			final int rpy = rpyIdx + rangeRPY[0];
+			if (mapRPY_CRs.get(rpy)==null) continue;
 			
-			int rpy = rpyIdx+rangeRPY[0];
 			int seqStart = Math.max(rpy, rangePY[0]);
 			int seqEnd = rangePY[1];
 			
-			int[][] CR_PY_SumPub = new int[RPY_CRs[rpyIdx].length][rangePY[1]-rangePY[0]+1];
+			if (seqEnd<seqStart) continue;
 			
-			for (int crIdx=0; crIdx<RPY_CRs[rpyIdx].length; crIdx++) {
-				CRType cr = RPY_CRs[rpyIdx][crIdx];
+			int[][] CR_PY_SumPub = new int[mapRPY_CRs.get(rpy).size()][rangePY[1]-rangePY[0]+1];
+//			char[][] mapCRID_Sequence = new char[mapRPY_CRs.get(rpy).size()][];
+//			int[][] mapCRID_Type = new int[mapRPY_CRs.get(rpy).size()][];
+			
+			for (int crIdx=0; crIdx<mapRPY_CRs.get(rpy).size(); crIdx++) {
+				CRType cr = mapRPY_CRs.get(rpy).get(crIdx);
 				int x = crIdx;
 				cr.getPub().filter(pub -> pub.getPY()!=null).forEach(pub -> CR_PY_SumPub[x][pub.getPY()-rangePY[0]]++);
-				cr.setPERC_YR (((double)cr.getN_CR())/RPY_SumNCR[rpy-rangeRPY[0]]);
+				cr.setPERC_YR (((double)cr.getN_CR())/RPY_SumNCR[rpyIdx]);
 				cr.setPERC_ALL(((double)cr.getN_CR())/sumNCR);
 				cr.setPYEAR_PERC(((double)cr.getN_PYEARS()) /  (rangePY[1]-Math.max(rangePY[0], cr.getRPY())+1));
+				cr.setN_PCT50(0);
+				cr.setN_PCT75(0);
+				cr.setN_PCT90(0);
+				
+//				mapCRID_Sequence[crIdx] = new char[seqEnd-seqStart+1];
+//				mapCRID_Type[crIdx] = new int[9];
 			}
 			
-			
-			Map<Pair<Integer, Integer>, int[]> cachePercBorder = new HashMap<Pair<Integer, Integer>, int[]>();
 			
 			int[] rangeFirstPY = new int[] { Math.max(rpy, Math.max(seqStart-range, rangePY[0])), Math.max(rpy, Math.max(seqEnd-range, rangePY[0])) };
 			int[] rangeLastPY = new int[] { Math.min(seqStart+range, rangePY[1]), Math.min(seqEnd+range, rangePY[1]) };
 			int[][][] allPercBorder = new int[rangeFirstPY[1]-rangeFirstPY[0]+1][rangeLastPY[1]-rangeLastPY[0]+1][];
 					
+			
+			
+			
 			for (int py=seqStart; py<=seqEnd; py++) {
 					
 				int firstPY = Math.max(rpy, Math.max(py-range, rangePY[0])); 
@@ -143,21 +128,69 @@ public class Indicators {
 				if (lastPY < firstPY) continue;	// in the error case that RPY is higher than PY
 
 				int[] percBorder = allPercBorder[firstPY-rangeFirstPY[0]][lastPY-rangeLastPY[0]]; 
-//				int[] percBorder = cachePercBorder.get(new Pair<Integer, Integer> (firstPY, lastPY)); 
 				if (percBorder == null) {
-					percBorder = getPercBorders(CR_PY_SumPub, rangePY, firstPY, lastPY);
+					percBorder = getPercBorders(CR_PY_SumPub, firstPY, lastPY);
 					allPercBorder[firstPY-rangeFirstPY[0]][lastPY-rangeLastPY[0]] = percBorder;
-					// cachePercBorder.put(new Pair<Integer, Integer> (firstPY, lastPY), percBorder);
 				}
 
-				for (int crIdx=0; crIdx<RPY_CRs[rpyIdx].length; crIdx++) {
-					CRType cr = RPY_CRs[rpyIdx][crIdx];
+				for (int crIdx=0; crIdx<mapRPY_CRs.get(rpy).size(); crIdx++) {
+					CRType cr = mapRPY_CRs.get(rpy).get(crIdx);
 					long count = CR_PY_SumPub[crIdx][py-rangePY[0]]; // number of citations to CR in year PY
 					if (percBorder[0]<count) cr.setN_PCT50(cr.getN_PCT50()+1);
 					if (percBorder[1]<count) cr.setN_PCT75(cr.getN_PCT75()+1);
 					if (percBorder[2]<count) cr.setN_PCT90(cr.getN_PCT90()+1);
 				}
+				
+				/*
+				for (int crIdx=0; crIdx<mapRPY_CRs.get(rpy).size(); crIdx++) {
+					CRType cr = mapRPY_CRs.get(rpy).get(crIdx);
+					double expect=0, z_res=0; 
+					if ((RPY_SumNCR[rpy-rangeRPY[0]]>0) && (py>=rangePY[0]) && (py<=rangePY[1])) {
+						// TODO: statt cr.getN_CR() wahrscheinlich hier die N_CR für das aktuelle py
+						expect = 1.0d * cr.getN_CR() * RPY_PY_NCR[rpy-rangeRPY[0]][py-rangePY[0]] / RPY_SumNCR[rpy-rangeRPY[0]];
+					}
+					
+					long count = cr.getPub(py).count();
+					if (expect>0) {
+						z_res = (count  - expect) / Math.sqrt(expect);
+					}
+					
+					mapCRID_Sequence[crIdx][py-seqStart] = (z_res>1) ? '+' : ((z_res<-1) ? '-' : '0');
+					
+					int t = py-seqStart+1;
+					mapCRID_Type[crIdx][0] +=                 (z_res>-1)?1:0;
+					mapCRID_Type[crIdx][1] += ((t< 4)?1:0) * ((z_res< 0)?1:0);
+					mapCRID_Type[crIdx][2] += ((t>=4)?1:0) * ((z_res> 0)?1:0);
+					mapCRID_Type[crIdx][3] += ((t< 4)?1:0) * ((z_res> 1)?1:0);
+					mapCRID_Type[crIdx][4] += ((t<=4)?1:0) * ((z_res< 1)?1:0);
+					mapCRID_Type[crIdx][5] += ((t> 4)?1:0) * ((z_res> 1)?1:0);
+					mapCRID_Type[crIdx][6] += ((t> 7)?1:0) * ((z_res<-1)?1:0);
+					mapCRID_Type[crIdx][7] += (count  >0)?1:0;
+					mapCRID_Type[crIdx][8] += 1;
+				}	
+				*/			
 			}
+			
+			
+			/*
+			for (int crIdx=0; crIdx<mapRPY_CRs.get(rpy).size(); crIdx++) {
+				CRType cr = mapRPY_CRs.get(rpy).get(crIdx);
+				cr.setSEQUENCE(new String (mapCRID_Sequence[crIdx]));
+				
+				boolean constant  = ((1.0d*mapCRID_Type[crIdx][0]/mapCRID_Type[crIdx][8])>0.8) && ((1.0d*mapCRID_Type[crIdx][7]/mapCRID_Type[crIdx][8])>0.8);
+				boolean sbeauty   = (mapCRID_Type[crIdx][1]>2) && (mapCRID_Type[crIdx][2]>2);
+				boolean hotpaper  = (mapCRID_Type[crIdx][3]>1);
+				boolean lifecycle = (mapCRID_Type[crIdx][4]>1) && (mapCRID_Type[crIdx][5]>1) && (mapCRID_Type[crIdx][6]>1);
+				
+				if (hotpaper) 	cr.setTYPE("Hot paper");
+				if (sbeauty) 	cr.setTYPE("Delayed performer");
+				if (lifecycle) 	cr.setTYPE("Life cycle");
+				if (constant) 	cr.setTYPE("Constant performer");
+				if (lifecycle && sbeauty) 	cr.setTYPE("Delayed performer / Life cycle");
+				if (hotpaper && sbeauty) 	cr.setTYPE("Delayed performer / Hot paper");
+				if (hotpaper && lifecycle) 	cr.setTYPE("Hot Paper / Life Cycle");
+			}
+			*/
 			
 		}		
 		
@@ -165,78 +198,6 @@ public class Indicators {
 		System.out.println("setPERC_*: " + (t2-t1)/1000d);
 		t1 = t2;
 		
-
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-//		mapRPY_PY_SumNCR = new HashMap<Integer, Map<Integer, Integer>>();
-//		mapRPY_SumNCR = 
-//			IntStream.rangeClosed(rangeRPY[0], rangeRPY[1]).mapToObj(RPY -> new Integer (RPY)).collect(Collectors.toMap(	
-//				RPY -> RPY, 
-//				RPY -> (mapRPY_CRs.get(RPY) == null) ? 0 : mapRPY_CRs.get(RPY).stream().mapToInt(cr -> cr.getN_CR()).sum()
-//			));
-		
-
-		System.out.println("3");
-	
-		/* !!!! LANGE */
-		
-		
-//		for (int rpy = rangeRPY[0]; rpy <= rangeRPY[1]; rpy++) {
-//			mapRPY_SumNCR.put(rpy, 0);
-//			mapRPY_PY_SumNCR.putIfAbsent(rpy, new HashMap<Integer, Integer>());
-//			for (int py = rangePY[0]; py <= rangePY[1]; py++) {
-//				mapRPY_PY_SumNCR.get(rpy).put(py, 0);
-//			}
-//		}
-//		
-//		CRTable.get().getCR().filter(cr -> cr.getRPY()!=null).forEach(cr -> {
-//			int rpy = cr.getRPY().intValue();
-//			cr.getPub().filter(pub -> pub.getPY() != null).forEach(pub -> { 
-//				mapRPY_PY_SumNCR.get(rpy).compute(pub.getPY().intValue(), (k, v) -> (v==null) ? 1 : v+1);
-//			});
-//			mapRPY_SumNCR.put(rpy, mapRPY_PY_SumNCR.get(rpy).values().stream().mapToInt(i -> i.intValue()).sum());
-//		});
-		
-		
-		System.out.println("3a");
-
-		
-		
-//		mapRPY_PY_SumNCR = 
-//			IntStream.rangeClosed(rangeRPY[0], rangeRPY[1]).mapToObj(RPY -> new Integer (RPY)).collect(Collectors.toMap(	
-//					RPY -> RPY, 
-//					RPY -> (IntStream.rangeClosed(rangePY[0], rangePY[1]).mapToObj(PY -> new Integer (PY)).collect(Collectors.toMap(
-//							PY -> PY,
-//							PY -> (mapRPY_CRs.get(RPY) == null) ? 0 : mapRPY_CRs.get(RPY).stream().mapToInt(cr -> (int)cr.getPub(PY).count()).sum()
-//							))
-//				)));
-	
-		
-		System.out.println("4");
-		
-//		computePERC();
-		
-		System.out.println("5");
 		
 	/* !!!! LANGE */	 // computeNPCT(CRStats.getMaxRangeCitingYear(), UserSettings.get().getNPCTRange());
 		
@@ -250,37 +211,35 @@ public class Indicators {
 		
 		
 		// compute difference to median
-		final Map<Integer, Integer> mapRPY_MedianDiff = new HashMap<Integer, Integer>();	// RPY -> SumNCR - (median of sumPerYear[year-range] ... sumPerYear[year+range])   
-		mapRPY_SumNCR.forEach ((rpy, crs) -> {
-			int median =  IntStream.rangeClosed(-medianRange, +medianRange)
-				.map( it -> { return (mapRPY_SumNCR.get(rpy+it)==null) ? 0 : mapRPY_SumNCR.get(rpy+it);})
-				.sorted()
-				.toArray()[medianRange];
-			mapRPY_MedianDiff.put(rpy, crs - median);
-		});
-
-		
-		int[] rangeYear = CRStats.getMaxRangeYear();
+		int[] RPY_MedianDiff = new int[RPY_SumNCR.length];	// RPY_idx -> SumNCR - (median of sumPerYear[year-range] ... sumPerYear[year+range])   
+		for (int rpyIdx=0; rpyIdx<RPY_SumNCR.length; rpyIdx++) {
+			int[] temp = new int[2*medianRange+1];
+			for (int m=-medianRange; m<=medianRange; m++) {
+				temp[m+medianRange] = (rpyIdx+m<0) || (rpyIdx+m>RPY_SumNCR.length-1) ? 0 : RPY_SumNCR[rpyIdx+m];
+			}
+			Arrays.sort(temp);
+			RPY_MedianDiff[rpyIdx] = RPY_SumNCR[rpyIdx] - temp[medianRange];
+		}
 		
 		// generate data rows for chart
 		return new int[][] {
-			IntStream.rangeClosed(rangeYear[0], rangeYear[1]).toArray(),
-			IntStream.rangeClosed(rangeYear[0], rangeYear[1]).map(rpy -> mapRPY_SumNCR.get(rpy)).toArray(),
-			IntStream.rangeClosed(rangeYear[0], rangeYear[1]).map(rpy -> mapRPY_MedianDiff.get(rpy)).toArray()
+			IntStream.rangeClosed(rangeRPY[0], rangeRPY[1]).toArray(),
+			RPY_SumNCR, 
+			RPY_MedianDiff 
 		};		
 	}
 	
-	
+	/*
 	private static void computePERC () {
 		
 
 		// compute PERC_YR and PERC_ALL
-		int sum = mapRPY_SumNCR.values().stream().mapToInt(Integer::intValue).sum(); 
+		int sum = Arrays.stream(RPY_SumNCR).sum(); 
 		CRTable.get().getCR().forEach ( cr -> {
 			cr.setPERC_YR( (cr.getRPY() == null) ? null : ((double)cr.getN_CR())/mapRPY_SumNCR.get(cr.getRPY()));
 			cr.setPERC_ALL(((double)cr.getN_CR())/sum);
 		});
-
+*/
 		/*
 		 * - PYEARS_PERC= Anzahl Jahre, in denen eine Referenzpublikation
 		 * zitiert wurde/maximal mögliche Anzahl von Jahren.-> NICHT OK!
@@ -296,7 +255,7 @@ public class Indicators {
 		 * einzusetzen, für die jüngeren Publikationen
 		 * "2016-Referenzpublikationsjahr".
 		 */
-				
+	/*			
 		// N_PYEARS = Number of DISTINCT PY (for a CR)
 		int[] rangePub = CRStats.getMaxRangeCitingYear();
 		CRTable.get().getCR().forEach( cr -> {
@@ -310,7 +269,7 @@ public class Indicators {
 
 	}
 	
-	
+	*/
 	
 	/*
 	private static void computeNPCT (int[] rangePY, int range) {
@@ -448,14 +407,14 @@ public class Indicators {
 	
 	*/
 	
-	private static int[] getPercBorders (int[][] CR_PY_SumPub, int[] rangePY, int firstPY, int lastPY) {
+	private static int[] getPercBorders (int[][] CR_PY_SumPub, int firstPY, int lastPY) {
 		
 		int yearSize = lastPY-firstPY+1;
 		int crSize = CR_PY_SumPub.length;
 		
 		int[][] cit = new int[yearSize][crSize];	// matrix [year] x [cr] -> #citations 
 
-		for (int idx=0; idx<CR_PY_SumPub.length; idx++) {
+		for (int idx=0; idx<crSize; idx++) {
 			
 			// das brauche ich doch nur einmal pro CR berechnen, oder?
 			// Count #citations per PY

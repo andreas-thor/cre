@@ -98,7 +98,7 @@ public enum ImportExportFormat {
 				
 		}
 		
-		System.out.println(crStatsInfo);
+//		System.out.println(crStatsInfo);
 		return crStatsInfo;
 	}
 
@@ -174,8 +174,8 @@ public enum ImportExportFormat {
 				
 		}
 
-		System.out.println("noAvailableCRs=" + noAvailableCRs.get());
-		System.out.println("noToImportCRs=" + noToImportCRs.get());
+//		System.out.println("noAvailableCRs=" + noAvailableCRs.get());
+//		System.out.println("noToImportCRs=" + noToImportCRs.get());
 		
 		
 		// Check for abort by user
@@ -185,10 +185,10 @@ public enum ImportExportFormat {
 			throw new AbortedException();
 		}
 		
-		System.out.println("CRTable.get().getPub().count(true)=" + CRTable.get().getPub(true).count());
-		System.out.println("CRTable.get().getPub().count()=" + CRTable.get().getPub().count());
-		System.out.println("CRTable.get().getPub(true).flatMap(pub -> pub.getCR()).count()=" + CRTable.get().getPub(true).flatMap(pub -> pub.getCR()).count());
-		System.out.println("CRTable.get().getCR().count()=" + CRTable.get().getCR().count());
+//		System.out.println("CRTable.get().getPub().count(true)=" + CRTable.get().getPub(true).count());
+//		System.out.println("CRTable.get().getPub().count()=" + CRTable.get().getPub().count());
+//		System.out.println("CRTable.get().getPub(true).flatMap(pub -> pub.getCR()).count()=" + CRTable.get().getPub(true).flatMap(pub -> pub.getCR()).count());
+//		System.out.println("CRTable.get().getCR().count()=" + CRTable.get().getCR().count());
 		
 
 		long ts2 = System.currentTimeMillis();
