@@ -16,6 +16,7 @@ import cre.test.data.CRStats;
 import cre.test.data.CRTable;
 import cre.test.data.UserSettings;
 import cre.test.data.type.CRType;
+import cre.test.data.type.CRType_Prop;
 import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
 
@@ -153,13 +154,13 @@ public class WoS_txt extends ImportReader {
 	
 	private CRType parseCR (String line) {
 
-		CRType cr = new CRType();
+		CRType cr = new CRType_Prop();
 		cr.setCR(line); // [3..-1] // .toUpperCase()
 		cr.setType (CRType.TYPE_WOS);
 		cr.setRPY(null);
 		
 	
-		String[] crsplit = cr.getCR().split (",", 3);
+		String[] crsplit = /*cr.getCR()*/ line.split (",", 3);
 		
 		
 		int yearPos = 1;

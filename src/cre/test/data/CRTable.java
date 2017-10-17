@@ -160,6 +160,7 @@ public class CRTable {
 		getCR().forEach(cr -> cr.setCID2(new CRCluster(cr)));
 		CRMatch2.get().init();
 		
+		updateData();
 		StatusBar.get().setValue("Merging done");
 
 	}

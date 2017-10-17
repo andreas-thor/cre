@@ -11,58 +11,21 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class CRType implements Comparable<CRType> {
+public abstract class CRType implements Comparable<CRType>  {
 
 	public static byte TYPE_WOS = 1;
 	public static byte TYPE_SCOPUS = 2;
 
-	
-	private SimpleIntegerProperty ID;
-	private SimpleStringProperty CR;
-	private SimpleStringProperty AU;
-	private SimpleStringProperty AU_F; 
-	private SimpleStringProperty AU_L;
-	private SimpleStringProperty AU_A;	// all Authors
-	private SimpleStringProperty TI; 		// title
-	private SimpleStringProperty J;
-	private SimpleStringProperty J_N;
-	private SimpleStringProperty J_S;
-	
-	private SimpleIntegerProperty N_CR;
-	private SimpleObjectProperty<Integer> RPY;
-//	private boolean isNullRPY;
-	
-	private SimpleStringProperty PAG;
-	private SimpleStringProperty VOL;
-	private SimpleStringProperty DOI;
-	private CRCluster CID2;
-	
-	private SimpleBooleanProperty VI;	// visible
-	private SimpleIntegerProperty CO;	// background color
-	private SimpleIntegerProperty SEARCH_SCORE;
-	
-	
-	private SimpleDoubleProperty PERC_YR;
-	private SimpleDoubleProperty PERC_ALL;
-	
-	private SimpleIntegerProperty N_PYEARS;	
-	private SimpleDoubleProperty PYEAR_PERC;
-	private SimpleIntegerProperty N_PCT50;
-	private SimpleIntegerProperty N_PCT75;
-	private SimpleIntegerProperty N_PCT90;
-	private SimpleIntegerProperty N_PYEARS2;	
-	
-	private SimpleStringProperty SEQUENCE;
-	private SimpleStringProperty TYPE;
-	
 	private byte type = 0;	
+	private boolean flag;
 	
-
 	private Set<PubType> pubList;
 	
-//	public int mergedTo = -1;
-	private boolean flag;	
-
+	public CRType() {
+		pubList = new HashSet<PubType>();
+	}
+	
+	
 	public boolean isFlag() {
 		return flag;
 	}
@@ -70,55 +33,7 @@ public class CRType implements Comparable<CRType> {
 	public void setFlag(boolean flag) {
 		this.flag = flag;
 	}
-
-
-
-
-	public CRType() {
-		super();
-		
-		ID = new SimpleIntegerProperty();
-		CR = new SimpleStringProperty();
-		AU = new SimpleStringProperty();
-		AU_F = new SimpleStringProperty();
-		AU_L = new SimpleStringProperty();
-		AU_A = new SimpleStringProperty();
-		TI = new SimpleStringProperty();
-		J = new SimpleStringProperty();
-		J_N = new SimpleStringProperty();
-		J_S = new SimpleStringProperty();
-		N_CR = null;
-		RPY = new SimpleObjectProperty<Integer>();
-//		isNullRPY = true;
-		PAG = new SimpleStringProperty();
-		VOL = new SimpleStringProperty();
-		DOI = new SimpleStringProperty();
-		CID2 = null;
-//		CID_S = new SimpleIntegerProperty();
-		PERC_YR = new SimpleDoubleProperty();
-		PERC_ALL = new SimpleDoubleProperty();
-		
-		N_PYEARS = new SimpleIntegerProperty();
-		PYEAR_PERC = new SimpleDoubleProperty();
-		N_PCT50 = new SimpleIntegerProperty(0);
-		N_PCT75 = new SimpleIntegerProperty(0);
-		N_PCT90 = new SimpleIntegerProperty(0);
-		N_PYEARS2 = new SimpleIntegerProperty();
-		
-		VI = new SimpleBooleanProperty(true);
-		CO = new SimpleIntegerProperty(0);
-		SEARCH_SCORE = new SimpleIntegerProperty(0);
-		
-		SEQUENCE = new SimpleStringProperty();
-		TYPE = new SimpleStringProperty();
-		
-		pubList = new HashSet<PubType>();
-		flag = false;
-	}
 	
-	
-
-
 	public byte getType() {
 		return type;
 	}
@@ -130,7 +45,12 @@ public class CRType implements Comparable<CRType> {
 	public Stream<PubType> getPub() {
 		return pubList.stream();
 	}
-    
+
+	public int getNumberOfPubs() {
+		return pubList.size();
+	}
+
+	
 	public Stream<PubType> getPub(int py) {
 		return pubList.stream().filter(pub -> (pub.getPY()!=null) && (pub.getPY().equals(py)));
 	}
@@ -145,7 +65,7 @@ public class CRType implements Comparable<CRType> {
 		if (inverse) {
 			pub.addCR(this, false);
 		}
-		N_CR=null;	// invalidate N_CR --> updated on next get access
+		this.resetN_CR();	// invalidate N_CR --> updated on next get access
 		this.pubList.add(pub);
 	}
 
@@ -160,7 +80,7 @@ public class CRType implements Comparable<CRType> {
 		if (inverse) {
 			pub.removeCR(this, false);
 		}
-		N_CR=null;	// invalidate N_CR --> updated on next get access
+		this.resetN_CR();	// invalidate N_CR --> updated on next get access
 		return this.pubList.remove(pub);
 	}
 	
@@ -169,354 +89,191 @@ public class CRType implements Comparable<CRType> {
 		if (inverse) {
 			pubList.forEach(pub -> pub.removeCR(this, false));
 		}
-		N_CR = null;
+		this.resetN_CR();
 		pubList.clear();
 		
 	}
 	
 	
-	public int getID() {
-		return ID.get();
-	}
-	public SimpleIntegerProperty getIDProp() {
-		return ID;
-	}
-	public void setID(int iD) {
-		ID.set(iD);
-	}
-	
-	
-	public String getCR() {
-		return CR.get();
-	}
-	public SimpleStringProperty getCRProp() {
-		return CR;
-	}
-	public void setCR(String cR) {
-		CR.set(cR);
-	}
-	
-	
-	public String getAU() {
-		return AU.get();
-	}
-	public SimpleStringProperty getAUProp() {
-		return AU;
-	}
-	public void setAU(String aU) {
-		AU.set(aU);
-	}
-	
-	
-	public String getAU_F() {
-		return AU_F.get();
-	}
-	public SimpleStringProperty getAU_FProp() {
-		return AU_F;
-	}
-	public void setAU_F(String aU_F) {
-		AU_F.set(aU_F);
-	}
-	
-	
-	public String getAU_L() {
-		return AU_L.get();
-	}
-	public SimpleStringProperty getAU_LProp() {
-		return AU_L;
-	}
-	public void setAU_L(String aU_L) {
-		AU_L.set(aU_L);
-	}
-	
-	
-	public String getAU_A() {
-		return AU_A.get();
-	}
-	public SimpleStringProperty getAU_AProp() {
-		return AU_A;
-	}
-	public void setAU_A(String aU_A) {
-		AU_A.set(aU_A);
-	}
-	
-	
-	public String getTI() {
-		return TI.get();
-	}
-	public SimpleStringProperty getTIProp() {
-		return TI;
-	}
-	public void setTI(String tI) {
-		TI.set(tI);
-	}
-	
-	
-	public String getJ() {
-		return J.get();
-	}
-	public SimpleStringProperty getJProp() {
-		return J;
-	}
-	public void setJ(String j) {
-		J.set(j);
-	}
-	
-	
-	public String getJ_N() {
-		return J_N.get();
-	}
-	public SimpleStringProperty getJ_NProp() {
-		return J_N;
-	}
-	public void setJ_N(String j_N) {
-		J_N.set(j_N);
-	}
-	
-	
-	public String getJ_S() {
-		return J_S.get();
-	}
-	public SimpleStringProperty getJ_SProp() {
-		return J_S;
-	}
-	public void setJ_S(String j_S) {
-		J_S.set(j_S);
-	}
-	
-	
-	public int getN_CR() {
-		return getN_CRProp().get();
-	}
-	
-	public SimpleIntegerProperty getN_CRProp() {
-		if (N_CR == null) {
-			N_CR = new SimpleIntegerProperty(pubList.size());
-		}
-		return N_CR;
-	}
+	public abstract int getID();
 
-	
-	
-	public Integer getRPY() {
-		return RPY.get();
-//		return isNullRPY ? null : RPY.get();
-	}
-	public SimpleObjectProperty<Integer> getRPYProp() {
-		return RPY;
-	}
-	public void setRPY(Integer rPY) {
-		RPY.set(rPY);
-//		if (rPY != null) { 
-//			isNullRPY = false;
-//			RPY.set(rPY);
-//		} else {
-//			isNullRPY = true;
-//			RPY.set(0);
-//		}
-	}
-	
-	
-	public String getPAG() {
-		return PAG.get();
-	}
-	public SimpleStringProperty getPAGProp() {
-		return PAG;
-	}
-	public void setPAG(String pAG) {
-		PAG.set(pAG);
-	}
-	
-	
-	public String getVOL() {
-		return VOL.get();
-	}
-	public SimpleStringProperty getVOLProp() {
-		return VOL;
-	}
-	public void setVOL(String vOL) {
-		VOL.set(vOL);
-	}
-	
-	
-	public String getDOI() {
-		return DOI.get();
-	}
-	public SimpleStringProperty getDOIProp() {
-		return DOI;
-	}
-	public void setDOI(String dOI) {
-		DOI.set(dOI);
-	}
-	
-	
-	public CRCluster getCID2() {
-		return CID2;
-	}
-	public void setCID2(CRCluster cID2) {
-		CID2 = cID2;
-	}
-	
-	
-	public int getCID_S() {
-		return CID2.getCID_SProp().get();
-	}
-	public SimpleIntegerProperty getCID_SProp() {
-		return CID2.getCID_SProp();
-	}
-//	public void setCID_S(int cID_S) {
-//		CID_S.set(cID_S);
-//	}
-	
-	
-	public boolean getVI() {
-		return VI.get();
-	}
-	public SimpleBooleanProperty getVIProp() {
-		return VI;
-	}
-	public void setVI(boolean vI) {
-		VI.set(vI);
-	}
-	
-	
-	public int getCO() {
-		return CO.get();
-	}
-	public SimpleIntegerProperty getCOProp() {
-		return CO;
-	}
-	public void setCO(int cO) {
-		CO.set(cO);
-	}
-	
-	
-	public Double getPERC_YR() {
-		return PERC_YR.getValue();
-	}
-	public SimpleDoubleProperty getPERC_YRProp() {
-		return PERC_YR;
-	}
-	public void setPERC_YR(Double pERC_YR) {
-		PERC_YR.setValue(pERC_YR);
-	}
-	
-	
-	public Double getPERC_ALL() {
-		return PERC_ALL.getValue();
-	}
-	public SimpleDoubleProperty getPERC_ALLProp() {
-		return PERC_ALL;
-	}
-	public void setPERC_ALL(Double pERC_ALL) {
-		PERC_ALL.setValue(pERC_ALL);
-	}
-	
-		
-	public int getN_PYEARS() {
-		return N_PYEARS.get();
-	}
-	public SimpleIntegerProperty getN_PYEARSProp() {
-		return N_PYEARS;
-	}
-	public void setN_PYEARS(int n_PYEARS) {
-		N_PYEARS.set(n_PYEARS);
-	}
-	
-	
-	
-	public Double getPYEAR_PERC() {
-		return PYEAR_PERC.getValue();
-	}
-	public SimpleDoubleProperty getPYEAR_PERCProp() {
-		return PYEAR_PERC;
-	}
-	public void setPYEAR_PERC(Double pYEAR_PERC) {
-		PYEAR_PERC.setValue(pYEAR_PERC);
-	}
-	
-	
-	
-	public int getN_PCT50() {
-		return N_PCT50.get();
-	}
-	public SimpleIntegerProperty getN_PCT50Prop() {
-		return N_PCT50;
-	}
-	public void setN_PCT50(int n_PCT50) {
-		N_PCT50.set(n_PCT50);
-	}
-	
-	
-	
-	public int getN_PCT75() {
-		return N_PCT75.get();
-	}
-	public SimpleIntegerProperty getN_PCT75Prop() {
-		return N_PCT75;
-	}
-	public void setN_PCT75(int n_PCT75) {
-		N_PCT75.set(n_PCT75);
-	}
-	
-	
-	
-	public int getN_PCT90() {
-		return N_PCT90.get();
-	}
-	public SimpleIntegerProperty getN_PCT90Prop() {
-		return N_PCT90;
-	}
-	public void setN_PCT90(int n_PCT90) {
-		N_PCT90.set(n_PCT90);
-	}
-	
-	
-	
-	public int getN_PYEARS2() {
-		return N_PYEARS2.get();
-	}
-	public SimpleIntegerProperty getN_PYEARS2Prop() {
-		return N_PYEARS2;
-	}
-	public void setN_PYEARS2(int n_PYEARS2) {
-		N_PYEARS2.set(n_PYEARS2);
-	}
-			
+	public abstract SimpleIntegerProperty getIDProp();
 
-	public int getSEARCH_SCORE() {
-		return SEARCH_SCORE.get();
-	}
-	public SimpleIntegerProperty getSEARCH_SCOREProp() {
-		return SEARCH_SCORE;
-	}
-	public void setSEARCH_SCORE(Double sEARCH_SCORE) {
-		SEARCH_SCORE.setValue(sEARCH_SCORE > 0 ? 1 : 0);
-	}
+	public abstract void setID(int iD);
+
+	public abstract String getCR();
+
+	public abstract SimpleStringProperty getCRProp();
+
+	public abstract void setCR(String cR);
+
+	public abstract String getAU();
+
+	public abstract SimpleStringProperty getAUProp();
+
+	public abstract void setAU(String aU);
+
+	public abstract String getAU_F();
+
+	public abstract SimpleStringProperty getAU_FProp();
+
+	public abstract void setAU_F(String aU_F);
+
+	public abstract String getAU_L();
+
+	public abstract SimpleStringProperty getAU_LProp();
+
+	public abstract void setAU_L(String aU_L);
+
+	public abstract String getAU_A();
+
+	public abstract SimpleStringProperty getAU_AProp();
+
+	public abstract void setAU_A(String aU_A);
+
+	public abstract String getTI();
+
+	public abstract SimpleStringProperty getTIProp();
+
+	public abstract void setTI(String tI);
+
+	public abstract String getJ();
+
+	public abstract SimpleStringProperty getJProp();
+
+	public abstract void setJ(String j);
+
+	public abstract String getJ_N();
+
+	public abstract SimpleStringProperty getJ_NProp();
+
+	public abstract void setJ_N(String j_N);
+
+	public abstract String getJ_S();
+
+	public abstract SimpleStringProperty getJ_SProp();
+
+	public abstract void setJ_S(String j_S);
+
+	public abstract int getN_CR();
+
+	public abstract SimpleIntegerProperty getN_CRProp();
+
+	public abstract void resetN_CR();
+
+	public abstract void setN_CR(int n_CR);
+	
+	public abstract Integer getRPY();
+
+	public abstract SimpleObjectProperty<Integer> getRPYProp();
+
+	public abstract void setRPY(Integer rPY);
+
+	public abstract String getPAG();
+
+	public abstract SimpleStringProperty getPAGProp();
+
+	public abstract void setPAG(String pAG);
+
+	public abstract String getVOL();
+
+	public abstract SimpleStringProperty getVOLProp();
+
+	public abstract void setVOL(String vOL);
+
+	public abstract String getDOI();
+
+	public abstract SimpleStringProperty getDOIProp();
+
+	public abstract void setDOI(String dOI);
+
+	public abstract CRCluster getCID2();
+
+	public abstract void setCID2(CRCluster cID2);
+
+	public abstract int getCID_S();
+
+	public abstract SimpleIntegerProperty getCID_SProp();
+
+	public abstract boolean getVI();
+
+	public abstract SimpleBooleanProperty getVIProp();
+
+	public abstract void setVI(boolean vI);
+
+	public abstract int getCO();
+
+	public abstract SimpleIntegerProperty getCOProp();
+
+	public abstract void setCO(int cO);
+
+	public abstract Double getPERC_YR();
+
+	public abstract SimpleDoubleProperty getPERC_YRProp();
+
+	public abstract void setPERC_YR(Double pERC_YR);
+
+	public abstract Double getPERC_ALL();
+
+	public abstract SimpleDoubleProperty getPERC_ALLProp();
+
+	public abstract void setPERC_ALL(Double pERC_ALL);
+
+	public abstract int getN_PYEARS();
+
+	public abstract SimpleIntegerProperty getN_PYEARSProp();
+
+	public abstract void setN_PYEARS(int n_PYEARS);
+
+	public abstract Double getPYEAR_PERC();
+
+	public abstract SimpleDoubleProperty getPYEAR_PERCProp();
+
+	public abstract void setPYEAR_PERC(Double pYEAR_PERC);
+
+	public abstract int getN_PCT50();
+
+	public abstract SimpleIntegerProperty getN_PCT50Prop();
+
+	public abstract void setN_PCT50(int n_PCT50);
+
+	public abstract int getN_PCT75();
+
+	public abstract SimpleIntegerProperty getN_PCT75Prop();
+
+	public abstract void setN_PCT75(int n_PCT75);
+
+	public abstract int getN_PCT90();
+
+	public abstract SimpleIntegerProperty getN_PCT90Prop();
+
+	public abstract void setN_PCT90(int n_PCT90);
+
+	public abstract int getN_PYEARS2();
+
+	public abstract SimpleIntegerProperty getN_PYEARS2Prop();
+
+	public abstract void setN_PYEARS2(int n_PYEARS2);
+
+	public abstract int getSEARCH_SCORE();
+
+	public abstract SimpleIntegerProperty getSEARCH_SCOREProp();
+
+	public abstract void setSEARCH_SCORE(Double sEARCH_SCORE);
+
+	public abstract String getSEQUENCE();
+
+	public abstract SimpleStringProperty getSEQUENCEProp();
+
+	public abstract void setSEQUENCE(String sEQUENCE);
+
+	public abstract String getTYPE();
+
+	public abstract SimpleStringProperty getTYPEProp();
+
+	public abstract void setTYPE(String tYPE);
 	
 	
-	
-	public String getSEQUENCE() {
-		return SEQUENCE.get();
-	}
-	public SimpleStringProperty getSEQUENCEProp() {
-		return SEQUENCE;
-	}
-	public void setSEQUENCE(String sEQUENCE) {
-		SEQUENCE.set(sEQUENCE);
-	}
-	
-	public String getTYPE() {
-		return TYPE.get();
-	}
-	public SimpleStringProperty getTYPEProp() {
-		return TYPE;
-	}
-	public void setTYPE(String tYPE) {
-		TYPE.set(tYPE);
-	}	
-    
-  
 	@Override
 	public String toString() {
 		
@@ -564,15 +321,18 @@ public class CRType implements Comparable<CRType> {
 
 
 
+
 	@Override
 	public boolean equals(Object obj) {
 		return this.getCR().equals(((CRType)obj).getCR());
 	}
 	
+
 	@Override
 	public int hashCode() {
 		return this.getCR().hashCode();
 	}
+
 
 	@Override
 	public int compareTo(CRType o) {
