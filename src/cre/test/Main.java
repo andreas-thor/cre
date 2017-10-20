@@ -326,6 +326,7 @@ public class Main {
 		
 
 		serv.setOnSucceeded((WorkerStateEvent t) -> {
+			updateTableCRList();
 			result.set(new ImportStats(serv.getValue()).showAndWait().isPresent());
 			wait.close();
 		});
@@ -449,6 +450,8 @@ public class Main {
 			if (source != ImportExportFormat.CRE_JSON) {
 				if (analyzeFiles(source, files)) {
 					openFiles(source, files);
+				} else {
+					StatusBar.get().setValue("Import aborted by user");
 				}
 			} else {
 				openFiles(source, files);

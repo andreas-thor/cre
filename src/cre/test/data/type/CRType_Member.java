@@ -112,11 +112,10 @@ public class CRType_Member extends CRType {
 		return CR;
 	}
 	public SimpleStringProperty getCRProp() {
-		System.out.println("getCRProp for " + this.getID());
 		return new SimpleStringProperty(CR);
 	}
 	public void setCR(String cR) {
-		CR = cR;
+		CR = new String(cR);
 	}
 	
 	
@@ -127,7 +126,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(AU);
 	}
 	public void setAU(String aU) {
-		AU = aU;
+		AU = new String(aU);
 	}
 	
 	
@@ -138,7 +137,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(AU_F);
 	}
 	public void setAU_F(String aU_F) {
-		AU_F = aU_F;
+		AU_F = new String(aU_F);
 	}
 	
 	
@@ -149,7 +148,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(AU_L);
 	}
 	public void setAU_L(String aU_L) {
-		AU_L = aU_L;
+		AU_L = new String(aU_L);
 	}
 	
 	
@@ -160,7 +159,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(AU_A);
 	}
 	public void setAU_A(String aU_A) {
-		AU_A = aU_A;
+		AU_A = new String(aU_A);
 	}
 	
 	
@@ -171,7 +170,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(TI);
 	}
 	public void setTI(String tI) {
-		TI = tI;
+		TI = new String(tI);
 	}
 	
 	
@@ -182,7 +181,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(J);
 	}
 	public void setJ(String j) {
-		J = j;
+		J = new String(j);
 	}
 	
 	
@@ -193,7 +192,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(J_N);
 	}
 	public void setJ_N(String j_N) {
-		J_N = j_N;
+		J_N = new String(j_N);
 	}
 	
 	
@@ -204,7 +203,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(J_S);
 	}
 	public void setJ_S(String j_S) {
-		J_S = j_S;
+		J_S = new String(j_S);
 	}
 	
 	
@@ -256,7 +255,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(PAG);
 	}
 	public void setPAG(String pAG) {
-		PAG = pAG;
+		PAG = new String(pAG);
 	}
 	
 	
@@ -267,7 +266,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty (VOL);
 	}
 	public void setVOL(String vOL) {
-		VOL = vOL;
+		VOL = new String(vOL);
 	}
 	
 	
@@ -278,7 +277,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(DOI);
 	}
 	public void setDOI(String dOI) {
-		DOI = dOI;
+		DOI = new String(dOI);
 	}
 	
 	
@@ -435,7 +434,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(SEQUENCE);
 	}
 	public void setSEQUENCE(String sEQUENCE) {
-		SEQUENCE = sEQUENCE;
+		SEQUENCE = new String(sEQUENCE);
 	}
 	
 	public String getTYPE() {
@@ -445,7 +444,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(TYPE);
 	}
 	public void setTYPE(String tYPE) {
-		TYPE = tYPE;
+		TYPE = new String(tYPE);
 	}	
     
 

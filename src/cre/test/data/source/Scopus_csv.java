@@ -19,7 +19,7 @@ import cre.test.data.CRStats;
 import cre.test.data.CRTable;
 import cre.test.data.UserSettings;
 import cre.test.data.type.CRType;
-import cre.test.data.type.CRType_Prop;
+import cre.test.data.type.CRType_Member;
 import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
 
@@ -163,7 +163,7 @@ public class Scopus_csv extends ImportReader {
 		line = line.trim();
 		if (line.length() == 0) return null;
 		
-		CRType res = new CRType_Prop();
+		CRType res = new CRType_Member();
 		res.setType (CRType.TYPE_SCOPUS);
 		res.setCR(line);
 		

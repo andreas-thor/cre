@@ -35,13 +35,22 @@
 	        	chart: {
 	                zoomType: 'xy',
 	                events: {
-	                    redraw: function () {
-	                    	var extremes = this.xAxis[0].getExtremes();
-                    		crejava.onRedraw(extremes.min, extremes.max);
+	                    selection: function (event) {
+	                    	crejava.onRedraw(event.xAxis[0].min, event.xAxis[0].max);
+	                    }
+	                },
+	                resetZoomButton: {
+	                    position: {
+	                        align: 'right', // by default
+	                        x: +1000,	// button not visible
+	                        y: -30
 	                    }
 	                }
 	                
 	            },
+	            
+	    
+	            
 	            
 	            title: {
 	                text: ''

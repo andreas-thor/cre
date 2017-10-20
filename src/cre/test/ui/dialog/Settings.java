@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import cre.test.data.UserSettings;
-import cre.test.data.UserSettings.RangeType;
 import cre.test.ui.CRTableView;
 import cre.test.ui.CRTableView.CRColumn;
 import cre.test.ui.CRTableView.ColGroup;
@@ -38,9 +37,6 @@ public class Settings extends Dialog<Integer> {
 	private final CheckBox[] cbLine = new CheckBox[2];
 	private final TextField[] tfLine = new TextField[4];
 	private final TextField tfMedian = new TextField();
-	private final TextField[] tfImport = new TextField[4];
-	private final CheckBox cbIncludePubsWithoutCRs = new CheckBox();
-	private final CheckBox cbImportRandom = new CheckBox();
 	
 	private final RadioButton[] rbChart = new RadioButton[2];
 	
@@ -98,13 +94,8 @@ public class Settings extends Dialog<Integer> {
 		tabChart.getChildren().add(new TitledPane("Chart Engine (Switching chart engines requires re-start of CRExplorer!)", createChartEnginePane()));
 		tpane.getTabs().add(new Tab("Chart", tabChart));
 
-		VBox tabImport = new VBox(10);
-		tabImport.setPadding (new Insets(20, 20, 20, 20));
-		tabImport.getChildren().add(new TitledPane("Restrict Import of Cited References", createImportRestrictionPane()));
-		tabImport.getChildren().add(new TitledPane("Advanced Import/Export Options", createAdvancedExportPane()));
-		tpane.getTabs().add(new Tab("Import/Export", tabImport));
 		
-		VBox[] q = {tabTable, tabChart, tabImport};
+		VBox[] q = {tabTable, tabChart};
 		Arrays.asList(q).stream().forEach(it -> it.getChildren().filtered(t -> t instanceof TitledPane).forEach(t -> {
 			TitledPane a = (TitledPane) t; 
 			a.heightProperty().addListener((obs, oldHeight, newHeight) -> {
@@ -132,11 +123,6 @@ public class Settings extends Dialog<Integer> {
 		    	noOfErrors += UserSettings.get().setChartLine(new boolean[] { cbLine[0].isSelected(), cbLine[1].isSelected() });
 		    	noOfErrors += UserSettings.get().setChartSize(new String[] { tfLine[0].getText(), tfLine[1].getText(), tfLine[2].getText(), tfLine[3].getText() });
 		    	noOfErrors += UserSettings.get().setMedianRange(tfMedian.getText());
-		    	noOfErrors += UserSettings.get().setMaxCR(tfImport[0].getText());
-		    	noOfErrors += UserSettings.get().setMaxPub(tfImport[1].getText());
-		    	noOfErrors += UserSettings.get().setIncludePubsWithoutCRs(cbIncludePubsWithoutCRs.isSelected());
-		    	noOfErrors += UserSettings.get().setImportRandom(cbImportRandom.isSelected());
-		    	noOfErrors += UserSettings.get().setRange(UserSettings.RangeType.ImportRPYRange, new String[] { tfImport[2].getText(), tfImport[3].getText()} );
 		    	noOfErrors += UserSettings.get().setNPCTRange(tfNPCT.getText());
 		    	UserSettings.get().setChartEngine(rbChart[0].isSelected() ? 0 : 1);
 		    	
@@ -215,44 +201,6 @@ public class Settings extends Dialog<Integer> {
 	
 
 	
-	
-	private GridPane createImportRestrictionPane() {
-
-		GridPane result =  new GridPane();
-		result.setHgap(10);
-		result.setVgap(10);
-		result.setPadding(new Insets(20, 20, 20, 20));
-		
-		String[] label = new String[] { "Maximum Number of CRs", "Maximum Number of Publications ", "Minimum Publication Year", "Maximum Publication Year" };
-		long[] value = new long[] { UserSettings.get().getMaxCR(), UserSettings.get().getMaxPub(), UserSettings.get().getRange(RangeType.ImportRPYRange)[0], UserSettings.get().getRange(RangeType.ImportRPYRange)[1] };
-		for (int i=0; i<label.length; i++) {
-			result.add(new Label(label[i]), 0, i);
-			tfImport[i] = new TextField(String.valueOf(value[i]));
-			tfImport[i].setMaxWidth(50);
-			result.add(tfImport[i], 1, i);
-		}
-		
-		cbImportRandom.setText("Import Random");
-		cbImportRandom.setSelected(UserSettings.get().getImportRandom());
-		result.add(cbImportRandom, 0, label.length);
-		
-		return result;
-		
-		
-	}
-	
-	private GridPane createAdvancedExportPane() {
-
-		GridPane result =  new GridPane();
-		result.setHgap(10);
-		result.setVgap(10);
-		result.setPadding(new Insets(20, 20, 20, 20));
-		
-		cbIncludePubsWithoutCRs.setText("Include Publications without CRs in export");
-		cbIncludePubsWithoutCRs.setSelected(UserSettings.get().getIncludePubsWithoutCRs());
-		result.add(cbIncludePubsWithoutCRs, 0, 0);
-		return result;
-	}
 	
 	
 	private GridPane createTableDataPane() {

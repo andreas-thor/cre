@@ -354,7 +354,9 @@ public class UserSettings {
 	}
 	
 	public boolean getIncludePubsWithoutCRs() {
-		return includePubsWithoutCRs;
+		// return includePubsWithoutCRs;
+		// TODO: we currently always include Pubs without CR
+		return true;
 	}
 
 	public int setIncludePubsWithoutCRs (boolean includePubsWithoutCRs) {

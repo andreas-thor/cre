@@ -27,7 +27,7 @@ import cre.test.data.match.CRCluster;
 import cre.test.data.match.CRMatch2;
 import cre.test.data.match.CRPair2;
 import cre.test.data.type.CRType;
-import cre.test.data.type.CRType_Prop;
+import cre.test.data.type.CRType_Member;
 import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
 
@@ -72,7 +72,7 @@ public class CRE_json {
 					
 					
 					switch (parser.next()) {
-					case START_OBJECT: 	cr = new CRType_Prop(); break; 
+					case START_OBJECT: 	cr = new CRType_Member(); break; 
 					case END_OBJECT: 	mapId2CR.put(cr.getID(), cr); crTab.addCR(cr); break;
 					case KEY_NAME:		key = parser.getString(); break;
 					case VALUE_STRING: 
