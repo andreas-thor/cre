@@ -66,7 +66,7 @@ public class CRType_Member extends CRType {
 		J = new String();
 		J_N = new String();
 		J_S = new String();
-		N_CR = null;
+		N_CR = new Integer(0);
 		RPY = null;
 //		isNullRPY = true;
 		PAG = new String();
@@ -215,7 +215,7 @@ public class CRType_Member extends CRType {
 	}
 	
 	public SimpleIntegerProperty getN_CRProp() {
-		return new SimpleIntegerProperty (N_CR);
+		return new SimpleIntegerProperty (getN_CR());
 	}
 
 

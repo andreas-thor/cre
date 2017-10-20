@@ -76,7 +76,7 @@ public class ImportStats extends Dialog<Integer> {
 		cbWithout[0] = new CheckBox("Include");
 		cbWithout[0].setSelected(UserSettings.get().getImportCRsWithoutYear());
 		grid.addRow(4, 
-				new Label("CRs w/o Reference Publication Year"), 
+				new Label("Number of Cited References without Publication Year"), 
 				cbWithout[0],
 				new Label(""),
 				createTF (crStatsInfo.getNumberOfCRsWithoutRPY(), false));
@@ -106,7 +106,7 @@ public class ImportStats extends Dialog<Integer> {
 		cbWithout[1] = new CheckBox("Include");
 		cbWithout[1].setSelected(UserSettings.get().getImportPubsWithoutYear());
 		grid.addRow(8, 
-				new Label("Publications w/o Publication Year"), 
+				new Label("Number of Publications without Publication Year"), 
 				cbWithout[1],
 				new Label(""),
 				createTF (crStatsInfo.getNumberOfCRsWithoutPY(), false));		
