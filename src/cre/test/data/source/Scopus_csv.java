@@ -1,5 +1,6 @@
 package cre.test.data.source;
  
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -55,6 +56,13 @@ public class Scopus_csv extends ImportReader {
 	private CSVReader csv = null;
 	
 	
+	@Override
+	public void init(File file) throws IOException {
+		attribute2Index = null;
+		csv = null;
+		super.init(file);
+	}
+		
 	@Override
 	protected void computeNextEntry () throws IOException {
 		

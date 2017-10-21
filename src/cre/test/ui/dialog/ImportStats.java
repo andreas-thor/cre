@@ -1,5 +1,7 @@
 package cre.test.ui.dialog;
 
+import org.omg.PortableInterceptor.NON_EXISTENT;
+
 import cre.test.data.CRStatsInfo;
 import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
@@ -37,13 +39,16 @@ public class ImportStats extends Dialog<Integer> {
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		
 		btnImport = (Button) getDialogPane().lookupButton(ButtonType.OK);
+		btnImport.setMaxWidth(130);
+		btnImport.setPrefWidth(130);
+		btnImport.setMinWidth(130);
 		
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(20, 20, 20, 20));
 		
-		tfNumber[0] = createTF (UserSettings.get().getMaxCR(), true);
+		tfNumber[0] = createTF (crStatsInfo.getNumberOfCRs() /*UserSettings.get().getMaxCR()*/, true);
 		tfNumber[1] = createTF (-1, false);
 		grid.addRow(0, 
 			new Label("Number of non-distinct Cited References"),
@@ -54,10 +59,15 @@ public class ImportStats extends Dialog<Integer> {
 		
 		long allocatedMemory = (Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory());
 		long presumableFreeMemory = Runtime.getRuntime().maxMemory() - allocatedMemory;
-		grid.addRow(1, 
-				new Label("(Approx. maximum number based in memory)"),
-				createTF (300*presumableFreeMemory/1024/1024, false));
-
+//				new Label("Estimated maximal Number which can be loaded in Memory: "),
+//				new Label(""),
+//				new Label(""), 
+//				createTF (300*presumableFreeMemory/1024/1024, false));
+		
+		Label l = new Label("Estimated maximal Number which can be loaded in Memory: " + 300*presumableFreeMemory/1024/1024);
+		GridPane.setColumnSpan(l, GridPane.REMAINING);
+		grid.addRow(1, l);
+		
 		int[] rangeRPY = crStatsInfo.getRangeRPY();
 		tfYear[0] = createTF (rangeRPY[0], true);
 		grid.addRow(2, 
@@ -165,6 +175,7 @@ public class ImportStats extends Dialog<Integer> {
 		 
 		 try {
 			 tfNumber[1].setText("???");
+			 
 			 long n = crStatsInfo.getNumberOfCRs(
 					 new int[] { Integer.valueOf (tfYear[0].getText()).intValue(), Integer.valueOf (tfYear[1].getText()).intValue() },
 					 cbWithout[0].isSelected(),
