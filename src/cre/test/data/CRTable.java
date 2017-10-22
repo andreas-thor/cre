@@ -200,7 +200,7 @@ public class CRTable {
 		crDataMap.keySet().removeIf( cr ->  { 
 			if (cond.test(cr)) {
 				cr.removeAllPubs(true);
-				crDataMap.remove(cr);
+				// crDataMap.remove(cr);
 				return true;
 			} else {
 				return false;

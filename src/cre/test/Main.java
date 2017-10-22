@@ -194,7 +194,17 @@ public class Main {
 		CitedReferencesExplorer.stage.setOnCloseRequest(event -> {
 
 			event.consume();
-
+			
+			if (CRStats.getSize()==0) {
+				
+				UserSettings.get().saveUserPrefs(CitedReferencesExplorer.stage.getWidth(),
+						CitedReferencesExplorer.stage.getHeight(), CitedReferencesExplorer.stage.getX(),
+						CitedReferencesExplorer.stage.getY());
+				CitedReferencesExplorer.stage.close();
+				return;
+			};
+			
+			
 			Alert exit = new Alert(AlertType.CONFIRMATION);
 			exit.setTitle("Warning");
 			exit.setHeaderText("Save before exit?");
