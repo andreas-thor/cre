@@ -1,0 +1,17 @@
+// import PY: minimal year, maximal year, include Pubs without year
+PY (2000, 2020, false)
+
+// range for RPY: minimal year, maximal year, include CRs without year
+RPY (1990, 2000, false)
+
+// loading a file
+// possible sources are: file:"<filename>", dir:"<diretoryname>",  
+// possible types are: WOS_TXT, SCOPUS_CSV, CRE_JSON
+load (file:"E:/Dev/CRE/data/wetransfer/results_0.txt", type:"WOS_TXT")
+
+// saving a file
+// possible destinations: file:"<filename>"
+// possible types are: WOS_TXT, SCOPUS_CSV, CRE_JSON, CRE_CSV_GRAPH, CRE_CSV_CR, CRE_CSV_CR_PUB, CRE_CSV_PUB 
+save (file:"E:/Dev/CRE/data/wetransfer/graph.csv", type:"CRE_CSV_GRAPH")
+
+save (file:"E:/Dev/CRE/data/wetransfer/we.cre", type:"CRE_JSON")

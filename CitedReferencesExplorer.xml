@@ -8,6 +8,8 @@
 	<property name="build.dir" value="./build"/>
 	<property name="build.name" value="CitedReferencesExplorer.jar"/>
 	<property name="fat.name" value="CitedReferencesExplorerFull.jar"/>
+	<property name="script.name" value="CitedReferencesExplorerScript.jar"/>
+
 	<property name="jnlp" value="CitedReferencesExplorer.jnlp"/>
 	<property name="src.dir" value="./src/"/>
 	<property name="bin.dir" value="./bin/"/>
@@ -23,9 +25,11 @@
 		<antcall target="clean" />
 		<antcall target="create_jws_jar" />
 		<antcall target="create_fat_jar" />
+		<antcall target="create_script_jar" />
+		<!--
 		<antcall target="sign" />
-		<antcall target="deploy" />
-		<antcall target="clean" />
+		<antcall target="deploy" /> 
+		<antcall target="clean" /> -->
 	</target>
 
 	<target name="clean">
@@ -57,7 +61,7 @@
         <jar destfile="${build.dir}/${fat.name}">
             <manifest>
                 <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
-                <attribute name="Rsrc-Main-Class" value="cre.test.CitedReferencesExplorer"/>
+                <attribute name="Rsrc-Main-Class" value="cre.test.CitedReferencesExplorer"/> 
                 <attribute name="Class-Path" value="."/>
                 <attribute name="Rsrc-Class-Path" value="./ lucene-core-6.4.2.jar lucene-queryparser-6.4.2.jar opencsv-3.9.jar simmetrics_jar_v1_6_2_d07_02_07.jar hamcrest-core-1.3.jar jcommon-1.0.23.jar jfreechart-1.0.19-experimental.jar jfreechart-1.0.19-swt.jar jfreechart-1.0.19.jar jfreesvg-2.0.jar junit-4.11.jar orsoncharts-1.4-eval-nofx.jar orsonpdf-1.6-eval.jar servlet.jar swtgraphics2d.jar javax.json-1.0.jar jfreechart-1.0.19-fx.jar"/>
             </manifest>
@@ -67,6 +71,22 @@
         </jar>
     </target>	
 
+	
+	<!-- must be executed after create_ws_jar because it references to the build/lib directory!!! -->
+    <target name="create_script_jar">
+        <jar destfile="${build.dir}/${script.name}">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="cre.test.script.CREScript"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ lucene-core-6.4.2.jar lucene-queryparser-6.4.2.jar opencsv-3.9.jar simmetrics_jar_v1_6_2_d07_02_07.jar hamcrest-core-1.3.jar jcommon-1.0.23.jar jfreechart-1.0.19-experimental.jar jfreechart-1.0.19-swt.jar jfreechart-1.0.19.jar jfreesvg-2.0.jar junit-4.11.jar orsoncharts-1.4-eval-nofx.jar orsonpdf-1.6-eval.jar servlet.jar swtgraphics2d.jar javax.json-1.0.jar jfreechart-1.0.19-fx.jar bsf-2.4.0.jar groovy-all-2.4.12.jar ivy-2.4.0.jar servlet-api-2.4.jar"/>
+            </manifest>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+        	<fileset dir="${bin.dir}" />
+        	<zipfileset dir="${build.dir}/lib" />
+        </jar>
+    </target>		
+	
 	
 	<target name="sign">
 		<signjar keystore="res/AndreasThor3.keystore"  alias="AndreasThor" storepass="${SignPW}">
