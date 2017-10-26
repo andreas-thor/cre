@@ -26,10 +26,9 @@
 		<antcall target="create_jws_jar" />
 		<antcall target="create_fat_jar" />
 		<antcall target="create_script_jar" />
-		<!--
 		<antcall target="sign" />
 		<antcall target="deploy" /> 
-		<antcall target="clean" /> -->
+		<antcall target="clean" /> 
 	</target>
 
 	<target name="clean">
