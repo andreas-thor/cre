@@ -26,14 +26,14 @@ public class Indicators {
 	public static int[][] update() {
 
 		long t1=0, t2=0;
-		System.out.println("1");
+//		System.out.println("1");
 		t1 = System.currentTimeMillis();
 		
 		rangeRPY = CRStats.getMaxRangeYear();
 		rangePY  = CRStats.getMaxRangeCitingYear();
 		
 		t2 = System.currentTimeMillis();;
-		System.out.println("ranges: " + (t2-t1)/1000d);
+//		System.out.println("ranges: " + (t2-t1)/1000d);
 		t1 = t2;
 		
 		CRTable.get().getCR().forEach(cr -> {
@@ -41,7 +41,7 @@ public class Indicators {
 		});
 		
 		t2 = System.currentTimeMillis();;
-		System.out.println("setN_PYEARS: " + (t2-t1)/1000d);
+//		System.out.println("setN_PYEARS: " + (t2-t1)/1000d);
 		t1 = t2;
 		
 		
@@ -51,7 +51,7 @@ public class Indicators {
 		
 		
 		t2 = System.currentTimeMillis();;
-		System.out.println("mapRPY_CRs: " + (t2-t1)/1000d);
+//		System.out.println("mapRPY_CRs: " + (t2-t1)/1000d);
 		t1 = t2;
 
 		RPY_PY_NCR = new int[rangeRPY[1]-rangeRPY[0]+1][rangePY[1]-rangePY[0]+1];
@@ -74,7 +74,7 @@ public class Indicators {
 		sumNCR = IntStream.of(RPY_SumNCR).sum();
 		
 		t2 = System.currentTimeMillis();;
-		System.out.println("RPY_SumNCR: " + (t2-t1)/1000d);
+//		System.out.println("RPY_SumNCR: " + (t2-t1)/1000d);
 		t1 = t2;
 		
 		
@@ -193,13 +193,13 @@ public class Indicators {
 		});
 		
 		t2 = System.currentTimeMillis();;
-		System.out.println("setPERC_*: " + (t2-t1)/1000d);
+//		System.out.println("setPERC_*: " + (t2-t1)/1000d);
 		t1 = t2;
 		
 		
 	/* !!!! LANGE */	 // computeNPCT(CRStats.getMaxRangeCitingYear(), UserSettings.get().getNPCTRange());
 		
-		System.out.println("6");
+//		System.out.println("6");
 		
 		return getChartData(UserSettings.get().getMedianRange());
 	}

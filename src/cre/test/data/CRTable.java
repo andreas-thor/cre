@@ -178,8 +178,8 @@ public class CRTable {
 		
 		duringUpdate = true;		// mutex to avoid chart updates during computation
 		
-		System.out.println("update Data");
-		System.out.println(System.currentTimeMillis());
+//		System.out.println("update Data");
+//		System.out.println(System.currentTimeMillis());
 		
 		this.chartData = Indicators.update();
 		
@@ -195,7 +195,7 @@ public class CRTable {
 		
 
 
-	public void removeCR (Predicate<CRType> cond) {
+	private void removeCR (Predicate<CRType> cond) {
 		
 		crDataMap.keySet().removeIf( cr ->  { 
 			if (cond.test(cr)) {

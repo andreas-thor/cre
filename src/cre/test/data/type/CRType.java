@@ -25,6 +25,9 @@ public abstract class CRType implements Comparable<CRType>  {
 		pubList = new HashSet<PubType>();
 	}
 	
+	public static int mein() {
+		return 3;
+	}
 	
 	public boolean isFlag() {
 		return flag;

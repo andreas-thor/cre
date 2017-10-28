@@ -1,20 +1,37 @@
-// import PY: minimal year, maximal year, include Pubs without year
-PY (2000, 2020, false)
 
-// range for RPY: minimal year, maximal year, include CRs without year
-RPY (1990, 2000, false)
+/**
+ * Example
+ */
 
-println("jjj")
+progress (false)	// show progress of loading etc. in percent
 
-// loading a file
-// possible sources are: file:"<filename>", dir:"<diretoryname>",  
-// possible types are: WOS_TXT, SCOPUS_CSV, CRE_JSON
-load (file:"E:/Dev/CRE/data/wetransfer/results_0.txt", type:"WOS")
+load (
+	file:	"E:/Dev/CRE/data/savedrecs_JOI1.txt", 
+//	file:	"E:/Dev/CRE/data/wetransfer/results_0.txt", 
+	type:	"WOS",
+	RPY: 	[1900, 2015, false],
+	PY: 	[2000, 2020]
+//	maxCR:	1000
+)
 
-print "davor"
+//info()
+//removeCR (RPY: [0, 1995])
+//info()
+//retainPub  (PY: [2000,2006])
+
 info()
-removeCR ("RPY<2000")
-print "danach"
+
+cluster(
+	threshold: 0.8,
+	volume: false,
+	page: false,
+	DOI: false
+)
+
+info()
+
+merge ()
+	
 info()
 
 // saving a file
@@ -24,4 +41,4 @@ for (x in ["WOS", "SCOPUS", "CRE", "GRAPH", "CRE_CR", "CRE_CR_PUB", "CRE_PUB"]) 
 //	save (file:"E:/Dev/CRE/data/wetransfer/out.$x", type:x)
 }
 
-save (file:"E:/Dev/CRE/data/wetransfer/we2.cre")
+//save (file:"E:/Dev/CRE/data/wetransfer/we2.cre")
