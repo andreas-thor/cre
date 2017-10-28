@@ -21,19 +21,19 @@ import javafx.stage.FileChooser.ExtensionFilter;
 public enum ImportExportFormat {
 
 	
-	CRE_JSON("Cited References Explorer", false, "cre" , null, CRE_json::save),
+	CRE("Cited References Explorer", false, "cre" , null, CRE_json::save),
 
-	WOS_TXT("Web of Science", true, "txt", new WoS_txt(), WoS_txt::save),
+	WOS("Web of Science", true, "txt", new WoS_txt(), WoS_txt::save),
 
-	SCOPUS_CSV("Scopus", true,	"csv", new Scopus_csv(), Scopus_csv::save),
+	SCOPUS("Scopus", true,	"csv", new Scopus_csv(), Scopus_csv::save),
 
-	CRE_CSV_CR("Cited References", false, "csv", null, CRE_csv::saveCR), 
+	CRE_CR("Cited References", false, "csv", null, CRE_csv::saveCR), 
 	
-	CRE_CSV_PUB("Citing Publications", false, "csv", null, CRE_csv::savePub), 
+	CRE_PUB("Citing Publications", false, "csv", null, CRE_csv::savePub), 
 
-	CRE_CSV_CR_PUB("Cited References + Citing Publications", false, "csv", null, CRE_csv::saveCRPub), 
+	CRE_CR_PUB("Cited References + Citing Publications", false, "csv", null, CRE_csv::saveCRPub), 
 
-	CRE_CSV_GRAPH("CRE Graph", false, "csv", null, CRE_csv::saveGraph);
+	GRAPH("CRE Graph", false, "csv", null, CRE_csv::saveGraph);
 	
 	
 
@@ -127,7 +127,7 @@ public enum ImportExportFormat {
 			
 			StatusBar.get().initProgressbar(file.length(), String.format("Loading %4$s file %1$d of %2$d (%3$s) ...", (++idx), files.size(), file.getName(), this.label));
 
-			if (this==ImportExportFormat.CRE_JSON) {	// load internal CRE format
+			if (this==ImportExportFormat.CRE) {	// load internal CRE format
 				CRE_json.load(file);
 			} else {	// import external data format
 			

@@ -5,13 +5,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate
 
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
+import cre.test.data.CRTable
 import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
 import cre.test.data.source.ImportExportFormat;
+import cre.test.data.type.CRType
 import cre.test.ui.StatusBar;
 import groovy.lang.Script;
 
@@ -41,7 +44,7 @@ abstract class CREDSL extends Script {
 	
 	public void load (Map<String, String> param)  {
 		
-		String type = param.getOrDefault("type", "CRE_JSON");
+		String type = param.getOrDefault("type", "CRE").toUpperCase();
 		
 		List<File> files = new ArrayList<File>();
 		if (param.get("file") != null) files.add(new File (param.get("file")));
@@ -54,10 +57,32 @@ abstract class CREDSL extends Script {
 		
 	}
 	
+	
 	public void save (Map<String, String> param)  {
 		
-		String type = param.getOrDefault("type", "CRE_JSON");
+		String type = param.getOrDefault("type", "CRE").toUpperCase();
 		File file = new File (param.get("file"));
 		ImportExportFormat.valueOf(type).save(file);
 	}
+	
+	public void removeCR (String cond) {
+		
+		cond = cond ?: "";
+		cond = cond.replaceAll("RPY", "it.getRPY()");
+		cond = cond.replaceAll("N_CR", "it.getN_CR()");
+		
+		Binding b = new Binding();
+		b.setVariable("pred", null);
+		GroovyShell shell = new GroovyShell(b);
+		shell.evaluate ("pred = { ${cond} };");
+		
+		CRTable.get().removeCR ((Predicate<CRType>) b.getVariable("pred"));
+		
+		
+	}
+	
+	public void info() {
+		StatusBar.get().updateInfo();
+	}
+	
 }

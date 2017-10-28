@@ -4,14 +4,24 @@ PY (2000, 2020, false)
 // range for RPY: minimal year, maximal year, include CRs without year
 RPY (1990, 2000, false)
 
+println("jjj")
+
 // loading a file
 // possible sources are: file:"<filename>", dir:"<diretoryname>",  
 // possible types are: WOS_TXT, SCOPUS_CSV, CRE_JSON
-load (file:"E:/Dev/CRE/data/wetransfer/results_0.txt", type:"WOS_TXT")
+load (file:"E:/Dev/CRE/data/wetransfer/results_0.txt", type:"WOS")
+
+print "davor"
+info()
+removeCR ("RPY<2000")
+print "danach"
+info()
 
 // saving a file
 // possible destinations: file:"<filename>"
-// possible types are: WOS_TXT, SCOPUS_CSV, CRE_JSON, CRE_CSV_GRAPH, CRE_CSV_CR, CRE_CSV_CR_PUB, CRE_CSV_PUB 
-save (file:"E:/Dev/CRE/data/wetransfer/graph.csv", type:"CRE_CSV_GRAPH")
+// possible types are: WOS, SCOPUS, CRE, GRAPH, CRE_CR, CRE_CR_PUB, CRE_PUB 
+for (x in ["WOS", "SCOPUS", "CRE", "GRAPH", "CRE_CR", "CRE_CR_PUB", "CRE_PUB"]) {
+//	save (file:"E:/Dev/CRE/data/wetransfer/out.$x", type:x)
+}
 
-save (file:"E:/Dev/CRE/data/wetransfer/we.cre", type:"CRE_JSON")
+save (file:"E:/Dev/CRE/data/wetransfer/we2.cre")
