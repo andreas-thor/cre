@@ -31,6 +31,7 @@ import cre.test.ui.CRChart_JFreeChart;
 import cre.test.ui.CRTableView;
 import cre.test.ui.MatchPanel;
 import cre.test.ui.StatusBar;
+import cre.test.ui.StatusBarFX;
 import cre.test.ui.dialog.About;
 import cre.test.ui.dialog.CRInfo;
 import cre.test.ui.dialog.CRPubInfo;
@@ -98,8 +99,10 @@ public class Main {
 		
 		creFile = null;
 		crTable = CRTable.get();
-		statPane.add(StatusBar.get(), 0, 0);
+		StatusBarFX stat = new StatusBarFX();
+		statPane.add(stat, 0, 0);
 
+		StatusBar.get().setUI(stat);
 		StatusBar.get().setOnUpdateInfo(x -> {
 			noOfVisibleCRs.setDisable(CRStats.getSize() == CRStats.getNumberByVisibility(true));
 			noOfVisibleCRs.setText(String.format("Show all Cited References (currently %d of %d)",

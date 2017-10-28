@@ -3,18 +3,19 @@ package cre.test.ui;
 import java.util.Date;
 
 
-public class StatusBarText extends StatusBar {
+public class StatusBarText implements StatusBarUI {
 
-
-	@Override
-	protected void setInfo (String info) {
+	public void printInfo (String info) {
 		System.out.println(info);
 	}
 	
-	@Override
+	public void print (String label, long percent, Date d) {
 
-	protected void setValue (String label, long value, String info, Date d) {
-		System.out.println(String.format("%s: %s [%d%%]", d.toString(), label, (maxSize==0) ? 0 : 100*value/maxSize));
+		StringBuffer out = new StringBuffer(String.format("%s: %s", d.toString(), label));
+		if (percent > 0) {
+			 out.append(String.format(" [%d%%]", percent));
+		} 
+		System.out.println(out.toString());
 	}
 
 	
