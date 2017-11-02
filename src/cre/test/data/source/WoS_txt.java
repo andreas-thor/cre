@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -238,7 +239,9 @@ public class WoS_txt extends ImportReader {
 	
 
 	
-	public static void save (String file_name) throws IOException, RuntimeException {
+	public static void save (String file_name, Predicate<CRType> filter) throws IOException, RuntimeException {
+		
+		/* TODO: Filter is not supported yet */
 		
 		StatusBar.get().initProgressbar(CRStats.getSizePub());
 						

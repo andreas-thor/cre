@@ -3,14 +3,15 @@
  * Example
  */
 
-progress (false)	// show progress of loading etc. in percent
+progress (true)	// show progress of loading etc. in percent
 
 load (
-	file:	"E:/Dev/CRE/data/savedrecs_JOI1.txt", 
+//	file:	"E:/Dev/CRE/data/savedrecs_JOI1.txt", 
 //	file:	"E:/Dev/CRE/data/wetransfer/results_0.txt", 
+	dir:	"wetransfer", 
 	type:	"WOS",
-	RPY: 	[1900, 2015, false],
-	PY: 	[2000, 2020]
+	RPY: 	[0, 0, false],
+	PY: 	[0, 0, false]
 //	maxCR:	1000
 )
 
@@ -33,6 +34,22 @@ info()
 merge ()
 	
 info()
+
+
+for (int y=32; y<2030; y++) {
+	save (
+//		file: "E:/Dev/CRE/data/wetransfer/out/out.year.$y", 
+		file: "wetransferout/out.year.$y", 
+		type: "CRE_CR",
+		RPY: [y, y]
+	)
+}
+
+
+save (
+	file: "wetransferout/graph.csv",
+	type: "GRAPH"
+)
 
 // saving a file
 // possible destinations: file:"<filename>"

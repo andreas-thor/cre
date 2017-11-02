@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
 
 import cre.test.Exceptions.AbortedException;
@@ -15,6 +16,7 @@ import cre.test.data.CRStatsInfo;
 import cre.test.data.CRTable;
 import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
+import cre.test.data.type.CRType;
 import cre.test.ui.StatusBar;
 import javafx.stage.FileChooser.ExtensionFilter;
 
@@ -38,7 +40,7 @@ public enum ImportExportFormat {
 	
 
 	public interface Export {
-	   void save(String file_name) throws IOException, RuntimeException;
+	   void save(String file_name, Predicate<CRType> filter) throws IOException, RuntimeException;
 	}
 	
 	public final String label;
@@ -58,15 +60,18 @@ public enum ImportExportFormat {
 		this.exportSave = exportSave;
 	}
 
-
 	public void save (File file) throws IOException {
+		this.save (file, (it -> true));
+	}
+	
+	public void save (File file, Predicate<CRType> filter) throws IOException {
 		
 		// add extension if necessary
 		String file_name = file.toString();
 		if (!file_name.endsWith("." + this.fileExtension)) file_name += "." + this.fileExtension;
 		
 		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s ...", file.getName(), this.label));
-		this.exportSave.save(file_name);
+		this.exportSave.save(file_name, filter);
 		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s done", file.getName(), this.label));
 
 	}

@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.opencsv.CSVWriter;
@@ -11,6 +12,7 @@ import com.opencsv.CSVWriter;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
 import cre.test.data.UserSettings;
+import cre.test.data.type.CRType;
 import cre.test.data.type.PubType.PubColumn;
 import cre.test.ui.CRTableView.CRColumn;
 import cre.test.ui.StatusBar;
@@ -23,14 +25,16 @@ public class CRE_csv {
 	 * Save CR table to CSV file
 	 * @param file
 	 */
-	public static void saveCR (String file_name) throws IOException {
+	
+	
+	public static void saveCR (String file_name, Predicate<CRType> filter) throws IOException {
 
 		StatusBar.get().initProgressbar(CRStats.getSize());
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(Arrays.stream(CRColumn.values()).map(col -> col.id).toArray(String[]::new)); 
 		
-		CRTable.get().getCR().sorted().forEach(cr -> {
+		CRTable.get().getCR().filter(filter).sorted().forEach(cr -> {
 			StatusBar.get().incProgressbar();
 			csv.writeNext(Arrays.stream(CRColumn.values()).map(col -> col.prop.apply(cr).getValue()).map(val -> val==null ? "" : String.valueOf(val)).toArray(String[]::new)); 
 		});
@@ -40,7 +44,7 @@ public class CRE_csv {
 
 
 	
-	public static void savePub (String file_name) throws IOException {
+	public static void savePub (String file_name, Predicate<CRType> filter) throws IOException {
 
 		StatusBar.get().initProgressbar(CRStats.getSizePub());
 		
@@ -57,7 +61,7 @@ public class CRE_csv {
 	
 	
 	
-	public static void saveCRPub (String file_name) throws IOException {
+	public static void saveCRPub (String file_name, Predicate<CRType> filter) throws IOException {
 
 		StatusBar.get().initProgressbar(CRStats.getSizePub());
 		
@@ -70,7 +74,7 @@ public class CRE_csv {
 		CRTable.get().getPub().sorted().forEach(pub -> {
 			StatusBar.get().incProgressbar();
 			
-			pub.getCR().sorted().forEach(cr -> {
+			pub.getCR().filter(filter).sorted().forEach(cr -> {
 				csv.writeNext (Stream.concat (
 					Arrays.stream(PubColumn.values()).map(col -> col.prop.apply(pub).getValue()).map(val -> val==null ? "" : String.valueOf(val)), 
 					Arrays.stream(CRColumn.values()).map(col -> col.prop.apply(cr).getValue()).map(val -> val==null ? "" : String.valueOf(val)) 
@@ -83,8 +87,10 @@ public class CRE_csv {
 
 	
 	
-	public static void saveGraph (String file_name) throws IOException {
+	public static void saveGraph (String file_name, Predicate<CRType> filter) throws IOException {
 
+		/* TODO: Filter not supported yet */
+		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(new String[] {"Year", "NCR", String.format("Median-%d", 2*UserSettings.get().getMedianRange()+1)});
 		

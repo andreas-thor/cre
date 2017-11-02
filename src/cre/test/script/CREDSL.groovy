@@ -90,7 +90,14 @@ abstract class CREDSL extends Script {
 		
 		String type = param.getOrDefault("TYPE", "CRE").toUpperCase();
 		File file = new File (param.get("FILE"));
-		ImportExportFormat.valueOf(type).save(file);
+		
+		Predicate<CRType> filter = { cr -> true };
+		if (param.keySet().contains("RPY")) {
+			int[] range = param["RPY"];
+			filter = { cr -> (cr.getRPY() != null) && (cr.getRPY()>=range[0]) && (cr.getRPY()<=range[1]) };
+		}
+		
+		ImportExportFormat.valueOf(type).save(file, filter);
 	}
 	
 	public void removeCR (Map<String, Object> map) {

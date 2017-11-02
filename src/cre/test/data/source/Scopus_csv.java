@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -267,7 +268,9 @@ public class Scopus_csv extends ImportReader {
 
 
 
-	public static void save (String file_name) throws IOException {
+	public static void save (String file_name, Predicate<CRType> filter) throws IOException {
+		
+		/* TODO: Filter not supported yet */
 		
 		StatusBar.get().initProgressbar(CRStats.getSizePub());
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));

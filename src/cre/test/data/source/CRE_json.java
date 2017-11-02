@@ -9,6 +9,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -239,8 +240,10 @@ public class CRE_json {
 
 
 
-	public static void save (String file_name) throws IOException {
+	public static void save (String file_name, Predicate<CRType> filter) throws IOException {
 		 
+		/* TODO: filter is not supported yet */
+		
 		CRTable crTab = CRTable.get();
 		StatusBar.get().initProgressbar(CRStats.getSize() + CRStats.getSizePub() + CRStats.getSizeMatch(true) + CRStats.getSizeMatch(false));
 		
