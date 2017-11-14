@@ -178,8 +178,8 @@ public class CRTable {
 		
 		duringUpdate = true;		// mutex to avoid chart updates during computation
 		
-//		System.out.println("update Data");
-//		System.out.println(System.currentTimeMillis());
+		System.out.println("update Data");
+		System.out.println(System.currentTimeMillis());
 		
 		this.chartData = Indicators.update();
 		
@@ -200,7 +200,6 @@ public class CRTable {
 		crDataMap.keySet().removeIf( cr ->  { 
 			if (cond.test(cr)) {
 				cr.removeAllPubs(true);
-				// crDataMap.remove(cr);
 				return true;
 			} else {
 				return false;
@@ -214,7 +213,9 @@ public class CRTable {
 	 * @param toDelete list of CRs to be deleted
 	 */
 	public void removeCR (List<CRType> toDelete) {
-		removeCR(cr -> toDelete.contains(cr));
+		getCR().forEach(cr -> cr.setFlag(false));
+		toDelete.forEach(cr -> cr.setFlag(true));
+		removeCR(cr -> cr.isFlag());
 	}
 	
 
@@ -223,7 +224,9 @@ public class CRTable {
 	 * @param toRetain list of CRs to be retained
 	 */
 	public void retainCR (List<CRType> toRetain) {
-		removeCR(cr -> !toRetain.contains(cr));
+		getCR().forEach(cr -> cr.setFlag(true));
+		toRetain.forEach(cr -> cr.setFlag(false));
+		removeCR(cr -> cr.isFlag());
 	}
 	
 	

@@ -47,6 +47,7 @@ import cre.test.ui.dialog.Threshold;
 import cre.test.ui.dialog.Wait;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
@@ -263,13 +264,15 @@ public class Main {
 			tableView.getSortOrder().forEach(it -> oldSort.add(it));
 	
 			// ... update rows ...
+			tableView.getItems().clear();
+			tableView.getSortOrder().clear();
 			tableView.setItems(FXCollections.observableArrayList(crTable.getCR().filter(cr -> cr.getVI()).collect(Collectors.toList())));
-	
+			
 			// ... reset old sort order
 			for (TableColumn<CRType, ?> x : oldSort) {
 				tableView.getSortOrder().add(x);
 			}
-	
+			
 			// set Domain Range for charts
 			if (!triggeredByChartZoom) {
 				Stream.of(crChart).forEach(it -> {
@@ -281,6 +284,7 @@ public class Main {
 			}
 	
 			refreshTableValues();
+
 		});
 	}
 

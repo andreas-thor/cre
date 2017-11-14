@@ -29,6 +29,7 @@ import cre.test.data.match.CRMatch2;
 import cre.test.data.match.CRPair2;
 import cre.test.data.type.CRType;
 import cre.test.data.type.CRType_Member;
+import cre.test.data.type.CRType_Prop;
 import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
 

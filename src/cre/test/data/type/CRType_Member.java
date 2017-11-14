@@ -9,6 +9,14 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class CRType_Member extends CRType {
 
+	/**
+	 * !!! Probleme durch unterschiedliche Init-Werte, z.B. bei AU_L
+	 * Parser (z.B. bei WoS) prüft auf "==NULL", hier aber Init-Wert = ""
+	 * Daher erstmal weiter CRTYpe_Prop verwenden! 
+	 * --> jetzt passt es, oder?
+	 */
+	
+	
 	private Integer ID;
 	private String CR;
 	private String AU;
@@ -57,23 +65,23 @@ public class CRType_Member extends CRType {
 		super();
 		
 		ID = null;
-		CR = new String();
-		AU = new String();
-		AU_F = new String();
-		AU_L = new String();
-		AU_A = new String();
-		TI = new String();
-		J = new String();
-		J_N = new String();
-		J_S = new String();
+//		CR = new String();
+//		AU = new String();
+//		AU_F = new String();
+//		AU_L = new String();
+//		AU_A = new String();
+//		TI = new String();
+//		J = new String();
+//		J_N = new String();
+//		J_S = new String();
 		N_CR = new Integer(0);
 		RPY = null;
-//		isNullRPY = true;
-		PAG = new String();
-		VOL = new String();
-		DOI = new String();
-		CID2 = null;
-//		CID_S = new Integer();
+//x		isNullRPY = true;
+//		PAG = new String();
+//		VOL = new String();
+//		DOI = new String();
+//		CID2 = null;
+//x		CID_S = new Integer();
 		PERC_YR = 0d;
 		PERC_ALL = 0d;
 		
@@ -83,7 +91,7 @@ public class CRType_Member extends CRType {
 		N_PCT75 = new Integer(0);
 		N_PCT90 = new Integer(0);
 		N_PYEARS2 = 0;
-		
+//		
 		VI = new Boolean(true);
 		CO = new Integer(0);
 		SEARCH_SCORE = new Integer(0);

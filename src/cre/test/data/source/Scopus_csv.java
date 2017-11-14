@@ -22,6 +22,7 @@ import cre.test.data.CRTable;
 import cre.test.data.UserSettings;
 import cre.test.data.type.CRType;
 import cre.test.data.type.CRType_Member;
+import cre.test.data.type.CRType_Prop;
 import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
 

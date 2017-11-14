@@ -109,7 +109,7 @@ public class CRType_Prop extends CRType {
 		return CR.get();
 	}
 	public SimpleStringProperty getCRProp() {
-		System.out.println("getCRProp for " + this.getID());
+//		System.out.println("getCRProp for " + this.getID());
 		return CR;
 	}
 	public void setCR(String cR) {
