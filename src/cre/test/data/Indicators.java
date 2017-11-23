@@ -127,10 +127,11 @@ public class Indicators {
 		for (int x=0; x<crSize; x++) {
 			final int crIdx = x;
 			int[] NPCT = new int[3];
-			int[] type = new int[9];
+			int[] type = new int[11];
 			char[] sequence = new char[pySize];
 			
 			
+			double zvalue_old = 0;
 			for (int pyIdx=0; pyIdx<pySize; pyIdx++) {
 				
 				for (int b=0; b<3; b++) {
@@ -145,23 +146,27 @@ public class Indicators {
 //				System.out.println(String.format("CR=%d; PY=%d; Expected=%10.2f; zValue=%10.2f", crIdx, pyIdx, expected, zvalue));
 				
 				sequence[pyIdx] = (zvalue>1) ? '+' : ((zvalue<-1) ? '-' : '0');
-				type[0] +=                      (zvalue>-1)?1:0;
-				type[1] += ((pyIdx < 3)?1:0) * ((zvalue< 0)?1:0);
-				type[2] += ((pyIdx >=3)?1:0) * ((zvalue> 0)?1:0);
-				type[3] += ((pyIdx < 3)?1:0) * ((zvalue> 1)?1:0);
-				type[4] += ((pyIdx <=3)?1:0) * ((zvalue< 1)?1:0);
-				type[5] += ((pyIdx > 3)?1:0) * ((zvalue> 1)?1:0);
-				type[6] += ((pyIdx > 6)?1:0) * ((zvalue<-1)?1:0);
-				type[7] += (NCR_CR[crIdx]>0)?1:0;
-				type[8] += 1;
+				type[0]  +=                      (zvalue>-1)?1:0;
+				type[1]  += ((pyIdx < 3)?1:0) * ((zvalue< 0)?1:0);
+				type[2]  += ((pyIdx >=3)?1:0) * ((zvalue> 0)?1:0);
+				type[3]  += ((pyIdx < 3)?1:0) * ((zvalue> 1)?1:0);
+				type[4]  += ((pyIdx <=3)?1:0) * ((zvalue< 1)?1:0);
+				type[5]  += ((pyIdx > 3)?1:0) * ((zvalue> 1)?1:0);
+				type[6]  += ((pyIdx > 6)?1:0) * ((zvalue<-1)?1:0);
+				type[7]  += (NCR_CR[crIdx]>0)?1:0;
+				type[8]  += ((pyIdx==0) || (zvalue>zvalue_old)) ? 1:0;
+				type[9]  +=                      (zvalue>1)?1:0;
+				type[10] += 1;
+				
+				zvalue_old = zvalue;
 
 			}
 			
-			boolean constant  = ((1.0d*type[0]/type[8])>0.8) && ((1.0d*type[7]/type[8])>0.8);
+			boolean constant  = ((1.0d*type[0]/type[10])>0.8) && ((1.0d*type[7]/type[10])>0.8);
 			boolean sbeauty   = (type[1]>2) && (type[2]>2);
 			boolean hotpaper  = (type[3]>1);
 			boolean lifecycle = (type[4]>1) && (type[5]>1) && (type[6]>1);
-			
+			boolean evergreen = ((1.0d*type[8]/type[10])>0.8) && ((1.0d*type[9]/type[10])>0.2);
 		
 			CRType cr = crList.get(crIdx);
 			
@@ -176,12 +181,15 @@ public class Indicators {
 			cr.setSEQUENCE(new String (sequence));
 			
 			if (hotpaper) 				cr.setTYPE("Hot paper");
-			if (sbeauty) 				cr.setTYPE("Delayed performer");
+			if (sbeauty) 				cr.setTYPE("Sleeping beauty");
 			if (lifecycle) 				cr.setTYPE("Life cycle");
 			if (constant) 				cr.setTYPE("Constant performer");
+			
 			if (lifecycle && sbeauty) 	cr.setTYPE("Delayed performer / Life cycle");
 			if (hotpaper && sbeauty) 	cr.setTYPE("Delayed performer / Hot paper");
 			if (hotpaper && lifecycle) 	cr.setTYPE("Hot Paper / Life Cycle");
+			if (evergreen) 				cr.setTYPE("Evergreen performer");
+
 		}
 		
 		
