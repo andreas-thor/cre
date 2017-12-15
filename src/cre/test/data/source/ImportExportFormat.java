@@ -16,6 +16,7 @@ import cre.test.data.CRStatsInfo;
 import cre.test.data.CRTable;
 import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
+import cre.test.data.UserSettings.Sampling;
 import cre.test.data.type.CRType;
 import cre.test.ui.StatusBar;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -110,23 +111,39 @@ public enum ImportExportFormat {
 
 	public void load(List<File> files) throws OutOfMemoryError, UnsupportedFileFormatException, FileTooLargeException, AbortedException, IOException {
 
+		
 		long ts1 = System.currentTimeMillis();
 		long ms1 = Runtime.getRuntime().totalMemory();
 
+		Random rand = new Random();
 		CRTable crTab = CRTable.get(); 
 		crTab.init();
 
-
+		final Sampling sampling = UserSettings.get().getSampling();
+		
 		final int[] rpyRange = UserSettings.get().getRange(RangeType.ImportRPYRange);
 		boolean importCRsWithoutYear = UserSettings.get().getImportCRsWithoutYear();
 		final int[] pyRange = UserSettings.get().getRange(RangeType.ImportPYRange);
-		boolean importPubsWithoutYear = UserSettings.get().getImportPubsWithoutYear();
+
+		boolean importPubsWithoutYear = (sampling==Sampling.CLUSTER) ? false : UserSettings.get().getImportPubsWithoutYear();
+
+		/* pick a PY at random */
+		if (sampling==Sampling.CLUSTER) {
+			int py = rand.nextInt(pyRange[1]-pyRange[0]+1);
+			pyRange[0] = pyRange[0]+py;
+			pyRange[1] = pyRange[0];
+		}
+		
+		
 		
 		final long noMaxCRs = UserSettings.get().getMaxCR();
 		AtomicLong noAvailableCRs = new AtomicLong (CRStatsInfo.get().getNumberOfCRs (rpyRange, importCRsWithoutYear, pyRange, importPubsWithoutYear));
-		AtomicLong noToImportCRs = new AtomicLong(noMaxCRs);
+		AtomicLong noToImportCRs = new AtomicLong(Math.min(noMaxCRs, noAvailableCRs.get()));
 				
-		Random rand = new Random();
+		float ratio = 1.0f*noToImportCRs.get()/noAvailableCRs.get();
+		
+		
+		
 		int idx = 0;
 		for (File file: files) {
 			
@@ -161,7 +178,14 @@ public enum ImportExportFormat {
 							pub.removeCRByYear(rpyRange, importCRsWithoutYear, true);
 							
 							if ((pub.getSizeCR()>0) && (noMaxCRs>0)) {		// select CRs at random
-								pub.removeCRByRandom(rand, noToImportCRs, noAvailableCRs);
+								
+								if (sampling==Sampling.RANDOM) {
+									pub.removeCRByProbability(rand.nextFloat(), noToImportCRs, noAvailableCRs);
+								}
+								if (sampling==Sampling.SYSTEMATIC) {
+									pub.removeCRByProbability(ratio, noToImportCRs, noAvailableCRs);
+								}
+								
 							}
 					
 							if (pub.getSizeCR()>0) {		

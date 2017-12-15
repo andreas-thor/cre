@@ -243,13 +243,13 @@ public class PubType implements Comparable<PubType> {
 	}
 	
 	
-	public void removeCRByRandom (Random rand, AtomicLong noToImportCRs, AtomicLong noAvailableCRs) {
+	public void removeCRByProbability (float probability, AtomicLong noToImportCRs, AtomicLong noAvailableCRs) {
 		
 		this.crList.removeIf(cr -> {
 			
 			boolean remove = true;
 			
-			if ((noToImportCRs.get()>0) && (rand.nextFloat()*noAvailableCRs.get() < 1.0f*noToImportCRs.get())) {
+			if ((noToImportCRs.get()>0) && (probability*noAvailableCRs.get() <= 1.0f*noToImportCRs.get())) {
 				noToImportCRs.decrementAndGet();
 				remove = false;
 			}

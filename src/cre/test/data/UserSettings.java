@@ -52,6 +52,23 @@ public class UserSettings {
 
 	private int chartEngine;
 	
+	private Sampling sampling;
+	public enum Sampling {
+		NONE("Import all (No sampling)"),
+		RANDOM("Random Sampling (set number of CRs ==>)"),
+		SYSTEMATIC("Systematic Sampling (set number of CRs ==>)"),
+		CLUSTER("Cluster Sampling (all CRs of a PY)");
+		
+		public String label;
+		Sampling(String label) {
+			this.label = label;
+		}
+	}
+
+	
+	
+	
+	
 	/**
 	 * Singleton pattern
 	 * 
@@ -401,6 +418,16 @@ public class UserSettings {
 		this.chartEngine = chartEngine;
 	}
 
-
+	public int setSampling (String label) {
+		this.sampling = Sampling.NONE;
+		for (Sampling s: Sampling.values()) {
+			if (s.label.equals(label)) this.sampling=s;
+		}
+		return 0;
+	}
+	
+	public Sampling getSampling () {
+		return this.sampling;
+	}
 
 }
