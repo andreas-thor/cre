@@ -170,7 +170,7 @@ public class Indicators {
 		
 			CRType cr = crList.get(crIdx);
 			
-			cr.setPYEAR_PERC (((double)cr.getPYEAR_PERC()) / (pySize-noPYWithoutCR));
+			cr.setPYEAR_PERC (((double)cr.getN_PYEARS()) / (pySize-noPYWithoutCR));
 			cr.setPERC_YR 	 (((double)cr.getN_CR())       / NCR_RPY[rpy-range_RPY[0]]);
 			cr.setPERC_ALL	 (((double)cr.getN_CR())       / NCR_ALL[0]);
 			
@@ -185,8 +185,8 @@ public class Indicators {
 			if (lifecycle) 				cr.setTYPE("Life cycle");
 			if (constant) 				cr.setTYPE("Constant performer");
 			
-			if (lifecycle && sbeauty) 	cr.setTYPE("Delayed performer / Life cycle");
-			if (hotpaper && sbeauty) 	cr.setTYPE("Delayed performer / Hot paper");
+			if (lifecycle && sbeauty) 	cr.setTYPE("Sleeping beauty / Life cycle");	// Delayed performer
+			if (hotpaper && sbeauty) 	cr.setTYPE("Sleeping beauty / Hot paper");	// Delayed performer
 			if (hotpaper && lifecycle) 	cr.setTYPE("Hot Paper / Life Cycle");
 			if (evergreen) 				cr.setTYPE("Evergreen performer");
 

@@ -55,9 +55,9 @@ public class UserSettings {
 	private Sampling sampling;
 	public enum Sampling {
 		NONE("Import all (No sampling)"),
-		RANDOM("Random Sampling (set number of CRs ==>)"),
-		SYSTEMATIC("Systematic Sampling (set number of CRs ==>)"),
-		CLUSTER("Cluster Sampling (all CRs of a PY)");
+		RANDOM("Random Sampling (set number of Cited References ==>)"),
+		SYSTEMATIC("Systematic Sampling (set number of Cited References ==>)"),
+		CLUSTER("Cluster Sampling (all Cited References of a random year (PY)");
 		
 		public String label;
 		Sampling(String label) {
