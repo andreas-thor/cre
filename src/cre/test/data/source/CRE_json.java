@@ -126,9 +126,15 @@ public class CRE_json {
 				while (!crTab.isAborted() && parser.hasNext()) {
 					
 					switch (parser.next()) {
-					case START_OBJECT: 	pub = new PubType(); break; 
-					case END_OBJECT: 	crTab.addPub(pub, false);  break;
-					case KEY_NAME:		key = parser.getString(); break;
+					case START_OBJECT: 	
+						pub = new PubType(); 
+						break; 
+					case END_OBJECT: 	
+						crTab.addPub(pub, false);  
+						break;
+					case KEY_NAME:		
+						key = parser.getString(); 
+						break;
 					case START_ARRAY:	
 						arrayLevel++;
 						switch (arrayLevel) {
@@ -145,19 +151,15 @@ public class CRE_json {
 						case 3:			C1List = new ArrayList<String>(); break;
 						}
 						break;
-					case END_ARRAY: 	
+					case END_ARRAY: 
 						if ((arrayLevel == 3) && (C1List != null)) pub.addC1((String[]) C1List.toArray(new String[C1List.size()])); 
 						arrayLevel--;
 						break;
 					case VALUE_STRING: 
 						switch (arrayLevel) {
-						case 2:
+						case 1:
 							switch (key) {
 							case "PT": 	pub.setPT(parser.getString()); break;
-							case "AU":	pub.addAU(parser.getString()); break;
-							case "AF":	pub.addAF(parser.getString()); break;
-							case "EM":	pub.addEM(parser.getString()); break;
-							case "AA":	pub.addAA(parser.getString()); break;
 							case "TI": 	pub.setTI(parser.getString()); break;
 							case "SO": 	pub.setSO(parser.getString()); break;
 							case "VL": 	pub.setVL(parser.getString()); break;
@@ -170,6 +172,16 @@ public class CRE_json {
 							case "DT": 	pub.setDT(parser.getString()); break;
 							case "FS": 	pub.setFS(parser.getString()); break;
 							case "UT": 	pub.setUT(parser.getString()); break;
+							default: System.out.println("PUBDATA.json >> Unknow Key with String Value: " + key); 
+							}
+							break;
+							
+						case 2:
+							switch (key) {
+							case "AU":	pub.addAU(parser.getString()); break;
+							case "AF":	pub.addAF(parser.getString()); break;
+							case "EM":	pub.addEM(parser.getString()); break;
+							case "AA":	pub.addAA(parser.getString()); break;
 							default: System.out.println("PUBDATA.json >> Unknow Key with String Value: " + key); 
 							}
 							break;
@@ -190,6 +202,8 @@ public class CRE_json {
 						}
 						break;
 					default:
+						System.out.println("DEFAULT");
+
 						break;
 					}
 					StatusBar.get().updateProgressbar(parser.getLocation().getStreamOffset());

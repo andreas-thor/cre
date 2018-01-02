@@ -126,7 +126,7 @@ public class Indicators {
 		
 		for (int x=0; x<crSize; x++) {
 			
-			System.out.println("CR x=" + x);
+//			System.out.println("CR x=" + x);
 			
 			final int crIdx = x;
 			int[] NPCT = new int[3];
