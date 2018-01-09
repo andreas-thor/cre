@@ -134,7 +134,6 @@ public class Indicators {
 			char[] sequence = new char[pySize];
 			
 			
-			double zvalue_old = 0;
 			for (int pyIdx=0; pyIdx<pySize; pyIdx++) {
 				
 				for (int b=0; b<3; b++) {
@@ -144,7 +143,7 @@ public class Indicators {
 				}
 				
 				double expected = (1.0d*NCR_CR[crIdx]*NCR_PY[pyIdx]/NCR[0]);
-				double zvalue = ((expected == 0) /*|| (NCR_CR_PY[crIdx][pyIdx] == 0)*/) ? 0 : (NCR_CR_PY[crIdx][pyIdx] - expected) / Math.sqrt(expected);
+				double zvalue = (expected == 0) ? 0 : (NCR_CR_PY[crIdx][pyIdx] - expected) / Math.sqrt(expected);
 
 //				System.out.println(String.format("CR=%d\tPY=%d\tExpected=%10.2f\tzValue=%10.2f", crIdx, pyIdx, expected, zvalue));
 				
@@ -160,11 +159,10 @@ public class Indicators {
 				
 				
 				type[7]  += (NCR_CR[crIdx]>0) ? 1 : 0;					// # no of citing years with at least 1 citation
-				type[8]  += ((pyIdx==0) || (zvalue>zvalue_old)) ? 1:0;
+				type[8]  += ((pyIdx==0) || (sequence[pyIdx-1]=='-') ||  (sequence[pyIdx]=='+') || ((sequence[pyIdx-1]=='0') && (sequence[pyIdx]=='0'))) ? 1:0;
 				type[9]  +=                      (zvalue>1)?1:0;
 				type[10] += 1;	// # citing years
 				
-				zvalue_old = zvalue;
 
 			}
 			
@@ -180,7 +178,8 @@ public class Indicators {
 			// Life cycle = Publication which has been cited in the first four years in at least two years on the average level ("0"; -1<=z<=1) or lower ("-"; z<-1), in at least two years of the following years above average ("+"; z>1), and in the last three years on the average level ("0"; -1<=z<=1) or lower ("-"; z<-1)
 			boolean lifecycle = (type[4]>=2) && (type[5]>=2) && (type[6]>1);
 			
-			/* boolean evergreen = ((1.0d*type[8]/type[10])>0.8) && ((1.0d*type[9]/type[10])>0.2); */
+			// Evergreen = Publication which has a constantly increasing (and never decreasing) citation distribution over citing years from ("-"; z<-1), ("0"; z=1), to ("+"; z>1)
+			boolean evergreen = type[8]==type[10]; 
 		
 			CRType cr = crList.get(crIdx);
 			
@@ -199,6 +198,7 @@ public class Indicators {
 			if (constant) 				cr.setTYPE("Constant performer");
 			if (hotpaper) 				cr.setTYPE("Hot paper");
 			if (lifecycle) 				cr.setTYPE("Life cycle");
+			if (evergreen)				cr.setTYPE("Evergreen");
 			
 			/*
 			if (lifecycle && sbeauty) 	cr.setTYPE("Sleeping beauty / Life cycle");	// Delayed performer
