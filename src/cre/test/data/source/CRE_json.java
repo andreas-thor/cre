@@ -237,7 +237,11 @@ public class CRE_json {
 						}
 						break;
 					case VALUE_NUMBER:
-						CRMatch2.get().addPair(new CRPair2 (mapId2CR.get(id1), mapId2CR.get(id2), parser.getBigDecimal().doubleValue()), isManual, false, null);
+						CRType cr1 = mapId2CR.get(id1);
+						CRType cr2 = mapId2CR.get(id2);
+						if (!(cr1==null) && !(cr2==null)) {
+							CRMatch2.get().addPair(new CRPair2 (cr1, cr2, parser.getBigDecimal().doubleValue()), isManual, false, null);
+						}
 						break;
 					default:break;  
 					}
