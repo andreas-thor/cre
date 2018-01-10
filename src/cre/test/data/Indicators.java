@@ -178,8 +178,6 @@ public class Indicators {
 			// Life cycle = Publication which has been cited in the first four years in at least two years on the average level ("0"; -1<=z<=1) or lower ("-"; z<-1), in at least two years of the following years above average ("+"; z>1), and in the last three years on the average level ("0"; -1<=z<=1) or lower ("-"; z<-1)
 			boolean lifecycle = (type[4]>=2) && (type[5]>=2) && (type[6]>1);
 			
-			// Evergreen = Publication which has a constantly increasing (and never decreasing) citation distribution over citing years from ("-"; z<-1), ("0"; z=1), to ("+"; z>1)
-			boolean evergreen = type[8]==type[10]; 
 		
 			CRType cr = crList.get(crIdx);
 			
@@ -192,13 +190,13 @@ public class Indicators {
 			cr.setN_PCT90(NPCT[2]);
 			
 			cr.setSEQUENCE(new String (sequence));
-			
-			cr.setTYPE("");
-			if (sbeauty) 				cr.setTYPE("Sleeping beauty");
-			if (constant) 				cr.setTYPE("Constant performer");
-			if (hotpaper) 				cr.setTYPE("Hot paper");
-			if (lifecycle) 				cr.setTYPE("Life cycle");
-			if (evergreen)				cr.setTYPE("Evergreen");
+
+			StringBuffer typeLabel = new StringBuffer();
+			if (sbeauty) 	typeLabel.append (typeLabel.length()>0?" + ":"").append("Sleeping beauty");
+			if (constant) 	typeLabel.append (typeLabel.length()>0?" + ":"").append("Constant performer");
+			if (hotpaper) 	typeLabel.append (typeLabel.length()>0?" + ":"").append("Hot paper");
+			if (lifecycle) 	typeLabel.append (typeLabel.length()>0?" + ":"").append("Life cycle");
+			cr.setTYPE(typeLabel.toString());
 			
 			/*
 			if (lifecycle && sbeauty) 	cr.setTYPE("Sleeping beauty / Life cycle");	// Delayed performer
