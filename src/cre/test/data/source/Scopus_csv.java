@@ -163,6 +163,8 @@ public class Scopus_csv extends ImportReader {
 		pub.setDE(attribute2Index.get("AUTHOR KEYWORDS") != null ? line[attribute2Index.get("AUTHOR KEYWORDS")] : null);
 		pub.setDT(attribute2Index.get("DOCUMENT TYPE") != null ? line[attribute2Index.get("DOCUMENT TYPE")] : null);
 		pub.setFS(attribute2Index.get("SOURCE") != null ? line[attribute2Index.get("SOURCE")] : null);
+		
+		System.out.println(pub.getTI());
 		pub.setUT(attribute2Index.get("EID") != null ? line[attribute2Index.get("EID")] : null);
 		
 		return pub;
