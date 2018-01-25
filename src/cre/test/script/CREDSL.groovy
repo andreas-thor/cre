@@ -136,11 +136,14 @@ abstract class CREDSL extends Script {
 
 		Map<String, Object> param = makeParamsCaseInsensitive(map)
 
+		// set file
 		if (param.get("FILE")==null) {
 			throw new Exception ("saveFile: missing parameter file");
 			
 		}
-
+		File file = new File (param.get("FILE"));
+		
+		// set filter
 		Predicate<CRType> filter = { cr -> true };
 		if (param.keySet().contains("RPY")) {
 			int[] range = param["RPY"];
@@ -149,46 +152,67 @@ abstract class CREDSL extends Script {
 
 		ImportExportFormat.CRE.save(file, filter);
 	}
+	
+	
+	/**
+	 * File > Export
+	 * FILE (mandatory)
+	 * TYPE = "WOS", "SCOPUS", "CSV_CR", "CSV_PUB", "CSV_CR_PUB", or "CSV_GRAPH"
+	 * RPY (optional filter RPY range)
+	 */
 
-	public void exportFile (Map<String, String> map)  {
+	public void exportFile (Map<String, String> map) throws Exception {
 
-		def param = makeParamsCaseInsensitive(map)
+		Map<String, Object> param = makeParamsCaseInsensitive(map)
 
-		String type = param.getOrDefault("TYPE", "CRE").toUpperCase();
+		// set file
+		if (param.get("FILE")==null) {
+			throw new Exception ("saveFile: missing parameter file");
+			
+		}
 		File file = new File (param.get("FILE"));
-
+		
+		// set filter
 		Predicate<CRType> filter = { cr -> true };
 		if (param.keySet().contains("RPY")) {
 			int[] range = param["RPY"];
 			filter = { cr -> (cr.getRPY() != null) && (cr.getRPY()>=range[0]) && (cr.getRPY()<=range[1]) };
 		}
-
-		ImportExportFormat.valueOf(type).save(file, filter);
-	}
-
-	private Map<String, Object> makeParamsCaseInsensitive  (Map<String, Object> map) {
-		return map.collectEntries { key, value ->
-			return [(key.toUpperCase()): value]
+		
+		
+		// set file format
+		ImportExportFormat fileFormat = null;
+		switch (param.getOrDefault("TYPE", "").toUpperCase()) {
+			case "WOS": fileFormat = ImportExportFormat.WOS; break;
+			case "SCOPUS": fileFormat = ImportExportFormat.SCOPUS; break;
+			case "CSV_CR": fileFormat = ImportExportFormat.CRE_CR; break;
+			case "CSV_PUB": fileFormat = ImportExportFormat.CRE_PUB; break;
+			case "CSV_CR_PUB": fileFormat = ImportExportFormat.CRE_CR_PUB; break;
+			case "CSV_GRAPH": fileFormat = ImportExportFormat.GRAPH; break;
+			default: throw new Exception ("importFile: missing or unknown file format (must be WOS, SCOPUS, CSV_CR, CSV_PUB, CSV_CR_PUB, or CSV_GRAPH)");
 		}
+		
+
+		fileFormat.save(file, filter);
 	}
 
 
-	public void progress (boolean b) {
-		status.setShowProgress (b)
-	}
 
 
 
-
-
-
+	/**
+	 * Edit > Remove Cited References [by N_CR, by RPY, w/o RPY]
+	 * N_CR 
+	 * RPY = [min, max] or NULL
+	 */
 	public void removeCR (Map<String, Object> map) {
 
-		def param = makeParamsCaseInsensitive(map)
+		Map<String, Object> param = makeParamsCaseInsensitive(map)
 
 		if (param["N_CR"] != null) {
-			int[] range = param["N_CR"]
-			CRTable.get().removeCRByN_CR(range)
+			int[] range = param["N_CR"];
+			CRTable.get().removeCRByN_CR(range);
+			return;
 		}
 
 		if (param.keySet().contains("RPY")) {
@@ -198,30 +222,42 @@ abstract class CREDSL extends Script {
 			} else {
 				CRTable.get().removeCRWithoutYear()
 			}
+			return;
 		}
 
+		throw new Exception ("removeCR: Missing parameter (must have N_CR or RPY)")
 	}
 
+	
+	
+	/**
+	 * Edit > Retain Publications within Publication Year
+	 * PY = [min, max] 
+	 */
+	public void retainPub (map) throws Exception {
 
-	public void retainPub (map) {
-
-		def param = makeParamsCaseInsensitive(map)
+		Map<String, Object> param = makeParamsCaseInsensitive(map)
 
 		if (param["PY"] != null) {
 			int[] range = param["PY"]
 			CRTable.get().removePubByCitingYear(range)
+		} else {
+			throw new Exception ("retainPub: Missing parameter PY")
 		}
 	}
 
 
-	public void info() {
-		StatusBar.get().updateInfo();
-	}
-
+	/**
+	 * Disambiguation > Cluster equivalent Cited References
+	 * THRESHOLD (float)
+	 * VOLUME (boolean)
+	 * PAGE (boolean)
+	 * DOI (boolean)
+	 */
 
 	public void cluster (map) {
 
-		def param = makeParamsCaseInsensitive(map)
+		Map<String, Object> param = makeParamsCaseInsensitive(map)
 
 		CRMatch2.get().generateAutoMatching();
 
@@ -233,8 +269,29 @@ abstract class CREDSL extends Script {
 		CRMatch2.get().updateClustering(CRMatch2.ClusteringType2.REFRESH, null, threshold, useVol, usePag, useDOI);
 	}
 
+	
+	/**
+	 * Disambiguation > Merge clustered References
+	 */
 	public void merge () {
 		CRTable.get().merge();
 	}
 
+	
+	
+	public void progress (boolean b) {
+		status.setShowProgress (b)
+	}
+
+	public void info() {
+		StatusBar.get().updateInfo();
+	}
+
+
+	private Map<String, Object> makeParamsCaseInsensitive  (Map<String, Object> map) {
+		return map.collectEntries { key, value ->
+			return [(key.toUpperCase()): value]
+		}
+	}
+	
 }

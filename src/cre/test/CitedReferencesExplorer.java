@@ -23,7 +23,7 @@ public class CitedReferencesExplorer extends Application {
 	public static String manual_url = "http://andreas-thor.github.io/cre/manual.pdf";
 	public static String url = "http://www.crexplorer.net";
 	// public static String title = "CRExplorer (Version 1.81)";
-	public static String title = "CRExplorer (DEVELOPMENT; Jan-11-2018)";
+	public static String title = "CRExplorer (DEVELOPMENT; Jan-25-2018)";
 	public static String loadOnOpen = null;
 
 	public static void main(String[] args) {
