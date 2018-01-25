@@ -421,8 +421,16 @@ public class UserSettings {
 	public int setSampling (String label) {
 		this.sampling = Sampling.NONE;
 		for (Sampling s: Sampling.values()) {
-			if (s.label.equals(label)) this.sampling=s;
+			if (s.label.equals(label)) {
+				this.sampling=s;
+				return 0;
+			}
 		}
+		return 1;
+	}
+	
+	public int setSampling (Sampling s) {
+		this.sampling = s;
 		return 0;
 	}
 	

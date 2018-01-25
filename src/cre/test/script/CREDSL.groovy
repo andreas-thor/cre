@@ -13,43 +13,65 @@ import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRTable
 import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
+import cre.test.data.UserSettings.Sampling
 import cre.test.data.match.CRMatch2
 import cre.test.data.source.ImportExportFormat;
 import cre.test.data.type.CRType
 import cre.test.ui.StatusBar;
 import groovy.lang.Script;
+import groovy.swing.factory.ImageIconFactory
 
 abstract class CREDSL extends Script {
 
 
-	private Map<String, Object> makeParamsCaseInsensitive  (Map<String, Object> map) {
-		return map.collectEntries { key, value ->
-			return [(key.toUpperCase()): value]
-		  }
+	/**
+	 * File > Open
+	 * ===========
+	 * FILE = string
+	 */
+	public void openFile (Map<String, Object> map) throws Exception {
+
+		Map<String, Object> param = makeParamsCaseInsensitive(map);
+
+		// set list of import files
+		List<File> files = new ArrayList<File>();
+		if (param.get("FILE") != null) {
+			files.add(new File (param.get("FILE")));
+		} else {
+			throw new Exception ("openFile: missing parameter file");
+		}
+
+		ImportExportFormat.CRE.load(files);
+
 	}
 
-	
-	public void progress (boolean b) {
-		status.setShowProgress (b)
-	}
-	
-	public void load (Map<String, Object> map)  {
-	
-		def param = makeParamsCaseInsensitive(map)
-	
-		// set RPY import range: [min, max, without=true] 
+	/**
+	 * File > Import
+	 * =============
+	 * FILE = string | FILE = [string] | DIR = string
+	 * TYPE = "WOS" OR "SCOPUS"
+	 * SAMPLING = "NONE" (default), "RANDOM", "SYSTEMATIC", or "CLUSTER"
+	 * RPY = [min, max, importWithoutRPY]; default = [0, 0, true]
+	 * PY = [min, max, importWithoutPY]; default = [0, 0, true]
+	 * MAXCR = int; default = 0
+	 */
+	public void importFile (Map<String, Object> map)  {
+
+		Map<String, Object> param = makeParamsCaseInsensitive(map);
+
+		// set RPY import range: [min, max, without=true]
 		int[] rangeRPY = [0, 0]		// default: all RPYs
 		boolean withoutRPY = true	// default: include CRs without RPY
 		if (param["RPY"] != null) {
-			rangeRPY[0] = param["RPY"][0] 
+			rangeRPY[0] = param["RPY"][0]
 			rangeRPY[1] = param["RPY"][1]
 			if (param["RPY"].size() > 2) {
 				withoutRPY = param["RPY"][2]
 			}
-		} 
+		}
 		UserSettings.get().setRange(RangeType.ImportRPYRange, rangeRPY);
 		UserSettings.get().setImportCRsWithoutYear(withoutRPY);
-		
+
 		// set PY import range: [min, max, without=true]
 		int[] rangePY = [0, 0]		// default: all PYs
 		boolean withoutPY = true	// default: include Pubs without PY
@@ -69,46 +91,106 @@ abstract class CREDSL extends Script {
 			maxCR = param["MAXCR"]
 		}
 		UserSettings.get().setMaxCR(maxCR);
-		
-		// set list of import files 
+
+		// set list of import files
 		List<File> files = new ArrayList<File>();
 		if (param.get("FILE") != null) files.add(new File (param.get("FILE")));
-		if (param["FILES"] != null)	files.addAll(param["FILES"].collect { new File(it) });	
+		if (param["FILES"] != null)	files.addAll(param["FILES"].collect { new File(it) });
 		if (param["DIR"] != null) new File (param["DIR"]).eachFile() { files.add(it) };
-			
-		
-		
-		
-		ImportExportFormat.valueOf(param.getOrDefault("TYPE", "CRE").toUpperCase()).load(files);
-		
+
+		if (files.size()==0) {
+			throw new Exception ("load: no files specified (using file, files, or dir)");
+		}
+
+		// sampling
+		Sampling sampling = null;
+		switch (param.getOrDefault("SAMPLING", "NONE").toUpperCase()) {
+			case "NONE": sampling = Sampling.NONE; break;
+			case "RANDOM": sampling = Sampling.RANDOM; break;
+			case "SYSTEMATIC": sampling = Sampling.SYSTEMATIC; break;
+			case "CLUSTER": sampling = Sampling.CLUSTER; break;
+			default: throw new Exception ("importFile: unknown sampling (must be NONE, RANDOM, SYSTEMATIC, or CLUSTER)");
+		}
+		UserSettings.get().setSampling(sampling);
+
+
+		// set file format
+		ImportExportFormat fileFormat = null;
+		switch (param.getOrDefault("TYPE", "").toUpperCase()) {
+			case "WOS": fileFormat = ImportExportFormat.WOS; break;
+			case "SCOPUS": fileFormat = ImportExportFormat.SCOPUS; break;
+			default: throw new Exception ("importFile: missing or unknown file format (must be WOS or SCOPUS)");
+		}
+
+		fileFormat.load(files);
+
 	}
-	
-	
-	public void save (Map<String, String> map)  {
-		
-		def param = makeParamsCaseInsensitive(map)
-		
-		String type = param.getOrDefault("TYPE", "CRE").toUpperCase();
-		File file = new File (param.get("FILE"));
-		
+
+	/**
+	 * File > Save
+	 * ===========
+	 * FILE (mandatory)
+	 * RPY (optional filter RPY range)
+	 */
+	public void saveFile (Map<String, String> map) throws Exception  {
+
+		Map<String, Object> param = makeParamsCaseInsensitive(map)
+
+		if (param.get("FILE")==null) {
+			throw new Exception ("saveFile: missing parameter file");
+			
+		}
+
 		Predicate<CRType> filter = { cr -> true };
 		if (param.keySet().contains("RPY")) {
 			int[] range = param["RPY"];
 			filter = { cr -> (cr.getRPY() != null) && (cr.getRPY()>=range[0]) && (cr.getRPY()<=range[1]) };
 		}
-		
+
+		ImportExportFormat.CRE.save(file, filter);
+	}
+
+	public void exportFile (Map<String, String> map)  {
+
+		def param = makeParamsCaseInsensitive(map)
+
+		String type = param.getOrDefault("TYPE", "CRE").toUpperCase();
+		File file = new File (param.get("FILE"));
+
+		Predicate<CRType> filter = { cr -> true };
+		if (param.keySet().contains("RPY")) {
+			int[] range = param["RPY"];
+			filter = { cr -> (cr.getRPY() != null) && (cr.getRPY()>=range[0]) && (cr.getRPY()<=range[1]) };
+		}
+
 		ImportExportFormat.valueOf(type).save(file, filter);
 	}
-	
+
+	private Map<String, Object> makeParamsCaseInsensitive  (Map<String, Object> map) {
+		return map.collectEntries { key, value ->
+			return [(key.toUpperCase()): value]
+		}
+	}
+
+
+	public void progress (boolean b) {
+		status.setShowProgress (b)
+	}
+
+
+
+
+
+
 	public void removeCR (Map<String, Object> map) {
-		
+
 		def param = makeParamsCaseInsensitive(map)
-		
+
 		if (param["N_CR"] != null) {
-			int[] range = param["N_CR"] 
+			int[] range = param["N_CR"]
 			CRTable.get().removeCRByN_CR(range)
 		}
-		
+
 		if (param.keySet().contains("RPY")) {
 			if (param["RPY"] != null) {
 				int[] range = param["RPY"]
@@ -119,40 +201,40 @@ abstract class CREDSL extends Script {
 		}
 
 	}
-	
-	
+
+
 	public void retainPub (map) {
-		
+
 		def param = makeParamsCaseInsensitive(map)
-		
+
 		if (param["PY"] != null) {
 			int[] range = param["PY"]
 			CRTable.get().removePubByCitingYear(range)
 		}
 	}
-	
-	
+
+
 	public void info() {
 		StatusBar.get().updateInfo();
 	}
-	
-	
+
+
 	public void cluster (map) {
-		
+
 		def param = makeParamsCaseInsensitive(map)
-		
+
 		CRMatch2.get().generateAutoMatching();
-		
+
 		double threshold = param.getOrDefault ("THRESHOLD", 0.8)
 		boolean useVol = param.getOrDefault ("VOLUME", false)
 		boolean usePag = param.getOrDefault ("PAGE", false)
 		boolean useDOI = param.getOrDefault ("DOI", false)
-		
+
 		CRMatch2.get().updateClustering(CRMatch2.ClusteringType2.REFRESH, null, threshold, useVol, usePag, useDOI);
 	}
-	
+
 	public void merge () {
 		CRTable.get().merge();
 	}
-	
+
 }

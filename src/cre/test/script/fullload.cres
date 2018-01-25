@@ -3,17 +3,25 @@
  * Example
  */
 
+
+openFile (file: "E:/Dev/CRE/data/matthieu/andreas.cre")
+
+
+
 progress (true)	// show progress of loading etc. in percent
 
-load (
+importFile (
 //	file:	"E:/Dev/CRE/data/savedrecs_JOI1.txt", 
 //	file:	"E:/Dev/CRE/data/wetransfer/results_0.txt", 
-	dir:	"wetransfer", 
+	dir:	"E:/Dev/CRE/data/matthieu/import/", 
 	type:	"WOS",
 	RPY: 	[0, 0, false],
 	PY: 	[0, 0, false]
 //	maxCR:	1000
 )
+
+return;
+
 
 //info()
 //removeCR (RPY: [0, 1995])
