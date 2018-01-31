@@ -134,7 +134,7 @@
 	<div class="section">
 		<h1>Running CRExplorer &amp; System Requirements</h1>
 		<p>CRExplorer requires a system with Java 8 support. There are two
-			options to run CRExplorer:</p>
+			options to run CRExplorer in the GUI mode:</p>
 		<ol>
 			<li><b>Java Web Start</b>: Click the <a
 				href="http://www1.hft-leipzig.de/thor/crexplorer/CitedReferencesExplorer.jnlp">CRExplorer
@@ -158,10 +158,20 @@
 				size if you are processing large files.</li>
 		</ol>
 
+		<p>
+			If you want employ CRExplorer's script language, you can <a
+				href="http://www1.hft-leipzig.de/thor/crexplorer/CitedReferencesExplorerScripts.jar">download
+				a runnable JAR file</a> that can be started from the command line as
+			follows:
+		
+		<pre>java -jar CitedReferencesExplorerScripts.jar [myscript.crs]</pre>
+		where [myscript.crs] should be replaced by the user's script filename.
+		</p>
+
 
 		<h2>Releases</h2>
 
-		<p>CRExplorer version 1.8.1 was released on January xx, 2018. This
+		<p>CRExplorer version 1.8.2 was released on February 018. This
 			version includes the following new features and improvements:</p>
 		<ul>
 
@@ -189,8 +199,11 @@
 				by loading only a sample from the population. Three samples can be
 				drawn from the population: <i>random</i>, <i>systematic</i>, or <i>cluster
 					sample</i>.</li>
-			<li><b>Command line</b>: CRExplorer can be used now in the
-				command line modus (instead of the menu modus).</li>
+			<li><b>Script language</b>: CRExplorer provides a tailored
+				script language that allows the application of the most important
+				functions. This can be useful for recurring experiments using different 
+				data sets or for processing large volumes of data. 
+				Users can execute scripts from the command line.</li>
 		</ul>
 		<p>CRExplorer version 1.7.7 was released on June 30, 2017. This
 			version includes the following new features and improvements:</p>
