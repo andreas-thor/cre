@@ -4,10 +4,12 @@
 * via [Java Web Start](http://www1.hft-leipzig.de/thor/crexplorer/CitedReferencesExplorer.jnlp)
 * via [Runnable Jar](http://www1.hft-leipzig.de/thor/crexplorer/CitedReferencesExplorerFull.jar)
   * for large files use heap space options (e.g., -Xms512m -Xmx4g)
+* via [Script Jar](http://www1.hft-leipzig.de/thor/crexplorer/CitedReferencesExplorerScript.jar)
 
 ## Developer Version
 * via [Java Web Start](http://www1.hft-leipzig.de/thor/crexplorer_dev/CitedReferencesExplorer.jnlp)
 * via [Runnable Jar](http://www1.hft-leipzig.de/thor/crexplorer_dev/CitedReferencesExplorerFull.jar)
+* via [Script Jar](http://www1.hft-leipzig.de/thor/crexplorer_dev/CitedReferencesExplorerScript.jar)
 
 
 
