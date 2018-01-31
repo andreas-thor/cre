@@ -158,7 +158,7 @@ public class Indicators {
 				type[6]  += ((pySize-pyIdx<=3) 	&& (zvalue<=1)) ? 1: 0;		// # average or lower in the last 3 py
 				
 				
-				type[7]  += (NCR_CR[crIdx]>0) ? 1 : 0;					// # no of citing years with at least 1 citation
+				type[7]  += (NCR_CR_PY[crIdx][pyIdx]>0) ? 1 : 0;					// # no of citing years with at least 1 citation
 				type[8]  += ((pyIdx==0) || (sequence[pyIdx-1]=='-') ||  (sequence[pyIdx]=='+') || ((sequence[pyIdx-1]=='0') && (sequence[pyIdx]=='0'))) ? 1:0;
 				type[9]  +=                      (zvalue>1)?1:0;
 				type[10] += 1;	// # citing years
