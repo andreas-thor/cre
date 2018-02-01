@@ -36,7 +36,6 @@ public class CRE_csv {
 		
 		CRTable.get().getCR().filter(filter).sorted().forEach(cr -> {
 			StatusBar.get().incProgressbar();
-			System.out.println(cr.getID());
 			csv.writeNext(Arrays.stream(CRColumn.values()).map(col -> col.prop.apply(cr)).map(val -> val == null ? "" : String.valueOf(val.getValue())).toArray(String[]::new)); 
 		});
 		

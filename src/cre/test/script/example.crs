@@ -1,0 +1,54 @@
+
+
+
+/*
+ (1)	maxCR = maximum number of non-distinct CRs to be imported
+ (2) 	possible values for sampling are: NONE, RANDOM, SYSTEMATIC, CLUSTER
+   		specification of sampling is optional; default is NONE
+   		RANDOM and SYSTEMATIC require specification of maxCR
+   		CLUSTER ignored maxCR
+ (3)	additional restrictions on RPY and/or PY possible; format: [min year, max year, importWithoutYear]  		
+   		
+ */
+  
+
+importFile (
+	dir: "E:/Dev/CRE/data/script/",
+	type: "WOS",
+	sampling: "CLUSTER",
+	maxCR: 1000,
+	RPY: [2000, 2013, false]	
+)
+
+
+info()	// prints brief statistics about data (as in the GUI status bar)
+
+progress (false)	// we do not want to see the percentage counter
+
+
+ /*
+ 	You can also use Java / Groovy programming language features (e.g., local variables, loops, etc)
+ 	The following loops through PY from 2010 to 2014 and 
+ 		imports the data (restricted to PY) 
+ 		export as CSV_CR file (filename contains current PY)
+ */
+ 
+ 
+for (py = 2010; py<=2014; py++) {
+ 
+	importFile (
+		dir: "E:/Dev/CRE/data/script/",
+		type: "WOS",
+		PY: [py, py, false]	
+	)
+
+	/* ... here you might add additional operations such as cluster and merge ... */
+	
+	
+	exportFile (
+		file: "E:/Dev/CRE/data/script/output/CR_by_PY_" + py + ".csv",
+		type: "CSV_CR"
+	) 
+ 
+}
+ 

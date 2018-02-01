@@ -95,9 +95,10 @@ public class Indicators {
 		for (int pyIdx=0; pyIdx<pySize; pyIdx++) {
 			if (NCR_PY[pyIdx]==0) noPYWithoutCR++;
 		}
-		if (noPYWithoutCR>0) {
-			System.out.println(String.format("RPY=%d, PYSize=%d, w/o=%d", rpy, pySize, noPYWithoutCR));
-		}
+		
+//		if (noPYWithoutCR>0) {
+//			System.out.println(String.format("RPY=%d, PYSize=%d, w/o=%d", rpy, pySize, noPYWithoutCR));
+//		}
 		
 		
  

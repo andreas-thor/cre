@@ -10,6 +10,7 @@ import java.util.function.Predicate
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
+import cre.test.data.CRStatsInfo
 import cre.test.data.CRTable
 import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
@@ -18,6 +19,7 @@ import cre.test.data.match.CRMatch2
 import cre.test.data.source.ImportExportFormat;
 import cre.test.data.type.CRType
 import cre.test.ui.StatusBar;
+import groovy.io.FileType
 import groovy.lang.Script;
 import groovy.swing.factory.ImageIconFactory
 
@@ -59,8 +61,29 @@ abstract class CREDSL extends Script {
 
 		Map<String, Object> param = makeParamsCaseInsensitive(map);
 
+		
+		// set list of import files
+		List<File> files = new ArrayList<File>();
+		if (param.get("FILE") != null) files.add(new File (param.get("FILE")));
+		if (param["FILES"] != null)	files.addAll(param["FILES"].collect { new File(it) });
+		if (param["DIR"] != null) new File (param["DIR"]).eachFile(FileType.FILES) { files.add(it) };
+		if (files.size()==0) {
+			throw new Exception ("load: no files specified (using file, files, or dir)");
+		}
+		
+		
+		// set file format
+		ImportExportFormat fileFormat = null;
+		switch (param.getOrDefault("TYPE", "").toUpperCase()) {
+			case "WOS": fileFormat = ImportExportFormat.WOS; break;
+			case "SCOPUS": fileFormat = ImportExportFormat.SCOPUS; break;
+			default: throw new Exception ("importFile: missing or unknown file format (must be WOS or SCOPUS)");
+		}
+		fileFormat.analyze(files);
+		
+		
 		// set RPY import range: [min, max, without=true]
-		int[] rangeRPY = [0, 0]		// default: all RPYs
+		int[] rangeRPY = CRStatsInfo.get().getRangeRPY()	// default: max range
 		boolean withoutRPY = true	// default: include CRs without RPY
 		if (param["RPY"] != null) {
 			rangeRPY[0] = param["RPY"][0]
@@ -72,8 +95,9 @@ abstract class CREDSL extends Script {
 		UserSettings.get().setRange(RangeType.ImportRPYRange, rangeRPY);
 		UserSettings.get().setImportCRsWithoutYear(withoutRPY);
 
+		
 		// set PY import range: [min, max, without=true]
-		int[] rangePY = [0, 0]		// default: all PYs
+		int[] rangePY = CRStatsInfo.get().getRangePY();		// default: max range
 		boolean withoutPY = true	// default: include Pubs without PY
 		if (param["PY"] != null) {
 			rangePY[0] = param["PY"][0]
@@ -85,6 +109,7 @@ abstract class CREDSL extends Script {
 		UserSettings.get().setRange(RangeType.ImportPYRange, rangePY);
 		UserSettings.get().setImportPubsWithoutYear(withoutPY);
 
+		
 		// set maximum number of CRs
 		int maxCR = 0
 		if (param["MAXCR"] != null) {
@@ -92,15 +117,6 @@ abstract class CREDSL extends Script {
 		}
 		UserSettings.get().setMaxCR(maxCR);
 
-		// set list of import files
-		List<File> files = new ArrayList<File>();
-		if (param.get("FILE") != null) files.add(new File (param.get("FILE")));
-		if (param["FILES"] != null)	files.addAll(param["FILES"].collect { new File(it) });
-		if (param["DIR"] != null) new File (param["DIR"]).eachFile() { files.add(it) };
-
-		if (files.size()==0) {
-			throw new Exception ("load: no files specified (using file, files, or dir)");
-		}
 
 		// sampling
 		Sampling sampling = null;
@@ -112,15 +128,6 @@ abstract class CREDSL extends Script {
 			default: throw new Exception ("importFile: unknown sampling (must be NONE, RANDOM, SYSTEMATIC, or CLUSTER)");
 		}
 		UserSettings.get().setSampling(sampling);
-
-
-		// set file format
-		ImportExportFormat fileFormat = null;
-		switch (param.getOrDefault("TYPE", "").toUpperCase()) {
-			case "WOS": fileFormat = ImportExportFormat.WOS; break;
-			case "SCOPUS": fileFormat = ImportExportFormat.SCOPUS; break;
-			default: throw new Exception ("importFile: missing or unknown file format (must be WOS or SCOPUS)");
-		}
 
 		fileFormat.load(files);
 
