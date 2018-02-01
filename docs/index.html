@@ -41,27 +41,21 @@
 
 	<div class="section">
 		<h1>Introduction</h1>
-		<p>
-			Which are the most important papers in the history of a field? On
-			whose shoulders of giants does an author stand? Where to look for the
-			intellectual roots of a research topic? These questions can be
-			answered by using the program CitedReferencesExplorer (CRExplorer).
-			The CRExplorer is a new software development which is based on the
-			programs provided at <a
-				href="http://www.leydesdorff.net/software/rpys/">Loet
-				Leydesdorff’s homepage</a>.
-		</p>
+		<p>Which are the most important papers in the history of a field?
+			On whose shoulders of giants does an author stand? Where to look for
+			the intellectual roots of a research topic? These questions can be
+			answered by using the program CitedReferencesExplorer (CRExplorer).</p>
 
-		<p>The CRExplorer uses data from Web of Science (Clarivate Analytics)
-			or Scopus (Elsevier) as input. Publication sets have to be downloaded
-			including the references cited. The program focusses on the analysis
-			of the cited references, in particular on the referenced publication
-			years. Over time, "citation classics" of a field become more
-			pronounced. When the aggregated citations are plotted along the time
-			axis, one obtains a "spectrogram" with distinct peaks. CRExplorer
-			visualizes this spectrogram, cleans the cited references (so-called
-			"disambiguation"), and uses a smoothing algorithm to suppress the
-			noise.</p>
+		<p>The CRExplorer uses data from Web of Science (Clarivate
+			Analytics) or Scopus (Elsevier) as input. Publication sets have to be
+			downloaded including the references cited. The program focusses on
+			the analysis of the cited references, in particular on the referenced
+			publication years. Over time, "citation classics" of a field become
+			more pronounced. When the aggregated citations are plotted along the
+			time axis, one obtains a "spectrogram" with distinct peaks.
+			CRExplorer visualizes this spectrogram, cleans the cited references
+			(so-called "disambiguation"), and uses a smoothing algorithm to
+			suppress the noise.</p>
 
 
 		<p>
@@ -74,8 +68,9 @@
 			of the “greenhouse effect”, a basic component of climate change.
 		</p>
 
-		<figure style="display: table; float: left;" >
-			<a href="fig1.png"><img src="fig1.png" width="350px" alt="Figure 1" ></a>
+		<figure style="display: table; float: left;">
+			<a href="fig1.png"><img src="fig1.png" width="350px"
+				alt="Figure 1"></a>
 			<figcaption style="display: table-caption; caption-side: bottom;">
 				<i>Figure 1: Citation classics concerning the discovery of the
 					“greenhouse effect” and appearing as peaks in the spectrogram
@@ -139,7 +134,7 @@
 	<div class="section">
 		<h1>Running CRExplorer &amp; System Requirements</h1>
 		<p>CRExplorer requires a system with Java 8 support. There are two
-			options to run CRExplorer:</p>
+			options to run CRExplorer in the GUI mode:</p>
 		<ol>
 			<li><b>Java Web Start</b>: Click the <a
 				href="http://www1.hft-leipzig.de/thor/crexplorer/CitedReferencesExplorer.jnlp">CRExplorer
@@ -163,17 +158,64 @@
 				size if you are processing large files.</li>
 		</ol>
 
+		<p>
+			If you want to employ CRExplorer's script language, you can <a
+				href="http://www1.hft-leipzig.de/thor/crexplorer/CitedReferencesExplorerScripts.jar">download
+				a runnable JAR file</a> that can be started from the command line as
+			follows:
+		
+		<pre>java -jar CitedReferencesExplorerScripts.jar [myscript.crs]</pre>
+		where [myscript.crs] should be replaced by the user's script filename.
+		</p>
+
 
 		<h2>Releases</h2>
 
+		<p>CRExplorer version 1.8.2 was released on February 1, 2018. This
+			version includes the following new features and improvements:</p>
+		<ul>
+
+			<li><b>Sequence</b>: To reveal impact sequences over time for
+				cited references, cited references are classified as on average
+				("0"), above average ("+"), and below average ("-") citation impact
+				in citing years. The benchmark is the mean citation impact of all
+				other cited references published in the same year. For example, the
+				sequence [---+++000] means that the cited reference has been cited
+				below average in the first three citing years, above average in the
+				next three years, and on average in the last three citing years.</li>
+			<li><b>Types of sequences</b>: The sequences are used to
+				identify specific types in terms of the symbols ("+", "-", "0"). The
+				types are labelled as follows: <i>sleeping beauty</i> with low or no
+				citation impact over a longer initial period and high citation
+				impact later; <i>constant performer</i> with a constant and
+				considerable amount of citation impact over time; <i>hot paper</i>
+				with high citation impact directly after the publication and low
+				citation impact later; <i>life cycle</i> with very different
+				citation impact across the citing years.</li>
+			<li><b>Samples</b>: In many cases, the full dataset from Web of
+				Science or Scopus (the population) cannot be completely imported in
+				the program because the available memory on the computer is
+				restricted. Thus, the user has the new option to reduce the dataset
+				by loading only a sample from the population. Three samples can be
+				drawn from the population: <i>random</i>, <i>systematic</i>, or <i>cluster
+					sample</i>.</li>
+			<li><b>Script language</b>: CRExplorer provides a tailored
+				script language that allows the application of the most important
+				functions. This can be useful for recurring experiments using different 
+				data sets or for processing large volumes of data. 
+				Users can execute scripts from the command line. The use of the script language
+				is explained in the handbook.
+				</li>
+		</ul>
 		<p>CRExplorer version 1.7.7 was released on June 30, 2017. This
 			version includes the following new features and improvements:</p>
 		<ul>
 
-			<li><b>Publications</b>: Users can specify (under "File" - "Settings" - "Import/Export")
-			if CRExplorer should include publications that do not have any cited references.			
-			</li>
-			<li><b>Settings</b>: Several enhancements in the settings incl. chart layout options (font size, stroke size).</li>
+			<li><b>Publications</b>: Users can specify (under "File" -
+				"Settings" - "Import/Export") if CRExplorer should include
+				publications that do not have any cited references.</li>
+			<li><b>Settings</b>: Several enhancements in the settings incl.
+				chart layout options (font size, stroke size).</li>
 		</ul>
 
 		<p>CRExplorer version 1.7.5 was released on May 31, 2017. This
@@ -202,8 +244,8 @@
 				"File" - "Settings" menu.</li>
 			<li><b>User Interface</b>: CRExplorer's GUI is now based on
 				JavaFX.</li>
-			<li><b>Handbook</b>: A <a href="manual.pdf">handbook</a> is available which explains the
-				elements and functions of the program.</li>
+			<li><b>Handbook</b>: A <a href="manual.pdf">handbook</a> is
+				available which explains the elements and functions of the program.</li>
 
 		</ul>
 
@@ -337,9 +379,16 @@
 				Jianhua Hou<br /> <br /></li>
 			<li><a
 				href="http://www.currentscience.ac.in/Volumes/113/07/1225.pdf">
-					Identification of seminal works that built the foundation for functional
-					magnetic resonance imaging studies of taste and food </a> <br />by
+					Identification of seminal works that built the foundation for
+					functional magnetic resonance imaging studies of taste and food </a> <br />by
 				Andy Wai Kan Yeung<br /> <br /></li>
+
+			<li><a href="https://doi.org/10.1080/00036846.2017.1363865">
+					Reference Publication Year Spectroscopy (RPYS) with publications in
+					the area of academic efficiency studies: what are the historical
+					roots of this research topic? </a> <br />by Mehdi Rhaiem and Lutz Bornmann<br />
+				<br /></li>
+
 		</ul>
 	</div>
 
@@ -371,9 +420,9 @@
 			Information Service<br /> Heisenbergstrasse 1<br /> 70506
 			Stuttgart, Germany<br /> Email: w.marx@fkf.mpg.de
 		</p>
-		
+
 		<h1>With further support of (alphabetically ordered)</h1>
-		
+
 		<p>
 			Robin Haunschild<br /> Max Planck Institute for Solid State Research<br />
 			Heisenbergstr. 1<br /> 70569 Stuttgart, Germany<br /> Email:

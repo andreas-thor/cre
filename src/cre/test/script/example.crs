@@ -1,6 +1,4 @@
 
-
-
 /*
  (1)	maxCR = maximum number of non-distinct CRs to be imported
  (2) 	possible values for sampling are: NONE, RANDOM, SYSTEMATIC, CLUSTER
@@ -11,6 +9,8 @@
    		
  */
   
+
+
 
 importFile (
 	dir: "E:/Dev/CRE/data/script/",
