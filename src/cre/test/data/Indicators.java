@@ -14,8 +14,9 @@ public class Indicators {
 
 	private static int[] range_RPY;
 	private static int[] range_PY;
-	private static int[] NCR_ALL;			// NCR overall (array length=1; array to make it effectively final)
-	private static int[] NCR_RPY;		// NCR by RPY
+	private static int[] NCR_ALL;		// NCR overall (array length=1; array to make it effectively final)
+	private static int[] NCR_RPY;		// (sum of) NCR by RPY
+	private static int[] CNT_RPY;		// number of CRs by RPY
 	
 	
 
@@ -26,6 +27,7 @@ public class Indicators {
 		range_PY  = CRStats.getMaxRangeCitingYear();
 		NCR_ALL = new int[1];
 		NCR_RPY = new int[range_RPY[1]-range_RPY[0]+1];
+		CNT_RPY = new int[range_RPY[1]-range_RPY[0]+1];
 		
 		// Group CRs by RPY, compute NCR_ALL and NCR_RPY
 		System.out.println("mapRPY_CRs");
@@ -34,6 +36,7 @@ public class Indicators {
 			NCR_ALL[0] += cr.getN_CR();
 			if (cr.getRPY()!=null) {
 				NCR_RPY[cr.getRPY()-range_RPY[0]] += cr.getN_CR();
+				CNT_RPY[cr.getRPY()-range_RPY[0]] += 1;
 				return true;
 			} else {
 				return false;
@@ -232,7 +235,8 @@ public class Indicators {
 		return new int[][] {
 			IntStream.rangeClosed(range_RPY[0], range_RPY[1]).toArray(),
 			NCR_RPY, 
-			RPY_MedianDiff 
+			RPY_MedianDiff,
+			CNT_RPY
 		};		
 	}
 	

@@ -3,6 +3,7 @@ package cre.test.data.source;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -92,11 +93,13 @@ public class CRE_csv {
 		/* TODO: Filter not supported yet */
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
-		csv.writeNext(new String[] {"Year", "NCR", String.format("Median-%d", 2*UserSettings.get().getMedianRange()+1)});
+		csv.writeNext(new String[] {"Year", "NCR", String.format("Median-%d", 2*UserSettings.get().getMedianRange()+1), "AVG"});
 		
+		DecimalFormat avgFormat = new DecimalFormat("#.###");
 		int[][] data = CRTable.get().getChartData();
 		for (int i=0; i<data[0].length; i++) {
-			csv.writeNext (new String[] {String.valueOf(data[0][i]), String.valueOf(data[1][i]), String.valueOf(data[2][i])});
+			String avg = data[3][i] > 0 ? avgFormat.format((1.0d*data[1][i])/data[3][i]) : "";
+			csv.writeNext (new String[] {String.valueOf(data[0][i]), String.valueOf(data[1][i]), String.valueOf(data[2][i]), avg});
 		}
 				
 		csv.close();
