@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -243,16 +244,23 @@ public class PubType implements Comparable<PubType> {
 	}
 	
 	
-	public void removeCRByProbability (float probability, AtomicLong noToImportCRs, AtomicLong noAvailableCRs) {
+	public void removeCRByProbability (float probability, int offset, AtomicLong noToImportCRs, AtomicLong noAvailableCRs, AtomicInteger currentOffset) {
 		
 		this.crList.removeIf(cr -> {
 			
 			boolean remove = true;
 			
 			if ((noToImportCRs.get()>0) && (probability*noAvailableCRs.get() <= 1.0f*noToImportCRs.get())) {
-				noToImportCRs.decrementAndGet();
-				remove = false;
+			
+				if (currentOffset.get()==offset) {
+					noToImportCRs.decrementAndGet();
+					currentOffset.set(0);
+					remove = false;
+				} else {
+					currentOffset.incrementAndGet();
+				}
 			}
+			
 			noAvailableCRs.decrementAndGet();
 			return remove;
 			

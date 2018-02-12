@@ -244,7 +244,7 @@ public class WoS_txt extends ImportReader {
 		
 		/* TODO: Filter is not supported yet */
 		
-		StatusBar.get().initProgressbar(CRStats.getSizePub());
+		StatusBar.get().initProgressbar(CRStats.getNumberOfPubs());
 						
 		BufferedWriter bw = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		bw.write("FN Thomson Reuters Web of Science\u0153 modified by CRExplorer");

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
@@ -139,7 +140,9 @@ public enum ImportExportFormat {
 		final long noMaxCRs = UserSettings.get().getMaxCR();
 		AtomicLong noAvailableCRs = new AtomicLong (CRStatsInfo.get().getNumberOfCRs (rpyRange, importCRsWithoutYear, pyRange, importPubsWithoutYear));
 		AtomicLong noToImportCRs = new AtomicLong(Math.min(noMaxCRs, noAvailableCRs.get()));
-				
+		AtomicInteger currentOffset = new AtomicInteger(0);	
+		
+		
 		float ratio = 1.0f*noToImportCRs.get()/noAvailableCRs.get();
 		
 		
@@ -180,10 +183,10 @@ public enum ImportExportFormat {
 							if ((pub.getSizeCR()>0) && (noMaxCRs>0)) {		// select CRs at random
 								
 								if (sampling==Sampling.RANDOM) {
-									pub.removeCRByProbability(rand.nextFloat(), noToImportCRs, noAvailableCRs);
+									pub.removeCRByProbability(rand.nextFloat(), 0, noToImportCRs, noAvailableCRs, currentOffset);
 								}
 								if (sampling==Sampling.SYSTEMATIC) {
-									pub.removeCRByProbability(ratio, noToImportCRs, noAvailableCRs);
+									pub.removeCRByProbability(ratio, sampling.offset, noToImportCRs, noAvailableCRs, currentOffset);
 								}
 								
 							}

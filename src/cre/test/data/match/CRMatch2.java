@@ -82,13 +82,13 @@ public class CRMatch2 {
 		final double weight_title = 5.0;
 		
 		// standard blocking: year + first letter of last name
-		StatusBar.get().setValue(String.format("Blocking of %d objects...", CRStats.getSize()));
+		StatusBar.get().setValue(String.format("Blocking of %d objects...", CRStats.getNumberOfCRs()));
 		Map<String, List<CRType>> blocks = CRTable.get().getCR().collect(Collectors.groupingBy(
 			cr -> ((cr.getRPY() != null) && (cr.getAU_L() != null) && (cr.getAU_L().length() > 0)) ? cr.getRPY() + cr.getAU_L().substring(0,1).toLowerCase() : "",
 			Collectors.toList()
 		));
 
-		StatusBar.get().initProgressbar(blocks.entrySet().stream().mapToInt(entry -> (entry.getValue().size()*(entry.getValue().size()-1))/2).sum(), String.format("Matching %d objects in %d blocks", CRStats.getSize(), blocks.size()));
+		StatusBar.get().initProgressbar(blocks.entrySet().stream().mapToInt(entry -> (entry.getValue().size()*(entry.getValue().size()-1))/2).sum(), String.format("Matching %d objects in %d blocks", CRStats.getNumberOfCRs(), blocks.size()));
 		matchResult.put(false, new HashMap<CRType,Map<CRType,Double>>());		// remove automatic match result, but preserve manual matching
 		Levenshtein l = new Levenshtein();
 		
@@ -240,7 +240,7 @@ public class CRMatch2 {
 			((changeCR == null) ? CRTable.get().getCR() : changeCR.stream()).forEach(cr -> cr.setCID2(new CRCluster(cr, cr.getCID2().c1)));
 		}
 
-		StatusBar.get().initProgressbar(pbSize, String.format("Clustering %d objects (%s) with threshold %.2f", CRStats.getSize(), type.label, threshold));
+		StatusBar.get().initProgressbar(pbSize, String.format("Clustering %d objects (%s) with threshold %.2f", CRStats.getNumberOfCRs(), type.label, threshold));
 		
 		// automatic matches
 		matchResult.get(false).forEach((cr1, pairs) -> {

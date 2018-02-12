@@ -16,6 +16,8 @@ import cre.test.ui.StatusBar;
 
 public class CRTable {
 
+	public static enum COMPARATOR { LT, LTE, EQ, GTE, GT };
+	
 	private static CRTable crTab = null;
 	
 	private HashMap<CRType, CRType> crDataMap;	// map: CR -> CR to get duplicates
@@ -23,7 +25,7 @@ public class CRTable {
 	private List<PubType> allPubs;
 	
 
-	private int[][] chartData;
+	private int[][] chartData;	// #years x 4; 4 elements = RPY, NCR, MedianDiff, number of CR
 	
 	private boolean duringUpdate;
 	private boolean aborted;
@@ -181,19 +183,23 @@ public class CRTable {
 		System.out.println("update Data");
 		System.out.println(System.currentTimeMillis());
 		
-		this.chartData = Indicators.update();
+		Indicators.update();
+		this.updateChartData();
 		
 		duringUpdate = false;
 		
 	}
 
 	
+	public void updateChartData () throws OutOfMemoryError {
+		this.chartData = Indicators.getChartData(UserSettings.get().getMedianRange());
+	}
+	
+	
 	public int[][] getChartData () {
 		return this.chartData;
 	}
 	
-		
-
 
 	private void removeCR (Predicate<CRType> cond) {
 		

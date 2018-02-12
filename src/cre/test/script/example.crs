@@ -13,13 +13,117 @@
 
 
 importFile (
-	dir: "E:/Dev/CRE/data/script/",
+	file: "E:/Dev/CRE/data/savedrecs_JOI2.txt",
 	type: "WOS",
-	sampling: "CLUSTER",
-	maxCR: 1000,
-	RPY: [2000, 2013, false]	
+	sampling: "SYSTEMATIC",
+	maxCR: 100
 )
 
+exportFile (
+	file: "E:/Dev/CRE/data/script/output/systemantic_offset_none.csv",
+	type: "CSV_CR"
+)
+
+
+importFile (
+	file: "E:/Dev/CRE/data/savedrecs_JOI2.txt",
+	type: "WOS",
+	sampling: "SYSTEMATIC",
+	maxCR: 100,
+	offset: 0
+)
+
+exportFile (
+	file: "E:/Dev/CRE/data/script/output/systemantic_offset_0.csv",
+	type: "CSV_CR"
+)
+
+
+importFile (
+	file: "E:/Dev/CRE/data/savedrecs_JOI2.txt",
+	type: "WOS",
+	sampling: "SYSTEMATIC",
+	maxCR: 100,
+	offset: 1
+)
+
+exportFile (
+	file: "E:/Dev/CRE/data/script/output/systemantic_offset_1.csv",
+	type: "CSV_CR"
+)
+
+importFile (
+	file: "E:/Dev/CRE/data/savedrecs_JOI2.txt",
+	type: "WOS",
+	sampling: "SYSTEMATIC",
+	maxCR: 100,
+	offset: 2
+)
+
+exportFile (
+	file: "E:/Dev/CRE/data/script/output/systemantic_offset_2.csv",
+	type: "CSV_CR"
+)
+
+importFile (
+	file: "E:/Dev/CRE/data/savedrecs_JOI2.txt",
+	type: "WOS",
+	sampling: "SYSTEMATIC",
+	maxCR: 100,
+	offset: 3	
+)
+
+exportFile (
+	file: "E:/Dev/CRE/data/script/output/systemantic_offset_3.csv",
+	type: "CSV_CR"
+)
+
+
+return
+
+importFile (
+	dir: "E:/Dev/CRE/data/script/",
+	type: "WOS",
+	sampling: "RANDM",
+	maxCR: 1000,
+	RPY: [2000, 2013, false]
+)
+
+
+set (n_pct_range: "0");
+
+exportFile (
+	file: "E:/Dev/CRE/data/script/output/npct0.csv",
+	type: "CSV_CR"
+)
+
+set (n_pct_range: 10);
+
+exportFile (
+	file: "E:/Dev/CRE/data/script/output/npct10.csv",
+	type: "CSV_CR"
+)
+
+
+
+
+
+set (median_range: "2");
+
+exportFile (
+	file: "E:/Dev/CRE/data/script/output/graph_2.csv",
+	type: "CSV_GRAPH"
+)
+
+set (median_range: 10);
+
+exportFile (
+	file: "E:/Dev/CRE/data/script/output/graph_10.csv",
+	type: "CSV_GRAPH"
+)
+
+
+return;
 
 info()	// prints brief statistics about data (as in the GUI status bar)
 

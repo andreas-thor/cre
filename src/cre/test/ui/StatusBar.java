@@ -51,15 +51,15 @@ public class StatusBar {
 	
 	
 	public void updateInfo () {
-		int[] yearsRPY = CRStats.getMaxRangeYear();
-		int[] yearsRPYVisible = CRStats.getMaxRangeYear(true);
-		int[] yearsPY  = CRStats.getMaxRangeCitingYear();
+		int[] yearsRPY = CRStats.getMaxRangeRPY();
+		int[] yearsRPYVisible = CRStats.getMaxRangeRPY(true);
+		int[] yearsPY  = CRStats.getMaxRangePY();
 
 		if (this.statUI != null) {
 			statUI.printInfo(String.format("#CRs: %d (%d shown), #Clusters: %d, RPY: %d-%d (%d-%d shown), PY: %d-%d",
-				CRStats.getSize(),
-				CRStats.getNumberByVisibility(true),
-				CRStats.getNoOfClusters(), 
+				CRStats.getNumberOfCRs(),
+				CRStats.getNumberOfCRsByVisibility(true),
+				CRStats.getNumberOfClusters(), 
 				yearsRPY[0], 
 				yearsRPY[1],
 				yearsRPYVisible[0], 

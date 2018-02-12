@@ -275,7 +275,7 @@ public class Scopus_csv extends ImportReader {
 		
 		/* TODO: Filter not supported yet */
 		
-		StatusBar.get().initProgressbar(CRStats.getSizePub());
+		StatusBar.get().initProgressbar(CRStats.getNumberOfPubs());
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		
 		csv.writeNext(new String[] {"Authors","Title","Year","Source title","Volume","Issue","Art. No.","Page start","Page end","Page count","Cited by","DOI","Link","Affiliations","Authors with affiliations","Abstract","Author Keywords","References","Document Type","Source","EID"});

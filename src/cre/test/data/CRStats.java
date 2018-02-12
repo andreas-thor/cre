@@ -10,23 +10,23 @@ public class CRStats {
 	/** TODO: Namen der Methoden vereinheitlichen */
 	
 	
-	public static long getSize () {
+	public static long getNumberOfCRs () {
 		return CRTable.get().getCR().count();
 	}
 	
-	public static long getSizePub () {
+	public static long getNumberOfPubs () {
 		return CRTable.get().getPub().count();
 	}
 
-	public static long getSizePub (boolean includePubsWithoutCRs) {
+	public static long getNumberOfPubs (boolean includePubsWithoutCRs) {
 		return CRTable.get().getPub(includePubsWithoutCRs).count();
 	}
 	
-	public static long getSizeMatch (boolean manual) {
+	public static long getNumberOfMatches (boolean manual) {
 		return CRMatch2.get().getSize(manual);
 	}
 
-	public static int[] getMaxRangeCitingYear () {
+	public static int[] getMaxRangePY () {
 		IntSummaryStatistics stats = CRTable.get().getPub().filter (pub -> pub.getPY() != null).mapToInt(it -> it.getPY()).summaryStatistics();
 		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
 	}
@@ -50,11 +50,11 @@ public class CRStats {
 	 * 
 	 * @return [min, max]
 	 */
-	public static int[] getMaxRangeYear () {
-		return getMaxRangeYear(false);
+	public static int[] getMaxRangeRPY () {
+		return getMaxRangeRPY(false);
 	}
 
-	public static int[] getMaxRangeYear (boolean visibleOnly) {
+	public static int[] getMaxRangeRPY (boolean visibleOnly) {
 		IntSummaryStatistics stats = CRTable.get().getCR().filter (cr -> (cr.getRPY()!= null) && (!visibleOnly || cr.getVI())).mapToInt(it -> it.getRPY()).summaryStatistics();
 		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
 	}
@@ -65,12 +65,12 @@ public class CRStats {
 	
 
 	
-	public static long getNoOfClusters() {
+	public static long getNumberOfClusters() {
 		return CRTable.get().getCR().map(cr -> cr.getCID2()).distinct().count();
 	}
 
 	
-	public static int getNumberByVisibility (boolean visible) {
+	public static int getNumberOfCRsByVisibility (boolean visible) {
 		return (int) CRTable.get().getCR().filter(cr -> (cr.getVI() == visible)).count(); 
 	}
 	
@@ -81,7 +81,7 @@ public class CRStats {
 	 * @param to
 	 */
 	
-	public static long getNumberByNCR (int[] range) {
+	public static long getNumberOfCRsByNCR (int[] range) {
 		return CRTable.get().getCR().filter(cr -> ((range[0] <= cr.getN_CR()) && (cr.getN_CR() <= range[1]))).count();
 	}
 
@@ -92,7 +92,7 @@ public class CRStats {
 	 * @return
 	 */
 	
-	public static long getNumberByPercentYear (String comp, double threshold) {
+	public static long getNumberOfCRsByPercentYear (String comp, double threshold) {
 		switch (comp) {
 			case "<" : return CRTable.get().getCR().filter( cr -> cr.getPERC_YR() <  threshold ).count(); 
 			case "<=": return CRTable.get().getCR().filter( cr -> cr.getPERC_YR() <= threshold ).count();
@@ -110,19 +110,17 @@ public class CRStats {
 	 * @param to
 	 */
 	
-	public static long getNumberByYear (int[] range) {
+	public static long getNumberOfCRsByRPY (int[] range) {
 		return CRTable.get().getCR().filter( cr -> ((cr.getRPY()!=null) && (range[0] <= cr.getRPY()) && (cr.getRPY() <= range[1]))).count();
 	}
 
-	public static long getNumberOfPubs () {
-		return CRTable.get().getPub().count();
-	}
+	
 
 	public static long getNumberOfPubsByCitingYear (int[] range) {
 		return CRTable.get().getPub().filter( pub -> ((pub.getPY()!=null) && (range[0] <= pub.getPY()) && (pub.getPY() <= range[1]))).count();
 	}
 
-	public static int getNumberWithoutYear () {
+	public static int getNumberOfCRsWithoutRPY () {
 		return (int) CRTable.get().getCR().filter( (CRType it) -> it.getRPY() == null).count();  
 	}
 

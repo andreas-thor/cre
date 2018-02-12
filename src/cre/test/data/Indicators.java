@@ -20,11 +20,11 @@ public class Indicators {
 	
 	
 
-	public static int[][] update() {
+	public static void update() {
 
 		System.out.println("Compute Ranges");
-		range_RPY = CRStats.getMaxRangeYear();
-		range_PY  = CRStats.getMaxRangeCitingYear();
+		range_RPY = CRStats.getMaxRangeRPY();
+		range_PY  = CRStats.getMaxRangePY();
 		NCR_ALL = new int[1];
 		NCR_RPY = new int[range_RPY[1]-range_RPY[0]+1];
 		CNT_RPY = new int[range_RPY[1]-range_RPY[0]+1];
@@ -48,7 +48,7 @@ public class Indicators {
 			computeForAllCRsOfTheSameRPY (rpyGroup.getKey(), rpyGroup.getValue());
 		});
 		
-		return getChartData(UserSettings.get().getMedianRange());
+		return;
 	}
 	
 	
@@ -217,7 +217,7 @@ public class Indicators {
 	
 	
 	
-	private static int[][] getChartData (int medianRange) {
+	public static int[][] getChartData (int medianRange) {
 		
 		
 		// compute difference to median

@@ -264,7 +264,7 @@ public class CRE_json {
 		/* TODO: filter is not supported yet */
 		
 		CRTable crTab = CRTable.get();
-		StatusBar.get().initProgressbar(CRStats.getSize() + CRStats.getSizePub() + CRStats.getSizeMatch(true) + CRStats.getSizeMatch(false));
+		StatusBar.get().initProgressbar(CRStats.getNumberOfCRs() + CRStats.getNumberOfPubs() + CRStats.getNumberOfMatches(true) + CRStats.getNumberOfMatches(false));
 		
 		ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(file_name), Charset.forName("UTF-8"));
 		zip.putNextEntry(new ZipEntry("crdata.json"));

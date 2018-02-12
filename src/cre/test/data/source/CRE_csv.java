@@ -30,7 +30,7 @@ public class CRE_csv {
 	
 	public static void saveCR (String file_name, Predicate<CRType> filter) throws IOException {
 
-		StatusBar.get().initProgressbar(CRStats.getSize());
+		StatusBar.get().initProgressbar(CRStats.getNumberOfCRs());
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(Arrays.stream(CRColumn.values()).map(col -> col.id).toArray(String[]::new)); 
@@ -47,7 +47,7 @@ public class CRE_csv {
 	
 	public static void savePub (String file_name, Predicate<CRType> filter) throws IOException {
 
-		StatusBar.get().initProgressbar(CRStats.getSizePub());
+		StatusBar.get().initProgressbar(CRStats.getNumberOfPubs());
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(Arrays.stream(PubColumn.values()).map(col -> col.id).toArray(String[]::new)); 
@@ -64,7 +64,7 @@ public class CRE_csv {
 	
 	public static void saveCRPub (String file_name, Predicate<CRType> filter) throws IOException {
 
-		StatusBar.get().initProgressbar(CRStats.getSizePub());
+		StatusBar.get().initProgressbar(CRStats.getNumberOfPubs());
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext (Stream.concat (

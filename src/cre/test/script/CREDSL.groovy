@@ -127,6 +127,8 @@ abstract class CREDSL extends Script {
 			case "CLUSTER": sampling = Sampling.CLUSTER; break;
 			default: throw new Exception ("importFile: unknown sampling (must be NONE, RANDOM, SYSTEMATIC, or CLUSTER)");
 		}
+		
+		sampling.offset = param.getOrDefault("OFFSET", 0);
 		UserSettings.get().setSampling(sampling);
 
 		fileFormat.load(files);
@@ -284,6 +286,37 @@ abstract class CREDSL extends Script {
 		CRTable.get().merge();
 	}
 
+	
+	
+	public void set (Map<String, Object> map) throws Exception { 
+	
+		Map<String, Object> param = makeParamsCaseInsensitive(map)
+	
+		if (param.get("N_PCT_RANGE") != null) {
+			if (UserSettings.get().setNPCTRange(param.get("N_PCT_RANGE").toString()) != 0) {
+				throw new Exception("Wrong value for set parameter N_PCT_RANGE: " + param.get("N_PCT_RANGE"));
+			}
+			param.remove("N_PCT_RANGE");
+			CRTable.get().updateData();
+		}
+		
+		if (param.get("MEDIAN_RANGE") != null) {
+			if (UserSettings.get().setMedianRange(param.get("MEDIAN_RANGE").toString()) != 0) {
+				throw new Exception("Wrong value for set parameter MEDIAN_RANGE: " + param.get("MEDIAN_RANGE"));
+			}
+			param.remove("MEDIAN_RANGE");
+			CRTable.get().updateChartData();
+		}
+		
+		
+		/* there should be no remaining parameter */
+		for (String unknownParam: param.keySet()) {
+			throw new Exception("Unknown set parameter: " + unknownParam);
+		}
+		
+			
+	}
+	
 	
 	
 	public void progress (boolean b) {

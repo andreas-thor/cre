@@ -26,17 +26,17 @@ public class Info extends Dialog<Void> {
 		
 		grid.addRow(0, 
 			new Label("Number of Cited References"),
-			createTF (CRStats.getSize()));
+			createTF (CRStats.getNumberOfCRs()));
 		
 		grid.addRow(1, 
 			new Label("Number of Cited References (shown)"),
-			createTF (CRStats.getNumberByVisibility(true)));
+			createTF (CRStats.getNumberOfCRsByVisibility(true)));
 		
 		grid.addRow(2, 
 			new Label("Number of Cited References Clusters"), 
-			createTF (CRStats.getNoOfClusters()));
+			createTF (CRStats.getNumberOfClusters()));
 		
-		int[] r = CRStats.getMaxRangeYear();
+		int[] r = CRStats.getMaxRangeRPY();
 		grid.addRow(3, 
 			new Label("Range of Cited References Years"), 
 			createTF (r[0], 1),
@@ -49,13 +49,13 @@ public class Info extends Dialog<Void> {
 		
 		grid.addRow(5, 
 			new Label("Number of Publications"), 
-			createTF (CRStats.getSizePub(true)));
+			createTF (CRStats.getNumberOfPubs(true)));
 
 		grid.addRow(6, 
 				new Label("Number of Citing Publications"), 
-				createTF (CRStats.getSizePub()));
+				createTF (CRStats.getNumberOfPubs()));
 		
-		r = CRStats.getMaxRangeCitingYear();
+		r = CRStats.getMaxRangePY();
 		grid.addRow(7, 
 			new Label("Range of Citing Publications Years"),
 			createTF (r[0], 1),
