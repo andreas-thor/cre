@@ -112,7 +112,7 @@ public class WoS_txt extends ImportReader {
 			case "EP": try { pub.setEP(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
 			case "PG": try { pub.setPG(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
 			case "TC": try { pub.setTC(Integer.valueOf(value)); } catch (NumberFormatException e) { }; break;
-			
+
 			/* Parse Cited References */
 			case "CR":
 				CRType cr = parseCR(value);

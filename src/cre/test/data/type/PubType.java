@@ -125,6 +125,7 @@ public class PubType implements Comparable<PubType> {
 
 	public int length; // approx. size for import status bar
 
+	
 	private Set<CRType> crList;
 
 	private boolean flag;
