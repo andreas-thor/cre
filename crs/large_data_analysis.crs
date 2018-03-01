@@ -1,0 +1,27 @@
+
+
+Sample = use ("procedures/Sample.crs")
+
+
+Sample.sampleUnion (5, { index ->
+	
+	importFile (
+		file: "E:/Dev/CRE/data/savedrecs_JOI2.txt",
+		type: "WOS",
+		sampling: "SYSTEMATIC",
+		maxCR: 100,
+		offset: index
+	)
+	
+})
+/*
+
+
+importFile (
+	file: "E:/Dev/CRE/data/savedrecs_JOI2.txt",
+	type: "WOS",
+	sampling: "SYSTEMATIC",
+	maxCR: 100
+)
+
+ */

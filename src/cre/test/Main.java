@@ -390,7 +390,9 @@ public class Main {
 						tableView.getItems().clear();	// free space (references to CR instances)
 						
 						source.load(files);
-						if (source == ImportExportFormat.CRE) creFile = files.get(0); 
+						if ((source == ImportExportFormat.CRE) && (files.size()==1)) {
+							creFile = files.get(0); 
+						}
 							
 						// show match panel if applicable
 						matchView.setVisible((CRMatch2.get().getSize(true) + CRMatch2.get().getSize(false)) > 0);

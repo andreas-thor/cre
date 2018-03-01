@@ -49,7 +49,7 @@ public class CRE_json {
 	 * @throws OutOfMemoryError
 	 * @throws IOException
 	 */
-	public static void load (File file) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
+	public static void load (File file, boolean isFirstFile) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 		
 		CRTable crTab = CRTable.get(); 
 		
@@ -75,7 +75,10 @@ public class CRE_json {
 					
 					switch (parser.next()) {
 					case START_OBJECT: 	cr = new CRType_Member(); break; 
-					case END_OBJECT: 	mapId2CR.put(cr.getID(), cr); crTab.addCR(cr); break;
+					case END_OBJECT: 	
+						int internalId = cr.getID();
+						cr = crTab.addCR(cr, !isFirstFile);
+						mapId2CR.put(internalId, cr);  break;
 					case KEY_NAME:		key = parser.getString(); break;
 					case VALUE_STRING: 
 						switch (key) {
@@ -121,6 +124,7 @@ public class CRE_json {
 				parser = Json.createParser(zipFile.getInputStream(entry) /*zip*/);
 				PubType pub = null;
 				List<String> C1List = null;
+				List<CRType> CRList = null; 
 				int arrayLevel = 0;
 				String key = "";
 				while (!crTab.isAborted() && parser.hasNext()) {
@@ -128,9 +132,13 @@ public class CRE_json {
 					switch (parser.next()) {
 					case START_OBJECT: 	
 						pub = new PubType(); 
+						CRList = new ArrayList<CRType>();
 						break; 
 					case END_OBJECT: 	
-						crTab.addPub(pub, false);  
+						pub = crTab.addPub(pub, false, !isFirstFile);
+						for (CRType cr: CRList) {
+							pub.addCR(cr, true);
+						}
 						break;
 					case KEY_NAME:		
 						key = parser.getString(); 
@@ -196,7 +204,9 @@ public class CRE_json {
 						case "EP": 	pub.setEP(parser.getInt()); break;
 						case "PG": 	pub.setPG(parser.getInt()); break;
 						case "TC": 	pub.setTC(parser.getInt()); break;
-						case "CRLISTID":	pub.addCR(mapId2CR.get(parser.getInt()), true); break;
+						case "CRLISTID":	
+							CRList.add(mapId2CR.get(parser.getInt()));	//  --> das wird erst nach AddPub gemacht: pub.addCR(mapId2CR.get(parser.getInt()), true); 
+							break;
 						// local mapping: case "CRLISTID":	crTab.crData.get(crTab.crMatch.crId2Index.get(parser.getInt()))); break;
 						default: System.out.println("PUBDATA.json >> Unknow Key with Number Value: " + key); 
 						}

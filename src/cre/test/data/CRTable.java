@@ -22,7 +22,7 @@ public class CRTable {
 	
 	private HashMap<CRType, CRType> crDataMap;	// map: CR -> CR to get duplicates
 	
-	private List<PubType> allPubs;
+	private HashMap<PubType, PubType> allPubs;
 	
 
 	private int[][] chartData;	// #years x 4; 4 elements = RPY, NCR, MedianDiff, number of CR
@@ -52,14 +52,14 @@ public class CRTable {
 	public void init() {
 		
 		if (allPubs != null) {
-			for (PubType pub: allPubs) {
+			for (PubType pub: allPubs.keySet()) {
 				pub.removeAllCRs(true);
 			}
 		}
 		
 		
 		crDataMap = new HashMap<CRType, CRType>();
-		allPubs = new ArrayList<PubType>();
+		allPubs = new HashMap<PubType, PubType>();
 		
 		CRMatch2.get().init();
 		duringUpdate = false;
@@ -81,7 +81,7 @@ public class CRTable {
 	 * @return
 	 */
 	public Stream<PubType> getPub (boolean includePubsWithoutCRs) {
-		return includePubsWithoutCRs ? allPubs.stream() : getCR().flatMap(cr -> cr.getPub()).distinct();
+		return includePubsWithoutCRs ? allPubs.keySet().stream() : getCR().flatMap(cr -> cr.getPub()).distinct();
 	}
 	
 	public Stream<PubType> getPub() {
@@ -89,10 +89,27 @@ public class CRTable {
 	}
 	
 
-	public void addCR(CRType cr) {
-		crDataMap.put(cr, cr);
+	public CRType addCR(CRType cr) {
+		return this.addCR(cr, false);
 	}
 	
+	public CRType addCR(CRType cr, boolean checkForDuplicatesAndSetId) {
+		
+		if (checkForDuplicatesAndSetId) {
+			CRType crMain = this.crDataMap.get(cr);
+			if (crMain == null) {
+				this.crDataMap.put(cr, cr);
+				cr.setID(this.crDataMap.size());
+				cr.setCID2(new CRCluster (cr));
+				return cr;
+			} else {
+				return crMain;
+			}
+		} else {
+			crDataMap.put(cr, cr);
+			return cr;
+		}
+	}
 	
 	
 	/*
@@ -100,11 +117,24 @@ public class CRTable {
 	 * This is later only used for export (to Scopus, WoS, CSV_Pub) when the user setting "include pubs without CRs" is set
 	 */
 	
+	public PubType addPub (PubType pub, boolean addCRs) {
+		return addPub (pub, addCRs, false);
+	}
 	
-	public void addPub (PubType pub, boolean addCRs) {
+	public PubType addPub (PubType pub, boolean addCRs, boolean checkForDuplicates) {
 		
-		this.allPubs.add(pub);
-		pub.setID(this.allPubs.size());
+		if (checkForDuplicates) {
+			PubType pubMain = this.allPubs.get(pub);
+			if (pubMain == null) {
+				this.allPubs.put(pub, pub);
+				pub.setID(this.allPubs.size());
+			} else {
+				pub = pubMain;
+			}
+		} else {
+			this.allPubs.put(pub, pub);
+			pub.setID(this.allPubs.size());
+		}
 		
 		if (addCRs) {
 		
@@ -122,6 +152,8 @@ public class CRTable {
 				}
 			}
 		}
+		
+		return pub;
 	}
 	
 

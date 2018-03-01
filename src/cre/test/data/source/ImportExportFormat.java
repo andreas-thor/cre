@@ -25,7 +25,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 public enum ImportExportFormat {
 
 	
-	CRE("Cited References Explorer", false, "cre" , null, CRE_json::save),
+	CRE("Cited References Explorer", true, "cre" , null, CRE_json::save),
 
 	WOS("Web of Science", true, "txt", new WoS_txt(), WoS_txt::save),
 
@@ -148,12 +148,14 @@ public enum ImportExportFormat {
 		
 		
 		int idx = 0;
+		boolean isFirstFile = true;
+		
 		for (File file: files) {
 			
 			StatusBar.get().initProgressbar(file.length(), String.format("Loading %4$s file %1$d of %2$d (%3$s) ...", (++idx), files.size(), file.getName(), this.label));
 
 			if (this==ImportExportFormat.CRE) {	// load internal CRE format
-				CRE_json.load(file);
+				CRE_json.load(file, isFirstFile);
 			} else {	// import external data format
 			
 				this.importReader.init(file);
@@ -205,6 +207,7 @@ public enum ImportExportFormat {
 				this.importReader.close();
 			}
 				
+			isFirstFile = false;
 		}
 
 //		System.out.println("noAvailableCRs=" + noAvailableCRs.get());

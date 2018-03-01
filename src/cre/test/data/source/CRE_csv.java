@@ -21,7 +21,6 @@ import cre.test.ui.StatusBar;
 public class CRE_csv {
 
 	
-	
 	/**
 	 * Save CR table to CSV file
 	 * @param file
@@ -104,5 +103,5 @@ public class CRE_csv {
 				
 		csv.close();
 	}
-	
+
 }

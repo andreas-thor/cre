@@ -3,7 +3,7 @@ package cre.test.data.type;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Random;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -587,6 +587,45 @@ public class PubType implements Comparable<PubType> {
 	}
 
 
+	@Override
+	public boolean equals(Object obj) {
+
+		PubType p = (PubType) obj;
+		
+		if (!this.TI.getValueSafe().equals(p.TI.getValueSafe())) return false;
+		if (!this.PT.getValueSafe().equals(p.PT.getValueSafe())) return false;
+		
+		if (!this.PY.isEqualTo(p.PY).get()) return false;
+		
+		if (!this.AU.equals(p.AU)) return false;
+		
+		if (!this.SO.getValueSafe().equals(p.SO.getValueSafe())) return false;
+		if (!this.VL.getValueSafe().equals(p.VL.getValueSafe())) return false;
+		if (!this.IS.getValueSafe().equals(p.IS.getValueSafe())) return false;
+		if (!this.AR.getValueSafe().equals(p.AR.getValueSafe())) return false;
+
+		if (!this.BP.isEqualTo(p.BP).get()) return false;
+		if (!this.EP.isEqualTo(p.EP).get()) return false;
+		if (!this.PG.isEqualTo(p.PG).get()) return false;
+		if (!this.TC.isEqualTo(p.TC).get()) return false;
+
+		if (!this.DI.getValueSafe().equals(p.DI.getValueSafe())) return false;
+		if (!this.LI.getValueSafe().equals(p.LI.getValueSafe())) return false;
+		if (!this.AB.getValueSafe().equals(p.AB.getValueSafe())) return false;
+		if (!this.DE.getValueSafe().equals(p.DE.getValueSafe())) return false;
+
+		if (!this.DT.getValueSafe().equals(p.DT.getValueSafe())) return false;
+		if (!this.FS.getValueSafe().equals(p.FS.getValueSafe())) return false;
+		if (!this.UT.getValueSafe().equals(p.UT.getValueSafe())) return false;
+		
+		return true;
+	}
+	
+	
+	@Override
+	public int hashCode() {
+		return this.TI.getValueSafe().hashCode();
+	}
 
 	public boolean isFlag() {
 		return flag;

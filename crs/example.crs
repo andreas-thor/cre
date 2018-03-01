@@ -10,7 +10,13 @@
  */
   
 
+//zuimport = this.class.classLoader.parseClass(new File (new File(getClass().protectionDomain.codeSource.location.path).parent, "zuimport.crs"))
+//zuimport.a()
 
+zu = use ("procedures/zuimport.crs")
+zu.a()
+
+return
 
 importFile (
 	file: "E:/Dev/CRE/data/savedrecs_JOI2.txt",
@@ -18,6 +24,9 @@ importFile (
 	sampling: "SYSTEMATIC",
 	maxCR: 100
 )
+
+
+
 
 exportFile (
 	file: "E:/Dev/CRE/data/script/output/systemantic_offset_none.csv",

@@ -19,6 +19,7 @@ import cre.test.data.match.CRMatch2
 import cre.test.data.source.ImportExportFormat;
 import cre.test.data.type.CRType
 import cre.test.ui.StatusBar;
+import cre.test.ui.StatusBarText
 import groovy.io.FileType
 import groovy.lang.Script;
 import groovy.swing.factory.ImageIconFactory
@@ -26,12 +27,14 @@ import groovy.swing.factory.ImageIconFactory
 abstract class CREDSL extends Script {
 
 
+	public static StatusBarText status
+	
 	/**
 	 * File > Open
 	 * ===========
 	 * FILE = string
 	 */
-	public void openFile (Map<String, Object> map) throws Exception {
+	public static void openFile (Map<String, Object> map) throws Exception {
 
 		Map<String, Object> param = makeParamsCaseInsensitive(map);
 
@@ -57,7 +60,7 @@ abstract class CREDSL extends Script {
 	 * PY = [min, max, importWithoutPY]; default = [0, 0, true]
 	 * MAXCR = int; default = 0
 	 */
-	public void importFile (Map<String, Object> map)  {
+	public static void importFile (Map<String, Object> map)  {
 
 		Map<String, Object> param = makeParamsCaseInsensitive(map);
 
@@ -141,7 +144,7 @@ abstract class CREDSL extends Script {
 	 * FILE (mandatory)
 	 * RPY (optional filter RPY range)
 	 */
-	public void saveFile (Map<String, String> map) throws Exception  {
+	public static void saveFile (Map<String, String> map) throws Exception  {
 
 		Map<String, Object> param = makeParamsCaseInsensitive(map)
 
@@ -170,7 +173,7 @@ abstract class CREDSL extends Script {
 	 * RPY (optional filter RPY range)
 	 */
 
-	public void exportFile (Map<String, String> map) throws Exception {
+	public static void exportFile (Map<String, String> map) throws Exception {
 
 		Map<String, Object> param = makeParamsCaseInsensitive(map)
 
@@ -214,7 +217,7 @@ abstract class CREDSL extends Script {
 	 * N_CR 
 	 * RPY = [min, max] or NULL
 	 */
-	public void removeCR (Map<String, Object> map) {
+	public static void removeCR (Map<String, Object> map) {
 
 		Map<String, Object> param = makeParamsCaseInsensitive(map)
 
@@ -243,7 +246,7 @@ abstract class CREDSL extends Script {
 	 * Edit > Retain Publications within Publication Year
 	 * PY = [min, max] 
 	 */
-	public void retainPub (map) throws Exception {
+	public static void retainPub (map) throws Exception {
 
 		Map<String, Object> param = makeParamsCaseInsensitive(map)
 
@@ -264,7 +267,7 @@ abstract class CREDSL extends Script {
 	 * DOI (boolean)
 	 */
 
-	public void cluster (map) {
+	public static void cluster (map) {
 
 		Map<String, Object> param = makeParamsCaseInsensitive(map)
 
@@ -282,13 +285,13 @@ abstract class CREDSL extends Script {
 	/**
 	 * Disambiguation > Merge clustered References
 	 */
-	public void merge () {
+	public static void merge () {
 		CRTable.get().merge();
 	}
 
 	
 	
-	public void set (Map<String, Object> map) throws Exception { 
+	public static void set (Map<String, Object> map) throws Exception { 
 	
 		Map<String, Object> param = makeParamsCaseInsensitive(map)
 	
@@ -319,16 +322,21 @@ abstract class CREDSL extends Script {
 	
 	
 	
-	public void progress (boolean b) {
+	public static void progress (boolean b) {
 		status.setShowProgress (b)
 	}
 
-	public void info() {
+	public static void info() {
 		StatusBar.get().updateInfo();
 	}
 
+	
+	
+	public Class use (String filename) {
+		return  this.class.classLoader.parseClass(new File (new File(getClass().protectionDomain.codeSource.location.path).parent, filename))
+	}
 
-	private Map<String, Object> makeParamsCaseInsensitive  (Map<String, Object> map) {
+	private static Map<String, Object> makeParamsCaseInsensitive  (Map<String, Object> map) {
 		return map.collectEntries { key, value ->
 			return [(key.toUpperCase()): value]
 		}
