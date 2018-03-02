@@ -1,5 +1,12 @@
-import java.util.Map
 import cre.test.script.CREDSL
+
+/**
+ * CRExplorer Scripting Package
+ * Introduces
+ * - forEach
+ * - forEachUnion
+ * @author Andreas Thor
+ */
 
 class Loop {
 

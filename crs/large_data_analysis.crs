@@ -3,7 +3,10 @@
  * Mit dem State use ("...").with { ... } binde ich ein externes Package ein.
  * Ein Package erweitert die Skriptsprache des CRExplorers um Funktionen.
  * Packages sind selbst wieder CRE-Skript-Dateien (.crs)
- * Packages können einfach kopiert und verwendet werden.
+ * (Technisch: Sie enthalten Java/Groovy-Code, der zur Laufzeit ausgeführt wird.) 
+ * Packages können einfach kopiert und verwendet werden, 
+ * d.h. programmier-affine Nutzer können auch selbst Packages erstellen und verteilen.
+ * Eine Änderung des CRExplorers ist nicht nötig. 
  * 
  * Das Package Loop enthält zwei Funktionen: forEach und forEachUnion
  * 
@@ -81,38 +84,3 @@ use ("packages/Loop.crs").with {
 	
 }
 
-
-
-
-
-
-
-
-
-
-	
-/*
-
-
-exportFile (
-	file: "E:/Dev/CRE/data/script/output/imskriptgermeged.csv",
-	type: "CSV_CR"
-)
-
-
-
-
-
-
-
-
-
-
-importFile (
-	file: "E:/Dev/CRE/data/savedrecs_JOI2.txt",
-	type: "WOS",
-	sampling: "SYSTEMATIC",
-	maxCR: 100
-)
-
- */
