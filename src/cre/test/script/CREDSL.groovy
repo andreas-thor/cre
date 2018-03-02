@@ -39,11 +39,13 @@ abstract class CREDSL extends Script {
 		Map<String, Object> param = makeParamsCaseInsensitive(map);
 
 		// set list of import files
+		// set list of import files
 		List<File> files = new ArrayList<File>();
-		if (param.get("FILE") != null) {
-			files.add(new File (param.get("FILE")));
-		} else {
-			throw new Exception ("openFile: missing parameter file");
+		if (param.get("FILE") != null) files.add(new File (param.get("FILE")));
+		if (param["FILES"] != null)	files.addAll(param["FILES"].collect { new File(it) });
+		if (param["DIR"] != null) new File (param["DIR"]).eachFile(FileType.FILES) { files.add(it) };
+		if (files.size()==0) {
+			throw new Exception ("openFile: no files specified (using file, files, or dir)");
 		}
 
 		ImportExportFormat.CRE.load(files);
@@ -71,7 +73,7 @@ abstract class CREDSL extends Script {
 		if (param["FILES"] != null)	files.addAll(param["FILES"].collect { new File(it) });
 		if (param["DIR"] != null) new File (param["DIR"]).eachFile(FileType.FILES) { files.add(it) };
 		if (files.size()==0) {
-			throw new Exception ("load: no files specified (using file, files, or dir)");
+			throw new Exception ("importFile: no files specified (using file, files, or dir)");
 		}
 		
 		
@@ -151,7 +153,6 @@ abstract class CREDSL extends Script {
 		// set file
 		if (param.get("FILE")==null) {
 			throw new Exception ("saveFile: missing parameter file");
-			
 		}
 		File file = new File (param.get("FILE"));
 		

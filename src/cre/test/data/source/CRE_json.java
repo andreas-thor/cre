@@ -53,214 +53,215 @@ public class CRE_json {
 		
 		CRTable crTab = CRTable.get(); 
 		
+		JsonParser parser;
 		ZipEntry entry = null;
 		ZipFile zipFile = new ZipFile(file);
-		Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
 		
 		Map<Integer, CRType> mapId2CR = new HashMap<Integer, CRType>();
+
+		entry = zipFile.getEntry("crdata.json");
+		if (entry != null) {
 		
-		JsonParser parser;
-		while ( zipEntries.hasMoreElements()) {
- 
-			entry = zipEntries.nextElement();
-			if (entry.getName().equals("crdata.json")) {
-
-				System.out.println("entry size is " + entry.getSize());
-				StatusBar.get().initProgressbar(entry.getSize(), "Loading CRE file crdata ...");
-				parser = Json.createParser(zipFile.getInputStream(entry));
-				CRType cr = null;
-				String key = "";
-				while (!crTab.isAborted() && parser.hasNext()) {
-					
-					
-					switch (parser.next()) {
-					case START_OBJECT: 	cr = new CRType_Member(); break; 
-					case END_OBJECT: 	
-						int internalId = cr.getID();
-						cr = crTab.addCR(cr, !isFirstFile);
-						mapId2CR.put(internalId, cr);  break;
-					case KEY_NAME:		key = parser.getString(); break;
-					case VALUE_STRING: 
-						switch (key) {
-						case "CR": 		cr.setCR(parser.getString()); break;
-						case "AU": 		cr.setAU(parser.getString()); break;
-						case "AU_F": 	cr.setAU_F(parser.getString()); break;
-						case "AU_L": 	cr.setAU_L(parser.getString()); break;
-						case "AU_A": 	cr.setAU_A(parser.getString()); break;
-						case "TI": 		cr.setTI(parser.getString()); break;
-						case "J": 		cr.setJ(parser.getString()); break;
-						case "J_N": 	cr.setJ_N(parser.getString()); break;
-						case "J_S": 	cr.setJ_S(parser.getString()); break;
-						case "PAG": 	cr.setPAG(parser.getString()); break;
-						case "VOL": 	cr.setVOL(parser.getString()); break;
-						case "DOI": 	cr.setDOI(parser.getString()); break;
-						case "CID2": 	cr.setCID2(new CRCluster(parser.getString())); break;
-						default: System.out.println("CRDATA.json >> Unknow Key with String Value: " + key); 
-						}
-						break;
-					case VALUE_NUMBER:
-						switch (key) {
-						case "ID": 		cr.setID(parser.getInt());  break;
-						case "N_CR": 	/*cr.setN_CR(parser.getInt());*/ break;
-						case "RPY": 	cr.setRPY(parser.getInt()); break;
-						case "CID_S": 	/*cr.setCID_S(parser.getInt()); */ break;
-						case "VI": 		cr.setVI(parser.getInt()==1); break;
-						case "CO": 		cr.setCO(parser.getInt()); break;
-						case "type": 	cr.setType (parser.getInt()); break;
-						default: System.out.println("CRDATA.json >> Unknow Key with Number Value: " + key); 
-						}
-						break;
-					default:break;  
-					}
+			System.out.println("entry size is " + entry.getSize());
+			StatusBar.get().initProgressbar(entry.getSize(), "Loading CRE file crdata ...");
+			parser = Json.createParser(zipFile.getInputStream(entry));
+			CRType cr = null;
+			String key = "";
+			while (!crTab.isAborted() && parser.hasNext()) {
 				
-					StatusBar.get().updateProgressbar(parser.getLocation().getStreamOffset());
+				
+				switch (parser.next()) {
+				case START_OBJECT: 	cr = new CRType_Member(); break; 
+				case END_OBJECT: 	
+					
+					int internalId = cr.getID();
+					cr = crTab.addCR(cr, !isFirstFile);
+					cr.setCID2(new CRCluster (cr));
+					mapId2CR.put(internalId, cr);  
+					break;
+				case KEY_NAME:		key = parser.getString(); break;
+				case VALUE_STRING: 
+					switch (key) {
+					case "CR": 		cr.setCR(parser.getString()); break;
+					case "AU": 		cr.setAU(parser.getString()); break;
+					case "AU_F": 	cr.setAU_F(parser.getString()); break;
+					case "AU_L": 	cr.setAU_L(parser.getString()); break;
+					case "AU_A": 	cr.setAU_A(parser.getString()); break;
+					case "TI": 		cr.setTI(parser.getString()); break;
+					case "J": 		cr.setJ(parser.getString()); break;
+					case "J_N": 	cr.setJ_N(parser.getString()); break;
+					case "J_S": 	cr.setJ_S(parser.getString()); break;
+					case "PAG": 	cr.setPAG(parser.getString()); break;
+					case "VOL": 	cr.setVOL(parser.getString()); break;
+					case "DOI": 	cr.setDOI(parser.getString()); break;
+					case "CID2": 	cr.setCID2(new CRCluster(parser.getString())); break;
+					default: System.out.println("CRDATA.json >> Unknow Key with String Value: " + key); 
+					}
+					break;
+				case VALUE_NUMBER:
+					switch (key) {
+					case "ID": 		cr.setID(parser.getInt()); break;
+					case "N_CR": 	/*cr.setN_CR(parser.getInt());*/ break;
+					case "RPY": 	cr.setRPY(parser.getInt()); break;
+					case "CID_S": 	/*cr.setCID_S(parser.getInt()); */ break;
+					case "VI": 		cr.setVI(parser.getInt()==1); break;
+					case "CO": 		cr.setCO(parser.getInt()); break;
+					case "type": 	cr.setType (parser.getInt()); break;
+					default: System.out.println("CRDATA.json >> Unknow Key with Number Value: " + key); 
+					}
+					break;
+				default:break;  
 				}
-				StatusBar.get().setValue("Loading CRE file crdata done");
+			
+				StatusBar.get().updateProgressbar(parser.getLocation().getStreamOffset());
 			}
-			
-			if (entry.getName().equals("pubdata.json")) {
-
-				StatusBar.get().initProgressbar(entry.getSize(), "Loading CRE file pubdata ...");
-				parser = Json.createParser(zipFile.getInputStream(entry) /*zip*/);
-				PubType pub = null;
-				List<String> C1List = null;
-				List<CRType> CRList = null; 
-				int arrayLevel = 0;
-				String key = "";
-				while (!crTab.isAborted() && parser.hasNext()) {
-					
-					switch (parser.next()) {
-					case START_OBJECT: 	
-						pub = new PubType(); 
-						CRList = new ArrayList<CRType>();
-						break; 
-					case END_OBJECT: 	
-						pub = crTab.addPub(pub, false, !isFirstFile);
-						for (CRType cr: CRList) {
-							pub.addCR(cr, true);
-						}
-						break;
-					case KEY_NAME:		
-						key = parser.getString(); 
-						break;
-					case START_ARRAY:	
-						arrayLevel++;
-						switch (arrayLevel) {
-						case 2:
-							switch (key) {
-							case "AU":	break;
-							case "AF":	break;
-							case "C1":	break;	
-							case "EM":	break;
-							case "AA":	break;
-//							case "CRLISTID":	pub.crList = new ArrayList<CRType>(); break;
-							}
-							break;
-						case 3:			C1List = new ArrayList<String>(); break;
-						}
-						break;
-					case END_ARRAY: 
-						if ((arrayLevel == 3) && (C1List != null)) pub.addC1((String[]) C1List.toArray(new String[C1List.size()])); 
-						arrayLevel--;
-						break;
-					case VALUE_STRING: 
-						switch (arrayLevel) {
-						case 1:
-							switch (key) {
-							case "PT": 	pub.setPT(parser.getString()); break;
-							case "TI": 	pub.setTI(parser.getString()); break;
-							case "SO": 	pub.setSO(parser.getString()); break;
-							case "VL": 	pub.setVL(parser.getString()); break;
-							case "IS": 	pub.setIS(parser.getString()); break;
-							case "AR": 	pub.setAR(parser.getString()); break;
-							case "DI": 	pub.setDI(parser.getString()); break;
-							case "LI": 	pub.setLI(parser.getString()); break;
-							case "AB": 	pub.setAB(parser.getString()); break;
-							case "DE": 	pub.setDE(parser.getString()); break;
-							case "DT": 	pub.setDT(parser.getString()); break;
-							case "FS": 	pub.setFS(parser.getString()); break;
-							case "UT": 	pub.setUT(parser.getString()); break;
-							default: System.out.println("PUBDATA.json >> Unknow Key with String Value: " + key); 
-							}
-							break;
-							
-						case 2:
-							switch (key) {
-							case "AU":	pub.addAU(parser.getString()); break;
-							case "AF":	pub.addAF(parser.getString()); break;
-							case "EM":	pub.addEM(parser.getString()); break;
-							case "AA":	pub.addAA(parser.getString()); break;
-							default: System.out.println("PUBDATA.json >> Unknow Key with String Value: " + key); 
-							}
-							break;
-						case 3: 
-							C1List.add(parser.getString()); break;
-						}
-						break;
-					case VALUE_NUMBER:
-						switch (key) {
-						case "PY": 	pub.setPY(parser.getInt()); break;
-						case "BP": 	pub.setBP(parser.getInt()); break;
-						case "EP": 	pub.setEP(parser.getInt()); break;
-						case "PG": 	pub.setPG(parser.getInt()); break;
-						case "TC": 	pub.setTC(parser.getInt()); break;
-						case "CRLISTID":	
-							CRList.add(mapId2CR.get(parser.getInt()));	//  --> das wird erst nach AddPub gemacht: pub.addCR(mapId2CR.get(parser.getInt()), true); 
-							break;
-						// local mapping: case "CRLISTID":	crTab.crData.get(crTab.crMatch.crId2Index.get(parser.getInt()))); break;
-						default: System.out.println("PUBDATA.json >> Unknow Key with Number Value: " + key); 
-						}
-						break;
-					default:
-						System.out.println("DEFAULT");
-
-						break;
-					}
-					StatusBar.get().updateProgressbar(parser.getLocation().getStreamOffset());
-				}
-				StatusBar.get().setValue("Loading CRE file pubdata done");
-			}			
-			
-			
-			
-			if (entry.getName().equals("crmatch.json")) {
-				int level = 0;
-				StatusBar.get().initProgressbar(entry.getSize(), "Loading CRE file crmatch ...");
-				parser = Json.createParser(zipFile.getInputStream(entry) /*zip*/);
-				
-				boolean isManual = false;
-				int id1 = 0, id2 = 0;
-				
-				while (!crTab.isAborted() && parser.hasNext()) {
-					switch (parser.next()) {
-					case START_OBJECT: 	level++; break; 
-					case END_OBJECT: 	level--; break;
-					case KEY_NAME:		
-						String key = parser.getString();
-						switch (level) {
-						case 1: 
-							if (key.equalsIgnoreCase("MATCH_AUTO")) isManual = false; 
-							if (key.equalsIgnoreCase("MATCH_MANU")) isManual = true;
-							break;
-						case 2: id1 = Integer.valueOf(key); break;
-						case 3: id2 = Integer.valueOf(key); break;
-						}
-						break;
-					case VALUE_NUMBER:
-						CRType cr1 = mapId2CR.get(id1);
-						CRType cr2 = mapId2CR.get(id2);
-						if (!(cr1==null) && !(cr2==null)) {
-							CRMatch2.get().addPair(new CRPair2 (cr1, cr2, parser.getBigDecimal().doubleValue()), isManual, false, null);
-						}
-						break;
-					default:break;  
-					}
-					StatusBar.get().updateProgressbar(parser.getLocation().getStreamOffset());
-				}
-				StatusBar.get().setValue("Loading CRE file crmatch done");
-			}
-			
+			StatusBar.get().setValue("Loading CRE file crdata done");
 		}
+		
+		entry = zipFile.getEntry("pubdata.json");
+		if (entry != null) {
+
+			StatusBar.get().initProgressbar(entry.getSize(), "Loading CRE file pubdata ...");
+			parser = Json.createParser(zipFile.getInputStream(entry) /*zip*/);
+			PubType pub = null;
+			List<String> C1List = null;
+			List<CRType> CRList = null; 
+			int arrayLevel = 0;
+			String key = "";
+			while (!crTab.isAborted() && parser.hasNext()) {
+				
+				switch (parser.next()) {
+				case START_OBJECT: 	
+					pub = new PubType(); 
+					CRList = new ArrayList<CRType>();
+					break; 
+				case END_OBJECT: 	
+					pub = crTab.addPub(pub, false, !isFirstFile);
+					for (CRType cr: CRList) {
+						pub.addCR(cr, true);
+					}
+					break;
+				case KEY_NAME:		
+					key = parser.getString(); 
+					break;
+				case START_ARRAY:	
+					arrayLevel++;
+					switch (arrayLevel) {
+					case 2:
+						switch (key) {
+						case "AU":	break;
+						case "AF":	break;
+						case "C1":	break;	
+						case "EM":	break;
+						case "AA":	break;
+//							case "CRLISTID":	pub.crList = new ArrayList<CRType>(); break;
+						}
+						break;
+					case 3:			C1List = new ArrayList<String>(); break;
+					}
+					break;
+				case END_ARRAY: 
+					if ((arrayLevel == 3) && (C1List != null)) pub.addC1((String[]) C1List.toArray(new String[C1List.size()])); 
+					arrayLevel--;
+					break;
+				case VALUE_STRING: 
+					switch (arrayLevel) {
+					case 1:
+						switch (key) {
+						case "PT": 	pub.setPT(parser.getString()); break;
+						case "TI": 	pub.setTI(parser.getString()); break;
+						case "SO": 	pub.setSO(parser.getString()); break;
+						case "VL": 	pub.setVL(parser.getString()); break;
+						case "IS": 	pub.setIS(parser.getString()); break;
+						case "AR": 	pub.setAR(parser.getString()); break;
+						case "DI": 	pub.setDI(parser.getString()); break;
+						case "LI": 	pub.setLI(parser.getString()); break;
+						case "AB": 	pub.setAB(parser.getString()); break;
+						case "DE": 	pub.setDE(parser.getString()); break;
+						case "DT": 	pub.setDT(parser.getString()); break;
+						case "FS": 	pub.setFS(parser.getString()); break;
+						case "UT": 	pub.setUT(parser.getString()); break;
+						default: System.out.println("PUBDATA.json >> Unknow Key with String Value: " + key); 
+						}
+						break;
+						
+					case 2:
+						switch (key) {
+						case "AU":	pub.addAU(parser.getString()); break;
+						case "AF":	pub.addAF(parser.getString()); break;
+						case "EM":	pub.addEM(parser.getString()); break;
+						case "AA":	pub.addAA(parser.getString()); break;
+						default: System.out.println("PUBDATA.json >> Unknow Key with String Value: " + key); 
+						}
+						break;
+					case 3: 
+						C1List.add(parser.getString()); break;
+					}
+					break;
+				case VALUE_NUMBER:
+					switch (key) {
+					case "PY": 	pub.setPY(parser.getInt()); break;
+					case "BP": 	pub.setBP(parser.getInt()); break;
+					case "EP": 	pub.setEP(parser.getInt()); break;
+					case "PG": 	pub.setPG(parser.getInt()); break;
+					case "TC": 	pub.setTC(parser.getInt()); break;
+					case "CRLISTID":	
+						CRList.add(mapId2CR.get(parser.getInt()));	//  --> das wird erst nach AddPub gemacht: pub.addCR(mapId2CR.get(parser.getInt()), true); 
+						break;
+					// local mapping: case "CRLISTID":	crTab.crData.get(crTab.crMatch.crId2Index.get(parser.getInt()))); break;
+					default: System.out.println("PUBDATA.json >> Unknow Key with Number Value: " + key); 
+					}
+					break;
+				default:
+					System.out.println("DEFAULT");
+
+					break;
+				}
+				StatusBar.get().updateProgressbar(parser.getLocation().getStreamOffset());
+			}
+			StatusBar.get().setValue("Loading CRE file pubdata done");
+		}			
+		
+		
+		entry = zipFile.getEntry("crmatch.json");
+		if (entry != null) {
+			
+			int level = 0;
+			StatusBar.get().initProgressbar(entry.getSize(), "Loading CRE file crmatch ...");
+			parser = Json.createParser(zipFile.getInputStream(entry) /*zip*/);
+			
+			boolean isManual = false;
+			int id1 = 0, id2 = 0;
+			
+			while (!crTab.isAborted() && parser.hasNext()) {
+				switch (parser.next()) {
+				case START_OBJECT: 	level++; break; 
+				case END_OBJECT: 	level--; break;
+				case KEY_NAME:		
+					String key = parser.getString();
+					switch (level) {
+					case 1: 
+						if (key.equalsIgnoreCase("MATCH_AUTO")) isManual = false; 
+						if (key.equalsIgnoreCase("MATCH_MANU")) isManual = true;
+						break;
+					case 2: id1 = Integer.valueOf(key); break;
+					case 3: id2 = Integer.valueOf(key); break;
+					}
+					break;
+				case VALUE_NUMBER:
+					CRType cr1 = mapId2CR.get(id1);
+					CRType cr2 = mapId2CR.get(id2);
+					if (!(cr1==null) && !(cr2==null)) {
+						CRMatch2.get().addPair(new CRPair2 (cr1, cr2, parser.getBigDecimal().doubleValue()), isManual, false, null);
+					}
+					break;
+				default:break;  
+				}
+				StatusBar.get().updateProgressbar(parser.getLocation().getStreamOffset());
+			}
+			StatusBar.get().setValue("Loading CRE file crmatch done");
+		}
+			
 		zipFile.close();
 
 		
@@ -299,7 +300,7 @@ public class CRE_json {
 			if (cr.getVOL()!=null) 	jgenCR.write("VOL", cr.getVOL());
 			if (cr.getDOI()!=null) 	jgenCR.write("DOI", cr.getDOI());
 			if (cr.getCID2()!=null) jgenCR.write("CID2", cr.getCID2().toString());
-									jgenCR.write("CID_S", cr.getCID_S());
+			 						jgenCR.write("CID_S", cr.getCID_S());
 									jgenCR.write("VI", cr.getVI()?1:0);
 									jgenCR.write("CO", cr.getCO());
 									jgenCR.write("type", cr.getType());			

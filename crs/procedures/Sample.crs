@@ -19,7 +19,7 @@ class Sample {
 		}
 		
 		// load all temporary CRE files into CRExplorer
-		
+		CREDSL.openFile(dir: dir.absolutePath)
 		
 	}
 }
