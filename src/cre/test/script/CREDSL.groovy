@@ -324,7 +324,8 @@ abstract class CREDSL extends Script {
 	
 	
 	public static void progress (boolean b) {
-		status.setShowProgress (b)
+//		status.setShowProgress (b)
+		StatusBar.get().setShowProgress (b)
 	}
 
 	public static void info() {

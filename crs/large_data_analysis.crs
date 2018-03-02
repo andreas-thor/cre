@@ -1,19 +1,97 @@
 
+/*
+ * Mit dem State use ("...").with { ... } binde ich ein externes Package ein.
+ * Ein Package erweitert die Skriptsprache des CRExplorers um Funktionen.
+ * Packages sind selbst wieder CRE-Skript-Dateien (.crs)
+ * Packages können einfach kopiert und verwendet werden.
+ * 
+ * Das Package Loop enthält zwei Funktionen: forEach und forEachUnion
+ * 
+ * forEach kann auf zwei Arten verwendet werden:
+ * 1) mit dem Parameter count, der die Anzahl der Durchläufe angibt
+ * 2) mit den Parametern from und to, die den Bereich der Durchläufe angeben
+ * Wird count verwendet, ist das äquivalent zu from=0 und to=count-1     
+ * Zusätzlich wird in geschweiften Klammern angegeben werden, was in jedem Schleifendurchlauf gemacht wird.
+ * Das sind nun wieder ganz normale Skript-Befehle mit dem Zusatz, dass der aktuelle Schleifenwert zur Verfügung steht.
+ * 
+ * forEachUnion funktioniert genauso wie forEach mit der Zusatzfunktion, 
+ * dass die Ergebnisse nach jedem Schleifendurchlauf temporär gespeichert werden und am Ende alle vereinigt werden
+ */
 
-Sample = use ("procedures/Sample.crs")
 
 
-Sample.sampleUnion (5, { index ->
+/*
+ * Das Beispiel zieht drei systematische Samples mit den Offsets 0, 1 und 2
+ * In jedem Sample werden CRs mit NC_R<=1 gelöscht.
+ * Am Ende werden alle drei Samples vereinigt und in einem CRE-File gespeichert.
+ */
+
+
+use ("packages/Loop.crs").with {
+
+	forEachUnion (count:3, { index ->
+		
+		importFile (
+			file: "data/proctest/savedrecs_JOI2.txt",
+			type: "WOS",
+			sampling: "SYSTEMATIC",
+			maxCR: 100,
+			offset: index
+		)
+		
+		removeCR (
+			N_CR: [0, 1]
+			)
+		
+	})
 	
-	importFile (
-		file: "E:/Dev/CRE/data/savedrecs_JOI2.txt",
-		type: "WOS",
-		sampling: "SYSTEMATIC",
-		maxCR: 100,
-		offset: index
-	)
+	saveFile (
+		file: "data/proctest/merge_von_drei_samples.cre",
+		)
+
+}
+
+
+/**
+ * Das Beispiel liest ein WoS file jeweils für die RPY von 2000 bis 2018 ein.
+ * Es werden alle CRs mit NC_R<5 gelöscht.
+ * Das Ergebnis wird (durch *Union) vereinigt.
+ * Im Ergebnis stehen alle CRs aus den Jahren 2000 bis 2018 mit mindestens 5 N_CR
+ */
+
+use ("packages/Loop.crs").with {
 	
-})
+	forEachUnion (from:2000, to:2018, { rpy ->
+		
+		importFile (
+			file: "data/proctest/savedrecs_JOI1.txt",
+			type: "WOS",
+			RPY: [rpy, rpy, false]
+		)
+		
+		removeCR (
+			N_CR: [0, 4]
+			)
+			
+	})
+	
+	saveFile (
+		file: "data/proctest/alle_CRs_der_2000er_mit_NCR_mindestens_5.cre",
+		)
+	
+}
+
+
+
+
+
+
+
+
+
+
+	
+/*
 
 
 exportFile (
@@ -22,14 +100,12 @@ exportFile (
 )
 
 
-saveFile (
-	file: "E:/Dev/CRE/data/imskriptgermeged.cre",
-	)
 
 
 
 
-/*
+
+
 
 
 importFile (

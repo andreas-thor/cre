@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,6 @@ import cre.test.data.match.CRMatch2;
 import cre.test.data.match.CRPair2;
 import cre.test.data.type.CRType;
 import cre.test.data.type.CRType_Member;
-import cre.test.data.type.CRType_Prop;
 import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
 
@@ -37,19 +35,18 @@ public class CRE_json {
 
 	
 	/**
-	 * 
-	 * @param files only first file is loaded
-	 * @param crTab
-	 * @param maxCR ignored
-	 * @param maxPub ignored 
-	 * @param yearRange ignored
+	 * if loadMutlipleFiles == TRUE: 
+	 * 	load is executed multiple times (i.e., multiple CRE files are loaded and unified)
+	 *  Ids (both, for CRs and Pubs) are re-adjusted
+	 * @param file
+	 * @param loadMutlipleFiles	true, if  -->
 	 * @throws UnsupportedFileFormatException
 	 * @throws FileTooLargeException
 	 * @throws AbortedException
 	 * @throws OutOfMemoryError
 	 * @throws IOException
 	 */
-	public static void load (File file, boolean isFirstFile) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
+	public static void load (File file, boolean loadMutlipleFiles) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 		
 		CRTable crTab = CRTable.get(); 
 		
@@ -75,7 +72,7 @@ public class CRE_json {
 				case END_OBJECT: 	
 					
 					int internalId = cr.getID();
-					cr = crTab.addCR(cr, !isFirstFile);
+					cr = crTab.addCR(cr, loadMutlipleFiles);
 					cr.setCID2(new CRCluster (cr));
 					mapId2CR.put(internalId, cr);  
 					break;
@@ -136,7 +133,7 @@ public class CRE_json {
 					CRList = new ArrayList<CRType>();
 					break; 
 				case END_OBJECT: 	
-					pub = crTab.addPub(pub, false, !isFirstFile);
+					pub = crTab.addPub(pub, false, loadMutlipleFiles);
 					for (CRType cr: CRList) {
 						pub.addCR(cr, true);
 					}

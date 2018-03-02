@@ -148,14 +148,14 @@ public enum ImportExportFormat {
 		
 		
 		int idx = 0;
-		boolean isFirstFile = true;
+		boolean loadMutlipleFiles = files.size()>1;
 		
 		for (File file: files) {
 			
 			StatusBar.get().initProgressbar(file.length(), String.format("Loading %4$s file %1$d of %2$d (%3$s) ...", (++idx), files.size(), file.getName(), this.label));
 
 			if (this==ImportExportFormat.CRE) {	// load internal CRE format
-				CRE_json.load(file, isFirstFile);
+				CRE_json.load(file, loadMutlipleFiles);
 			} else {	// import external data format
 			
 				this.importReader.init(file);
@@ -207,7 +207,6 @@ public enum ImportExportFormat {
 				this.importReader.close();
 			}
 				
-			isFirstFile = false;
 		}
 
 //		System.out.println("noAvailableCRs=" + noAvailableCRs.get());
