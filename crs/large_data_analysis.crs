@@ -64,7 +64,7 @@ use ("packages/Loop.crs").with {
 
 use ("packages/Loop.crs").with {
 	
-	forEachUnion (from:2000, to:2018, { rpy ->
+	forEachUnion (from:2000, to:2018, dir: "data/proctest/mytemp/", { rpy ->
 		
 		importFile (
 			file: "data/proctest/savedrecs_JOI1.txt",
