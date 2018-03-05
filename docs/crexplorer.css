@@ -33,3 +33,6 @@ div.footer {
     border-top-width: 1px;
 }
 
+ol.publist {margin-left:0; padding-left:0; counter-reset:item}
+ol.publist>li {margin-left:0; padding-left:0; counter-increment:item; list-style:none inside}
+ol.publist>li:before {content:"[" counter(item) "]"; padding-right:0.5em}
