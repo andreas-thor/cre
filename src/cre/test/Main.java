@@ -548,6 +548,11 @@ public class Main {
 	public void OnMenuFileImportScopus(ActionEvent event) throws IOException {
 		openFile(ImportExportFormat.SCOPUS);
 	}
+	
+	@FXML
+	public void OnMenuFileImportCrossref(ActionEvent event) throws IOException {
+		openFile(ImportExportFormat.CROSSREF);
+	}
 
 	@FXML
 	public void OnMenuFileSave() throws IOException {

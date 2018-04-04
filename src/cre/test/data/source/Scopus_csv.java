@@ -170,7 +170,7 @@ public class Scopus_csv extends ImportReader {
 		return pub;
 	}
 	
-	private static CRType parseCR (String line) {
+	protected static CRType parseCR (String line) {
 		
 		line = line.trim();
 		if (line.length() == 0) return null;
