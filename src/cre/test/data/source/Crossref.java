@@ -9,6 +9,14 @@ import javax.json.stream.JsonParser;
 
 import cre.test.data.type.PubType;
 
+/**
+ * Extra Methode, die alle Properties einer CR ausliest
+ * Dann zuerst parse("unstructured")
+ * Dann Überschreiben der CR-Properties mit Werten von JSON
+ * @author Andreas
+ *
+ */
+
 public class Crossref extends ImportReader {
 
 	private JsonParser parser;
@@ -88,13 +96,21 @@ public class Crossref extends ImportReader {
 					break;
 				case 2:
 					if ((keyStack[1].equals("reference")) && (keyStack[2].equals("unstructured"))) {
-						this.entry.addCR(Scopus_csv.parseCR(parser.getString()), true);
+						this.entry.addCR(WoS_txt.parseCR(parser.getString().replace("\n", "").replace("\r", "")), true);
 						System.out.println("added CR");
 					}
 					break;
 				}
 				break;
 				
+				
+			case VALUE_NUMBER:
+				
+				if ((level == 2) && (keyStack[1].startsWith("published-")) && (keyStack[2].equals("date-parts")) && (this.entry.getPY() == null)) {
+					this.entry.setPY(parser.getInt());
+				}
+				
+				break;
 			default:
 				break;
 
