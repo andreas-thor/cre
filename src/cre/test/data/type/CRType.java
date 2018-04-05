@@ -99,181 +99,122 @@ public abstract class CRType implements Comparable<CRType>  {
 	
 	
 	public abstract int getID();
-
 	public abstract SimpleIntegerProperty getIDProp();
-
 	public abstract void setID(int iD);
 
 	public abstract String getCR();
-
 	public abstract SimpleStringProperty getCRProp();
-
 	public abstract void setCR(String cR);
 
 	public abstract String getAU();
-
 	public abstract SimpleStringProperty getAUProp();
-
 	public abstract void setAU(String aU);
 
 	public abstract String getAU_F();
-
 	public abstract SimpleStringProperty getAU_FProp();
-
 	public abstract void setAU_F(String aU_F);
 
 	public abstract String getAU_L();
-
 	public abstract SimpleStringProperty getAU_LProp();
-
 	public abstract void setAU_L(String aU_L);
 
 	public abstract String getAU_A();
-
 	public abstract SimpleStringProperty getAU_AProp();
-
 	public abstract void setAU_A(String aU_A);
 
 	public abstract String getTI();
-
 	public abstract SimpleStringProperty getTIProp();
-
 	public abstract void setTI(String tI);
 
 	public abstract String getJ();
-
 	public abstract SimpleStringProperty getJProp();
-
 	public abstract void setJ(String j);
 
 	public abstract String getJ_N();
-
 	public abstract SimpleStringProperty getJ_NProp();
-
 	public abstract void setJ_N(String j_N);
 
 	public abstract String getJ_S();
-
 	public abstract SimpleStringProperty getJ_SProp();
-
 	public abstract void setJ_S(String j_S);
 
 	public abstract int getN_CR();
-
 	public abstract SimpleIntegerProperty getN_CRProp();
-
 	public abstract void resetN_CR();
-
 	public abstract void setN_CR(int n_CR);
 	
 	public abstract Integer getRPY();
-
 	public abstract SimpleObjectProperty<Integer> getRPYProp();
-
 	public abstract void setRPY(Integer rPY);
 
 	public abstract String getPAG();
-
 	public abstract SimpleStringProperty getPAGProp();
-
 	public abstract void setPAG(String pAG);
 
 	public abstract String getVOL();
-
 	public abstract SimpleStringProperty getVOLProp();
-
 	public abstract void setVOL(String vOL);
 
 	public abstract String getDOI();
-
 	public abstract SimpleStringProperty getDOIProp();
-
 	public abstract void setDOI(String dOI);
 
 	public abstract CRCluster getCID2();
-
 	public abstract void setCID2(CRCluster cID2);
 
 	public abstract int getCID_S();
-
 	public abstract SimpleIntegerProperty getCID_SProp();
 
 	public abstract boolean getVI();
-
 	public abstract SimpleBooleanProperty getVIProp();
-
 	public abstract void setVI(boolean vI);
 
 	public abstract int getCO();
-
 	public abstract SimpleIntegerProperty getCOProp();
-
 	public abstract void setCO(int cO);
 
 	public abstract Double getPERC_YR();
-
 	public abstract SimpleDoubleProperty getPERC_YRProp();
-
 	public abstract void setPERC_YR(Double pERC_YR);
 
 	public abstract Double getPERC_ALL();
-
 	public abstract SimpleDoubleProperty getPERC_ALLProp();
-
 	public abstract void setPERC_ALL(Double pERC_ALL);
 
 	public abstract int getN_PYEARS();
-
 	public abstract SimpleIntegerProperty getN_PYEARSProp();
-
 	public abstract void setN_PYEARS(int n_PYEARS);
 
 	public abstract Double getPYEAR_PERC();
-
 	public abstract SimpleDoubleProperty getPYEAR_PERCProp();
-
 	public abstract void setPYEAR_PERC(Double pYEAR_PERC);
 
 	public abstract int getN_PCT50();
-
 	public abstract SimpleIntegerProperty getN_PCT50Prop();
-
 	public abstract void setN_PCT50(int n_PCT50);
 
 	public abstract int getN_PCT75();
-
 	public abstract SimpleIntegerProperty getN_PCT75Prop();
-
 	public abstract void setN_PCT75(int n_PCT75);
 
 	public abstract int getN_PCT90();
-
 	public abstract SimpleIntegerProperty getN_PCT90Prop();
-
 	public abstract void setN_PCT90(int n_PCT90);
 
 	public abstract int getN_PYEARS2();
-
 	public abstract SimpleIntegerProperty getN_PYEARS2Prop();
-
 	public abstract void setN_PYEARS2(int n_PYEARS2);
 
 	public abstract int getSEARCH_SCORE();
-
 	public abstract SimpleIntegerProperty getSEARCH_SCOREProp();
-
 	public abstract void setSEARCH_SCORE(Double sEARCH_SCORE);
 
 	public abstract String getSEQUENCE();
-
 	public abstract SimpleStringProperty getSEQUENCEProp();
-
 	public abstract void setSEQUENCE(String sEQUENCE);
 
 	public abstract String getTYPE();
-
 	public abstract SimpleStringProperty getTYPEProp();
-
 	public abstract void setTYPE(String tYPE);
 	
 	
