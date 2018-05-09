@@ -29,29 +29,55 @@ abstract class CREDSL extends Script {
 
 	public static StatusBarText status
 	
-	/**
-	 * File > Open
-	 * ===========
-	 * FILE = string
-	 */
-	public static void openFile (Map<String, Object> map) throws Exception {
+	
 
-		Map<String, Object> param = makeParamsCaseInsensitive(map);
-
-		// set list of import files
+	private static List<File> getFiles (String operator, Map<String, Object> param) {
+		
 		// set list of import files
 		List<File> files = new ArrayList<File>();
 		if (param.get("FILE") != null) files.add(new File (param.get("FILE")));
 		if (param["FILES"] != null)	files.addAll(param["FILES"].collect { new File(it) });
 		if (param["DIR"] != null) new File (param["DIR"]).eachFile(FileType.FILES) { files.add(it) };
 		if (files.size()==0) {
-			throw new Exception ("openFile: no files specified (using file, files, or dir)");
+			throw new Exception (String.format("%s: no files specified (using file, files, or dir)", operator));
 		}
-
+		
+		return files;
+	}
+	
+	private static ImportExportFormat getFileFormat  (String operator, Map<String, Object> param) {
+	
+		switch (param.getOrDefault("TYPE", "").toUpperCase()) {
+			case "WOS": return ImportExportFormat.WOS; 
+			case "SCOPUS": return ImportExportFormat.SCOPUS; 
+		}
+		throw new Exception (String.format("%s: missing or unknown file format (must be WOS or SCOPUS)", operator));
+		
+	}
+	
+	
+	/**
+	 * File > Open
+	 * ===========
+	 * FILE = string
+	 */
+	public static void openFile (Map<String, Object> map) throws Exception {
+		Map<String, Object> param = makeParamsCaseInsensitive(map);
+		List<File> files = getFiles ("openFile", param); 
 		ImportExportFormat.CRE.load(files);
-
 	}
 
+	
+
+	
+	public static void analyzeFile (Map<String, Object> map)  {
+		Map<String, Object> param = makeParamsCaseInsensitive(map);
+		List<File> files = getFiles ("analyzeFile", param);
+		ImportExportFormat fileFormat = getFileFormat("analyzeFile", param);
+		fileFormat.analyze(files);
+		println CRStatsInfo.get().toString()
+	}
+	
 	/**
 	 * File > Import
 	 * =============
@@ -66,26 +92,10 @@ abstract class CREDSL extends Script {
 
 		Map<String, Object> param = makeParamsCaseInsensitive(map);
 
-		
-		// set list of import files
-		List<File> files = new ArrayList<File>();
-		if (param.get("FILE") != null) files.add(new File (param.get("FILE")));
-		if (param["FILES"] != null)	files.addAll(param["FILES"].collect { new File(it) });
-		if (param["DIR"] != null) new File (param["DIR"]).eachFile(FileType.FILES) { files.add(it) };
-		if (files.size()==0) {
-			throw new Exception ("importFile: no files specified (using file, files, or dir)");
-		}
-		
-		
-		// set file format
-		ImportExportFormat fileFormat = null;
-		switch (param.getOrDefault("TYPE", "").toUpperCase()) {
-			case "WOS": fileFormat = ImportExportFormat.WOS; break;
-			case "SCOPUS": fileFormat = ImportExportFormat.SCOPUS; break;
-			default: throw new Exception ("importFile: missing or unknown file format (must be WOS or SCOPUS)");
-		}
+		List<File> files = getFiles ("importFile", param);
+		ImportExportFormat fileFormat = getFileFormat("importFile", param);
+
 		fileFormat.analyze(files);
-		
 		
 		// set RPY import range: [min, max, without=true]
 		int[] rangeRPY = CRStatsInfo.get().getRangeRPY()	// default: max range

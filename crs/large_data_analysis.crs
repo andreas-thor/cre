@@ -30,6 +30,17 @@
  */
 
 
+
+analyzeFile (
+	file: "data/proctest/savedrecs_JOI2.txt",
+	type: "WOS"
+)
+
+info()
+
+return
+
+
 use ("packages/Loop.crs").with {
 
 	forEachUnion (count:3, { index ->

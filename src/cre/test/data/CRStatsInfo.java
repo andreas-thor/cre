@@ -15,6 +15,8 @@ public class CRStatsInfo {
 	
 	private long noOfPubs;
 	private long noOfCitingPubs;
+	private long noOfPubsWithoutPY;
+	
 	private int rangePY[];
 	private HashSet<Integer> allPY;
 	private HashMap<Integer, HashMap<Integer, Integer>> mapPY2RPY2NCR;
@@ -37,6 +39,7 @@ public class CRStatsInfo {
 	public void init() {
 		noOfPubs = 0;
 		noOfCitingPubs = 0;
+		noOfPubsWithoutPY = 0;
 		rangePY = new int[]{-1, -1};
 		allPY = new HashSet<Integer>();
 		
@@ -51,6 +54,7 @@ public class CRStatsInfo {
 	public void updateStats (PubType pub) {
 		noOfPubs++;
 		noOfCitingPubs += (pub.getSizeCR()>0) ? 1 : 0;
+		noOfPubsWithoutPY += (pub.getPY() == null) ? 1 : 0;
 		
 		int py = MISSING;
 		if (pub.getPY() != null) {
@@ -91,6 +95,10 @@ public class CRStatsInfo {
 		return noOfPubs;
 	}
 
+	public long getNumberOfPubsWithoutPY () {
+		return noOfPubsWithoutPY;
+	}
+	
 	public long getNumberOfCRsWithoutRPY () {
 		return getNumberOfCRs(new int[] {2, 1}, true, new int[] {NONE, NONE}, true);	// 2>1 => no CRs with RPY are counted 
 	}
@@ -137,6 +145,8 @@ public class CRStatsInfo {
 		
 		result += "\n* noOfPubs=" + noOfPubs;
 		result += "\n* noOfCitingPubs=" + noOfCitingPubs;
+		result += "\n* noOfPubsWithoutPY=" + noOfPubsWithoutPY;
+		
 		result += "\n* minPY=" + rangePY[0];
 		result += "\n* maxPY=" + rangePY[1];
 		result += "\n* distinctPY=" + allPY.size();
@@ -146,9 +156,10 @@ public class CRStatsInfo {
 		result += "\n* maxRPY=" + rangeRPY[1];
 		result += "\n* distinctRPY=" + allRPY.size();
 		
+		result += "\n* PY-RPY-pairs ...";
 		for (Entry<Integer, HashMap<Integer, Integer>> x: mapPY2RPY2NCR.entrySet()) {
 			for (Entry<Integer, Integer> y: x.getValue().entrySet()) {
-				result += "\n* PY=" + x.getKey() + "/RPY=" + y.getKey() + "=" + y.getValue().intValue();
+				result += "\n* PY=" + x.getKey() + " / RPY=" + y.getKey() + " / N_CR=" + y.getValue().intValue();
 			}
 		}
 		

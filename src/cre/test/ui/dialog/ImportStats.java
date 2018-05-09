@@ -188,7 +188,7 @@ public class ImportStats extends Dialog<Integer> {
 				new Label("Number of Publications without Publication Year"), 
 				cbWithout[1],
 				new Label(""),
-				createTF (crStatsInfo.getNumberOfCRsWithoutPY(), false));		
+				createTF (crStatsInfo.getNumberOfPubsWithoutPY(), false));		
 		
 		
 		tfNumber[0].textProperty().addListener((obs, oldText, newText) -> {

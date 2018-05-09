@@ -551,7 +551,7 @@ public class Main {
 	
 	@FXML
 	public void OnMenuFileImportCrossref(ActionEvent event) throws IOException {
-		openFile(ImportExportFormat.CROSSREF);
+//		openFile(ImportExportFormat.CROSSREF);
 	}
 
 	@FXML
