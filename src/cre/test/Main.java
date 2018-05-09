@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -23,6 +24,7 @@ import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
 import cre.test.data.match.CRMatch2;
 import cre.test.data.match.CRMatch2.ManualMatchType2;
+import cre.test.data.source.Crossref;
 import cre.test.data.source.ImportExportFormat;
 import cre.test.data.type.CRType;
 import cre.test.ui.CRChart;
@@ -36,6 +38,8 @@ import cre.test.ui.dialog.About;
 import cre.test.ui.dialog.CRInfo;
 import cre.test.ui.dialog.CRPubInfo;
 import cre.test.ui.dialog.ConfirmAlert;
+import cre.test.ui.dialog.DownloadCrossref;
+import cre.test.ui.dialog.DownloadCrossref.DownloadCrossrefData;
 import cre.test.ui.dialog.ExceptionStacktrace;
 import cre.test.ui.dialog.ImportStats;
 import cre.test.ui.dialog.Info;
@@ -47,7 +51,6 @@ import cre.test.ui.dialog.Threshold;
 import cre.test.ui.dialog.Wait;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
@@ -478,6 +481,39 @@ public class Main {
 		}
 	}
 
+	
+	private void downloadCrossref () {
+		
+		Optional<DownloadCrossrefData> dialogResult = new DownloadCrossref().showAndWait();
+		
+		if (!dialogResult.isPresent()) {
+			return;
+		}
+
+
+		if (dialogResult.get().getDOI().length>0) {
+			try {
+				Crossref.downloadByDOI(dialogResult.get().getDOI(), true);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		final List<File> files = new ArrayList<File>();
+		
+		if (files.size() > 0) {
+			this.creFile = null;
+			if (analyzeFiles(ImportExportFormat.CROSSREF, files)) {
+				openFiles(ImportExportFormat.CROSSREF, files);
+			} else {
+				StatusBar.get().setValue("Import aborted by user");
+			}
+		}
+		
+	}
+	
 	private boolean saveFile(ImportExportFormat source) throws IOException {
 		return saveFile(source, true);
 	}
@@ -550,8 +586,13 @@ public class Main {
 	}
 	
 	@FXML
-	public void OnMenuFileImportCrossref(ActionEvent event) throws IOException {
-//		openFile(ImportExportFormat.CROSSREF);
+	public void OnMenuFileImportCrossrefFile(ActionEvent event) throws IOException {
+		openFile(ImportExportFormat.CROSSREF);
+	}
+
+	@FXML
+	public void OnMenuFileImportCrossrefSearch(ActionEvent event) throws IOException {
+		downloadCrossref();
 	}
 
 	@FXML

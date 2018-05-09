@@ -1,10 +1,27 @@
 package cre.test.data.source;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -134,7 +151,70 @@ public class Crossref extends ImportReader {
 	
 	
 
-	
+	public static List<File> downloadByDOI (String[] DOI, boolean useCache) throws IOException  {
+		
+		/*
+		 * ow does it work? Simple. You can do one of two things to get directed to the "polite pool":
+
+    Include a "mailto" parameter in your query. For example:
+
+https://api.crossref.org/works?filter=has-full-text:true&mailto=GroovyBib@example.org
+
+    Include a "mailto:" in your User-Agent header. For example:
+
+GroovyBib/1.1 (https://example.org/GroovyBib/; mailto:GroovyBib@example.org) BasedOnFunkyLib/1.4.
+
+Note that this only works if you query the API using HTTPS. You really should be doing that anyway (wags finger).
+		 */
+		
+		List<File> result = new ArrayList<File>();
+		
+		if (DOI.length==0) {
+			return result;
+		}
+		
+		String query = Arrays.stream(DOI).map(s -> "doi:" + s).collect(Collectors.joining( "," ));
+		
+		System.out.println("http://api.crossref.org/works?filter=" + query);
+		URL url = new URL("http://api.crossref.org/works?filter=" + query);
+		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		con.setRequestMethod("GET");
+		
+//		int status = con.getResponseCode();
+//		System.out.println("Status Code is " + status);
+
+		
+		Path cachePath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("CRExplorerCrossrefDownload");
+		try {
+			Files.createDirectory(cachePath);
+		} catch (java.nio.file.FileAlreadyExistsException e) {
+			// not a problem
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		}
+			
+		
+		
+		System.out.println("Cache path is " + cachePath.toString());
+
+		File f = cachePath.resolve("1").toFile();
+		BufferedWriter outFile = Files.newBufferedWriter(f.toPath());
+		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		String inputLine;
+		while ((inputLine = in.readLine()) != null) {
+			outFile.write(inputLine);
+		}
+		in.close();
+		outFile.close();
+		
+		
+		con.disconnect();
+		result.add(f);
+		
+		return result;
+		
+		
+	}
 	
 
 }
