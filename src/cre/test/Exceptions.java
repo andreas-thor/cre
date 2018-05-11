@@ -2,6 +2,17 @@ package cre.test;
 
 public class Exceptions {
 
+	public static class BadResponseCodeException extends Exception {
+		private static final long serialVersionUID = 1L;
+		
+		int code;
+		
+		public BadResponseCodeException (int code) {
+			this.code = code;
+		}
+
+	}
+	
 	public static class FileTooLargeException extends Exception {
 		
 		private static final long serialVersionUID = 1L;

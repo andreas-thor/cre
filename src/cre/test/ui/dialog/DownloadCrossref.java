@@ -8,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
@@ -22,7 +23,7 @@ public class DownloadCrossref extends Dialog<DownloadCrossrefData> {
 		public DownloadCrossrefData(String ISSN, String[] range, String DOI) {
 			super();
 
-			this.ISSN = ISSN;
+			this.ISSN = ISSN.trim();
 			this.range = Arrays.stream(range).mapToInt(s -> {
 				try {
 					return Integer.valueOf(s).intValue();
@@ -30,7 +31,7 @@ public class DownloadCrossref extends Dialog<DownloadCrossrefData> {
 					return -1;
 				}
 			}).toArray();
-			this.DOI = Arrays.stream(DOI.split("[,;]")).map(s -> s.trim()).toArray(String[]::new);
+			this.DOI = Arrays.stream(DOI.split("[,;]")).map(s -> s.trim()).filter(s -> s.length()>0).toArray(String[]::new);
 		}
 		
 		public String getISSN() {
@@ -74,10 +75,13 @@ public class DownloadCrossref extends Dialog<DownloadCrossrefData> {
 			new Label("-"),
 			tfRangeTo);
 		
-		TextField tfDOI = createTF ("");
-		grid.addRow(2, 
-			new Label("DOIs"), 
-			tfDOI);
+		TextArea tfDOI = new TextArea();
+		tfDOI.setMaxWidth(165);
+		tfDOI.setEditable(true);
+		tfDOI.setMinHeight(50);
+
+		grid.add(new Label("DOIs"), 0, 2);
+		grid.add(tfDOI, 1, 2, 3, 1);
 		
 		getDialogPane().setContent(grid);
 		

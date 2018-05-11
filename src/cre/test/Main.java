@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
 
 import cre.test.Exceptions.AbortedException;
+import cre.test.Exceptions.BadResponseCodeException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRSearch;
@@ -74,33 +75,36 @@ import javafx.stage.WindowEvent;
 
 public class Main {
 
-	
-
 	CRTable crTable;
 	CRChart crChart[] = new CRChart[2];
 
-	@FXML Label lab;
-	@FXML GridPane mainPane;
-	@FXML ScrollPane scrollTab;
+	@FXML
+	Label lab;
+	@FXML
+	GridPane mainPane;
+	@FXML
+	ScrollPane scrollTab;
 
-	@FXML GridPane chartPane;
-	@FXML GridPane tablePane;
-	@FXML GridPane statPane;
+	@FXML
+	GridPane chartPane;
+	@FXML
+	GridPane tablePane;
+	@FXML
+	GridPane statPane;
 
 	private CRTableView tableView;
 	private MatchPanel matchView;
 	private Thread t;
 	private File creFile;
 
-	@FXML MenuItem noOfVisibleCRs;
-	@FXML CheckMenuItem showWOYear;
-
+	@FXML
+	MenuItem noOfVisibleCRs;
+	@FXML
+	CheckMenuItem showWOYear;
 
 	@FXML
 	public void initialize() throws IOException {
 
-		
-		
 		creFile = null;
 		crTable = CRTable.get();
 		StatusBarFX stat = new StatusBarFX();
@@ -109,8 +113,7 @@ public class Main {
 		StatusBar.get().setUI(stat);
 		StatusBar.get().setOnUpdateInfo(x -> {
 			noOfVisibleCRs.setDisable(CRStats.getNumberOfCRs() == CRStats.getNumberOfCRsByVisibility(true));
-			noOfVisibleCRs.setText(String.format("Show all Cited References (currently %d of %d)",
-					CRStats.getNumberOfCRsByVisibility(true), CRStats.getNumberOfCRs()));
+			noOfVisibleCRs.setText(String.format("Show all Cited References (currently %d of %d)", CRStats.getNumberOfCRsByVisibility(true), CRStats.getNumberOfCRs()));
 		});
 
 		tableView = new CRTableView();
@@ -130,30 +133,25 @@ public class Main {
 		matchView = new MatchPanel() {
 
 			@Override
-			public void onUpdateClustering(double threshold, boolean useClustering, boolean useVol, boolean usePag,
-					boolean useDOI) {
+			public void onUpdateClustering(double threshold, boolean useClustering, boolean useVol, boolean usePag, boolean useDOI) {
 				if (t != null)
 					t.interrupt();
 				t = new Thread(() -> {
-					CRMatch2.get().updateClustering(CRMatch2.ClusteringType2.REFRESH, null, threshold, useVol, usePag,
-							useDOI);
+					CRMatch2.get().updateClustering(CRMatch2.ClusteringType2.REFRESH, null, threshold, useVol, usePag, useDOI);
 					refreshTableValues();
 				});
 				t.start();
 			}
 
 			@Override
-			public void onMatchManual(ManualMatchType2 type, double threshold, boolean useVol, boolean usePag,
-					boolean useDOI) {
+			public void onMatchManual(ManualMatchType2 type, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
 
 				List<CRType> toMatch = getSelectedCRs();
 				if ((toMatch.size() == 0) || ((toMatch.size() == 1) && (type != ManualMatchType2.EXTRACT))) {
-					new ConfirmAlert("Error during clustering!", true,
-							new String[] { "Too few Cited References selected!" }).showAndWait();
+					new ConfirmAlert("Error during clustering!", true, new String[] { "Too few Cited References selected!" }).showAndWait();
 				} else {
 					if ((toMatch.size() > 5) && (type != ManualMatchType2.EXTRACT)) {
-						new ConfirmAlert("Error during clustering!", true,
-								new String[] { "Too many Cited References selected (at most 5)!" }).showAndWait();
+						new ConfirmAlert("Error during clustering!", true, new String[] { "Too many Cited References selected (at most 5)!" }).showAndWait();
 					} else {
 						CRMatch2.get().addManuMatching(toMatch, type, threshold, useVol, usePag, useDOI);
 						refreshTableValues();
@@ -201,17 +199,15 @@ public class Main {
 		CitedReferencesExplorer.stage.setOnCloseRequest(event -> {
 
 			event.consume();
-			
-			if (CRStats.getNumberOfCRs()==0) {
-				
-				UserSettings.get().saveUserPrefs(CitedReferencesExplorer.stage.getWidth(),
-						CitedReferencesExplorer.stage.getHeight(), CitedReferencesExplorer.stage.getX(),
-						CitedReferencesExplorer.stage.getY());
+
+			if (CRStats.getNumberOfCRs() == 0) {
+
+				UserSettings.get().saveUserPrefs(CitedReferencesExplorer.stage.getWidth(), CitedReferencesExplorer.stage.getHeight(), CitedReferencesExplorer.stage.getX(), CitedReferencesExplorer.stage.getY());
 				CitedReferencesExplorer.stage.close();
 				return;
-			};
-			
-			
+			}
+			;
+
 			Alert exit = new Alert(AlertType.CONFIRMATION);
 			exit.setTitle("Warning");
 			exit.setHeaderText("Save before exit?");
@@ -235,9 +231,7 @@ public class Main {
 					}
 				}
 
-				UserSettings.get().saveUserPrefs(CitedReferencesExplorer.stage.getWidth(),
-						CitedReferencesExplorer.stage.getHeight(), CitedReferencesExplorer.stage.getX(),
-						CitedReferencesExplorer.stage.getY());
+				UserSettings.get().saveUserPrefs(CitedReferencesExplorer.stage.getWidth(), CitedReferencesExplorer.stage.getHeight(), CitedReferencesExplorer.stage.getX(), CitedReferencesExplorer.stage.getY());
 				CitedReferencesExplorer.stage.close();
 			});
 		});
@@ -248,16 +242,15 @@ public class Main {
 
 	}
 
-
 	private void filterByRPY(int[] range, boolean fromChart) {
 		UserSettings.get().setRange(RangeType.FilterByRPYRange, range);
 		crTable.filterByYear(range);
 		updateTableCRList(fromChart);
 	}
-	
+
 	private void updateTableCRList() {
 		updateTableCRList(false);
-	}	
+	}
 
 	private void updateTableCRList(boolean triggeredByChartZoom) {
 		Platform.runLater(() -> {
@@ -265,17 +258,17 @@ public class Main {
 			// save sort order ...
 			List<TableColumn<CRType, ?>> oldSort = new ArrayList<TableColumn<CRType, ?>>();
 			tableView.getSortOrder().forEach(it -> oldSort.add(it));
-	
+
 			// ... update rows ...
 			tableView.getItems().clear();
 			tableView.getSortOrder().clear();
 			tableView.setItems(FXCollections.observableArrayList(crTable.getCR().filter(cr -> cr.getVI()).collect(Collectors.toList())));
-			
+
 			// ... reset old sort order
 			for (TableColumn<CRType, ?> x : oldSort) {
 				tableView.getSortOrder().add(x);
 			}
-			
+
 			// set Domain Range for charts
 			if (!triggeredByChartZoom) {
 				Stream.of(crChart).forEach(it -> {
@@ -285,7 +278,7 @@ public class Main {
 					}
 				});
 			}
-	
+
 			refreshTableValues();
 
 		});
@@ -307,14 +300,14 @@ public class Main {
 
 	/*
 	 * http://stackoverflow.com/questions/36353518/javafx-table-view-multiple-
-	 * selection-sometimes-skips-one-of-the-items/38207246#38207246 Apparently
-	 * it's a bug, already fixed for version 9 (and also 8u112, if I understand
-	 * correctly): https://bugs.openjdk.java.net/browse/JDK-8144501 A workaround
-	 * for now is to use getSelectedIndices(), then get the items corresponding
-	 * to these instances from table.getItems() return
+	 * selection-sometimes-skips-one-of-the-items/38207246#38207246 Apparently it's
+	 * a bug, already fixed for version 9 (and also 8u112, if I understand
+	 * correctly): https://bugs.openjdk.java.net/browse/JDK-8144501 A workaround for
+	 * now is to use getSelectedIndices(), then get the items corresponding to these
+	 * instances from table.getItems() return
 	 * tableView.getSelectionModel().getSelectedIndices().stream().map(idx ->
-	 * tableView.getItems().get(idx)).collect(Collectors.toList()); ==> GEHT
-	 * AUCH NICHT
+	 * tableView.getItems().get(idx)).collect(Collectors.toList()); ==> GEHT AUCH
+	 * NICHT
 	 */
 	private List<CRType> getSelectedCRs() {
 		return tableView.getSelectionModel().getSelectedItems().stream().filter(cr -> cr != null).collect(Collectors.toList());
@@ -324,11 +317,10 @@ public class Main {
 		openFile(source, null);
 	}
 
-	
-	private boolean analyzeFiles (ImportExportFormat source, List<File> files) {
-		
+	private boolean analyzeFiles(ImportExportFormat source, List<File> files) {
+
 		final AtomicBoolean result = new AtomicBoolean();
-	
+
 		Wait wait = new Wait();
 		Service<CRStatsInfo> serv = new Service<CRStatsInfo>() {
 
@@ -343,7 +335,6 @@ public class Main {
 				};
 			}
 		};
-		
 
 		serv.setOnSucceeded((WorkerStateEvent t) -> {
 			updateTableCRList();
@@ -351,9 +342,8 @@ public class Main {
 			wait.close();
 		});
 
-		
 		serv.setOnFailed((WorkerStateEvent t) -> {
-			Throwable e = t.getSource().getException(); 
+			Throwable e = t.getSource().getException();
 			if (e instanceof UnsupportedFileFormatException) {
 				new ConfirmAlert("Error during file analysis!", true, new String[] { "Unsupported File Format." }).showAndWait();
 			} else if (e instanceof AbortedException) {
@@ -366,20 +356,19 @@ public class Main {
 			}
 			wait.close();
 		});
-		
+
 		serv.start();
-		
-		
+
 		wait.showAndWait().ifPresent(cancel -> {
 			crTable.setAborted(cancel);
 		});
-		
+
 		return result.get();
-		
+
 	}
 
-	private void openFiles (ImportExportFormat source, List<File> files) {
-		
+	private void openFiles(ImportExportFormat source, List<File> files) {
+
 		Wait wait = new Wait();
 		Service<Void> serv = new Service<Void>() {
 
@@ -389,24 +378,23 @@ public class Main {
 
 					@Override
 					protected Void call() throws Exception {
-						
-						tableView.getItems().clear();	// free space (references to CR instances)
-						
+
+						tableView.getItems().clear(); // free space (references to CR instances)
+
 						source.load(files);
-						if ((source == ImportExportFormat.CRE) && (files.size()==1)) {
-							creFile = files.get(0); 
+						if ((source == ImportExportFormat.CRE) && (files.size() == 1)) {
+							creFile = files.get(0);
 						}
-							
+
 						// show match panel if applicable
 						matchView.setVisible((CRMatch2.get().getSize(true) + CRMatch2.get().getSize(false)) > 0);
 						matchView.updateClustering();
-						
+
 						return null;
 					}
 				};
 			}
 		};
-		
 
 		serv.setOnSucceeded((WorkerStateEvent t) -> {
 			OnMenuViewInfo();
@@ -415,13 +403,13 @@ public class Main {
 			wait.close();
 		});
 
-		
 		serv.setOnFailed((WorkerStateEvent t) -> {
-			Throwable e = t.getSource().getException(); 
+			Throwable e = t.getSource().getException();
 			if (e instanceof FileTooLargeException) {
-				new ConfirmAlert("Error during file import!", true, new String[] { String.format(
-					"You try to import too many cited references. Import was aborted after loading %d Cited References and %d Citing Publications. You can change the maximum number in the File > Settings > Import menu. ",
-					((FileTooLargeException)e).numberOfCRs, ((FileTooLargeException)e).numberOfPubs) }).showAndWait();
+				new ConfirmAlert("Error during file import!", true,
+						new String[] {
+								String.format("You try to import too many cited references. Import was aborted after loading %d Cited References and %d Citing Publications. You can change the maximum number in the File > Settings > Import menu. ",
+										((FileTooLargeException) e).numberOfCRs, ((FileTooLargeException) e).numberOfPubs) }).showAndWait();
 			} else if (e instanceof UnsupportedFileFormatException) {
 				new ConfirmAlert("Error during file import!", true, new String[] { "Unsupported File Format." }).showAndWait();
 			} else if (e instanceof AbortedException) {
@@ -434,15 +422,14 @@ public class Main {
 			}
 			wait.close();
 		});
-		
+
 		serv.start();
-		
+
 		wait.showAndWait().ifPresent(cancel -> {
 			crTable.setAborted(cancel);
 		});
 	}
-	
-	
+
 	private void openFile(ImportExportFormat source, String fileName) throws IOException {
 
 		final List<File> files = new ArrayList<File>();
@@ -458,17 +445,19 @@ public class Main {
 
 			if (source.importMultiple) {
 				List<File> selFiles = fileChooser.showOpenMultipleDialog(CitedReferencesExplorer.stage);
-				if (selFiles != null) files.addAll(selFiles);
+				if (selFiles != null)
+					files.addAll(selFiles);
 			} else {
 				File selFile = fileChooser.showOpenDialog(CitedReferencesExplorer.stage);
-				if (selFile != null) files.add(selFile);
+				if (selFile != null)
+					files.add(selFile);
 			}
 		}
 
 		if (files.size() > 0) {
 			this.creFile = null;
 			UserSettings.get().setLastFileDir(files.get(0).getParentFile()); // save last directory to be uses as initial directory
-			
+
 			if (source != ImportExportFormat.CRE) {
 				if (analyzeFiles(source, files)) {
 					openFiles(source, files);
@@ -481,39 +470,72 @@ public class Main {
 		}
 	}
 
-	
-	private void downloadCrossref () {
-		
+	private void downloadCrossref() {
+
 		Optional<DownloadCrossrefData> dialogResult = new DownloadCrossref().showAndWait();
-		
+
 		if (!dialogResult.isPresent()) {
 			return;
 		}
 
+		
+		final boolean searchForDOI = (dialogResult.get().getDOI().length > 0);
+		
+		Wait wait = new Wait();
+		Service<List<File>> serv = new Service<List<File>>() {
+			@Override
+			protected Task<List<File>> createTask() {
+				return new Task<List<File>>() {
+					@Override
+					protected List<File> call() throws Exception {
+						if (searchForDOI) {
+							return Crossref.downloadByDOI(dialogResult.get().getDOI());
+						} else {
+							return Crossref.downloadByISSNAndRange(dialogResult.get().getISSN(), dialogResult.get().getRange());
+						}
+					}
+				};
+			}
+		};
 
-		if (dialogResult.get().getDOI().length>0) {
-			try {
-				Crossref.downloadByDOI(dialogResult.get().getDOI(), true);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		serv.setOnSucceeded((WorkerStateEvent t) -> {
+			
+			
+			if ((serv.getValue() != null) && (serv.getValue().size() > 0)) {
+				this.creFile = null;
+				if (analyzeFiles(ImportExportFormat.CROSSREF, serv.getValue())) {
+					openFiles(ImportExportFormat.CROSSREF, serv.getValue());
+				} else {
+					StatusBar.get().setValue("Import aborted by user");
+				}
 			}
-		}
-		
-		
-		final List<File> files = new ArrayList<File>();
-		
-		if (files.size() > 0) {
-			this.creFile = null;
-			if (analyzeFiles(ImportExportFormat.CROSSREF, files)) {
-				openFiles(ImportExportFormat.CROSSREF, files);
+			
+			wait.close();
+			
+		});
+
+		serv.setOnFailed((WorkerStateEvent t) -> {
+			Throwable e = t.getSource().getException();
+			if (e instanceof IOException) {
+				new ExceptionStacktrace("Error during Crossref download!", e).showAndWait();
+			} else if (e instanceof BadResponseCodeException) {
+				new ExceptionStacktrace("Could not get data from Crossref (" + ((BadResponseCodeException)e).code + ")", e).showAndWait();
 			} else {
-				StatusBar.get().setValue("Import aborted by user");
+				new ExceptionStacktrace("Exception", e).showAndWait();
 			}
-		}
+			wait.close();
+		});
+
+		serv.start();
+
+		wait.showAndWait().ifPresent(cancel -> {
+			crTable.setAborted(cancel);
+		});
 		
+		
+
 	}
-	
+
 	private boolean saveFile(ImportExportFormat source) throws IOException {
 		return saveFile(source, true);
 	}
@@ -536,16 +558,17 @@ public class Main {
 			return false;
 
 		// save last directory to be uses as initial directory
-		UserSettings.get().setLastFileDir(selFile.getParentFile()); 
+		UserSettings.get().setLastFileDir(selFile.getParentFile());
 
 		Service<Void> serv = new Service<Void>() {
-			@Override 
+			@Override
 			protected Task<Void> createTask() {
 				return new Task<Void>() {
 					@Override
 					protected Void call() throws Exception {
 						source.save(selFile);
-						if (source == ImportExportFormat.CRE) creFile = selFile;
+						if (source == ImportExportFormat.CRE)
+							creFile = selFile;
 						return null;
 					}
 				};
@@ -557,11 +580,11 @@ public class Main {
 		});
 
 		serv.setOnFailed((WorkerStateEvent t) -> {
-			Throwable e = t.getSource().getException(); 
+			Throwable e = t.getSource().getException();
 			new ExceptionStacktrace("Error during file import!", e).showAndWait();
 		});
-		
-		serv.start();		
+
+		serv.start();
 
 		return true;
 	}
@@ -584,7 +607,7 @@ public class Main {
 	public void OnMenuFileImportScopus(ActionEvent event) throws IOException {
 		openFile(ImportExportFormat.SCOPUS);
 	}
-	
+
 	@FXML
 	public void OnMenuFileImportCrossrefFile(ActionEvent event) throws IOException {
 		openFile(ImportExportFormat.CROSSREF);
@@ -641,19 +664,19 @@ public class Main {
 		int old_NPCTRange = UserSettings.get().getNPCTRange();
 		int old_MedianRange = UserSettings.get().getMedianRange();
 		new Settings().showAndWait().ifPresent(noOfErrors -> {
-			
+
 			if (old_NPCTRange != UserSettings.get().getNPCTRange()) {
 				crTable.updateData();
 			} else {
 				if (old_MedianRange != UserSettings.get().getMedianRange()) {
-					crTable.updateChartData();		
+					crTable.updateChartData();
 				}
 			}
-			
+
 			for (int i = 0; i < crChart.length; i++) {
 				crChart[i].setFontSize();
 				crChart[i].setVisible(UserSettings.get().getChartEngine() == i);
-				
+
 			}
 			updateTableCRList();
 			// TODO: Apply settings changes
@@ -702,101 +725,91 @@ public class Main {
 
 	@FXML
 	public void OnMenuViewFilterByRPY(ActionEvent event) {
-		new Range("Filter Cited References", "Select Range of Cited References Years",
-				UserSettings.RangeType.FilterByRPYRange, CRStats.getMaxRangeRPY()).showAndWait().ifPresent(range -> {
-					filterByRPY(range, false);
-				});
+		new Range("Filter Cited References", "Select Range of Cited References Years", UserSettings.RangeType.FilterByRPYRange, CRStats.getMaxRangeRPY()).showAndWait().ifPresent(range -> {
+			filterByRPY(range, false);
+		});
 	}
-
 
 	@FXML
 	public void OnMenuViewShowCluster() {
 		List<CRType> sel = getSelectedCRs();
 		if (sel.size() > 0) {
 
-			crTable.filterByCluster (sel);
+			crTable.filterByCluster(sel);
 			updateTableCRList();
-			
+
 		} else {
-			new ConfirmAlert("Filter Cited References by Cluster", true,
-					new String[] { "No Cited References selected." }).showAndWait();
+			new ConfirmAlert("Filter Cited References by Cluster", true, new String[] { "No Cited References selected." }).showAndWait();
 		}
 	}
-	
-	
+
 	@FXML
 	public void OnMenuViewSearch() {
-		
+
 		try {
-		
+
 			new Search().showAndWait().ifPresent(query -> {
-			
+
 				try {
-					
-					
+
 					CRSearch.get().search(query);
 					tableView.orderBySearchResult();
-					
-//					Arrays.stream(id).forEach(it -> System.out.println(it));
-//					List<CRType> show = crTable.getCR().filter(cr -> IntStream.of(id).anyMatch(it -> cr.getID() == it)).collect(Collectors.toList());
-//					
-//					System.out.println("Size = " + show.size());
-					
-//					crTable.filterByCR(null); // show);
+
+					// Arrays.stream(id).forEach(it -> System.out.println(it));
+					// List<CRType> show = crTable.getCR().filter(cr -> IntStream.of(id).anyMatch(it
+					// -> cr.getID() == it)).collect(Collectors.toList());
+					//
+					// System.out.println("Size = " + show.size());
+
+					// crTable.filterByCR(null); // show);
 					updateTableCRList();
-					
+
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			});
-			
-			
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
-	
 	@FXML
 	public void OnMenuViewShowAll() {
 		showWOYear.setSelected(true);
 		crTable.showAll();
 		updateTableCRList();
 	}
-	
 
-	@FXML public void OnMenuViewResetChart() {
-		
+	@FXML
+	public void OnMenuViewResetChart() {
+
 		for (int i = 0; i < crChart.length; i++) {
 			if (crChart[i].isVisible()) {
 				crChart[i].autoRange();
 			}
 		}
 	}
-	
-	
+
 	/*
 	 * DATA Menu
 	 */
-	
+
 	@FXML
 	public void OnMenuDataRemoveSelected() {
 
 		List<CRType> toDelete = getSelectedCRs();
 		int n = toDelete.size();
-		new ConfirmAlert("Remove Cited References", n == 0,
-				new String[] { "No Cited References selected.",
-						String.format("Would you like to remove all %d selected Cited References?", n) }).showAndWait()
-								.ifPresent(btn -> {
-									if (btn == ButtonType.YES) {
-										crTable.removeCR(toDelete);
-										updateTableCRList();
-									}
-								});
+		new ConfirmAlert("Remove Cited References", n == 0, new String[] { "No Cited References selected.", String.format("Would you like to remove all %d selected Cited References?", n) }).showAndWait().ifPresent(btn -> {
+			if (btn == ButtonType.YES) {
+				crTable.removeCR(toDelete);
+				updateTableCRList();
+			}
+		});
 	}
 
 	@FXML
@@ -822,58 +835,44 @@ public class Main {
 	public void OnMenuDataRemovewoYears() {
 
 		int n = CRStats.getNumberOfCRsWithoutRPY();
-		new ConfirmAlert("Remove Cited References", n == 0,
-				new String[] { "No Cited References w/o Year.",
-						String.format("Would you like to remove all %d Cited References w/o Year?", n) }).showAndWait()
-								.ifPresent(btn -> {
-									if (btn == ButtonType.YES) {
-										crTable.removeCRWithoutYear();
-										updateTableCRList();
-									}
-								});
+		new ConfirmAlert("Remove Cited References", n == 0, new String[] { "No Cited References w/o Year.", String.format("Would you like to remove all %d Cited References w/o Year?", n) }).showAndWait().ifPresent(btn -> {
+			if (btn == ButtonType.YES) {
+				crTable.removeCRWithoutYear();
+				updateTableCRList();
+			}
+		});
 	}
 
 	@FXML
 	public void OnMenuDataRemoveByRPY() {
 
 		final String header = "Remove Cited References";
-		new Range(header, "Select Range of Cited References Years", UserSettings.RangeType.RemoveByRPYRange,
-				CRStats.getMaxRangeRPY()).showAndWait().ifPresent(range -> {
-					long n = CRStats.getNumberOfCRsByRPY(range);
-					new ConfirmAlert(header, n == 0,
-							new String[] {
-									String.format("No Cited References with Cited Reference Year between %d and %d.",
-											range[0], range[1]),
-									String.format(
-											"Would you like to remove all %d Cited References with Cited Reference Year between %d and %d?",
-											n, range[0], range[1]) }).showAndWait().ifPresent(btn -> {
+		new Range(header, "Select Range of Cited References Years", UserSettings.RangeType.RemoveByRPYRange, CRStats.getMaxRangeRPY()).showAndWait().ifPresent(range -> {
+			long n = CRStats.getNumberOfCRsByRPY(range);
+			new ConfirmAlert(header, n == 0, new String[] { String.format("No Cited References with Cited Reference Year between %d and %d.", range[0], range[1]),
+					String.format("Would you like to remove all %d Cited References with Cited Reference Year between %d and %d?", n, range[0], range[1]) }).showAndWait().ifPresent(btn -> {
 						if (btn == ButtonType.YES) {
 							crTable.removeCRByYear(range);
 							updateTableCRList();
 						}
 					});
-				});
+		});
 	}
 
 	@FXML
 	public void OnMenuDataRemoveByNCR() {
 
 		final String header = "Remove Cited References";
-		new Range(header, "Select Number of Cited References", UserSettings.RangeType.RemoveByNCRRange,
-				CRStats.getMaxRangeNCR()).showAndWait().ifPresent(range -> {
-					long n = CRStats.getNumberOfCRsByNCR(range);
-					new ConfirmAlert(header, n == 0, new String[] {
-							String.format("No Cited References with Number of Cited References between %d and %d.",
-									range[0], range[1]),
-							String.format(
-									"Would you like to remove all %d Cited References with Number of Cited References between %d and %d?",
-									n, range[0], range[1]) }).showAndWait().ifPresent(btn -> {
+		new Range(header, "Select Number of Cited References", UserSettings.RangeType.RemoveByNCRRange, CRStats.getMaxRangeNCR()).showAndWait().ifPresent(range -> {
+			long n = CRStats.getNumberOfCRsByNCR(range);
+			new ConfirmAlert(header, n == 0, new String[] { String.format("No Cited References with Number of Cited References between %d and %d.", range[0], range[1]),
+					String.format("Would you like to remove all %d Cited References with Number of Cited References between %d and %d?", n, range[0], range[1]) }).showAndWait().ifPresent(btn -> {
 						if (btn == ButtonType.YES) {
 							crTable.removeCRByN_CR(range);
 							updateTableCRList();
 						}
 					});
-				});
+		});
 	}
 
 	@FXML
@@ -884,17 +883,13 @@ public class Main {
 			String comp = cond.getKey();
 			double threshold = cond.getValue().doubleValue();
 			long n = CRStats.getNumberOfCRsByPercentYear(comp, threshold);
-			new ConfirmAlert(header, n == 0,
-					new String[] {
-							String.format("No Cited References with Percent in Year %s %.1f%%.", comp, 100 * threshold),
-							String.format(
-									"Would you like to remove all %d Cited References with Percent in Year %s %.1f%%?",
-									n, comp, 100 * threshold) }).showAndWait().ifPresent(btn -> {
-				if (btn == ButtonType.YES) {
-					crTable.removeCRByPERC_YR(comp, threshold);
-					updateTableCRList();
-				}
-			});
+			new ConfirmAlert(header, n == 0, new String[] { String.format("No Cited References with Percent in Year %s %.1f%%.", comp, 100 * threshold),
+					String.format("Would you like to remove all %d Cited References with Percent in Year %s %.1f%%?", n, comp, 100 * threshold) }).showAndWait().ifPresent(btn -> {
+						if (btn == ButtonType.YES) {
+							crTable.removeCRByPERC_YR(comp, threshold);
+							updateTableCRList();
+						}
+					});
 		});
 	}
 
@@ -904,8 +899,7 @@ public class Main {
 		new TextInput("Retain Cited References By Id", "Specify list if CR Ids").showAndWait().ifPresent(list -> {
 			if (list != null) {
 				int[] id = Arrays.stream(list.split("\\D")).mapToInt(Integer::valueOf).toArray();
-				List<CRType> toRetain = crTable.getCR().filter(cr -> IntStream.of(id).anyMatch(it -> cr.getID() == it))
-						.collect(Collectors.toList());
+				List<CRType> toRetain = crTable.getCR().filter(cr -> IntStream.of(id).anyMatch(it -> cr.getID() == it)).collect(Collectors.toList());
 				crTable.retainCR(toRetain);
 			}
 		});
@@ -916,38 +910,28 @@ public class Main {
 
 		List<CRType> toDelete = getSelectedCRs();
 		int n = toDelete.size();
-		new ConfirmAlert("Remove Publications", n == 0,
-				new String[] { "No Cited References selected.",
-						String.format(
-								"Would you like to remove all citing publications that do not cite any of the selected %d Cited References?",
-								n) }).showAndWait().ifPresent(btn -> {
-									if (btn == ButtonType.YES) {
-										crTable.removePubByCR(toDelete);
-										updateTableCRList();
-									}
-								});
+		new ConfirmAlert("Remove Publications", n == 0, new String[] { "No Cited References selected.", String.format("Would you like to remove all citing publications that do not cite any of the selected %d Cited References?", n) }).showAndWait()
+				.ifPresent(btn -> {
+					if (btn == ButtonType.YES) {
+						crTable.removePubByCR(toDelete);
+						updateTableCRList();
+					}
+				});
 	}
 
 	@FXML
 	public void OnMenuDataRetainByRPY() {
 
-		new Range("Retain Publications", "Select Range of Citing Publication Years",
-				UserSettings.RangeType.RetainByRPYRange, CRStats.getMaxRangePY()).showAndWait()
-						.ifPresent(range -> {
-							long n = CRStats.getNumberOfPubs() - CRStats.getNumberOfPubsByCitingYear(range);
-							new ConfirmAlert("Remove Publications", n == 0,
-									new String[] {
-											String.format("All Citing Publication Years are between between %d and %d.",
-													range[0], range[1]),
-											String.format(
-													"Would you like to remove all %d citing publications with publication year lower than %d or higher than %d?",
-													n, range[0], range[1]) }).showAndWait().ifPresent(btn -> {
-								if (btn == ButtonType.YES) {
-									crTable.removePubByCitingYear(range);
-									updateTableCRList();
-								}
-							});
-						});
+		new Range("Retain Publications", "Select Range of Citing Publication Years", UserSettings.RangeType.RetainByRPYRange, CRStats.getMaxRangePY()).showAndWait().ifPresent(range -> {
+			long n = CRStats.getNumberOfPubs() - CRStats.getNumberOfPubsByCitingYear(range);
+			new ConfirmAlert("Remove Publications", n == 0, new String[] { String.format("All Citing Publication Years are between between %d and %d.", range[0], range[1]),
+					String.format("Would you like to remove all %d citing publications with publication year lower than %d or higher than %d?", n, range[0], range[1]) }).showAndWait().ifPresent(btn -> {
+						if (btn == ButtonType.YES) {
+							crTable.removePubByCitingYear(range);
+							updateTableCRList();
+						}
+					});
+		});
 	}
 
 	/*
@@ -969,17 +953,16 @@ public class Main {
 	public void OnMenuStdMerge() {
 
 		long n = CRStats.getNumberOfCRs() - CRStats.getNumberOfClusters();
-		new ConfirmAlert("Merge clusters", n == 0, new String[] { "No Clusters to merge.", String.format("Merging will aggregate %d Cited References! Are you sure?", n) }).showAndWait()
-			.ifPresent(btn -> {
-				if (btn == ButtonType.YES) {
-					new Thread(() -> {
-						crTable.merge();
-						matchView.setVisible(false);
-						updateTableCRList();
-						// tablePane.requestLayout();
-					}).start();
-				}
-			});
+		new ConfirmAlert("Merge clusters", n == 0, new String[] { "No Clusters to merge.", String.format("Merging will aggregate %d Cited References! Are you sure?", n) }).showAndWait().ifPresent(btn -> {
+			if (btn == ButtonType.YES) {
+				new Thread(() -> {
+					crTable.merge();
+					matchView.setVisible(false);
+					updateTableCRList();
+					// tablePane.requestLayout();
+				}).start();
+			}
+		});
 	}
 
 	/*
@@ -996,9 +979,4 @@ public class Main {
 		new About().showAndWait();
 	}
 
-
-	
-
-
-	
 }

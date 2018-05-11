@@ -16,6 +16,8 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +36,9 @@ import javax.json.stream.JsonParser;
 import cre.test.data.type.CRType;
 import cre.test.data.type.CRType_Member;
 import cre.test.data.type.PubType;
+import groovy.json.internal.Exceptions;
+
+import cre.test.Exceptions.BadResponseCodeException;
 
 /**
  * Extra Methode, die alle Properties einer CR ausliest
@@ -119,7 +124,9 @@ public class Crossref extends ImportReader {
 				
 				// overwrite with JSON data
 				if (jsonCR.get("year") != null) {
-					cr.setRPY(Integer.parseInt (jsonCR.getString("year")));
+					try {
+						cr.setRPY(Integer.parseInt (jsonCR.getString("year")));
+					} catch (NumberFormatException e) { }
 				}
 				if (jsonCR.get("DOI") != null) {
 					cr.setDOI(jsonCR.getString("DOI"));
@@ -150,39 +157,19 @@ public class Crossref extends ImportReader {
 	}
 	
 	
-
-	public static List<File> downloadByDOI (String[] DOI, boolean useCache) throws IOException  {
-		
-		/*
-		 * ow does it work? Simple. You can do one of two things to get directed to the "polite pool":
-
-    Include a "mailto" parameter in your query. For example:
-
-https://api.crossref.org/works?filter=has-full-text:true&mailto=GroovyBib@example.org
-
-    Include a "mailto:" in your User-Agent header. For example:
-
-GroovyBib/1.1 (https://example.org/GroovyBib/; mailto:GroovyBib@example.org) BasedOnFunkyLib/1.4.
-
-Note that this only works if you query the API using HTTPS. You really should be doing that anyway (wags finger).
-		 */
+	private static List<File> downloadByFilter (String filter) throws IOException, BadResponseCodeException  {
 		
 		List<File> result = new ArrayList<File>();
 		
-		if (DOI.length==0) {
-			return result;
-		}
+		String url = "https://api.crossref.org/works";
+		url += "?filter=" + filter;
+		url += "&rows=1000";
+		url += "&mailto=thor@hft-leipzig.de";
+		System.out.println(url);
 		
-		String query = Arrays.stream(DOI).map(s -> "doi:" + s).collect(Collectors.joining( "," ));
-		
-		System.out.println("http://api.crossref.org/works?filter=" + query);
-		URL url = new URL("http://api.crossref.org/works?filter=" + query);
-		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
 		con.setRequestMethod("GET");
-		
-//		int status = con.getResponseCode();
-//		System.out.println("Status Code is " + status);
-
+		con.setRequestProperty("User-Agent", "CRExplorer (http://www.crexplorer.net; mailto:thor@hft-leipzig.de)");
 		
 		Path cachePath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("CRExplorerCrossrefDownload");
 		try {
@@ -194,10 +181,15 @@ Note that this only works if you query the API using HTTPS. You really should be
 		}
 			
 		
+		if (con.getResponseCode()!=200) {
+			throw new BadResponseCodeException(con.getResponseCode());
+		}
 		
 		System.out.println("Cache path is " + cachePath.toString());
 
-		File f = cachePath.resolve("1").toFile();
+		String timestamp = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss_SSS").format(LocalDateTime.now());  
+		
+		File f = cachePath.resolve(timestamp + ".crossref").toFile();
 		BufferedWriter outFile = Files.newBufferedWriter(f.toPath());
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		String inputLine;
@@ -210,10 +202,38 @@ Note that this only works if you query the API using HTTPS. You really should be
 		
 		con.disconnect();
 		result.add(f);
-		
+			
 		return result;
 		
+	}
+	
+	
+	public static List<File> downloadByDOI (String[] DOI) throws IOException, BadResponseCodeException  {
 		
+		List<File> result = new ArrayList<File>();
+		
+		if (DOI.length==0) {
+			return result;
+		}
+		String doiList = Arrays.stream(DOI).map(s -> "doi:" + s).collect(Collectors.joining( "," ));
+
+		return downloadByFilter(doiList);
+	}
+
+
+	public static List<File> downloadByISSNAndRange(String issn, int[] range) throws IOException, BadResponseCodeException {
+		
+		String filter = "issn:" + issn;
+		
+		if (range[0]!=-1) {
+			filter += ",from-print-pub-date:" + range[0];
+		}
+		if (range[1]!=-1) {
+			filter += ",until-print-pub-date:" + range[1];
+		}
+		
+		return downloadByFilter(filter);
+
 	}
 	
 
