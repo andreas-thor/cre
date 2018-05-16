@@ -15,8 +15,6 @@ import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRStatsInfo;
 import cre.test.data.CRTable;
-import cre.test.data.UserSettings;
-import cre.test.data.UserSettings.RangeType;
 import cre.test.data.UserSettings.Sampling;
 import cre.test.data.type.CRType;
 import cre.test.ui.StatusBar;
@@ -112,7 +110,7 @@ public enum ImportExportFormat {
 		return crStatsInfo;
 	}
 
-	public void load(List<File> files) throws OutOfMemoryError, UnsupportedFileFormatException, FileTooLargeException, AbortedException, IOException {
+	public void load(List<File> files, int[] rpyRange, boolean importCRsWithoutYear, int[] pyRange, boolean importPubsWithoutYear, long noMaxCRs, Sampling sampling) throws OutOfMemoryError, UnsupportedFileFormatException, FileTooLargeException, AbortedException, IOException {
 
 		
 		long ts1 = System.currentTimeMillis();
@@ -122,13 +120,16 @@ public enum ImportExportFormat {
 		CRTable crTab = CRTable.get(); 
 		crTab.init();
 
-		final Sampling sampling = UserSettings.get().getSampling();
+//		final long noMaxCRs = UserSettings.get().getMaxCR();
+//		final Sampling sampling = UserSettings.get().getSampling();
 		
-		final int[] rpyRange = UserSettings.get().getRange(RangeType.ImportRPYRange);
-		boolean importCRsWithoutYear = UserSettings.get().getImportCRsWithoutYear();
-		final int[] pyRange = UserSettings.get().getRange(RangeType.ImportPYRange);
-
-		boolean importPubsWithoutYear = (sampling==Sampling.CLUSTER) ? false : UserSettings.get().getImportPubsWithoutYear();
+//		final int[] rpyRange = UserSettings.get().getRange(RangeType.ImportRPYRange);
+//		boolean importCRsWithoutYear = UserSettings.get().getImportCRsWithoutYear();
+		
+//		final int[] pyRange = UserSettings.get().getRange(RangeType.ImportPYRange);
+//		boolean importPubsWithoutYear = (sampling==Sampling.CLUSTER) ? false : UserSettings.get().getImportPubsWithoutYear();
+		
+		final boolean importPubsWOYear = (sampling==Sampling.CLUSTER) ? false : importPubsWithoutYear;
 
 		/* pick a PY at random */
 		if (sampling==Sampling.CLUSTER) {
@@ -139,7 +140,6 @@ public enum ImportExportFormat {
 		
 		
 		
-		final long noMaxCRs = UserSettings.get().getMaxCR();
 		AtomicLong noAvailableCRs = new AtomicLong (CRStatsInfo.get().getNumberOfCRs (rpyRange, importCRsWithoutYear, pyRange, importPubsWithoutYear));
 		AtomicLong noToImportCRs = new AtomicLong(Math.min(noMaxCRs, noAvailableCRs.get()));
 		AtomicInteger currentOffset = new AtomicInteger(0);	
@@ -174,7 +174,7 @@ public enum ImportExportFormat {
 						
 						boolean addPub = true;
 						if (pub.getPY()==null) {
-							addPub = importPubsWithoutYear; 
+							addPub = importPubsWOYear; 
 						} else {
 							int py = pub.getPY().intValue();
 							if ((pyRange[0] != CRStatsInfo.NONE) && (pyRange[0]>py)) addPub = false;

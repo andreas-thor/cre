@@ -206,7 +206,6 @@ public class Main {
 				CitedReferencesExplorer.stage.close();
 				return;
 			}
-			;
 
 			Alert exit = new Alert(AlertType.CONFIRMATION);
 			exit.setTitle("Warning");
@@ -381,7 +380,16 @@ public class Main {
 
 						tableView.getItems().clear(); // free space (references to CR instances)
 
-						source.load(files);
+						source.load(
+							files, 
+							UserSettings.get().getRange(RangeType.ImportRPYRange),
+							UserSettings.get().getImportCRsWithoutYear(),
+							UserSettings.get().getRange(RangeType.ImportPYRange), 
+							UserSettings.get().getImportPubsWithoutYear(),
+							UserSettings.get().getMaxCR(),
+							UserSettings.get().getSampling()
+						);
+						
 						if ((source == ImportExportFormat.CRE) && (files.size() == 1)) {
 							creFile = files.get(0);
 						}

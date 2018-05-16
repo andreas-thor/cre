@@ -1,19 +1,10 @@
 package cre.test.script;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate
 
-import cre.test.Exceptions.AbortedException;
-import cre.test.Exceptions.FileTooLargeException;
-import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRStatsInfo
 import cre.test.data.CRTable
 import cre.test.data.UserSettings;
-import cre.test.data.UserSettings.RangeType;
 import cre.test.data.UserSettings.Sampling
 import cre.test.data.match.CRMatch2
 import cre.test.data.source.ImportExportFormat;
@@ -21,8 +12,6 @@ import cre.test.data.type.CRType
 import cre.test.ui.StatusBar;
 import cre.test.ui.StatusBarText
 import groovy.io.FileType
-import groovy.lang.Script;
-import groovy.swing.factory.ImageIconFactory
 
 abstract class CREDSL extends Script {
 
@@ -64,7 +53,7 @@ abstract class CREDSL extends Script {
 	public static void openFile (Map<String, Object> map) throws Exception {
 		Map<String, Object> param = makeParamsCaseInsensitive(map);
 		List<File> files = getFiles ("openFile", param); 
-		ImportExportFormat.CRE.load(files);
+		ImportExportFormat.CRE.load(files, [Integer.MIN_VALUE, Integer.MAX_VALUE], true, [Integer.MIN_VALUE, Integer.MAX_VALUE], true, Long.MAX_VALUE, Sampling.NONE);
 	}
 
 	
@@ -107,8 +96,8 @@ abstract class CREDSL extends Script {
 				withoutRPY = param["RPY"][2]
 			}
 		}
-		UserSettings.get().setRange(RangeType.ImportRPYRange, rangeRPY);
-		UserSettings.get().setImportCRsWithoutYear(withoutRPY);
+//		UserSettings.get().setRange(RangeType.ImportRPYRange, rangeRPY);
+//		UserSettings.get().setImportCRsWithoutYear(withoutRPY);
 
 		
 		// set PY import range: [min, max, without=true]
@@ -121,8 +110,8 @@ abstract class CREDSL extends Script {
 				withoutPY = param["PY"][2]
 			}
 		}
-		UserSettings.get().setRange(RangeType.ImportPYRange, rangePY);
-		UserSettings.get().setImportPubsWithoutYear(withoutPY);
+//		UserSettings.get().setRange(RangeType.ImportPYRange, rangePY);
+//		UserSettings.get().setImportPubsWithoutYear(withoutPY);
 
 		
 		// set maximum number of CRs
@@ -130,7 +119,7 @@ abstract class CREDSL extends Script {
 		if (param["MAXCR"] != null) {
 			maxCR = param["MAXCR"]
 		}
-		UserSettings.get().setMaxCR(maxCR);
+//		UserSettings.get().setMaxCR(maxCR);
 
 
 		// sampling
@@ -144,9 +133,9 @@ abstract class CREDSL extends Script {
 		}
 		
 		sampling.offset = param.getOrDefault("OFFSET", 0);
-		UserSettings.get().setSampling(sampling);
+//		UserSettings.get().setSampling(sampling);
 
-		fileFormat.load(files);
+		fileFormat.load(files, rangeRPY, withoutRPY, rangePY, withoutPY, maxCR, sampling);
 
 	}
 

@@ -63,6 +63,7 @@ public class CitedReferencesExplorer extends Application {
 		CitedReferencesExplorer.stage = stage;
 		CitedReferencesExplorer.app = this;
 
+		
 		stage.setWidth(UserSettings.get().getWindowWidth());
 		stage.setHeight(UserSettings.get().getWindowHeight());
 		stage.setX(UserSettings.get().getWindowX());
