@@ -19,10 +19,8 @@ import com.opencsv.CSVWriter;
 
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
-import cre.test.data.UserSettings;
 import cre.test.data.type.CRType;
 import cre.test.data.type.CRType_Member;
-import cre.test.data.type.CRType_Prop;
 import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
 
@@ -271,7 +269,7 @@ public class Scopus_csv extends ImportReader {
 
 
 
-	public static void save (String file_name, Predicate<CRType> filter) throws IOException {
+	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException {
 		
 		/* TODO: Filter not supported yet */
 		
@@ -280,7 +278,7 @@ public class Scopus_csv extends ImportReader {
 		
 		csv.writeNext(new String[] {"Authors","Title","Year","Source title","Volume","Issue","Art. No.","Page start","Page end","Page count","Cited by","DOI","Link","Affiliations","Authors with affiliations","Abstract","Author Keywords","References","Document Type","Source","EID"});
 		
-		CRTable.get().getPub(UserSettings.get().getIncludePubsWithoutCRs()).forEach(pub -> {
+		CRTable.get().getPub(includePubsWithoutCRs).forEach(pub -> {
 			ArrayList<String> row = new ArrayList<String>();
 			
 			row.add ((pub.getAUSize() == 0) ? "" :

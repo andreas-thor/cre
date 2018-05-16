@@ -446,12 +446,12 @@ public class Main {
 			files.add(new File(fileName));
 		} else {
 			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle(String.format("%1$s %2$s", (source == ImportExportFormat.CRE) ? "Open" : "Import", source.label));
+			fileChooser.setTitle(String.format("%1$s %2$s", (source == ImportExportFormat.CRE) ? "Open" : "Import", source.getLabel()));
 			fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
-			fileChooser.getExtensionFilters().add(source.fileExtensionFilter);
+			fileChooser.getExtensionFilters().add(new ExtensionFilter(source.getLabel(), Arrays.asList(new String[] { "*." + source.getFileExtension()})));
 			fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
 
-			if (source.importMultiple) {
+			if (source.isImportMultiple()) {
 				List<File> selFiles = fileChooser.showOpenMultipleDialog(CitedReferencesExplorer.stage);
 				if (selFiles != null)
 					files.addAll(selFiles);
@@ -555,9 +555,9 @@ public class Main {
 			selFile = creFile;
 		} else {
 			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle(String.format("%1$s %2$s", (source == ImportExportFormat.CRE) ? "Save" : "Export", source.label));
+			fileChooser.setTitle(String.format("%1$s %2$s", (source == ImportExportFormat.CRE) ? "Save" : "Export", source.getLabel()));
 			fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
-			fileChooser.getExtensionFilters().add(source.fileExtensionFilter);
+			fileChooser.getExtensionFilters().add(new ExtensionFilter(source.getLabel(), Arrays.asList(new String[] { "*." + source.getFileExtension()})));
 			fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
 			selFile = fileChooser.showSaveDialog(CitedReferencesExplorer.stage);
 		}
@@ -574,7 +574,7 @@ public class Main {
 				return new Task<Void>() {
 					@Override
 					protected Void call() throws Exception {
-						source.save(selFile);
+						source.save(selFile, UserSettings.get().getIncludePubsWithoutCRs());
 						if (source == ImportExportFormat.CRE)
 							creFile = selFile;
 						return null;

@@ -1,6 +1,7 @@
 package cre.test.ui.dialog;
 
 import cre.test.data.CRStatsInfo;
+import cre.test.data.Sampling;
 import cre.test.data.UserSettings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -109,7 +110,7 @@ public class ImportStats extends Dialog<Integer> {
 				tfNumber[2]);
 
 		
-		ObservableList<String> options = FXCollections.observableArrayList(UserSettings.Sampling.NONE.label, UserSettings.Sampling.RANDOM.label, UserSettings.Sampling.SYSTEMATIC.label, UserSettings.Sampling.CLUSTER.label);
+		ObservableList<String> options = FXCollections.observableArrayList(Sampling.NONE.label, Sampling.RANDOM.label, Sampling.SYSTEMATIC.label, Sampling.CLUSTER.label);
 		comboSampling = new ComboBox<String>(options);
 		comboSampling.setEditable(false);
 		

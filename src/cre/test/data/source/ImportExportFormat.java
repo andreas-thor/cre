@@ -2,7 +2,6 @@ package cre.test.data.source;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,10 +14,9 @@ import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRStatsInfo;
 import cre.test.data.CRTable;
-import cre.test.data.UserSettings.Sampling;
+import cre.test.data.Sampling;
 import cre.test.data.type.CRType;
 import cre.test.ui.StatusBar;
-import javafx.stage.FileChooser.ExtensionFilter;
 
 public enum ImportExportFormat {
 
@@ -42,39 +40,37 @@ public enum ImportExportFormat {
 	
 
 	public interface Export {
-	   void save(String file_name, Predicate<CRType> filter) throws IOException, RuntimeException;
+	   void save(String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException, RuntimeException;
 	}
 	
-	public final String label;
-	public boolean importMultiple;
-	public String fileExtension;
-	public ExtensionFilter fileExtensionFilter;
-	public ImportReader importReader;
-	public Export exportSave;
+	private final String label;
+	private final boolean importMultiple;
+	private final String fileExtension;
+	private final ImportReader importReader;
+	private final Export exportSave;
 
 	
 	ImportExportFormat(String label, boolean importMultiple, String fileExtension, ImportReader importReader, Export exportSave) {
 		this.label = label;
 		this.importMultiple = importMultiple;
 		this.fileExtension = fileExtension;
-		this.fileExtensionFilter = new ExtensionFilter(label, Arrays.asList(new String[] { "*." + fileExtension}));
 		this.importReader = importReader;
 		this.exportSave = exportSave;
 	}
 
-	public void save (File file) throws IOException {
-		this.save (file, (it -> true));
+	public void save (File file, boolean includePubsWithoutCRs) throws IOException {
+		this.save (file, includePubsWithoutCRs, (it -> true));
 	}
 	
-	public void save (File file, Predicate<CRType> filter) throws IOException {
+	public void save (File file, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException {
 		
 		// add extension if necessary
 		String file_name = file.toString();
-		if (!file_name.endsWith("." + this.fileExtension)) file_name += "." + this.fileExtension;
+		if (!file_name.endsWith("." + this.getFileExtension())) file_name += "." + this.getFileExtension();
 		
-		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s ...", file.getName(), this.label));
-		this.exportSave.save(file_name, filter);
-		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s done", file.getName(), this.label));
+		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s ...", file.getName(), this.getLabel()));
+		this.exportSave.save(file_name, includePubsWithoutCRs, filter);
+		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s done", file.getName(), this.getLabel()));
 
 	}
 	
@@ -91,7 +87,7 @@ public enum ImportExportFormat {
 		int idx = 0;
 		for (File file: files) {
 			
-			StatusBar.get().initProgressbar(file.length(), String.format("Analyzing %4$s file %1$d of %2$d (%3$s) ...", (++idx), files.size(), file.getName(), this.label));
+			StatusBar.get().initProgressbar(file.length(), String.format("Analyzing %4$s file %1$d of %2$d (%3$s) ...", (++idx), files.size(), file.getName(), this.getLabel()));
 
 			this.importReader.init(file);
 			StreamSupport.stream(this.importReader.getIterable().spliterator(), false)
@@ -154,7 +150,7 @@ public enum ImportExportFormat {
 		
 		for (File file: files) {
 			
-			StatusBar.get().initProgressbar(file.length(), String.format("Loading %4$s file %1$d of %2$d (%3$s) ...", (++idx), files.size(), file.getName(), this.label));
+			StatusBar.get().initProgressbar(file.length(), String.format("Loading %4$s file %1$d of %2$d (%3$s) ...", (++idx), files.size(), file.getName(), this.getLabel()));
 
 			if (this==ImportExportFormat.CRE) {	// load internal CRE format
 				CRE_json.load(file, loadMutlipleFiles);
@@ -218,7 +214,7 @@ public enum ImportExportFormat {
 		// Check for abort by user
 		if (crTab.isAborted()) {
 			crTab.init();
-			StatusBar.get().setValue(String.format("Loading %1$s file%2$s aborted (due to user request)", this.label, files.size()>1 ? "s" : ""));
+			StatusBar.get().setValue(String.format("Loading %1$s file%2$s aborted (due to user request)", this.getLabel(), files.size()>1 ? "s" : ""));
 			throw new AbortedException();
 		}
 		
@@ -243,7 +239,20 @@ public enum ImportExportFormat {
 		System.out.println("Update Memory usage " + ((ms3-ms2)/1024d/1024d) + " MBytes");
 
 		
-		StatusBar.get().setValue(String.format("Loading %1$s file%2$s done", this.label, files.size()>1 ? "s" : ""));
+		StatusBar.get().setValue(String.format("Loading %1$s file%2$s done", this.getLabel(), files.size()>1 ? "s" : ""));
 	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public boolean isImportMultiple() {
+		return importMultiple;
+	}
+
+	public String getFileExtension() {
+		return fileExtension;
+	}
+
 
 };

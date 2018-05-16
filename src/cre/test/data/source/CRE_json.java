@@ -22,7 +22,6 @@ import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
-import cre.test.data.UserSettings;
 import cre.test.data.match.CRCluster;
 import cre.test.data.match.CRMatch2;
 import cre.test.data.match.CRPair2;
@@ -267,7 +266,7 @@ public class CRE_json {
 
 
 
-	public static void save (String file_name, Predicate<CRType> filter) throws IOException {
+	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException {
 		 
 		/* TODO: filter is not supported yet */
 		
@@ -313,7 +312,7 @@ public class CRE_json {
 		zip.putNextEntry(new ZipEntry("pubdata.json"));
 		JsonGenerator jgenPub = Json.createGenerator(zip);
 		jgenPub.writeStartArray();
-		crTab.getPub(UserSettings.get().getIncludePubsWithoutCRs()).forEach(pub -> {
+		crTab.getPub(includePubsWithoutCRs).forEach(pub -> {
 			jgenPub.writeStartObject();
 			
 			if (pub.getPT()!=null) 	jgenPub.write("PT", pub.getPT());

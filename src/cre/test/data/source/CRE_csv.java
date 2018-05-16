@@ -27,7 +27,7 @@ public class CRE_csv {
 	 */
 	
 	
-	public static void saveCR (String file_name, Predicate<CRType> filter) throws IOException {
+	public static void saveCR (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException {
 
 		StatusBar.get().initProgressbar(CRStats.getNumberOfCRs());
 		
@@ -44,14 +44,14 @@ public class CRE_csv {
 
 
 	
-	public static void savePub (String file_name, Predicate<CRType> filter) throws IOException {
+	public static void savePub (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException {
 
 		StatusBar.get().initProgressbar(CRStats.getNumberOfPubs());
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(Arrays.stream(PubColumn.values()).map(col -> col.id).toArray(String[]::new)); 
 		
-		CRTable.get().getPub(UserSettings.get().getIncludePubsWithoutCRs()).sorted().forEach(pub -> {
+		CRTable.get().getPub(includePubsWithoutCRs).sorted().forEach(pub -> {
 			StatusBar.get().incProgressbar();
 			csv.writeNext(Arrays.stream(PubColumn.values()).map(col -> col.prop.apply(pub)).map(val -> val==null ? "" : String.valueOf(val.getValue())).toArray(String[]::new)); 
 		});
@@ -61,7 +61,7 @@ public class CRE_csv {
 	
 	
 	
-	public static void saveCRPub (String file_name, Predicate<CRType> filter) throws IOException {
+	public static void saveCRPub (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException {
 
 		StatusBar.get().initProgressbar(CRStats.getNumberOfPubs());
 		
@@ -87,7 +87,7 @@ public class CRE_csv {
 
 	
 	
-	public static void saveGraph (String file_name, Predicate<CRType> filter) throws IOException {
+	public static void saveGraph (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException {
 
 		/* TODO: Filter not supported yet */
 		

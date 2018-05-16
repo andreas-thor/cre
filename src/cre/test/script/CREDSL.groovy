@@ -4,8 +4,8 @@ import java.util.function.Predicate
 
 import cre.test.data.CRStatsInfo
 import cre.test.data.CRTable
+import cre.test.data.Sampling
 import cre.test.data.UserSettings;
-import cre.test.data.UserSettings.Sampling
 import cre.test.data.match.CRMatch2
 import cre.test.data.source.ImportExportFormat;
 import cre.test.data.type.CRType

@@ -15,10 +15,8 @@ import java.util.stream.Stream;
 
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
-import cre.test.data.UserSettings;
 import cre.test.data.type.CRType;
 import cre.test.data.type.CRType_Member;
-import cre.test.data.type.CRType_Prop;
 import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
 
@@ -240,7 +238,7 @@ public class WoS_txt extends ImportReader {
 	
 
 	
-	public static void save (String file_name, Predicate<CRType> filter) throws IOException, RuntimeException {
+	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException, RuntimeException {
 		
 		/* TODO: Filter is not supported yet */
 		
@@ -252,7 +250,7 @@ public class WoS_txt extends ImportReader {
 		bw.write("VR 1.0");
 		bw.newLine();
 		
-		CRTable.get().getPub(UserSettings.get().getIncludePubsWithoutCRs()).forEach (pub -> {
+		CRTable.get().getPub(includePubsWithoutCRs).forEach (pub -> {
 			try {
 				writeTag(bw, "PT", pub.getPT() == null ? "J" : pub.getPT());	// TODO: Is "J" the correct default for publication type?
 				writeTag(bw, "AU", pub.getAU());
