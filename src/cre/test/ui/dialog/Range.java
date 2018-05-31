@@ -2,6 +2,7 @@ package cre.test.ui.dialog;
 
 import cre.test.data.UserSettings;
 import cre.test.data.UserSettings.RangeType;
+import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
@@ -31,10 +32,6 @@ public class Range extends Dialog<int[]> {
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		
 		
-//		DialogPane pane = getDialogPane();
-//		pane.getButtonTypes().clear();
-//		pane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		
 		
 		TextField[] tf = new TextField[] { new TextField(String.valueOf(range[0])), new TextField(String.valueOf(range[1])) }; 
 		CheckBox[] cb = new CheckBox[] { new CheckBox("Minimum"), new CheckBox("Maximum") }; 
@@ -55,6 +52,7 @@ public class Range extends Dialog<int[]> {
 		grid.addRow(0, new Label("From:"), tf[0], cb[0]);
 		grid.addRow(1, new Label("To:"  ), tf[1], cb[1]);
 		getDialogPane().setContent(grid);
+		
 		
 		// Request focus on first field by default.
 		Platform.runLater(() -> tf[0].requestFocus());

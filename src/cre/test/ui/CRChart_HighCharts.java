@@ -1,8 +1,12 @@
 package cre.test.ui;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+import cre.test.data.CRChartData;
+import cre.test.data.CRChartData.SERIESTYPE;
 import cre.test.data.UserSettings;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -58,7 +62,7 @@ public abstract class CRChart_HighCharts extends CRChart {
 					Platform.runLater( () -> {
 						JSObject jsobj = (JSObject) webEngine.executeScript("window");
 						jsobj.setMember("crejava", cb);
-						updateData(new int[][] { { 0 }, { 0 }, { 0 } });
+						updateData(new CRChartData(0, 0));
 					});
 				}
 				
@@ -118,12 +122,14 @@ public abstract class CRChart_HighCharts extends CRChart {
 	}
 
 	@Override
-	public void updateData(int[][] data) {
+	public void updateData(CRChartData data) {
 
 		
 		// series as JSON data
-		String[] json = IntStream.range(0, 2).mapToObj(s ->
-				IntStream.range(0, data[0].length).mapToObj(it -> "["+data[0][it]+","+data[s+1][it]+"]").collect(Collectors.joining(", "))
+		String[] json = Stream.of(SERIESTYPE.NCR, SERIESTYPE.MEDIANDIFF).map(type -> 
+			IntStream.range(0, data.getRPY().length)
+				.mapToObj(index -> "[" + data.getRPYValue(index) + "," + data.getSeriesValue(type, index) + "]")
+				.collect(Collectors.joining(", "))
 			).toArray(size -> new String[size]);
 		
 		// call Javascript to render chart

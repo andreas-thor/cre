@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import cre.test.data.CRChartData.SERIESTYPE;
 import cre.test.data.type.CRType;
 
 
@@ -217,7 +218,7 @@ public class Indicators {
 	
 	
 	
-	public static int[][] getChartData (int medianRange) {
+	public static /*int[][]*/ CRChartData getChartData (int medianRange) {
 		
 		
 		// compute difference to median
@@ -231,13 +232,12 @@ public class Indicators {
 			RPY_MedianDiff[rpyIdx] = NCR_RPY[rpyIdx] - temp[medianRange];
 		}
 		
-		// generate data rows for chart
-		return new int[][] {
-			IntStream.rangeClosed(range_RPY[0], range_RPY[1]).toArray(),
-			NCR_RPY, 
-			RPY_MedianDiff,
-			CNT_RPY
-		};		
+		
+		CRChartData result = new CRChartData(range_RPY[0], range_RPY[1]);
+		result.addSeries(SERIESTYPE.NCR, NCR_RPY);
+		result.addSeries(SERIESTYPE.MEDIANDIFF, RPY_MedianDiff);
+		result.addSeries(SERIESTYPE.CNT, CNT_RPY);
+		return result;
 	}
 	
 	

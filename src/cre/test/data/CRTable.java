@@ -24,7 +24,7 @@ public class CRTable {
 	private HashMap<PubType, PubType> allPubs;
 	
 
-	private int[][] chartData;	// #years x 4; 4 elements = RPY, NCR, MedianDiff, number of CR
+	private CRChartData chartData;	// #years x 4; 4 elements = RPY, NCR, MedianDiff, number of CR
 	
 	private boolean duringUpdate;
 	private boolean aborted;
@@ -64,7 +64,7 @@ public class CRTable {
 		duringUpdate = false;
 		aborted = false;
 		showNull = true;
-		chartData = new int[][] {{0},{0},{0}};
+		chartData = new CRChartData(0, 0); // new int[][] {{0},{0},{0}};
 		setAborted(false);
 		CRSearch.get().init();
 		
@@ -227,7 +227,7 @@ public class CRTable {
 	}
 	
 	
-	public int[][] getChartData () {
+	public CRChartData getChartData () {
 		return this.chartData;
 	}
 	

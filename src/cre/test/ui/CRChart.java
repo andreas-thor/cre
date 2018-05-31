@@ -1,5 +1,6 @@
 package cre.test.ui;
 
+import cre.test.data.CRChartData;
 import cre.test.data.UserSettings;
 import javafx.scene.Node;
 
@@ -26,7 +27,7 @@ public abstract class CRChart {
 	
 	protected abstract void setChartDomainRange (int[] range);
 	
-	public abstract void updateData (int[][] data);
+	public abstract void updateData (CRChartData data);
 	
 	public abstract void setFontSize ();
 	

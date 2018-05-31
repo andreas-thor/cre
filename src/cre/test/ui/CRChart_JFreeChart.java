@@ -25,6 +25,8 @@ import org.jfree.data.Range;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
 
+import cre.test.data.CRChartData;
+import cre.test.data.CRChartData.SERIESTYPE;
 import cre.test.data.UserSettings;
 import javafx.scene.Node;
 
@@ -170,7 +172,7 @@ public abstract class CRChart_JFreeChart extends CRChart {
 	}
 
 	@Override
-	public void updateData(int[][] data) {
+	public void updateData(CRChartData data) {
 		
 		this.duringUpdate = true;	// avoids triggering plot change listener
 		
@@ -180,9 +182,14 @@ public abstract class CRChart_JFreeChart extends CRChart {
 		}
 		
 		// generate chart lines
-		double[][] series = Arrays.stream(data).map(it -> Arrays.stream(it).asDoubleStream().toArray() ).toArray(double[][]::new);
-		ds.addSeries(getSeriesLabel(0), new double[][] { series[0], series[1] });
-		ds.addSeries(getSeriesLabel(1), new double[][] { series[0], series[2] });
+		ds.addSeries(getSeriesLabel(0), new double[][] { 
+			Arrays.stream(data.getRPY()).asDoubleStream().toArray(), 
+			Arrays.stream(data.getSeries(SERIESTYPE.NCR)).asDoubleStream().toArray()
+		});
+		ds.addSeries(getSeriesLabel(1), new double[][] { 
+			Arrays.stream(data.getRPY()).asDoubleStream().toArray(), 
+			Arrays.stream(data.getSeries(SERIESTYPE.MEDIANDIFF)).asDoubleStream().toArray()
+		});
 		
 		this.duringUpdate = false;
 	}

@@ -10,6 +10,8 @@ import java.util.stream.Stream;
 
 import com.opencsv.CSVWriter;
 
+import cre.test.data.CRChartData;
+import cre.test.data.CRChartData.SERIESTYPE;
 import cre.test.data.CRStats;
 import cre.test.data.CRTable;
 import cre.test.data.UserSettings;
@@ -95,10 +97,15 @@ public class CRE_csv {
 		csv.writeNext(new String[] {"Year", "NCR", String.format("Median-%d", 2*UserSettings.get().getMedianRange()+1), "AVG"});
 		
 		DecimalFormat avgFormat = new DecimalFormat("#.###");
-		int[][] data = CRTable.get().getChartData();
-		for (int i=0; i<data[0].length; i++) {
-			String avg = data[3][i] > 0 ? avgFormat.format((1.0d*data[1][i])/data[3][i]) : "";
-			csv.writeNext (new String[] {String.valueOf(data[0][i]), String.valueOf(data[1][i]), String.valueOf(data[2][i]), avg});
+		
+		CRChartData data = CRTable.get().getChartData();
+		for (int index=0; index<data.getRPY().length; index++) {
+			String avg = data.getSeriesValue(SERIESTYPE.CNT, index) > 0 ? avgFormat.format((1.0d*data.getSeriesValue(SERIESTYPE.NCR, index))/data.getSeriesValue(SERIESTYPE.CNT, index)) : "";
+			csv.writeNext (new String[] {
+				String.valueOf(data.getRPYValue(index)), 
+				String.valueOf(data.getSeriesValue(SERIESTYPE.NCR, index)), 
+				String.valueOf(data.getSeriesValue(SERIESTYPE.MEDIANDIFF, index)), 
+				avg});
 		}
 				
 		csv.close();
