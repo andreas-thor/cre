@@ -1,6 +1,5 @@
 package cre.test.ui;
 
-import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -9,6 +8,7 @@ import cre.test.data.CRChartData;
 import cre.test.data.CRChartData.SERIESTYPE;
 import cre.test.data.UserSettings;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
@@ -18,6 +18,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSException;
 import netscape.javascript.JSObject;
+import nz.sodium.Cell;
 
 public abstract class CRChart_HighCharts extends CRChart {
 
@@ -73,6 +74,7 @@ public abstract class CRChart_HighCharts extends CRChart {
 		webEngine.load(CRChart_HighCharts.class.getResource("highcharts/CRChart.html").toExternalForm());
 		
      
+		
 		
 //		webEngine.documentProperty().addListener(new ChangeListener<Document>() {
 //			@Override

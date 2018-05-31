@@ -16,7 +16,6 @@ import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.fx.ChartViewer;
 import org.jfree.chart.fx.interaction.ChartMouseEventFX;
 import org.jfree.chart.fx.interaction.ChartMouseListenerFX;
-import org.jfree.chart.labels.XYSeriesLabelGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -28,7 +27,9 @@ import org.jfree.data.xy.XYDataset;
 import cre.test.data.CRChartData;
 import cre.test.data.CRChartData.SERIESTYPE;
 import cre.test.data.UserSettings;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
+import nz.sodium.Cell;
 
 public abstract class CRChart_JFreeChart extends CRChart {
 

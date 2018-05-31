@@ -12,6 +12,7 @@ import cre.test.data.match.CRMatch2;
 import cre.test.data.type.CRType;
 import cre.test.data.type.PubType;
 import cre.test.ui.StatusBar;
+import nz.sodium.Cell;
 
 public class CRTable {
 
@@ -23,8 +24,8 @@ public class CRTable {
 	
 	private HashMap<PubType, PubType> allPubs;
 	
-
-	private CRChartData chartData;	// #years x 4; 4 elements = RPY, NCR, MedianDiff, number of CR
+	
+	private CRChartData chartData;	
 	
 	private boolean duringUpdate;
 	private boolean aborted;
@@ -50,6 +51,7 @@ public class CRTable {
 	
 	public void init() {
 		
+		
 		if (allPubs != null) {
 			for (PubType pub: allPubs.keySet()) {
 				pub.removeAllCRs(true);
@@ -64,7 +66,9 @@ public class CRTable {
 		duringUpdate = false;
 		aborted = false;
 		showNull = true;
-		chartData = new CRChartData(0, 0); // new int[][] {{0},{0},{0}};
+		
+		chartData = new CRChartData(0, 0);
+		
 		setAborted(false);
 		CRSearch.get().init();
 		
@@ -229,8 +233,7 @@ public class CRTable {
 	
 	public CRChartData getChartData () {
 		return this.chartData;
-	}
-	
+	}	
 
 	private void removeCR (Predicate<CRType> cond) {
 		

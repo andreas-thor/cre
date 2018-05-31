@@ -46,6 +46,9 @@ public class StatusBarFX extends GridPane implements StatusBarUI {
 		this.sbinfo = new Label();
 		this.sbinfo.setPadding(new Insets (0, 0, 0, 0));
 		add(this.sbinfo, 3, 0);
+		
+		
+		
 	}
 
 	

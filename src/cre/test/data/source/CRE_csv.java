@@ -98,7 +98,7 @@ public class CRE_csv {
 		
 		DecimalFormat avgFormat = new DecimalFormat("#.###");
 		
-		CRChartData data = CRTable.get().getChartData();
+		CRChartData data = null; // FIXME = CRTable.get().getChartData().
 		for (int index=0; index<data.getRPY().length; index++) {
 			String avg = data.getSeriesValue(SERIESTYPE.CNT, index) > 0 ? avgFormat.format((1.0d*data.getSeriesValue(SERIESTYPE.NCR, index))/data.getSeriesValue(SERIESTYPE.CNT, index)) : "";
 			csv.writeNext (new String[] {

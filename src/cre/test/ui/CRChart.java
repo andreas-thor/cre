@@ -10,6 +10,7 @@ public abstract class CRChart {
 	public static String yAxisLabel = "Cited References";
 	
 	
+	
 	public CRChart () {
 		super();
 	}

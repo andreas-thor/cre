@@ -3,7 +3,7 @@ package cre.test.data;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-public class CRChartData {
+public class CRChartData  {
 
 	
 	public static enum SERIESTYPE { 
@@ -15,6 +15,8 @@ public class CRChartData {
 	
 	private int[] rangeRPY;
 	private int[][] series;	// #years x 4; 4 elements = RPY, NCR, MedianDiff, number of CR
+	private int medianRange;
+	
 	
 	public CRChartData(int fromRPY, int toRPY) {
 		
@@ -47,6 +49,7 @@ public class CRChartData {
 	public int getSeriesValue (SERIESTYPE type, int index) {
 		return this.series[type.ordinal()][index];
 	}
+
 	
 	
 	

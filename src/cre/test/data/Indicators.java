@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import cre.test.data.CRChartData.SERIESTYPE;
 import cre.test.data.type.CRType;
@@ -218,7 +217,7 @@ public class Indicators {
 	
 	
 	
-	public static /*int[][]*/ CRChartData getChartData (int medianRange) {
+	public static CRChartData getChartData (int medianRange) {
 		
 		
 		// compute difference to median
