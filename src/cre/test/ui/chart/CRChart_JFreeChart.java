@@ -27,9 +27,7 @@ import org.jfree.data.xy.XYDataset;
 import cre.test.data.CRChartData;
 import cre.test.data.CRChartData.SERIESTYPE;
 import cre.test.ui.UISettings;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
-import nz.sodium.Cell;
 
 public abstract class CRChart_JFreeChart extends CRChart {
 

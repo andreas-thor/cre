@@ -2,7 +2,6 @@ package cre.test.ui.dialog;
 
 import cre.test.ui.UISettings;
 import cre.test.ui.UISettings.RangeType;
-import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
