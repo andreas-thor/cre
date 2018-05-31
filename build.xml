@@ -139,7 +139,7 @@
 		<!-- set the codebase URL in JNLP file -->
 		<replace file="${build.dir}/${jnlp}" token="##VERSION##" value="${version.name}"/>
 		
-		<scp sftp="true" serverAliveIntervalSeconds="100" serverAliveCountMax="100" trust="true" todir="thor:${ftpPW}@seru01.hft-leipzig.de:/home/thor/home/www1_thor/${version.name}/">
+		<scp sftp="true" serverAliveIntervalSeconds="20" serverAliveCountMax="100" trust="true" todir="thor:${ftpPW}@seru01.hft-leipzig.de:/home/thor/home/www1_thor/${version.name}/">
 		  	<fileset dir="${build.dir}"/> 	 
 		</scp>
 	</target>
