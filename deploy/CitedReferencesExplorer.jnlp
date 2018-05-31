@@ -44,5 +44,5 @@
 	<jar href="lib/javax.json-1.0.jar"/>    
   </resources>
 
-  <application-desc main-class="cre.test.CitedReferencesExplorer"/>
+  <application-desc main-class="main.cre.CitedReferencesExplorer"/>
 </jnlp> 
