@@ -23,8 +23,8 @@ public class Indicators {
 	public static void update() {
 
 		System.out.println("Compute Ranges");
-		range_RPY = CRStats.getMaxRangeRPY();
-		range_PY  = CRStats.getMaxRangePY();
+		range_RPY = Statistics.getMaxRangeRPY();
+		range_PY  = Statistics.getMaxRangePY();
 		NCR_ALL = new int[1];
 		NCR_RPY = new int[range_RPY[1]-range_RPY[0]+1];
 		CNT_RPY = new int[range_RPY[1]-range_RPY[0]+1];
@@ -105,7 +105,7 @@ public class Indicators {
 		
 		
  
-		int rangeSize_NPCT = UserSettings.get().getNPCTRange();
+		int rangeSize_NPCT = CRTable.get().getNpctRange();
 		int[][] borders = new int[pySize][];	// borders (50%, 75%, 90%) for each PY
 		for (int pyIdx=0; pyIdx<pySize; pyIdx++) {
 			
@@ -217,8 +217,9 @@ public class Indicators {
 	
 	
 	
-	public static CRChartData getChartData (int medianRange) {
+	public static void updateChartData () {
 		
+		int medianRange = CRChartData.get().getMedianRange();
 		
 		// compute difference to median
 		int[] RPY_MedianDiff = new int[NCR_RPY.length];	// RPY_idx -> SumNCR - (median of sumPerYear[year-range] ... sumPerYear[year+range])   
@@ -232,11 +233,10 @@ public class Indicators {
 		}
 		
 		
-		CRChartData result = new CRChartData(range_RPY[0], range_RPY[1]);
-		result.addSeries(SERIESTYPE.NCR, NCR_RPY);
-		result.addSeries(SERIESTYPE.MEDIANDIFF, RPY_MedianDiff);
-		result.addSeries(SERIESTYPE.CNT, CNT_RPY);
-		return result;
+		CRChartData.get().init(range_RPY[0], range_RPY[1]);
+		CRChartData.get().addSeries(SERIESTYPE.NCR, NCR_RPY);
+		CRChartData.get().addSeries(SERIESTYPE.MEDIANDIFF, RPY_MedianDiff);
+		CRChartData.get().addSeries(SERIESTYPE.CNT, CNT_RPY);
 	}
 	
 	

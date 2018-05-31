@@ -16,7 +16,7 @@ import cre.test.data.CRStatsInfo;
 import cre.test.data.CRTable;
 import cre.test.data.Sampling;
 import cre.test.data.type.CRType;
-import cre.test.ui.StatusBar;
+import cre.test.ui.statusbar.StatusBar;
 
 public enum ImportExportFormat {
 

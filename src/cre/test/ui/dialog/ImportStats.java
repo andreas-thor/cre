@@ -2,7 +2,7 @@ package cre.test.ui.dialog;
 
 import cre.test.data.CRStatsInfo;
 import cre.test.data.Sampling;
-import cre.test.data.UserSettings;
+import cre.test.ui.UISettings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -65,12 +65,12 @@ public class ImportStats extends Dialog<Integer> {
 		setResultConverter(dialogButton -> {
 		    if (dialogButton == ButtonType.OK) {
 		    	int noOfErrors = 0;
-		    	noOfErrors += UserSettings.get().setMaxCR(tfNumber[0].getText());
-		    	noOfErrors += UserSettings.get().setSampling(comboSampling.getValue());
-		    	noOfErrors += UserSettings.get().setRange(UserSettings.RangeType.ImportRPYRange, new String[] { tfYear[0].getText(), tfYear[1].getText()} );
-		    	noOfErrors += UserSettings.get().setRange(UserSettings.RangeType.ImportPYRange, new String[] { tfYear[2].getText(), tfYear[3].getText()} );
-		    	noOfErrors += UserSettings.get().setImportCRsWithoutYear(cbWithout[0].isSelected());
-		    	noOfErrors += UserSettings.get().setImportPubsWithoutYear(cbWithout[1].isSelected());
+		    	noOfErrors += UISettings.get().setMaxCR(tfNumber[0].getText());
+		    	noOfErrors += UISettings.get().setSampling(comboSampling.getValue());
+		    	noOfErrors += UISettings.get().setRange(UISettings.RangeType.ImportRPYRange, new String[] { tfYear[0].getText(), tfYear[1].getText()} );
+		    	noOfErrors += UISettings.get().setRange(UISettings.RangeType.ImportPYRange, new String[] { tfYear[2].getText(), tfYear[3].getText()} );
+		    	noOfErrors += UISettings.get().setImportCRsWithoutYear(cbWithout[0].isSelected());
+		    	noOfErrors += UISettings.get().setImportPubsWithoutYear(cbWithout[1].isSelected());
 		    	
 		    	if (noOfErrors>0) {	// if result == 0 --> no adjustments, otherwise errors (parseInt) or invalid values (e.g., <0)
 
@@ -154,7 +154,7 @@ public class ImportStats extends Dialog<Integer> {
 				createTF (rangeRPY[1], false));
 
 		cbWithout[0] = new CheckBox("Include");
-		cbWithout[0].setSelected(UserSettings.get().getImportCRsWithoutYear());
+		cbWithout[0].setSelected(UISettings.get().getImportCRsWithoutYear());
 		grid.addRow(2, 
 				new Label("Number of Cited References without Publication Year"), 
 				cbWithout[0],
@@ -184,7 +184,7 @@ public class ImportStats extends Dialog<Integer> {
 				createTF (rangePY[1], false));
 
 		cbWithout[1] = new CheckBox("Include");
-		cbWithout[1].setSelected(UserSettings.get().getImportPubsWithoutYear());
+		cbWithout[1].setSelected(UISettings.get().getImportPubsWithoutYear());
 		grid.addRow(6, 
 				new Label("Number of Publications without Publication Year"), 
 				cbWithout[1],

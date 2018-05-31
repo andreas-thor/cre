@@ -1,4 +1,4 @@
-package cre.test.ui;
+package cre.test.ui.chart;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -26,7 +26,7 @@ import org.jfree.data.xy.XYDataset;
 
 import cre.test.data.CRChartData;
 import cre.test.data.CRChartData.SERIESTYPE;
-import cre.test.data.UserSettings;
+import cre.test.ui.UISettings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import nz.sodium.Cell;
@@ -201,8 +201,8 @@ public abstract class CRChart_JFreeChart extends CRChart {
 	public void setFontSize() {
 		
 		XYItemRenderer rend = chart.getXYPlot().getRenderer();
-		float strokeSize = UserSettings.get().getChartSize()[0];;	// 3
-		double shapeSize = UserSettings.get().getChartSize()[1];	// 6
+		float strokeSize = UISettings.get().getChartSize()[0];;	// 3
+		double shapeSize = UISettings.get().getChartSize()[1];	// 6
 		
 		rend.setSeriesShape(0, new Rectangle2D.Double(-shapeSize/2,-shapeSize/2,shapeSize,shapeSize));
 		rend.setSeriesStroke(0, new BasicStroke(strokeSize));
@@ -211,11 +211,11 @@ public abstract class CRChart_JFreeChart extends CRChart {
 		
 		
 		XYPlot plot = chart.getXYPlot();
-		plot.getRangeAxis(0).setLabelFont(new Font(null, Font.PLAIN, UserSettings.get().getChartSize()[2]));
-		plot.getRangeAxis(0).setTickLabelFont(new Font(null, Font.PLAIN, UserSettings.get().getChartSize()[3]));
+		plot.getRangeAxis(0).setLabelFont(new Font(null, Font.PLAIN, UISettings.get().getChartSize()[2]));
+		plot.getRangeAxis(0).setTickLabelFont(new Font(null, Font.PLAIN, UISettings.get().getChartSize()[3]));
 
-		plot.getDomainAxis(0).setLabelFont(new Font(null, Font.PLAIN, UserSettings.get().getChartSize()[2]));
-		plot.getDomainAxis(0).setTickLabelFont(new Font(null, Font.PLAIN, UserSettings.get().getChartSize()[3]));
+		plot.getDomainAxis(0).setLabelFont(new Font(null, Font.PLAIN, UISettings.get().getChartSize()[2]));
+		plot.getDomainAxis(0).setTickLabelFont(new Font(null, Font.PLAIN, UISettings.get().getChartSize()[3]));
 		
 //		rend.setSeriesItemLabelFont(0, new Font(null, Font.PLAIN, UserSettings.get().getChartSize()[2]));
 //		rend.setSeriesItemLabelFont(1, new Font(null, Font.PLAIN, UserSettings.get().getChartSize()[2]));
@@ -223,7 +223,7 @@ public abstract class CRChart_JFreeChart extends CRChart {
 //		plot.getDomainAxis(0).setLabelFont(font3);
 //		plot.getDomainAxis(0).setTickLabelFont(font3);
 		for (int i=0; i<plot.getLegendItems().getItemCount(); i++) {
-			plot.getLegendItems().get(i).setLabelFont(new Font(null, Font.PLAIN, UserSettings.get().getChartSize()[3]));
+			plot.getLegendItems().get(i).setLabelFont(new Font(null, Font.PLAIN, UISettings.get().getChartSize()[3]));
 		}
 		
 		

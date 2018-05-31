@@ -12,13 +12,13 @@ import com.opencsv.CSVWriter;
 
 import cre.test.data.CRChartData;
 import cre.test.data.CRChartData.SERIESTYPE;
-import cre.test.data.CRStats;
+import cre.test.data.Statistics;
 import cre.test.data.CRTable;
-import cre.test.data.UserSettings;
 import cre.test.data.type.CRType;
 import cre.test.data.type.PubType.PubColumn;
+import cre.test.ui.UISettings;
 import cre.test.ui.CRTableView.CRColumn;
-import cre.test.ui.StatusBar;
+import cre.test.ui.statusbar.StatusBar;
 
 public class CRE_csv {
 
@@ -31,7 +31,7 @@ public class CRE_csv {
 	
 	public static void saveCR (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException {
 
-		StatusBar.get().initProgressbar(CRStats.getNumberOfCRs());
+		StatusBar.get().initProgressbar(Statistics.getNumberOfCRs());
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(Arrays.stream(CRColumn.values()).map(col -> col.id).toArray(String[]::new)); 
@@ -48,7 +48,7 @@ public class CRE_csv {
 	
 	public static void savePub (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException {
 
-		StatusBar.get().initProgressbar(CRStats.getNumberOfPubs());
+		StatusBar.get().initProgressbar(Statistics.getNumberOfPubs());
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(Arrays.stream(PubColumn.values()).map(col -> col.id).toArray(String[]::new)); 
@@ -65,7 +65,7 @@ public class CRE_csv {
 	
 	public static void saveCRPub (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException {
 
-		StatusBar.get().initProgressbar(CRStats.getNumberOfPubs());
+		StatusBar.get().initProgressbar(Statistics.getNumberOfPubs());
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext (Stream.concat (
@@ -92,13 +92,14 @@ public class CRE_csv {
 	public static void saveGraph (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException {
 
 		/* TODO: Filter not supported yet */
+		CRChartData data = CRChartData.get();
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
-		csv.writeNext(new String[] {"Year", "NCR", String.format("Median-%d", 2*UserSettings.get().getMedianRange()+1), "AVG"});
+		csv.writeNext(new String[] {"Year", "NCR", String.format("Median-%d", 2*data.getMedianRange()+1), "AVG"});
 		
 		DecimalFormat avgFormat = new DecimalFormat("#.###");
 		
-		CRChartData data = null; // FIXME = CRTable.get().getChartData().
+		
 		for (int index=0; index<data.getRPY().length; index++) {
 			String avg = data.getSeriesValue(SERIESTYPE.CNT, index) > 0 ? avgFormat.format((1.0d*data.getSeriesValue(SERIESTYPE.NCR, index))/data.getSeriesValue(SERIESTYPE.CNT, index)) : "";
 			csv.writeNext (new String[] {

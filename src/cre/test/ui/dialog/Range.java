@@ -1,7 +1,7 @@
 package cre.test.ui.dialog;
 
-import cre.test.data.UserSettings;
-import cre.test.data.UserSettings.RangeType;
+import cre.test.ui.UISettings;
+import cre.test.ui.UISettings.RangeType;
 import io.reactivex.rxjavafx.observables.JavaFxObservable;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -20,11 +20,11 @@ public class Range extends Dialog<int[]> {
 	public Range(String title, String header, RangeType r, int[] maxRange) {
 		super();
 
-		int[] range = UserSettings.get().getRange(r);
+		int[] range = UISettings.get().getRange(r);
 		
 		// initialize property if not set
 		if ((range[0]==-1) && (range[1]==-1)) {
-			UserSettings.get().setRange(r, maxRange);
+			UISettings.get().setRange(r, maxRange);
 		}
 		
 		setTitle(title);
@@ -60,8 +60,8 @@ public class Range extends Dialog<int[]> {
 		setResultConverter(dialogButton -> {
 		    if (dialogButton == ButtonType.OK) {
 		    	
-		    	if (UserSettings.get().setRange(r, new String[] { tf[0].getText(), tf[1].getText()}) == 0) {
-		    		return UserSettings.get().getRange(r);
+		    	if (UISettings.get().setRange(r, new String[] { tf[0].getText(), tf[1].getText()}) == 0) {
+		    		return UISettings.get().getRange(r);
 		    	}
 		        // INVALID range
 		        Alert alert = new Alert(AlertType.ERROR);

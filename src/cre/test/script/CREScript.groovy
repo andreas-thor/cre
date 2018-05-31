@@ -3,9 +3,8 @@ package cre.test.script
 import org.codehaus.groovy.control.CompilerConfiguration
 
 import cre.test.CitedReferencesExplorer
-import cre.test.data.type.CRType
-import cre.test.ui.StatusBar
-import cre.test.ui.StatusBarText
+import cre.test.ui.statusbar.StatusBar
+import cre.test.ui.statusbar.StatusBarText
 
 StatusBarText status = new StatusBarText()
 StatusBar.get().setUI(status);

@@ -1,7 +1,7 @@
-package cre.test.ui;
+package cre.test.ui.chart;
 
 import cre.test.data.CRChartData;
-import cre.test.data.UserSettings;
+import cre.test.ui.UISettings;
 import javafx.scene.Node;
 
 public abstract class CRChart {
@@ -37,7 +37,7 @@ public abstract class CRChart {
 	protected String getSeriesLabel (int idx) {
 		switch (idx) {
 		case 0: return "Number of Cited References";
-		case 1: return String.format("Deviation from the %1$d-Year-Median", 2*UserSettings.get().getMedianRange()+1);
+		case 1: return String.format("Deviation from the %1$d-Year-Median", 2*UISettings.get().getMedianRange()+1);
 		default: return "";
 		}
 	}

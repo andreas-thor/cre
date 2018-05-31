@@ -1,4 +1,4 @@
-package cre.test.ui;
+package cre.test.ui.statusbar;
 
 import java.util.Date;
 

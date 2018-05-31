@@ -20,7 +20,7 @@ import javax.json.stream.JsonParser;
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
-import cre.test.data.CRStats;
+import cre.test.data.Statistics;
 import cre.test.data.CRTable;
 import cre.test.data.match.CRCluster;
 import cre.test.data.match.CRMatch2;
@@ -28,7 +28,7 @@ import cre.test.data.match.CRPair2;
 import cre.test.data.type.CRType;
 import cre.test.data.type.CRType_Member;
 import cre.test.data.type.PubType;
-import cre.test.ui.StatusBar;
+import cre.test.ui.statusbar.StatusBar;
 
 public class CRE_json {
 
@@ -271,7 +271,7 @@ public class CRE_json {
 		/* TODO: filter is not supported yet */
 		
 		CRTable crTab = CRTable.get();
-		StatusBar.get().initProgressbar(CRStats.getNumberOfCRs() + CRStats.getNumberOfPubs() + CRStats.getNumberOfMatches(true) + CRStats.getNumberOfMatches(false));
+		StatusBar.get().initProgressbar(Statistics.getNumberOfCRs() + Statistics.getNumberOfPubs() + Statistics.getNumberOfMatches(true) + Statistics.getNumberOfMatches(false));
 		
 		ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(file_name), Charset.forName("UTF-8"));
 		zip.putNextEntry(new ZipEntry("crdata.json"));

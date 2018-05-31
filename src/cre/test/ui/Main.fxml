@@ -17,7 +17,7 @@
 <?import javafx.scene.control.CheckMenuItem?>
 
 
-<GridPane fx:id="mainPane" prefHeight="600" prefWidth="800" xmlns:fx="http://javafx.com/fxml" fx:controller="cre.test.Main">
+<GridPane fx:id="mainPane" prefHeight="600" prefWidth="800" xmlns:fx="http://javafx.com/fxml" fx:controller="cre.test.ui.MainController">
 	<MenuBar GridPane.hgrow="always" maxWidth="Infinity" GridPane.columnIndex="0" GridPane.rowIndex="0">
 		<menus>
 			<Menu text="_File">

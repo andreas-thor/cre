@@ -11,8 +11,7 @@ import cre.test.data.match.CRCluster;
 import cre.test.data.match.CRMatch2;
 import cre.test.data.type.CRType;
 import cre.test.data.type.PubType;
-import cre.test.ui.StatusBar;
-import nz.sodium.Cell;
+import cre.test.ui.statusbar.StatusBar;
 
 public class CRTable {
 
@@ -25,12 +24,11 @@ public class CRTable {
 	private HashMap<PubType, PubType> allPubs;
 	
 	
-	private CRChartData chartData;	
-	
 	private boolean duringUpdate;
 	private boolean aborted;
 	private boolean showNull;
 	
+	private int npctRange;
 	
 	public static CRTable get() {
 		if (crTab == null) {
@@ -58,7 +56,7 @@ public class CRTable {
 			}
 		}
 		
-		
+		npctRange = 1;
 		crDataMap = new HashMap<CRType, CRType>();
 		allPubs = new HashMap<PubType, PubType>();
 		
@@ -66,8 +64,6 @@ public class CRTable {
 		duringUpdate = false;
 		aborted = false;
 		showNull = true;
-		
-		chartData = new CRChartData(0, 0);
 		
 		setAborted(false);
 		CRSearch.get().init();
@@ -219,21 +215,15 @@ public class CRTable {
 		System.out.println(System.currentTimeMillis());
 		
 		Indicators.update();
-		this.updateChartData();
+		Indicators.updateChartData();
 		
 		duringUpdate = false;
 		
 	}
 
 	
-	public void updateChartData () throws OutOfMemoryError {
-		this.chartData = Indicators.getChartData(UserSettings.get().getMedianRange());
-	}
 	
 	
-	public CRChartData getChartData () {
-		return this.chartData;
-	}	
 
 	private void removeCR (Predicate<CRType> cond) {
 		
@@ -389,6 +379,18 @@ public class CRTable {
 	public void setAborted(boolean aborted) {
 		this.aborted = aborted;
 	}
+
+
+	public int getNpctRange() {
+		return npctRange;
+	}
+
+
+	public void setNpctRange(int npctRange) {
+		this.npctRange = npctRange;
+	}
+	
+	
 
 }
 

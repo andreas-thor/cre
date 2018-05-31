@@ -13,12 +13,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import cre.test.data.CRStats;
+import cre.test.data.Statistics;
 import cre.test.data.CRTable;
 import cre.test.data.type.CRType;
 import cre.test.data.type.CRType_Member;
 import cre.test.data.type.PubType;
-import cre.test.ui.StatusBar;
+import cre.test.ui.statusbar.StatusBar;
 
 /** 
  * Provides iterator over all PubType elements in a list of Scopus files
@@ -242,7 +242,7 @@ public class WoS_txt extends ImportReader {
 		
 		/* TODO: Filter is not supported yet */
 		
-		StatusBar.get().initProgressbar(CRStats.getNumberOfPubs());
+		StatusBar.get().initProgressbar(Statistics.getNumberOfPubs());
 						
 		BufferedWriter bw = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		bw.write("FN Thomson Reuters Web of Science\u0153 modified by CRExplorer");

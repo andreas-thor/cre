@@ -5,7 +5,7 @@ public class Exceptions {
 	public static class BadResponseCodeException extends Exception {
 		private static final long serialVersionUID = 1L;
 		
-		int code;
+		public int code;
 		
 		public BadResponseCodeException (int code) {
 			this.code = code;
@@ -17,8 +17,8 @@ public class Exceptions {
 		
 		private static final long serialVersionUID = 1L;
 
-		long numberOfCRs;
-		long numberOfPubs;
+		public long numberOfCRs;
+		public long numberOfPubs;
 
 		public FileTooLargeException(long numberOfCRs, long numberOfPubs) {
 			super();

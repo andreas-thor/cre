@@ -1,8 +1,8 @@
 package cre.test.ui.dialog;
 
-import cre.test.data.UserSettings;
 import cre.test.data.match.CRCluster;
 import cre.test.data.type.CRType;
+import cre.test.ui.UISettings;
 import cre.test.ui.CRTableView.CRColumn;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
@@ -42,7 +42,7 @@ public class CRInfo extends Dialog<Void> {
 				value = ((ObservableValue<Integer>)prop).getValue().toString();
 				break;
 			case DOUBLE: 
-				value = UserSettings.get().getFormat().format(((ObservableValue<Double>)prop).getValue().doubleValue());
+				value = UISettings.get().getFormat().format(((ObservableValue<Double>)prop).getValue().doubleValue());
 				break;
 			case STRING: 
 				value = ((ObservableValue<String>)prop).getValue();

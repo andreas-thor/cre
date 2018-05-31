@@ -1,4 +1,4 @@
-package cre.test.ui;
+package cre.test.ui.chart;
 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -6,9 +6,8 @@ import java.util.stream.Stream;
 
 import cre.test.data.CRChartData;
 import cre.test.data.CRChartData.SERIESTYPE;
-import cre.test.data.UserSettings;
+import cre.test.ui.UISettings;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
@@ -18,7 +17,6 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSException;
 import netscape.javascript.JSObject;
-import nz.sodium.Cell;
 
 public abstract class CRChart_HighCharts extends CRChart {
 
@@ -63,7 +61,7 @@ public abstract class CRChart_HighCharts extends CRChart {
 					Platform.runLater( () -> {
 						JSObject jsobj = (JSObject) webEngine.executeScript("window");
 						jsobj.setMember("crejava", cb);
-						updateData(new CRChartData(0, 0));
+						updateData(CRChartData.get());
 					});
 				}
 				
@@ -148,10 +146,10 @@ public abstract class CRChart_HighCharts extends CRChart {
 						json[0] ,json[1], 
 						CRChart.xAxisLabel, CRChart.yAxisLabel, 
 						getSeriesLabel(0), getSeriesLabel(1), 
-						UserSettings.get().getChartSize()[0], 
-						UserSettings.get().getChartSize()[1], 
-						UserSettings.get().getChartSize()[2], 
-						UserSettings.get().getChartSize()[3]
+						UISettings.get().getChartSize()[0], 
+						UISettings.get().getChartSize()[1], 
+						UISettings.get().getChartSize()[2], 
+						UISettings.get().getChartSize()[3]
 						));
 				
 			} catch (JSException e) {

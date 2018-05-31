@@ -5,7 +5,7 @@ import java.util.IntSummaryStatistics;
 import cre.test.data.match.CRMatch2;
 import cre.test.data.type.CRType;
 
-public class CRStats {
+public class Statistics {
 
 	/** TODO: Namen der Methoden vereinheitlichen */
 	

@@ -7,7 +7,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Locale;
 
-import cre.test.data.UserSettings;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -23,7 +22,7 @@ public class CitedReferencesExplorer extends Application {
 	public static String manual_url = "http://andreas-thor.github.io/cre/manual.pdf";
 	public static String url = "http://www.crexplorer.net";
 //	public static String title = "CRExplorer (Version 1.82)";
-	public static String title = "CRExplorer (DEVELOPMENT; May-11-2018)";
+	public static String title = "CRExplorer (DEVELOPMENT; May-31-2018)";
 	public static String loadOnOpen = null;
 
 	public static void main(String[] args) {
@@ -62,16 +61,11 @@ public class CitedReferencesExplorer extends Application {
 
 		CitedReferencesExplorer.stage = stage;
 		CitedReferencesExplorer.app = this;
-
 		
-		stage.setWidth(UserSettings.get().getWindowWidth());
-		stage.setHeight(UserSettings.get().getWindowHeight());
-		stage.setX(UserSettings.get().getWindowX());
-		stage.setY(UserSettings.get().getWindowY());
-		stage.getIcons().add(new Image(getClass().getResourceAsStream("CRE32.png")));
+		stage.getIcons().add(new Image(getClass().getResourceAsStream("ui/CRE32.png")));
 		stage.setTitle(CitedReferencesExplorer.title);
 
-		Parent root = FXMLLoader.load(getClass().getResource("Main.fxml"));
+		Parent root = FXMLLoader.load(getClass().getResource("ui/Main.fxml"));
 		Scene scene = new Scene(root); 
 		stage.setScene(scene);
 		stage.show();

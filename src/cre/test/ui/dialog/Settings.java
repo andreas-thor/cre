@@ -3,8 +3,8 @@ package cre.test.ui.dialog;
 import java.io.IOException;
 import java.util.Arrays;
 
-import cre.test.data.UserSettings;
 import cre.test.ui.CRTableView;
+import cre.test.ui.UISettings;
 import cre.test.ui.CRTableView.CRColumn;
 import cre.test.ui.CRTableView.ColGroup;
 import javafx.application.Platform;
@@ -117,14 +117,14 @@ public class Settings extends Dialog<Integer> {
 		    if (dialogButton == ButtonType.OK) {
 		    	int noOfErrors = 0;
 		    	for (int i=0; i<cbCol.length; i++) {
-		    		UserSettings.get().getColumnVisibleProperty(i).set(cbCol[i].isSelected());
+		    		UISettings.get().getColumnVisibleProperty(i).set(cbCol[i].isSelected());
 		    	}
-		    	noOfErrors += UserSettings.get().setFormatDigits(tfDigits.getText());
-		    	noOfErrors += UserSettings.get().setChartLine(new boolean[] { cbLine[0].isSelected(), cbLine[1].isSelected() });
-		    	noOfErrors += UserSettings.get().setChartSize(new String[] { tfLine[0].getText(), tfLine[1].getText(), tfLine[2].getText(), tfLine[3].getText() });
-		    	noOfErrors += UserSettings.get().setMedianRange(tfMedian.getText());
-		    	noOfErrors += UserSettings.get().setNPCTRange(tfNPCT.getText());
-		    	UserSettings.get().setChartEngine(rbChart[0].isSelected() ? 0 : 1);
+		    	noOfErrors += UISettings.get().setFormatDigits(tfDigits.getText());
+		    	noOfErrors += UISettings.get().setChartLine(new boolean[] { cbLine[0].isSelected(), cbLine[1].isSelected() });
+		    	noOfErrors += UISettings.get().setChartSize(new String[] { tfLine[0].getText(), tfLine[1].getText(), tfLine[2].getText(), tfLine[3].getText() });
+		    	noOfErrors += UISettings.get().setMedianRange(tfMedian.getText());
+		    	noOfErrors += UISettings.get().setNPCTRange(tfNPCT.getText());
+		    	UISettings.get().setChartEngine(rbChart[0].isSelected() ? 0 : 1);
 		    	
 		    	
 		    	if (noOfErrors>0) {	// if result == 0 --> no adjustments, otherwise errors (parseInt) or invalid values (e.g., <0)
@@ -156,7 +156,7 @@ public class Settings extends Dialog<Integer> {
 		String[] label = new String[] { "JFreeChart", "Highcharts"};
 		for (int i=0; i<label.length; i++) {
 			rbChart[i] = new RadioButton(label[i]);
-			rbChart[i].setSelected(UserSettings.get().getChartEngine()==i);
+			rbChart[i].setSelected(UISettings.get().getChartEngine()==i);
 			rbChart[i].setToggleGroup(group);
 			result.add(rbChart[i], 0, i);			
 		}
@@ -175,11 +175,11 @@ public class Settings extends Dialog<Integer> {
 		String[] label = new String[] { "Number of Cited References", "Deviation from the Median +/-"};
 		for (int i=0; i<label.length; i++) {
 			cbLine[i] = new CheckBox(label[i]);
-			cbLine[i].setSelected(UserSettings.get().getChartLine()[i]);
+			cbLine[i].setSelected(UISettings.get().getChartLine()[i]);
 			result.add(cbLine[i], 0, i);
 		}
 		
-		tfMedian.setText(String.valueOf(UserSettings.get().getMedianRange()));
+		tfMedian.setText(String.valueOf(UISettings.get().getMedianRange()));
 		tfMedian.setMaxWidth(50);
 		tfMedian.setDisable(!cbLine[1].isSelected());
 		result.add(tfMedian, 1, 1);
@@ -189,7 +189,7 @@ public class Settings extends Dialog<Integer> {
 		label = new String[] { "Stroke Size", "Shape Size", "Label Font Size", "Tick Font Size"};
 		for (int i=0; i<label.length; i++) {
 			result.add(new Label(label[i]), 0, i+2);
-			tfLine[i] = new TextField(String.valueOf (UserSettings.get().getChartSize()[i]));
+			tfLine[i] = new TextField(String.valueOf (UISettings.get().getChartSize()[i]));
 			tfLine[i].setMaxWidth(50);
 			result.add(tfLine[i], 1, i+2);
 		}
@@ -211,12 +211,12 @@ public class Settings extends Dialog<Integer> {
 		
 		result.add(new Label("Number of Digits"), 0, 0);
 		tfDigits.setMaxWidth(50);
-		tfDigits.setText(UserSettings.get().getFormatDigits());
+		tfDigits.setText(UISettings.get().getFormatDigits());
 		result.add(tfDigits, 1, 0);
 		
 		result.add(new Label("N_PCT Range"), 0, 1);
 		tfNPCT.setMaxWidth(50);
-		tfNPCT.setText(String.valueOf(UserSettings.get().getNPCTRange()));
+		tfNPCT.setText(String.valueOf(UISettings.get().getNPCTRange()));
 		result.add(tfNPCT, 1, 1);
 		
 		return result;
@@ -247,7 +247,7 @@ public class Settings extends Dialog<Integer> {
 			if (e.group == group) {
 				cbCol[idx] = new CheckBox(String.format("%s (%s)", e.id, e.title));
 				cbCol[idx].setMnemonicParsing(false);
-				cbCol[idx].setSelected(UserSettings.get().getColumnVisibleProperty(idx).get());
+				cbCol[idx].setSelected(UISettings.get().getColumnVisibleProperty(idx).get());
 				
 				cbCol[idx].selectedProperty().addListener(new ChangeListener<Boolean>() {
 				    @Override

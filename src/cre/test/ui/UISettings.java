@@ -1,4 +1,4 @@
-package cre.test.data;
+package cre.test.ui;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -6,13 +6,13 @@ import java.util.Arrays;
 import java.util.prefs.Preferences;
 
 import cre.test.CitedReferencesExplorer;
-import cre.test.ui.CRTableView;
+import cre.test.data.Sampling;
 import javafx.beans.property.SimpleBooleanProperty;
 
-public class UserSettings {
+public class UISettings {
 
 	// SINGLETON
-	private static UserSettings set = null;
+	private static UISettings set = null;
 
 	// store Preferences
 	private Preferences userPrefs;
@@ -60,15 +60,15 @@ public class UserSettings {
 	 * 
 	 * @return
 	 */
-	public static UserSettings get() {
+	public static UISettings get() {
 
-		if (UserSettings.set == null) {
-			UserSettings.set = new UserSettings();
+		if (UISettings.set == null) {
+			UISettings.set = new UISettings();
 		}
-		return UserSettings.set;
+		return UISettings.set;
 	}
 
-	private UserSettings() { // private avoids direct instantiation
+	private UISettings() { // private avoids direct instantiation
 		userPrefs = Preferences.userNodeForPackage(CitedReferencesExplorer.class);
 		loadUserPrefs();
 	}

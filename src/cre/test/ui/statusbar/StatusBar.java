@@ -1,9 +1,9 @@
-package cre.test.ui;
+package cre.test.ui.statusbar;
 
 import java.util.Date;
 import java.util.function.Consumer;
 
-import cre.test.data.CRStats;
+import cre.test.data.Statistics;
 
 public class StatusBar {
 
@@ -51,15 +51,15 @@ public class StatusBar {
 	
 	
 	public void updateInfo () {
-		int[] yearsRPY = CRStats.getMaxRangeRPY();
-		int[] yearsRPYVisible = CRStats.getMaxRangeRPY(true);
-		int[] yearsPY  = CRStats.getMaxRangePY();
+		int[] yearsRPY = Statistics.getMaxRangeRPY();
+		int[] yearsRPYVisible = Statistics.getMaxRangeRPY(true);
+		int[] yearsPY  = Statistics.getMaxRangePY();
 
 		if (this.statUI != null) {
 			statUI.printInfo(String.format("#CRs: %d (%d shown), #Clusters: %d, RPY: %d-%d (%d-%d shown), PY: %d-%d",
-				CRStats.getNumberOfCRs(),
-				CRStats.getNumberOfCRsByVisibility(true),
-				CRStats.getNumberOfClusters(), 
+				Statistics.getNumberOfCRs(),
+				Statistics.getNumberOfCRsByVisibility(true),
+				Statistics.getNumberOfClusters(), 
 				yearsRPY[0], 
 				yearsRPY[1],
 				yearsRPYVisible[0], 

@@ -1,4 +1,4 @@
-package cre.test;
+package cre.test.ui;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,34 +13,34 @@ import java.util.stream.Stream;
 
 import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
 
+import cre.test.CitedReferencesExplorer;
 import cre.test.Exceptions.AbortedException;
 import cre.test.Exceptions.BadResponseCodeException;
 import cre.test.Exceptions.FileTooLargeException;
 import cre.test.Exceptions.UnsupportedFileFormatException;
+import cre.test.data.CRChartData;
 import cre.test.data.CRSearch;
-import cre.test.data.CRStats;
 import cre.test.data.CRStatsInfo;
 import cre.test.data.CRTable;
-import cre.test.data.UserSettings;
-import cre.test.data.UserSettings.RangeType;
+import cre.test.data.Indicators;
+import cre.test.data.Statistics;
 import cre.test.data.match.CRMatch2;
 import cre.test.data.match.CRMatch2.ManualMatchType2;
 import cre.test.data.source.Crossref;
 import cre.test.data.source.ImportExportFormat;
 import cre.test.data.type.CRType;
-import cre.test.ui.CRChart;
-import cre.test.ui.CRChart_HighCharts;
-import cre.test.ui.CRChart_JFreeChart;
-import cre.test.ui.CRTableView;
-import cre.test.ui.MatchPanel;
-import cre.test.ui.StatusBar;
-import cre.test.ui.StatusBarFX;
+import cre.test.ui.UISettings.RangeType;
+import cre.test.ui.chart.CRChart;
+import cre.test.ui.chart.CRChart_HighCharts;
+import cre.test.ui.chart.CRChart_JFreeChart;
 import cre.test.ui.dialog.About;
 import cre.test.ui.dialog.CRInfo;
 import cre.test.ui.dialog.CRPubInfo;
 import cre.test.ui.dialog.ConfirmAlert;
 import cre.test.ui.dialog.DownloadCrossref;
 import cre.test.ui.dialog.DownloadCrossref.DownloadCrossrefData;
+import cre.test.ui.statusbar.StatusBar;
+import cre.test.ui.statusbar.StatusBarFX;
 import cre.test.ui.dialog.ExceptionStacktrace;
 import cre.test.ui.dialog.ImportStats;
 import cre.test.ui.dialog.Info;
@@ -73,7 +73,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.WindowEvent;
 
-public class Main {
+public class MainController {
 
 	CRTable crTable;
 	CRChart crChart[] = new CRChart[2];
@@ -105,15 +105,24 @@ public class Main {
 	@FXML
 	public void initialize() throws IOException {
 
+		CitedReferencesExplorer.stage.setWidth(UISettings.get().getWindowWidth());
+		CitedReferencesExplorer.stage.setHeight(UISettings.get().getWindowHeight());
+		CitedReferencesExplorer.stage.setX(UISettings.get().getWindowX());
+		CitedReferencesExplorer.stage.setY(UISettings.get().getWindowY());
+		
 		creFile = null;
 		crTable = CRTable.get();
+		crTable.setNpctRange(UISettings.get().getNPCTRange());
+		
+		CRChartData.get().setMedianRange(UISettings.get().getMedianRange());
+		
 		StatusBarFX stat = new StatusBarFX();
 		statPane.add(stat, 0, 0);
 
 		StatusBar.get().setUI(stat);
 		StatusBar.get().setOnUpdateInfo(x -> {
-			noOfVisibleCRs.setDisable(CRStats.getNumberOfCRs() == CRStats.getNumberOfCRsByVisibility(true));
-			noOfVisibleCRs.setText(String.format("Show all Cited References (currently %d of %d)", CRStats.getNumberOfCRsByVisibility(true), CRStats.getNumberOfCRs()));
+			noOfVisibleCRs.setDisable(Statistics.getNumberOfCRs() == Statistics.getNumberOfCRsByVisibility(true));
+			noOfVisibleCRs.setText(String.format("Show all Cited References (currently %d of %d)", Statistics.getNumberOfCRsByVisibility(true), Statistics.getNumberOfCRs()));
 		});
 
 		tableView = new CRTableView();
@@ -192,7 +201,7 @@ public class Main {
 		} };
 		for (int i = 0; i < crChart.length; i++) {
 			chartPane.add(crChart[i].getNode(), 0, 0);
-			crChart[i].setVisible(UserSettings.get().getChartEngine() == i);
+			crChart[i].setVisible(UISettings.get().getChartEngine() == i);
 		}
 
 		// save user settings when exit
@@ -200,9 +209,9 @@ public class Main {
 
 			event.consume();
 
-			if (CRStats.getNumberOfCRs() == 0) {
+			if (Statistics.getNumberOfCRs() == 0) {
 
-				UserSettings.get().saveUserPrefs(CitedReferencesExplorer.stage.getWidth(), CitedReferencesExplorer.stage.getHeight(), CitedReferencesExplorer.stage.getX(), CitedReferencesExplorer.stage.getY());
+				UISettings.get().saveUserPrefs(CitedReferencesExplorer.stage.getWidth(), CitedReferencesExplorer.stage.getHeight(), CitedReferencesExplorer.stage.getX(), CitedReferencesExplorer.stage.getY());
 				CitedReferencesExplorer.stage.close();
 				return;
 			}
@@ -230,7 +239,7 @@ public class Main {
 					}
 				}
 
-				UserSettings.get().saveUserPrefs(CitedReferencesExplorer.stage.getWidth(), CitedReferencesExplorer.stage.getHeight(), CitedReferencesExplorer.stage.getX(), CitedReferencesExplorer.stage.getY());
+				UISettings.get().saveUserPrefs(CitedReferencesExplorer.stage.getWidth(), CitedReferencesExplorer.stage.getHeight(), CitedReferencesExplorer.stage.getX(), CitedReferencesExplorer.stage.getY());
 				CitedReferencesExplorer.stage.close();
 			});
 		});
@@ -242,7 +251,7 @@ public class Main {
 	}
 
 	private void filterByRPY(int[] range, boolean fromChart) {
-		UserSettings.get().setRange(RangeType.FilterByRPYRange, range);
+		UISettings.get().setRange(RangeType.FilterByRPYRange, range);
 		crTable.filterByYear(range);
 		updateTableCRList(fromChart);
 	}
@@ -272,8 +281,8 @@ public class Main {
 			if (!triggeredByChartZoom) {
 				Stream.of(crChart).forEach(it -> {
 					if (it.isVisible()) {
-						it.updateData(crTable.getChartData());
-						it.setDomainRange(CRStats.getMaxRangeRPY(true));
+						it.updateData(CRChartData.get());
+						it.setDomainRange(Statistics.getMaxRangeRPY(true));
 					}
 				});
 			}
@@ -382,12 +391,12 @@ public class Main {
 
 						source.load(
 							files, 
-							UserSettings.get().getRange(RangeType.ImportRPYRange),
-							UserSettings.get().getImportCRsWithoutYear(),
-							UserSettings.get().getRange(RangeType.ImportPYRange), 
-							UserSettings.get().getImportPubsWithoutYear(),
-							UserSettings.get().getMaxCR(),
-							UserSettings.get().getSampling()
+							UISettings.get().getRange(RangeType.ImportRPYRange),
+							UISettings.get().getImportCRsWithoutYear(),
+							UISettings.get().getRange(RangeType.ImportPYRange), 
+							UISettings.get().getImportPubsWithoutYear(),
+							UISettings.get().getMaxCR(),
+							UISettings.get().getSampling()
 						);
 						
 						if ((source == ImportExportFormat.CRE) && (files.size() == 1)) {
@@ -447,7 +456,7 @@ public class Main {
 		} else {
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle(String.format("%1$s %2$s", (source == ImportExportFormat.CRE) ? "Open" : "Import", source.getLabel()));
-			fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
+			fileChooser.setInitialDirectory(UISettings.get().getLastFileDir());
 			fileChooser.getExtensionFilters().add(new ExtensionFilter(source.getLabel(), Arrays.asList(new String[] { "*." + source.getFileExtension()})));
 			fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
 
@@ -464,7 +473,7 @@ public class Main {
 
 		if (files.size() > 0) {
 			this.creFile = null;
-			UserSettings.get().setLastFileDir(files.get(0).getParentFile()); // save last directory to be uses as initial directory
+			UISettings.get().setLastFileDir(files.get(0).getParentFile()); // save last directory to be uses as initial directory
 
 			if (source != ImportExportFormat.CRE) {
 				if (analyzeFiles(source, files)) {
@@ -556,7 +565,7 @@ public class Main {
 		} else {
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle(String.format("%1$s %2$s", (source == ImportExportFormat.CRE) ? "Save" : "Export", source.getLabel()));
-			fileChooser.setInitialDirectory(UserSettings.get().getLastFileDir());
+			fileChooser.setInitialDirectory(UISettings.get().getLastFileDir());
 			fileChooser.getExtensionFilters().add(new ExtensionFilter(source.getLabel(), Arrays.asList(new String[] { "*." + source.getFileExtension()})));
 			fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
 			selFile = fileChooser.showSaveDialog(CitedReferencesExplorer.stage);
@@ -566,7 +575,7 @@ public class Main {
 			return false;
 
 		// save last directory to be uses as initial directory
-		UserSettings.get().setLastFileDir(selFile.getParentFile());
+		UISettings.get().setLastFileDir(selFile.getParentFile());
 
 		Service<Void> serv = new Service<Void>() {
 			@Override
@@ -574,7 +583,7 @@ public class Main {
 				return new Task<Void>() {
 					@Override
 					protected Void call() throws Exception {
-						source.save(selFile, UserSettings.get().getIncludePubsWithoutCRs());
+						source.save(selFile, UISettings.get().getIncludePubsWithoutCRs());
 						if (source == ImportExportFormat.CRE)
 							creFile = selFile;
 						return null;
@@ -669,21 +678,23 @@ public class Main {
 	@FXML
 	public void OnMenuFileSettings() throws IOException {
 
-		int old_NPCTRange = UserSettings.get().getNPCTRange();
-		int old_MedianRange = UserSettings.get().getMedianRange();
+		int old_NPCTRange = UISettings.get().getNPCTRange();
+		int old_MedianRange = UISettings.get().getMedianRange();
 		new Settings().showAndWait().ifPresent(noOfErrors -> {
 
-			if (old_NPCTRange != UserSettings.get().getNPCTRange()) {
+			if (old_NPCTRange != UISettings.get().getNPCTRange()) {
+				crTable.setNpctRange(UISettings.get().getNPCTRange());
 				crTable.updateData();
 			} else {
-				if (old_MedianRange != UserSettings.get().getMedianRange()) {
-					crTable.updateChartData();
+				if (old_MedianRange != UISettings.get().getMedianRange()) {
+					CRChartData.get().setMedianRange(UISettings.get().getMedianRange());
+					Indicators.updateChartData();
 				}
 			}
 
 			for (int i = 0; i < crChart.length; i++) {
 				crChart[i].setFontSize();
-				crChart[i].setVisible(UserSettings.get().getChartEngine() == i);
+				crChart[i].setVisible(UISettings.get().getChartEngine() == i);
 
 			}
 			updateTableCRList();
@@ -733,7 +744,7 @@ public class Main {
 
 	@FXML
 	public void OnMenuViewFilterByRPY(ActionEvent event) {
-		new Range("Filter Cited References", "Select Range of Cited References Years", UserSettings.RangeType.FilterByRPYRange, CRStats.getMaxRangeRPY()).showAndWait().ifPresent(range -> {
+		new Range("Filter Cited References", "Select Range of Cited References Years", UISettings.RangeType.FilterByRPYRange, Statistics.getMaxRangeRPY()).showAndWait().ifPresent(range -> {
 			filterByRPY(range, false);
 		});
 	}
@@ -842,7 +853,7 @@ public class Main {
 	@FXML
 	public void OnMenuDataRemovewoYears() {
 
-		int n = CRStats.getNumberOfCRsWithoutRPY();
+		int n = Statistics.getNumberOfCRsWithoutRPY();
 		new ConfirmAlert("Remove Cited References", n == 0, new String[] { "No Cited References w/o Year.", String.format("Would you like to remove all %d Cited References w/o Year?", n) }).showAndWait().ifPresent(btn -> {
 			if (btn == ButtonType.YES) {
 				crTable.removeCRWithoutYear();
@@ -855,8 +866,8 @@ public class Main {
 	public void OnMenuDataRemoveByRPY() {
 
 		final String header = "Remove Cited References";
-		new Range(header, "Select Range of Cited References Years", UserSettings.RangeType.RemoveByRPYRange, CRStats.getMaxRangeRPY()).showAndWait().ifPresent(range -> {
-			long n = CRStats.getNumberOfCRsByRPY(range);
+		new Range(header, "Select Range of Cited References Years", UISettings.RangeType.RemoveByRPYRange, Statistics.getMaxRangeRPY()).showAndWait().ifPresent(range -> {
+			long n = Statistics.getNumberOfCRsByRPY(range);
 			new ConfirmAlert(header, n == 0, new String[] { String.format("No Cited References with Cited Reference Year between %d and %d.", range[0], range[1]),
 					String.format("Would you like to remove all %d Cited References with Cited Reference Year between %d and %d?", n, range[0], range[1]) }).showAndWait().ifPresent(btn -> {
 						if (btn == ButtonType.YES) {
@@ -871,8 +882,8 @@ public class Main {
 	public void OnMenuDataRemoveByNCR() {
 
 		final String header = "Remove Cited References";
-		new Range(header, "Select Number of Cited References", UserSettings.RangeType.RemoveByNCRRange, CRStats.getMaxRangeNCR()).showAndWait().ifPresent(range -> {
-			long n = CRStats.getNumberOfCRsByNCR(range);
+		new Range(header, "Select Number of Cited References", UISettings.RangeType.RemoveByNCRRange, Statistics.getMaxRangeNCR()).showAndWait().ifPresent(range -> {
+			long n = Statistics.getNumberOfCRsByNCR(range);
 			new ConfirmAlert(header, n == 0, new String[] { String.format("No Cited References with Number of Cited References between %d and %d.", range[0], range[1]),
 					String.format("Would you like to remove all %d Cited References with Number of Cited References between %d and %d?", n, range[0], range[1]) }).showAndWait().ifPresent(btn -> {
 						if (btn == ButtonType.YES) {
@@ -890,7 +901,7 @@ public class Main {
 		new Threshold(header, "Select Threshold for Percent in Year", "<", 0.0).showAndWait().ifPresent(cond -> {
 			String comp = cond.getKey();
 			double threshold = cond.getValue().doubleValue();
-			long n = CRStats.getNumberOfCRsByPercentYear(comp, threshold);
+			long n = Statistics.getNumberOfCRsByPercentYear(comp, threshold);
 			new ConfirmAlert(header, n == 0, new String[] { String.format("No Cited References with Percent in Year %s %.1f%%.", comp, 100 * threshold),
 					String.format("Would you like to remove all %d Cited References with Percent in Year %s %.1f%%?", n, comp, 100 * threshold) }).showAndWait().ifPresent(btn -> {
 						if (btn == ButtonType.YES) {
@@ -930,8 +941,8 @@ public class Main {
 	@FXML
 	public void OnMenuDataRetainByRPY() {
 
-		new Range("Retain Publications", "Select Range of Citing Publication Years", UserSettings.RangeType.RetainByRPYRange, CRStats.getMaxRangePY()).showAndWait().ifPresent(range -> {
-			long n = CRStats.getNumberOfPubs() - CRStats.getNumberOfPubsByCitingYear(range);
+		new Range("Retain Publications", "Select Range of Citing Publication Years", UISettings.RangeType.RetainByRPYRange, Statistics.getMaxRangePY()).showAndWait().ifPresent(range -> {
+			long n = Statistics.getNumberOfPubs() - Statistics.getNumberOfPubsByCitingYear(range);
 			new ConfirmAlert("Remove Publications", n == 0, new String[] { String.format("All Citing Publication Years are between between %d and %d.", range[0], range[1]),
 					String.format("Would you like to remove all %d citing publications with publication year lower than %d or higher than %d?", n, range[0], range[1]) }).showAndWait().ifPresent(btn -> {
 						if (btn == ButtonType.YES) {
@@ -960,7 +971,7 @@ public class Main {
 	@FXML
 	public void OnMenuStdMerge() {
 
-		long n = CRStats.getNumberOfCRs() - CRStats.getNumberOfClusters();
+		long n = Statistics.getNumberOfCRs() - Statistics.getNumberOfClusters();
 		new ConfirmAlert("Merge clusters", n == 0, new String[] { "No Clusters to merge.", String.format("Merging will aggregate %d Cited References! Are you sure?", n) }).showAndWait().ifPresent(btn -> {
 			if (btn == ButtonType.YES) {
 				new Thread(() -> {

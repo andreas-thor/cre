@@ -17,12 +17,12 @@ import java.util.stream.IntStream;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
-import cre.test.data.CRStats;
+import cre.test.data.Statistics;
 import cre.test.data.CRTable;
 import cre.test.data.type.CRType;
 import cre.test.data.type.CRType_Member;
 import cre.test.data.type.PubType;
-import cre.test.ui.StatusBar;
+import cre.test.ui.statusbar.StatusBar;
 
 public class Scopus_csv extends ImportReader {
 
@@ -273,7 +273,7 @@ public class Scopus_csv extends ImportReader {
 		
 		/* TODO: Filter not supported yet */
 		
-		StatusBar.get().initProgressbar(CRStats.getNumberOfPubs());
+		StatusBar.get().initProgressbar(Statistics.getNumberOfPubs());
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		
 		csv.writeNext(new String[] {"Authors","Title","Year","Source title","Volume","Issue","Art. No.","Page start","Page end","Page count","Cited by","DOI","Link","Affiliations","Authors with affiliations","Abstract","Author Keywords","References","Document Type","Source","EID"});

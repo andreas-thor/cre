@@ -3,7 +3,6 @@ package cre.test.ui;
 import java.util.Optional;
 import java.util.function.Function;
 
-import cre.test.data.UserSettings;
 import cre.test.data.match.CRCluster;
 import cre.test.data.type.CRType;
 import javafx.beans.value.ObservableValue;
@@ -104,7 +103,7 @@ public class CRTableView extends TableView<CRType> {
 					        @Override
 					        protected void updateItem(Number value , boolean empty) {
 					            super.updateItem(value, empty);
-				            	setText (((value == null) || empty) ? null : UserSettings.get().getFormat().format(value.doubleValue()));
+				            	setText (((value == null) || empty) ? null : UISettings.get().getFormat().format(value.doubleValue()));
 					        }
 						}; 
 					}); 
@@ -125,7 +124,7 @@ public class CRTableView extends TableView<CRType> {
 				default: assert false;
 			}
 			
-			columns[i].visibleProperty().bindBidirectional(UserSettings.get().getColumnVisibleProperty(i));
+			columns[i].visibleProperty().bindBidirectional(UISettings.get().getColumnVisibleProperty(i));
 			
 			if (i==0) {
 				((TableColumn<CRType, Number>) columns[ 0]).setCellValueFactory(cellData -> (ObservableValue<Number>) col.prop.apply (cellData.getValue()));

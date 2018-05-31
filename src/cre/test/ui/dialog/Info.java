@@ -1,6 +1,6 @@
 package cre.test.ui.dialog;
 
-import cre.test.data.CRStats;
+import cre.test.data.Statistics;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -26,17 +26,17 @@ public class Info extends Dialog<Void> {
 		
 		grid.addRow(0, 
 			new Label("Number of Cited References"),
-			createTF (CRStats.getNumberOfCRs()));
+			createTF (Statistics.getNumberOfCRs()));
 		
 		grid.addRow(1, 
 			new Label("Number of Cited References (shown)"),
-			createTF (CRStats.getNumberOfCRsByVisibility(true)));
+			createTF (Statistics.getNumberOfCRsByVisibility(true)));
 		
 		grid.addRow(2, 
 			new Label("Number of Cited References Clusters"), 
-			createTF (CRStats.getNumberOfClusters()));
+			createTF (Statistics.getNumberOfClusters()));
 		
-		int[] r = CRStats.getMaxRangeRPY();
+		int[] r = Statistics.getMaxRangeRPY();
 		grid.addRow(3, 
 			new Label("Range of Cited References Years"), 
 			createTF (r[0], 1),
@@ -45,17 +45,17 @@ public class Info extends Dialog<Void> {
 		
 		grid.addRow(4, 
 			new Label("Number of different Cited References Years"), 
-			createTF (CRStats.getNumberOfDistinctRPY()));
+			createTF (Statistics.getNumberOfDistinctRPY()));
 		
 		grid.addRow(5, 
 			new Label("Number of Publications"), 
-			createTF (CRStats.getNumberOfPubs(true)));
+			createTF (Statistics.getNumberOfPubs(true)));
 
 		grid.addRow(6, 
 				new Label("Number of Citing Publications"), 
-				createTF (CRStats.getNumberOfPubs()));
+				createTF (Statistics.getNumberOfPubs()));
 		
-		r = CRStats.getMaxRangePY();
+		r = Statistics.getMaxRangePY();
 		grid.addRow(7, 
 			new Label("Range of Citing Publications Years"),
 			createTF (r[0], 1),
@@ -64,7 +64,7 @@ public class Info extends Dialog<Void> {
 		
 		grid.addRow(8,
 			new Label("Number of different Citing Publications Years"),
-			createTF (CRStats.getNumberOfDistinctPY()));
+			createTF (Statistics.getNumberOfDistinctPY()));
 		
 		
 		getDialogPane().setContent(grid);
