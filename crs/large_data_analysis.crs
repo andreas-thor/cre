@@ -31,14 +31,28 @@
 
 
 
-analyzeFile (
+importFile (
 	file: "data/proctest/savedrecs_JOI2.txt",
 	type: "WOS"
 )
 
 info()
 
-return
+exportFile (
+	file: "data/proctest/savedrecs_JOI2_vonskript.txt",
+	type: "WOS",
+	RPY: [2000, 2010]
+	)
+
+analyzeFile (
+		file: "data/proctest/savedrecs_JOI2_vonskript.txt",
+		type: "WOS"
+	)
+	
+	info()
+	
+
+
 
 
 use ("packages/Loop.crs").with {

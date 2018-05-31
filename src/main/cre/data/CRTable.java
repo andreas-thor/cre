@@ -387,7 +387,9 @@ public class CRTable {
 
 
 	public void setNpctRange(int npctRange) {
-		this.npctRange = npctRange;
+		if (npctRange>=0) {
+			this.npctRange = npctRange;
+		}
 	}
 	
 	

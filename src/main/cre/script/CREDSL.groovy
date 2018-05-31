@@ -2,16 +2,17 @@ package main.cre.script;
 
 import java.util.function.Predicate
 
-import cre.test.data.CRStatsInfo
-import cre.test.data.CRTable
-import cre.test.data.Sampling
-import cre.test.data.UserSettings;
-import cre.test.data.match.CRMatch2
-import cre.test.data.source.ImportExportFormat;
-import cre.test.data.type.CRType
-import cre.test.ui.StatusBar;
-import cre.test.ui.StatusBarText
 import groovy.io.FileType
+import main.cre.data.CRChartData
+import main.cre.data.CRStatsInfo
+import main.cre.data.CRTable
+import main.cre.data.Indicators
+import main.cre.data.Sampling
+import main.cre.data.match.CRMatch2
+import main.cre.data.source.ImportExportFormat;
+import main.cre.data.type.CRType
+import main.cre.ui.statusbar.StatusBar;
+import main.cre.ui.statusbar.StatusBarText
 
 abstract class CREDSL extends Script {
 
@@ -53,7 +54,7 @@ abstract class CREDSL extends Script {
 	public static void openFile (Map<String, Object> map) throws Exception {
 		Map<String, Object> param = makeParamsCaseInsensitive(map);
 		List<File> files = getFiles ("openFile", param); 
-		ImportExportFormat.CRE.load(files, [Integer.MIN_VALUE, Integer.MAX_VALUE], true, [Integer.MIN_VALUE, Integer.MAX_VALUE], true, Long.MAX_VALUE, Sampling.NONE);
+		ImportExportFormat.CRE.load(files, [Integer.MIN_VALUE, Integer.MAX_VALUE] as int[], true, [Integer.MIN_VALUE, Integer.MAX_VALUE] as int[], true, Long.MAX_VALUE, Sampling.NONE);
 	}
 
 	
@@ -96,10 +97,7 @@ abstract class CREDSL extends Script {
 				withoutRPY = param["RPY"][2]
 			}
 		}
-//		UserSettings.get().setRange(RangeType.ImportRPYRange, rangeRPY);
-//		UserSettings.get().setImportCRsWithoutYear(withoutRPY);
 
-		
 		// set PY import range: [min, max, without=true]
 		int[] rangePY = CRStatsInfo.get().getRangePY();		// default: max range
 		boolean withoutPY = true	// default: include Pubs without PY
@@ -110,17 +108,12 @@ abstract class CREDSL extends Script {
 				withoutPY = param["PY"][2]
 			}
 		}
-//		UserSettings.get().setRange(RangeType.ImportPYRange, rangePY);
-//		UserSettings.get().setImportPubsWithoutYear(withoutPY);
-
 		
 		// set maximum number of CRs
 		int maxCR = 0
 		if (param["MAXCR"] != null) {
 			maxCR = param["MAXCR"]
 		}
-//		UserSettings.get().setMaxCR(maxCR);
-
 
 		// sampling
 		Sampling sampling = null;
@@ -133,7 +126,6 @@ abstract class CREDSL extends Script {
 		}
 		
 		sampling.offset = param.getOrDefault("OFFSET", 0);
-//		UserSettings.get().setSampling(sampling);
 
 		fileFormat.load(files, rangeRPY, withoutRPY, rangePY, withoutPY, maxCR, sampling);
 
@@ -159,10 +151,10 @@ abstract class CREDSL extends Script {
 		Predicate<CRType> filter = { cr -> true };
 		if (param.keySet().contains("RPY")) {
 			int[] range = param["RPY"];
-			filter = { cr -> (cr.getRPY() != null) && (cr.getRPY()>=range[0]) && (cr.getRPY()<=range[1]) };
+			filter = { CRType cr -> (cr.getRPY() != null) && (cr.getRPY()>=range[0]) && (cr.getRPY()<=range[1]) };
 		}
 
-		ImportExportFormat.CRE.save(file, filter);
+		ImportExportFormat.CRE.save(file, true, filter);
 	}
 	
 	
@@ -184,11 +176,18 @@ abstract class CREDSL extends Script {
 		}
 		File file = new File (param.get("FILE"));
 		
+		
+		// includePubsWithoutCRs
+		boolean includePubsWithoutCRs = true;
+		if (param.keySet().contains("W/O_CR")) {
+			includePubsWithoutCRs = param.get("W/O_CR");
+		}
+		
 		// set filter
 		Predicate<CRType> filter = { cr -> true };
 		if (param.keySet().contains("RPY")) {
 			int[] range = param["RPY"];
-			filter = { cr -> (cr.getRPY() != null) && (cr.getRPY()>=range[0]) && (cr.getRPY()<=range[1]) };
+			filter = { CRType cr -> (cr.getRPY() != null) && (cr.getRPY()>=range[0]) && (cr.getRPY()<=range[1]) };
 		}
 		
 		
@@ -205,7 +204,7 @@ abstract class CREDSL extends Script {
 		}
 		
 
-		fileFormat.save(file, filter);
+		fileFormat.save(file, includePubsWithoutCRs, filter);
 	}
 
 
@@ -296,19 +295,26 @@ abstract class CREDSL extends Script {
 		Map<String, Object> param = makeParamsCaseInsensitive(map)
 	
 		if (param.get("N_PCT_RANGE") != null) {
-			if (UserSettings.get().setNPCTRange(param.get("N_PCT_RANGE").toString()) != 0) {
+			
+			try {
+				CRTable.get().setNpctRange(Integer.valueOf(param.get("N_PCT_RANGE").toString()).intValue())
+				CRTable.get().updateData();
+			} catch (Exception e) {
 				throw new Exception("Wrong value for set parameter N_PCT_RANGE: " + param.get("N_PCT_RANGE"));
 			}
 			param.remove("N_PCT_RANGE");
-			CRTable.get().updateData();
+			
 		}
 		
 		if (param.get("MEDIAN_RANGE") != null) {
-			if (UserSettings.get().setMedianRange(param.get("MEDIAN_RANGE").toString()) != 0) {
+			
+			try {
+				CRChartData.get().setMedianRange(Integer.valueOf(param.get("MEDIAN_RANGE").toString()).intValue());
+				Indicators.updateChartData();
+			} catch (Exception e) {
 				throw new Exception("Wrong value for set parameter MEDIAN_RANGE: " + param.get("MEDIAN_RANGE"));
 			}
 			param.remove("MEDIAN_RANGE");
-			CRTable.get().updateChartData();
 		}
 		
 		
@@ -323,8 +329,7 @@ abstract class CREDSL extends Script {
 	
 	
 	public static void progress (boolean b) {
-//		status.setShowProgress (b)
-		StatusBar.get().setShowProgress (b)
+		status.setShowProgress (b)
 	}
 
 	public static void info() {

@@ -1,4 +1,4 @@
-import cre.test.script.CREDSL
+import main.cre.script.CREDSL
 
 /**
  * CRExplorer Scripting Package
