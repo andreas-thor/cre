@@ -2,17 +2,12 @@ package main.cre.data.source;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,9 +15,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
@@ -31,9 +24,7 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
-import javax.json.stream.JsonParser;
 
-import groovy.json.internal.Exceptions;
 import main.cre.Exceptions.BadResponseCodeException;
 import main.cre.data.type.CRType;
 import main.cre.data.type.CRType_Member;
@@ -147,6 +138,9 @@ public class Crossref extends ImportReader {
 					cr.setTI(jsonCR.getString("article-title"));
 				}
 				
+				if (cr.getCR()==null) {
+					cr.setCR(jsonCR.toString());
+				}
 				this.entry.addCR (cr, true);
 				
 			});	

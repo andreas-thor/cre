@@ -38,8 +38,11 @@ public class CRChartData  {
 	}
 
 	
+	
 	public void init (int fromRPY, int toRPY) {
 		this.rangeRPY = IntStream.rangeClosed(fromRPY, toRPY).toArray();
+	
+		// all series initialized with 0
 		this.series = new int[SERIESTYPE.values().length][];
 		for (SERIESTYPE type: SERIESTYPE.values()) {
 			this.series[type.ordinal()] = new int[this.rangeRPY.length];

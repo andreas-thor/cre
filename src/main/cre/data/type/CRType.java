@@ -13,10 +13,13 @@ import main.cre.data.match.CRCluster;
 
 public abstract class CRType implements Comparable<CRType>  {
 
-	public static byte TYPE_WOS = 1;
-	public static byte TYPE_SCOPUS = 2;
-
-	private byte type = 0;	
+	
+	public static enum FORMATTYPE { 
+		WOS, 	
+		SCOPUS 
+	};
+	
+	private FORMATTYPE type = null;	
 	private boolean flag;
 	
 	private Set<PubType> pubList;
@@ -37,12 +40,12 @@ public abstract class CRType implements Comparable<CRType>  {
 		this.flag = flag;
 	}
 	
-	public byte getType() {
+	public FORMATTYPE getType() {
 		return type;
 	}
 
-	public void setType(int type) {
-		this.type = (byte) type;
+	public void setType(FORMATTYPE type) {
+		this.type = type;
 	}
 
 	public Stream<PubType> getPub() {

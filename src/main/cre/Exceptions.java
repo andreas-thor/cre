@@ -45,4 +45,14 @@ public class Exceptions {
 		
 	}
 	
+	public class ImportException extends Exception {
+
+		public ImportException(String msg) {
+			super(msg);
+		}
+
+		private static final long serialVersionUID = 1L; 
+		
+	}
+	
 }

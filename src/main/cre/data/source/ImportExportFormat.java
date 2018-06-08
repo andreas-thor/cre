@@ -106,7 +106,7 @@ public enum ImportExportFormat {
 		return crStatsInfo;
 	}
 
-	public void load(List<File> files, int[] rpyRange, boolean importCRsWithoutYear, int[] pyRange, boolean importPubsWithoutYear, long noMaxCRs, Sampling sampling) throws OutOfMemoryError, UnsupportedFileFormatException, FileTooLargeException, AbortedException, IOException {
+	public void load(List<File> files, int[] rpyRange, boolean importCRsWithoutYear, int[] pyRange, boolean importPubsWithoutYear, long noMaxCRs, Sampling sampling) throws OutOfMemoryError, Exception {
 
 		
 		long ts1 = System.currentTimeMillis();

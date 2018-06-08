@@ -156,7 +156,7 @@ public class WoS_txt extends ImportReader {
 
 		CRType cr = new CRType_Member();
 		cr.setCR(line); // [3..-1] // .toUpperCase()
-		cr.setType (CRType.TYPE_WOS);
+		cr.setType (CRType.FORMATTYPE.WOS);
 		cr.setRPY(null);
 		
 	
@@ -296,7 +296,7 @@ public class WoS_txt extends ImportReader {
 				
 				writeTag(bw, "CR", pub.getCR().map(it -> {
 	
-					if (it.getType() == CRType.TYPE_WOS) return it.getCR();
+					if (it.getType() == CRType.FORMATTYPE.WOS) return it.getCR();
 					
 					/* Generate CR-String in WoS format */
 					String res = (it.getAU_L() != null) ? it.getAU_L() + " " : "";
