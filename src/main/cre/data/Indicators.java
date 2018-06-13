@@ -12,31 +12,44 @@ import main.cre.data.type.CRType;
 
 public class Indicators {
 
-	private static int[] range_RPY;
-	private static int[] range_PY;
-	private static int[] NCR_ALL;		// NCR overall (array length=1; array to make it effectively final)
-	private static int[] NCR_RPY;		// (sum of) NCR by RPY
-	private static int[] CNT_RPY;		// number of CRs by RPY
+	private int[] range_RPY;
+	private int[] range_PY;
+	private int[] NCR_ALL;		// NCR overall (array length=1; array to make it effectively final)
+	private int[] NCR_RPY;		// (sum of) NCR by RPY
+	private int[] CNT_RPY;		// number of CRs by RPY
 	
+	private static Indicators indicators;
+	
+	private Indicators () {
+		this.update();
+	}
+	
+	
+	public static Indicators get() {
+		if (indicators == null) {
+			indicators = new Indicators();
+		}
+		return indicators;
+	}
 	
 
-	public static void update() {
+	public void update() {
 
 		System.out.println("Compute Ranges");
-		range_RPY = Statistics.getMaxRangeRPY();
-		range_PY  = Statistics.getMaxRangePY();
-		NCR_ALL = new int[1];
-		NCR_RPY = new int[range_RPY[1]-range_RPY[0]+1];
-		CNT_RPY = new int[range_RPY[1]-range_RPY[0]+1];
+		this.range_RPY = Statistics.getMaxRangeRPY();
+		this.range_PY  = Statistics.getMaxRangePY();
+		this.NCR_ALL = new int[1];
+		this.NCR_RPY = new int[this.range_RPY[1]-this.range_RPY[0]+1];
+		this.CNT_RPY = new int[this.range_RPY[1]-this.range_RPY[0]+1];
 		
 		// Group CRs by RPY, compute NCR_ALL and NCR_RPY
 		System.out.println("mapRPY_CRs");
 		Map<Integer, List<CRType>> map_RPY_CRs = CRTable.get().getCR().filter(cr -> {
 			
-			NCR_ALL[0] += cr.getN_CR();
+			this.NCR_ALL[0] += cr.getN_CR();
 			if (cr.getRPY()!=null) {
-				NCR_RPY[cr.getRPY()-range_RPY[0]] += cr.getN_CR();
-				CNT_RPY[cr.getRPY()-range_RPY[0]] += 1;
+				this.NCR_RPY[cr.getRPY()-this.range_RPY[0]] += cr.getN_CR();
+				this.CNT_RPY[cr.getRPY()-this.range_RPY[0]] += 1;
 				return true;
 			} else {
 				return false;
@@ -45,7 +58,7 @@ public class Indicators {
 		
 		
 		map_RPY_CRs.entrySet().stream().parallel().forEach(rpyGroup -> {	
-			computeForAllCRsOfTheSameRPY (rpyGroup.getKey(), rpyGroup.getValue());
+			this.computeForAllCRsOfTheSameRPY (rpyGroup.getKey(), rpyGroup.getValue());
 		});
 		
 		return;
@@ -53,10 +66,10 @@ public class Indicators {
 	
 	
 	
-	private static void computeForAllCRsOfTheSameRPY (int rpy, List<CRType> crList) {
+	private void computeForAllCRsOfTheSameRPY (int rpy, List<CRType> crList) {
 		
-		int firstPY = (rpy<=range_PY[0]) ? range_PY[0] : rpy;	// usually: rpy<=range_PY[0] 
-		int lastPY = range_PY[1];
+		int firstPY = (rpy<=this.range_PY[0]) ? this.range_PY[0] : rpy;	// usually: rpy<=range_PY[0] 
+		int lastPY = this.range_PY[1];
 		if (lastPY < firstPY) return;
 		
 		int pySize = lastPY-firstPY+1;
@@ -217,26 +230,26 @@ public class Indicators {
 	
 	
 	
-	public static void updateChartData () {
+	public void updateChartData () {
 		
 		int medianRange = CRChartData.get().getMedianRange();
 		
 		// compute difference to median
-		int[] RPY_MedianDiff = new int[NCR_RPY.length];	// RPY_idx -> SumNCR - (median of sumPerYear[year-range] ... sumPerYear[year+range])   
-		for (int rpyIdx=0; rpyIdx<NCR_RPY.length; rpyIdx++) {
+		int[] RPY_MedianDiff = new int[this.NCR_RPY.length];	// RPY_idx -> SumNCR - (median of sumPerYear[year-range] ... sumPerYear[year+range])   
+		for (int rpyIdx=0; rpyIdx<this.NCR_RPY.length; rpyIdx++) {
 			int[] temp = new int[2*medianRange+1];
 			for (int m=-medianRange; m<=medianRange; m++) {
-				temp[m+medianRange] = (rpyIdx+m<0) || (rpyIdx+m>NCR_RPY.length-1) ? 0 : NCR_RPY[rpyIdx+m];
+				temp[m+medianRange] = (rpyIdx+m<0) || (rpyIdx+m>this.NCR_RPY.length-1) ? 0 : this.NCR_RPY[rpyIdx+m];
 			}
 			Arrays.sort(temp);
-			RPY_MedianDiff[rpyIdx] = NCR_RPY[rpyIdx] - temp[medianRange];
+			RPY_MedianDiff[rpyIdx] = this.NCR_RPY[rpyIdx] - temp[medianRange];
 		}
 		
 		
-		CRChartData.get().init(range_RPY[0], range_RPY[1]);
-		CRChartData.get().addSeries(SERIESTYPE.NCR, NCR_RPY);
+		CRChartData.get().init(this.range_RPY[0], this.range_RPY[1]);
+		CRChartData.get().addSeries(SERIESTYPE.NCR, this.NCR_RPY);
 		CRChartData.get().addSeries(SERIESTYPE.MEDIANDIFF, RPY_MedianDiff);
-		CRChartData.get().addSeries(SERIESTYPE.CNT, CNT_RPY);
+		CRChartData.get().addSeries(SERIESTYPE.CNT, this.CNT_RPY);
 	}
 	
 	

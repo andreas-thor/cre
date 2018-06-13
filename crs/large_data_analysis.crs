@@ -3,38 +3,41 @@
  * Mit dem State use ("...").with { ... } binde ich ein externes Package ein.
  * Ein Package erweitert die Skriptsprache des CRExplorers um Funktionen.
  * Packages sind selbst wieder CRE-Skript-Dateien (.crs)
- * (Technisch: Sie enthalten Java/Groovy-Code, der zur Laufzeit ausgeführt wird.) 
- * Packages können einfach kopiert und verwendet werden, 
- * d.h. programmier-affine Nutzer können auch selbst Packages erstellen und verteilen.
- * Eine Änderung des CRExplorers ist nicht nötig. 
+ * (Technisch: Sie enthalten Java/Groovy-Code, der zur Laufzeit ausgefï¿½hrt wird.) 
+ * Packages kï¿½nnen einfach kopiert und verwendet werden, 
+ * d.h. programmier-affine Nutzer kï¿½nnen auch selbst Packages erstellen und verteilen.
+ * Eine ï¿½nderung des CRExplorers ist nicht nï¿½tig. 
  * 
- * Das Package Loop enthält zwei Funktionen: forEach und forEachUnion
+ * Das Package Loop enthï¿½lt zwei Funktionen: forEach und forEachUnion
  * 
  * forEach kann auf zwei Arten verwendet werden:
- * 1) mit dem Parameter count, der die Anzahl der Durchläufe angibt
- * 2) mit den Parametern from und to, die den Bereich der Durchläufe angeben
- * Wird count verwendet, ist das äquivalent zu from=0 und to=count-1     
- * Zusätzlich wird in geschweiften Klammern angegeben werden, was in jedem Schleifendurchlauf gemacht wird.
- * Das sind nun wieder ganz normale Skript-Befehle mit dem Zusatz, dass der aktuelle Schleifenwert zur Verfügung steht.
+ * 1) mit dem Parameter count, der die Anzahl der Durchlï¿½ufe angibt
+ * 2) mit den Parametern from und to, die den Bereich der Durchlï¿½ufe angeben
+ * Wird count verwendet, ist das ï¿½quivalent zu from=0 und to=count-1     
+ * Zusï¿½tzlich wird in geschweiften Klammern angegeben werden, was in jedem Schleifendurchlauf gemacht wird.
+ * Das sind nun wieder ganz normale Skript-Befehle mit dem Zusatz, dass der aktuelle Schleifenwert zur Verfï¿½gung steht.
  * 
  * forEachUnion funktioniert genauso wie forEach mit der Zusatzfunktion, 
- * dass die Ergebnisse nach jedem Schleifendurchlauf temporär gespeichert werden und am Ende alle vereinigt werden
+ * dass die Ergebnisse nach jedem Schleifendurchlauf temporï¿½r gespeichert werden und am Ende alle vereinigt werden
  */
 
 
 
 /*
  * Das Beispiel zieht drei systematische Samples mit den Offsets 0, 1 und 2
- * In jedem Sample werden CRs mit NC_R<=1 gelöscht.
+ * In jedem Sample werden CRs mit NC_R<=1 gelï¿½scht.
  * Am Ende werden alle drei Samples vereinigt und in einem CRE-File gespeichert.
  */
 
 
+set (median_range: 2)
 
 importFile (
 	file: "data/proctest/savedrecs_JOI2.txt",
 	type: "WOS"
 )
+
+return
 
 info()
 
@@ -81,8 +84,8 @@ use ("packages/Loop.crs").with {
 
 
 /**
- * Das Beispiel liest ein WoS file jeweils für die RPY von 2000 bis 2018 ein.
- * Es werden alle CRs mit NC_R<5 gelöscht.
+ * Das Beispiel liest ein WoS file jeweils fï¿½r die RPY von 2000 bis 2018 ein.
+ * Es werden alle CRs mit NC_R<5 gelï¿½scht.
  * Das Ergebnis wird (durch *Union) vereinigt.
  * Im Ergebnis stehen alle CRs aus den Jahren 2000 bis 2018 mit mindestens 5 N_CR
  */

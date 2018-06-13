@@ -688,7 +688,7 @@ public class MainController {
 			} else {
 				if (old_MedianRange != UISettings.get().getMedianRange()) {
 					CRChartData.get().setMedianRange(UISettings.get().getMedianRange());
-					Indicators.updateChartData();
+					Indicators.get().updateChartData();
 				}
 			}
 

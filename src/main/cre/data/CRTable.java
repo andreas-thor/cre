@@ -214,8 +214,8 @@ public class CRTable {
 		System.out.println("update Data");
 		System.out.println(System.currentTimeMillis());
 		
-		Indicators.update();
-		Indicators.updateChartData();
+		Indicators.get().update();
+		Indicators.get().updateChartData();
 		
 		duringUpdate = false;
 		
