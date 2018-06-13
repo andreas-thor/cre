@@ -25,6 +25,7 @@
   	<property name="swing.defaultlaf" value="com.sun.java.swing.plaf.windows.WindowsLookAndFeel"/>
 
 
+	<jar href="lib/commons-io-2.6.jar"/>
 	<jar href="lib/lucene-core-6.4.2.jar"/>
 	<jar href="lib/lucene-queryparser-6.4.2.jar"/>
 	<jar href="lib/opencsv-3.9.jar"/>

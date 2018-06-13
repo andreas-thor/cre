@@ -56,7 +56,7 @@
 
 	
 	<!-- must be executed after create_ws_jar because it references to the build/lib directory!!! -->
-    <target name="create_fat_jar_extracted">
+    <target name="create_fat_jar_extracted" depends="create_jws_jar">
         <jar destfile="${build.dir}/${fat.name}" filesetmanifest="mergewithoutmain" duplicate="preserve">
             <manifest>
                 <attribute name="Main-Class" value="main.cre.CitedReferencesExplorer"/> 
@@ -88,7 +88,7 @@
 	
 	
 	<!-- must be executed after create_ws_jar because it references to the build/lib directory!!! -->
-    <target name="create_script_jar_extracted">
+    <target name="create_script_jar_extracted" depends="create_jws_jar">
         <jar destfile="${build.dir}/${script.name}" filesetmanifest="mergewithoutmain" duplicate="preserve">
             <manifest>
                 <attribute name="Main-Class" value="main.cre.script.CREScript"/>
@@ -140,7 +140,7 @@
 		<!-- set the codebase URL in JNLP file -->
 		<replace file="${build.dir}/${jnlp}" token="##VERSION##" value="${version.name}"/>
 		
-		<scp sftp="true" serverAliveIntervalSeconds="20" serverAliveCountMax="100" trust="true" todir="thor:${ftpPW}@seru01.hft-leipzig.de:/home/thor/home/www1_thor/${version.name}/">
+		<scp sftp="true" serverAliveIntervalSeconds="3" serverAliveCountMax="1000" trust="true" todir="thor:${ftpPW}@seru01.hft-leipzig.de:/home/thor/home/www1_thor/${version.name}/">
 		  	<fileset dir="${build.dir}"/> 	 
 		</scp>
 	</target>

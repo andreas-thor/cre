@@ -22,6 +22,7 @@ import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
 import main.cre.Exceptions.BadResponseCodeException;
+import main.cre.data.CRTable;
 import main.cre.data.type.CRType;
 import main.cre.data.type.CRType_Member;
 import main.cre.data.type.PubType;
@@ -172,6 +173,8 @@ public class Crossref extends ImportReader {
 		
 		while (offset<10000) {	// 10.000 is the maximal offset according to API
 		
+			if (CRTable.get().isAborted()) break;
+			
 			String url = "https://api.crossref.org/works";
 			url += "?filter=" + filter;
 			url += "&rows=" + rows_per_Request;
