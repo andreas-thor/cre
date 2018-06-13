@@ -1,11 +1,18 @@
 package main.cre.ui.dialog;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import main.cre.CitedReferencesExplorer;
 
@@ -30,12 +37,29 @@ public class About extends Alert {
 		grid.add(new Label("Content Development:"), 0, 1);
 		grid.add(new Label("Lutz Bornmann and Werner Marx"), 1, 1);
 		grid.add(new Label("with further support of:"), 0, 2);
-		grid.add(new Label("Robin Haunschild, Loet Leydesdorff, and Rüdiger Mutz"), 1, 2);
+		grid.add(new Label("Robin Haunschild, Loet Leydesdorff, and RÃ¼diger Mutz"), 1, 2);
 		Hyperlink hp = new Hyperlink("Project website: crexplorer.net");
 		hp.setOnAction(e -> {
 			HostServicesFactory.getInstance(CitedReferencesExplorer.app).showDocument(CitedReferencesExplorer.url);
 		});
 		grid.add(hp, 0, 3);
+		
+		// FIXME: Global seeting
+		Path cachePath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("CRExplorerDownload");
+		try {
+			Files.createDirectory(cachePath);
+		} catch (Exception e2) {
+			e2.printStackTrace();
+		}
+		
+		grid.add(new Label("Temp Directory:"), 0, 4);
+		
+		TextField tf = new TextField(cachePath.toString());
+		tf.setMaxWidth(250);
+		tf.setEditable(false);
+		grid.add(tf,  1,  4);
+		
+		
 		
 		getDialogPane().setContent(grid);
 			

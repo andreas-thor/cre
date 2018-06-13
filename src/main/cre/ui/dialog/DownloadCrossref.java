@@ -63,9 +63,9 @@ public class DownloadCrossref extends Dialog<DownloadCrossrefData> {
 		grid.setPadding(new Insets(20, 20, 20, 20));
 		
 		TextField tfISSN = createTF ("");
-		grid.addRow(0, 
-			new Label("ISSN"),
-			tfISSN);
+		tfISSN.setMaxWidth(170);
+		grid.add(new Label("ISSN"), 0, 0);
+		grid.add(tfISSN, 1, 0, 3, 1);		
 		
 		TextField tfRangeFrom = createTF ("");
 		TextField tfRangeTo = createTF ("");

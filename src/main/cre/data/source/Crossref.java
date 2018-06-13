@@ -1,12 +1,8 @@
 package main.cre.data.source;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,7 +29,7 @@ import main.cre.data.type.PubType;
 /**
  * Extra Methode, die alle Properties einer CR ausliest
  * Dann zuerst parse("unstructured")
- * Dann Überschreiben der CR-Properties mit Werten von JSON
+ * Dann ï¿½berschreiben der CR-Properties mit Werten von JSON
  * @author Andreas
  *
  */
@@ -90,7 +86,12 @@ public class Crossref extends ImportReader {
 
 		JsonObject item = (JsonObject) jsonObject;
 		this.entry = new PubType();
-		this.entry.setTI(item.getJsonArray("title").getString(0));
+		if (item.getJsonArray("title") != null) {
+			if (item.getJsonArray("title").size()>0) {
+				this.entry.setTI(item.getJsonArray("title").getString(0));
+			}
+		}
+		
 		
 		// "published-print" : [ [ year, month, day ] ]
 		if (item.get("published-print") != null) {
@@ -154,48 +155,54 @@ public class Crossref extends ImportReader {
 		
 		List<File> result = new ArrayList<File>();
 		
-		String url = "https://api.crossref.org/works";
-		url += "?filter=" + filter;
-		url += "&rows=1000";
-		url += "&mailto=thor@hft-leipzig.de";
-		System.out.println(url);
-		
-		HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
-		con.setRequestMethod("GET");
-		con.setRequestProperty("User-Agent", "CRExplorer (http://www.crexplorer.net; mailto:thor@hft-leipzig.de)");
-		
-		Path cachePath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("CRExplorerCrossrefDownload");
+		// set cache path 
+		Path cachePath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("CRExplorerDownload");
 		try {
 			Files.createDirectory(cachePath);
 		} catch (java.nio.file.FileAlreadyExistsException e) {
 			// not a problem
 		} catch (IOException e2) {
 			e2.printStackTrace();
-		}
-			
-		
-		if (con.getResponseCode()!=200) {
-			throw new BadResponseCodeException(con.getResponseCode());
-		}
-		
+		}		
 		System.out.println("Cache path is " + cachePath.toString());
 
-		String timestamp = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss_SSS").format(LocalDateTime.now());  
 		
-		File f = cachePath.resolve(timestamp + ".crossref").toFile();
-		BufferedWriter outFile = Files.newBufferedWriter(f.toPath());
-		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		String inputLine;
-		while ((inputLine = in.readLine()) != null) {
-			outFile.write(inputLine);
-		}
-		in.close();
-		outFile.close();
+		int offset = 0;
+		int rows_per_Request = 1000;		// 1.000 is maximum per page
 		
+		while (offset<10000) {	// 10.000 is the maximal offset according to API
 		
-		con.disconnect();
-		result.add(f);
+			String url = "https://api.crossref.org/works";
+			url += "?filter=" + filter;
+			url += "&rows=" + rows_per_Request;
+			url += "&offset=" + offset;
+			url += "&mailto=thor@hft-leipzig.de";
+			System.out.println(url);
 			
+			String filename = String.format("%s.crossref", DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss_SSS").format(LocalDateTime.now()));  
+			File file = cachePath.resolve(filename).toFile();
+			org.apache.commons.io.FileUtils.copyURLToFile(new URL(url), file);
+			result.add(file);
+			
+			
+			// check if 
+			int total_results = 0;
+			try {
+				JsonReader reader = Json.createReader(new FileInputStream(file));
+				JsonObject msg = reader.readObject();
+				total_results = msg.getJsonObject("message").getInt("total-results");
+				reader.close();
+			} catch (Exception e) {
+				// if we do not get the total-results --> do nothing --> we will not download any more files
+			}
+			
+			if ((offset + rows_per_Request)<total_results) {
+				offset += rows_per_Request;		// adjust offset to get next chunk of data
+			} else {
+				break; 		// do not download any more files
+			}
+		}
+		
 		return result;
 		
 	}
