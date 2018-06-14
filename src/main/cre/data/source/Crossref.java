@@ -107,11 +107,15 @@ public class Crossref extends ImportReader {
 		if (item.get("reference") != null) {
 			item.getJsonArray("reference").stream().map(jsonCR -> (JsonObject)jsonCR).forEach(jsonCR -> { 
 
-				CRType cr = new CRType_Member();
+				CRType cr = null;
 				
 				// default values from parsing unstructured string
 				if (jsonCR.get("unstructured") != null) {
 					cr = Scopus_csv.parseCR (jsonCR.getString("unstructured").replace("\n", "").replace("\r", ""));
+				}
+				
+				if (cr == null) {
+					cr = new CRType_Member();
 				}
 				
 				// overwrite with JSON data
