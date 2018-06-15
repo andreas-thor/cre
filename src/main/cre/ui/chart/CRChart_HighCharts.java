@@ -127,7 +127,7 @@ public abstract class CRChart_HighCharts extends CRChart {
 		
 		// series as JSON data
 		String[] json = Stream.of(SERIESTYPE.NCR, SERIESTYPE.MEDIANDIFF).map(type -> 
-			IntStream.range(0, data.getRPY().length)
+			IntStream.range(0, data.getRPYLength())
 				.mapToObj(index -> "[" + data.getRPYValue(index) + "," + data.getSeriesValue(type, index) + "]")
 				.collect(Collectors.joining(", "))
 			).toArray(size -> new String[size]);

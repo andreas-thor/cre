@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ import main.cre.data.CRTable;
 import main.cre.data.type.CRType;
 import main.cre.data.type.CRType_Member;
 import main.cre.data.type.PubType;
+import main.cre.ui.statusbar.StatusBar;
 
 /**
  * Extra Methode, die alle Properties einer CR ausliest
@@ -87,6 +89,8 @@ public class Crossref extends ImportReader {
 
 		JsonObject item = (JsonObject) jsonObject;
 		this.entry = new PubType();
+		this.entry.length = item.toString().length();
+		
 		if (item.getJsonArray("title") != null) {
 			if (item.getJsonArray("title").size()>0) {
 				this.entry.setTI(item.getJsonArray("title").getString(0));
@@ -156,7 +160,7 @@ public class Crossref extends ImportReader {
 	}
 	
 	
-	private static List<File> downloadByFilter (String filter) throws IOException, BadResponseCodeException  {
+	private static List<File> downloadByFilter (List<String> filter) throws IOException, BadResponseCodeException  {
 		
 		List<File> result = new ArrayList<File>();
 		
@@ -171,16 +175,26 @@ public class Crossref extends ImportReader {
 		}		
 		System.out.println("Cache path is " + cachePath.toString());
 
+		StatusBar.get().setValue(String.format ("Downloading CrossRef data to %s ...", cachePath.toString()));
 		
+		int total_results = 0;
 		int offset = 0;
-		int rows_per_Request = 1000;		// 1.000 is maximum per page
+		int rows_per_Request = 100;		// 1.000 is maximum per page
 		
 		while (offset<10000) {	// 10.000 is the maximal offset according to API
 		
-			if (CRTable.get().isAborted()) break;
+			if (CRTable.get().isAborted()) {
+				StatusBar.get().setValue("Download aborted by user");
+				return new ArrayList<File>();		// return empty result
+			}
+			
+			if (offset>0) {
+				StatusBar.get().initProgressbar(total_results);
+				StatusBar.get().incProgressbar(offset);
+			}
 			
 			String url = "https://api.crossref.org/works";
-			url += "?filter=" + filter;
+			url += "?filter=" + filter.stream().collect(Collectors.joining( "," ));
 			url += "&rows=" + rows_per_Request;
 			url += "&offset=" + offset;
 			url += "&mailto=thor@hft-leipzig.de";
@@ -192,15 +206,16 @@ public class Crossref extends ImportReader {
 			result.add(file);
 			
 			
-			// check if 
-			int total_results = 0;
-			try {
-				JsonReader reader = Json.createReader(new FileInputStream(file));
-				JsonObject msg = reader.readObject();
-				total_results = msg.getJsonObject("message").getInt("total-results");
-				reader.close();
-			} catch (Exception e) {
-				// if we do not get the total-results --> do nothing --> we will not download any more files
+			// get the number of total_results from the first downloaded file
+			if (total_results == 0) {
+				try {
+					JsonReader reader = Json.createReader(new FileInputStream(file));
+					JsonObject msg = reader.readObject();
+					total_results = msg.getJsonObject("message").getInt("total-results");
+					reader.close();
+				} catch (Exception e) {
+					// if we do not get the total-results --> do nothing --> we will not download any more files
+				}
 			}
 			
 			if ((offset + rows_per_Request)<total_results) {
@@ -215,29 +230,17 @@ public class Crossref extends ImportReader {
 	}
 	
 	
-	public static List<File> downloadByDOI (String[] DOI) throws IOException, BadResponseCodeException  {
-		
-		List<File> result = new ArrayList<File>();
-		
-		if (DOI.length==0) {
-			return result;
-		}
-		String doiList = Arrays.stream(DOI).map(s -> "doi:" + s).collect(Collectors.joining( "," ));
-
-		return downloadByFilter(doiList);
-	}
 
 
-	public static List<File> downloadByISSNAndRange(String issn, int[] range) throws IOException, BadResponseCodeException {
+
+	public static List<File> download(String[] DOI, String issn, int[] range) throws IOException, BadResponseCodeException {
 		
-		String filter = "issn:" + issn;
+		List<String> filter = new ArrayList<String>();
 		
-		if (range[0]!=-1) {
-			filter += ",from-print-pub-date:" + range[0];
-		}
-		if (range[1]!=-1) {
-			filter += ",until-print-pub-date:" + range[1];
-		}
+		Arrays.stream(DOI).forEach(s -> filter.add("doi:" + s));
+		if (issn.length()>0) 	filter.add("issn:" + issn);
+		if (range[0]!=-1) 		filter.add("from-print-pub-date:" + range[0]);
+		if (range[1]!=-1) 		filter.add("until-print-pub-date:" + range[1]);
 		
 		return downloadByFilter(filter);
 

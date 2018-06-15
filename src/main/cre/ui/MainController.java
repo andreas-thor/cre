@@ -494,9 +494,6 @@ public class MainController {
 		if (!dialogResult.isPresent()) {
 			return;
 		}
-
-		
-		final boolean searchForDOI = (dialogResult.get().getDOI().length > 0);
 		
 		Wait wait = new Wait();
 		Service<List<File>> serv = new Service<List<File>>() {
@@ -505,11 +502,8 @@ public class MainController {
 				return new Task<List<File>>() {
 					@Override
 					protected List<File> call() throws Exception {
-						if (searchForDOI) {
-							return Crossref.downloadByDOI(dialogResult.get().getDOI());
-						} else {
-							return Crossref.downloadByISSNAndRange(dialogResult.get().getISSN(), dialogResult.get().getRange());
-						}
+						CRTable.get().setAborted(false);
+						return Crossref.download(dialogResult.get().getDOI(), dialogResult.get().getISSN(), dialogResult.get().getRange());
 					}
 				};
 			}
@@ -525,6 +519,8 @@ public class MainController {
 				} else {
 					StatusBar.get().setValue("Import aborted by user");
 				}
+			} else {
+				StatusBar.get().setValue("Download aborted by user");
 			}
 			
 			wait.close();

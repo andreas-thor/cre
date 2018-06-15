@@ -33,8 +33,8 @@ public class CRChartData  {
 	
 	
 	private CRChartData() {
-		this.init(0, 0);
 		this.medianRange = 2;
+		this.init(0, 0);
 	}
 
 	
@@ -52,6 +52,11 @@ public class CRChartData  {
 	public void addSeries (SERIESTYPE type, int[] data) {
 		// we add a copy of the series data and make sure it has the same length as the RPY range
 		this.series[type.ordinal()] = Arrays.copyOf(data, this.rangeRPY.length);
+	}
+	
+	
+	public int getRPYLength () {
+		return this.rangeRPY.length;
 	}
 	
 	
