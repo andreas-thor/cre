@@ -221,6 +221,24 @@ public abstract class CRType implements Comparable<CRType>  {
 	public abstract void setTYPE(String tYPE);
 	
 	
+	public void copyNotNULLValues (CRType cr) {
+		
+		if (cr.getCR()!=null) 		this.setCR(cr.getCR());
+		if (cr.getAU()!=null) 		this.setAU(cr.getAU());
+		if (cr.getAU_F()!=null) 	this.setAU_F(cr.getAU_F());
+		if (cr.getAU_L()!=null) 	this.setAU_L(cr.getAU_L());
+		if (cr.getAU_A()!=null) 	this.setAU_A(cr.getAU_A());
+		if (cr.getTI()!=null) 		this.setTI(cr.getTI());
+		if (cr.getJ()!=null) 		this.setJ(cr.getJ());
+		if (cr.getJ_N()!=null) 		this.setJ_N(cr.getJ_N());
+		if (cr.getJ_S()!=null) 		this.setJ_S(cr.getJ_S());
+		if (cr.getRPY()!=null) 		this.setRPY(cr.getRPY());
+		if (cr.getPAG()!=null) 		this.setPAG(cr.getPAG());
+		if (cr.getVOL()!=null) 		this.setVOL(cr.getVOL());
+		if (cr.getDOI()!=null) 		this.setDOI(cr.getDOI());
+	}
+	
+	
 	@Override
 	public String toString() {
 		

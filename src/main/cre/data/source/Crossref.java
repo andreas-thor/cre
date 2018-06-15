@@ -115,7 +115,17 @@ public class Crossref extends ImportReader {
 				
 				// default values from parsing unstructured string
 				if (jsonCR.get("unstructured") != null) {
-					cr = Scopus_csv.parseCR (jsonCR.getString("unstructured").replace("\n", "").replace("\r", ""));
+					CRType crScopus = Scopus_csv.parseCR (jsonCR.getString("unstructured").replace("\n", "").replace("\r", ""));
+					CRType crWoS = WoS_txt.parseCR (jsonCR.getString("unstructured").replace("\n", "").replace("\r", ""));
+					
+					if (crScopus != null) {
+						cr = crScopus;
+						if (crWoS != null) {
+							cr.copyNotNULLValues(crWoS);
+						}
+					} else {
+						cr = crWoS;
+					}
 				}
 				
 				if (cr == null) {
@@ -149,7 +159,8 @@ public class Crossref extends ImportReader {
 				}
 				
 				if (cr.getCR()==null) {
-					cr.setCR(jsonCR.toString());
+					cr.setCR (WoS_txt.generateCRString(cr));
+//					cr.setCR(jsonCR.toString());
 				}
 				this.entry.addCR (cr, true);
 				

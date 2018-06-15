@@ -315,28 +315,9 @@ public class Scopus_csv extends ImportReader {
 			row.add (pub.getAB() == null ? "" : pub.getAB());
 			row.add (pub.getDE() == null ? "" : pub.getDE());
 
-			row.add (pub.getCR().map ( cr -> { 
-				
-				if (cr.getType() == CRType.FORMATTYPE.SCOPUS) return cr.getCR();
-				
-				/* generate CR string in Scopus format */
-				String res = "";
-				if (cr.getAU_A() == null) {
-					if (cr.getAU_L() != null) res += cr.getAU_L() + ", " + cr.getAU_F().replaceAll("([A-Z])", "$1."); 
-				} else {
-					res += cr.getAU_A().replaceAll(";", ",");
-				}
-				res += ",";
-				if (cr.getTI() != null)	res += cr.getTI();
-				if (cr.getRPY() != null) res += " (" + cr.getRPY() + ") ";
-				if (cr.getJ_N() != null) res += cr.getJ_N();
-				if (cr.getVOL() != null) res += ", " + cr.getVOL();
-				if (cr.getPAG() != null) res += ", pp." + cr.getPAG();
-				if (cr.getDOI() != null) res += ", DOI " + cr.getDOI();
-
-				return res;
-			} ).collect (Collectors.joining ("; ")));
-			
+			row.add (pub.getCR()
+				.map ( cr -> (cr.getType()==CRType.FORMATTYPE.SCOPUS) ? cr.getCR() : generateCRString (cr))
+				.collect (Collectors.joining ("; ")));
 			row.add (pub.getDT() == null ? "" : pub.getDT());
 			row.add (pub.getFS() == null ? "" : pub.getFS());
 			row.add (pub.getUT() == null ? "" : pub.getUT());
@@ -353,7 +334,24 @@ public class Scopus_csv extends ImportReader {
 	}
 	
 	
-	
+	public static String generateCRString (CRType cr) {
+		/* generate CR string in Scopus format */
+		String res = "";
+		if (cr.getAU_A() == null) {
+			if (cr.getAU_L() != null) res += cr.getAU_L() + ", " + cr.getAU_F().replaceAll("([A-Z])", "$1."); 
+		} else {
+			res += cr.getAU_A().replaceAll(";", ",");
+		}
+		res += ",";
+		if (cr.getTI() != null)	res += cr.getTI();
+		if (cr.getRPY() != null) res += " (" + cr.getRPY() + ") ";
+		if (cr.getJ_N() != null) res += cr.getJ_N();
+		if (cr.getVOL() != null) res += ", " + cr.getVOL();
+		if (cr.getPAG() != null) res += ", pp." + cr.getPAG();
+		if (cr.getDOI() != null) res += ", DOI " + cr.getDOI();
+
+		return res;
+	}
 	
 } 
 

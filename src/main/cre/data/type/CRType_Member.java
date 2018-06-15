@@ -11,7 +11,7 @@ public class CRType_Member extends CRType {
 
 	/**
 	 * !!! Probleme durch unterschiedliche Init-Werte, z.B. bei AU_L
-	 * Parser (z.B. bei WoS) prüft auf "==NULL", hier aber Init-Wert = ""
+	 * Parser (z.B. bei WoS) prï¿½ft auf "==NULL", hier aber Init-Wert = ""
 	 * Daher erstmal weiter CRTYpe_Prop verwenden! 
 	 * --> jetzt passt es, oder?
 	 */

@@ -294,28 +294,7 @@ public class WoS_txt extends ImportReader {
 				if (pub.getPG() != null) writeTag(bw, "PG", pub.getPG().toString());
 				if (pub.getTC() != null) writeTag(bw, "TC", pub.getTC().toString());
 				
-				writeTag(bw, "CR", pub.getCR().map(it -> {
-	
-					if (it.getType() == CRType.FORMATTYPE.WOS) return it.getCR();
-					
-					/* Generate CR-String in WoS format */
-					String res = (it.getAU_L() != null) ? it.getAU_L() + " " : "";
-					if (it.getAU_F() != null) res += it.getAU_F();
-					if (it.getRPY() != null) res += ", " + it.getRPY();
-					if ((it.getVOL()!=null) || (it.getPAG()!=null)) {
-						if (it.getJ_N()!=null) res += ", " + it.getJ_N(); 
-						if (it.getVOL()!=null) res += ", V" + it.getVOL();
-						if (it.getPAG()!=null) res += ", P" + it.getPAG();
-					} else {
-						res += ", " + it.getJ();
-					}
-					if (it.getDOI()!=null) res += ", DOI " + it.getDOI();
-					
-					return res;
-					
-				}));
-				
-				
+				writeTag(bw, "CR", pub.getCR().map(cr -> (cr.getType()==CRType.FORMATTYPE.WOS) ? cr.getCR() : generateCRString(cr)));
 				writeTag(bw, "NR", String.valueOf(pub.getSizeCR()));
 				writeTag(bw, "DI", pub.getDI());
 				writeTag(bw, "AB", pub.getAB());
@@ -357,6 +336,25 @@ public class WoS_txt extends ImportReader {
 			writeTag (bw, first ? tag : "  ", v);
 			first = false;
 		}
+	}
+	
+	public static String generateCRString (CRType cr) {
+		/* Generate CR-String in WoS format */
+		String res = (cr.getAU_L() != null) ? cr.getAU_L() + " " : "";
+		if (cr.getAU_F() != null) res += cr.getAU_F();
+		if (cr.getRPY() != null) res += ", " + cr.getRPY();
+		if ((cr.getVOL()!=null) || (cr.getPAG()!=null)) {
+			if (cr.getJ_N()!=null) res += ", " + cr.getJ_N(); 
+			if (cr.getVOL()!=null) res += ", V" + cr.getVOL();
+			if (cr.getPAG()!=null) res += ", P" + cr.getPAG();
+		} else {
+			res += ", " + cr.getJ();
+		}
+		if (cr.getDOI()!=null) res += ", DOI " + cr.getDOI();
+		
+		return res;
+
+		
 	}
 	
 }
