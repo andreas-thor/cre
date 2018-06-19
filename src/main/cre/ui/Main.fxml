@@ -26,8 +26,10 @@
 					<Menu text="Import">
 						<MenuItem text="Web of Science..." onAction="#OnMenuFileImportWoS"/>
 						<MenuItem text="Scopus..." onAction="#OnMenuFileImportScopus"/>
+						<!--
 						<MenuItem text="Crossref File..." onAction="#OnMenuFileImportCrossrefFile"/>
 						<MenuItem text="Crossref Search..." onAction="#OnMenuFileImportCrossrefSearch"/>
+						-->
 					</Menu>
 					<SeparatorMenuItem />
 					<MenuItem text="Save" accelerator="Shortcut+S" onAction="#OnMenuFileSave"/>

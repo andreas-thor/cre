@@ -44,11 +44,7 @@ public class About extends Alert {
 		
 		// FIXME: Global seeting
 		Path cachePath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("CRExplorerDownload");
-		try {
-			Files.createDirectory(cachePath);
-		} catch (Exception e2) {
-			e2.printStackTrace();
-		}
+		try { Files.createDirectory(cachePath); } catch (Exception e2) { }
 		
 		grid.add(new Label("Temp Directory:"), 0, 4);
 		

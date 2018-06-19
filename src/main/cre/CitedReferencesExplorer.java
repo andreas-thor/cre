@@ -21,31 +21,14 @@ public class CitedReferencesExplorer extends Application {
 	public static Application app;
 	public static String manual_url = "http://andreas-thor.github.io/cre/manual.pdf";
 	public static String url = "http://www.crexplorer.net";
-//	public static String title = "CRExplorer (Version 1.82)";
-	public static String title = "CRExplorer (DEVELOPMENT; June-15-2018)";
+	public static String title = "CRExplorer (Version 1.86)";
+//	public static String title = "CRExplorer (DEVELOPMENT; June-15-2018)";
 	public static String loadOnOpen = null;
 
 	public static void main(String[] args) {
 
 		if ((args.length > 1) && (args[0].equals("-open"))) {
 			loadOnOpen = args[1];
-		}
-
-		try {
-			URL url = new URL("https://crexplorer-186022.appspot.com/?title=" + URLEncoder.encode(title, "UTF-8"));
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setRequestMethod("GET");
-			conn.setConnectTimeout(2000);
-			
-			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			StringBuilder result = new StringBuilder();
-			String line;
-			while ((line = rd.readLine()) != null) {
-				result.append(line);
-			}
-			rd.close();
-		
-		} catch (Exception e) {
 		}
 
 		launch(args);
