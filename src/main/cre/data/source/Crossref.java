@@ -3,7 +3,10 @@ package main.cre.data.source;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,6 +24,7 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import main.cre.Exceptions.BadResponseCodeException;
 import main.cre.data.CRTable;
@@ -247,8 +251,11 @@ public class Crossref extends ImportReader {
 	public static List<File> download(String[] DOI, String issn, int[] range) throws IOException, BadResponseCodeException {
 		
 		List<String> filter = new ArrayList<String>();
-		
-		Arrays.stream(DOI).forEach(s -> filter.add("doi:" + s));
+		Arrays.stream(DOI).forEach(s -> {
+			try {
+				filter.add("doi:" + URLEncoder.encode(s, StandardCharsets.UTF_8.toString()));
+			} catch (UnsupportedEncodingException e) {	}
+		});
 		if (issn.length()>0) 	filter.add("issn:" + issn);
 		if (range[0]!=-1) 		filter.add("from-print-pub-date:" + range[0]);
 		if (range[1]!=-1) 		filter.add("until-print-pub-date:" + range[1]);
