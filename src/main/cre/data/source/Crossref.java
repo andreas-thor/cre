@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
@@ -51,6 +53,11 @@ public class Crossref extends ImportReader {
 
 	private JsonArray items;
 	private int currentItemIndex;
+	
+
+	static Pattern sCrossRef_matchAuthor = Pattern.compile("([A-Z\\.]+)( )(.+)");	// e.g., "L Bornmann", "AG Smith"
+
+	
 	
 	@Override
 	public void init(File file) throws IOException {
@@ -153,6 +160,17 @@ public class Crossref extends ImportReader {
 				}
 				if (jsonCR.get("author") != null) {
 					cr.setAU_A(jsonCR.getString("author"));
+					cr.setAU(jsonCR.getString("author").split("[,;]")[0]);
+					Matcher CrossRef_matchAuthor = sCrossRef_matchAuthor.matcher(cr.getAU());
+					if (CrossRef_matchAuthor.matches()) {
+						cr.setAU_L(CrossRef_matchAuthor.group(3));
+						cr.setAU_F(CrossRef_matchAuthor.group(1));
+					}
+					
+					if (cr.getAU().indexOf(" ")<0) {	// no space in AU
+						cr.setAU_L(cr.getAU());
+						cr.setAU_F("");
+					}
 				}
 				
 				if (jsonCR.get("journal-title") != null) {
@@ -163,7 +181,7 @@ public class Crossref extends ImportReader {
 				}
 				
 				if (cr.getCR()==null) {
-					cr.setCR (WoS_txt.generateCRString(cr));
+					cr.setCR (generateCRString(cr));
 //					cr.setCR(jsonCR.toString());
 				}
 				this.entry.addCR (cr, true);
@@ -173,6 +191,37 @@ public class Crossref extends ImportReader {
 		
 		this.currentItemIndex++;
 	}
+	
+	
+	
+	public static String generateCRString (CRType cr) {
+		/* Generate CR-String in WoS format */
+		String res = "";
+		
+		if (cr.getAU_L() != null) {
+			res += cr.getAU_L();
+			if (cr.getAU_F() != null) res += " " + cr.getAU_F();
+		} else {
+			if (cr.getAU()!= null) {
+				res += cr.getAU();
+			}
+		}
+		
+		if (cr.getRPY() != null) res += ", " + cr.getRPY();
+		if ((cr.getVOL()!=null) || (cr.getPAG()!=null)) {
+			if (cr.getJ_N()!=null) res += ", " + cr.getJ_N(); 
+			if (cr.getVOL()!=null) res += ", V" + cr.getVOL();
+			if (cr.getPAG()!=null) res += ", P" + cr.getPAG();
+		} else {
+			res += ", " + cr.getJ();
+		}
+		if (cr.getDOI()!=null) res += ", DOI " + cr.getDOI();
+		
+		return res;
+
+		
+	}
+	
 	
 	
 	private static List<File> downloadByFilter (List<String> filter) throws IOException, BadResponseCodeException  {
