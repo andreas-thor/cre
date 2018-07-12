@@ -1,0 +1,62 @@
+
+// download three dois in one search 
+
+importSearch (
+	type: "CROSSREF",
+	doi: ["10.1002/asi.23329", "10.1016/j.joi.2015.03.001", "10.1007/s11192-014-1425-1"]
+	)
+
+saveFile (file: "E:/Dev/CRE/data/20180712/3dois.cre")
+	
+
+// download three dois separately and merge them later 
+	
+importSearch (type: "CROSSREF", doi: "10.1002/asi.23329")
+saveFile (file: "E:/Dev/CRE/data/20180712/doi1.cre")
+	
+importSearch (type: "CROSSREF", doi: "10.1016/j.joi.2015.03.001")
+saveFile (file: "E:/Dev/CRE/data/20180712/doi2.cre")
+	
+importSearch (type: "CROSSREF", doi: "10.1007/s11192-014-1425-1")
+saveFile (file: "E:/Dev/CRE/data/20180712/doi3.cre")
+
+openFile (files: ["E:/Dev/CRE/data/20180712/doi1.cre", "E:/Dev/CRE/data/20180712/doi2.cre", "E:/Dev/CRE/data/20180712/doi3.cre"])
+saveFile (file: "E:/Dev/CRE/data/20180712/doi123.cre")
+		
+// assertion: 3dois.cre == doi123.cre 
+
+
+// search by ISSN and PY
+importSearch (
+	type: "CROSSREF",
+	issn: "0138-9130",
+	PY: [2010, 2012]
+	)
+	
+saveFile (file: "E:/Dev/CRE/data/20180712/issn-0138-9130_2010-2012.cre")
+	
+
+
+// search + sampling
+importSearch (
+	type: "CROSSREF",
+	issn: "0138-9130",
+	PY: [2010, 2012],
+	sampling: "SYSTEMATIC",
+	maxCR: 1000
+	)
+	
+saveFile (file: "E:/Dev/CRE/data/20180712/issn-0138-9130_2010-2012_fromSearch_SYS1000.cre")
+
+	
+// importFile + Sampling
+importFile (
+	dir: "E:/Dev/CRE/data/20180712/crossrefdownload/",
+	type: "CROSSREF",
+	PY: [2010, 2012],
+	sampling: "SYSTEMATIC",
+	maxCR: 1000
+	)
+
+saveFile (file: "E:/Dev/CRE/data/20180712/issn-0138-9130_2010-2012_fromFile_SYS1000.cre")
+	

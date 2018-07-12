@@ -9,6 +9,7 @@ import main.cre.data.CRTable
 import main.cre.data.Indicators
 import main.cre.data.Sampling
 import main.cre.data.match.CRMatch2
+import main.cre.data.source.Crossref
 import main.cre.data.source.ImportExportFormat;
 import main.cre.data.type.CRType
 import main.cre.ui.statusbar.StatusBar;
@@ -18,11 +19,11 @@ abstract class CREDSL extends Script {
 
 
 	public static StatusBarText status
-	
-	
+
+
 
 	private static List<File> getFiles (String operator, Map<String, Object> param) {
-		
+
 		// set list of import files
 		List<File> files = new ArrayList<File>();
 		if (param.get("FILE") != null) files.add(new File (param.get("FILE")));
@@ -31,21 +32,94 @@ abstract class CREDSL extends Script {
 		if (files.size()==0) {
 			throw new Exception (String.format("%s: no files specified (using file, files, or dir)", operator));
 		}
-		
+
 		return files;
 	}
-	
+
 	private static ImportExportFormat getFileFormat  (String operator, Map<String, Object> param) {
-	
+
 		switch (param.getOrDefault("TYPE", "").toUpperCase()) {
-			case "WOS": return ImportExportFormat.WOS; 
-			case "SCOPUS": return ImportExportFormat.SCOPUS; 
+			case "WOS": return ImportExportFormat.WOS;
+			case "SCOPUS": return ImportExportFormat.SCOPUS;
+			case "CROSSREF": return ImportExportFormat.CROSSREF;
 		}
 		throw new Exception (String.format("%s: missing or unknown file format (must be WOS or SCOPUS)", operator));
+
+	}
+
+	private static int[] getRangeRPY (Map<String, Object> param, int[] defaultRangeRPY = null) {
+
+		// default: max range
+		int[] rangeRPY = defaultRangeRPY ?: CRStatsInfo.get().getRangeRPY();  	
+		if (param["RPY"] != null) {
+			rangeRPY[0] = param["RPY"][0]
+			rangeRPY[1] = param["RPY"][1]
+		}
+		return rangeRPY;
+	}
+
+
+	private static boolean getWithoutRPY (Map<String, Object> param) {
+
+		boolean withoutRPY = true;	// default: include CRs without RPY
+		if (param["RPY"] != null) {
+			if (param["RPY"].size() > 2) {
+				withoutRPY = param["RPY"][2];
+			}
+		}
+		return withoutRPY;
+	}
+
+	private static int[] getRangePY (Map<String, Object> param, int[] defaultRangePY = null) {
+
+		int[] rangePY = defaultRangePY ?: CRStatsInfo.get().getRangePY();	// default: max range
+		if (param["PY"] != null) {
+			rangePY[0] = param["PY"][0];
+			rangePY[1] = param["PY"][1];
+		}
+		return rangePY;
+	}
+
+
+	private static boolean getWithoutPY (Map<String, Object> param) {
+
+		boolean withoutPY = true	// default: include Pubs without PY
+		if (param["PY"] != null) {
+			if (param["PY"].size() > 2) {
+				withoutPY = param["PY"][2];
+			}
+		}
+		return withoutPY;
+	}
+	
+	private static Sampling getSampling (Map<String, Object> param) {
 		
+		Sampling sampling = null;
+		switch (param.getOrDefault("SAMPLING", "NONE").toUpperCase()) {
+			case "NONE": sampling = Sampling.NONE; break;
+			case "RANDOM": sampling = Sampling.RANDOM; break;
+			case "SYSTEMATIC": sampling = Sampling.SYSTEMATIC; break;
+			case "CLUSTER": sampling = Sampling.CLUSTER; break;
+			default: throw new Exception ("importFile: unknown sampling (must be NONE, RANDOM, SYSTEMATIC, or CLUSTER)");
+		}
+		sampling.offset = param.getOrDefault("OFFSET", 0);
+		return sampling;
 	}
 	
 	
+	private static String[] getDOI (Map<String, Object> param) { 
+		
+		List<String> dois = new ArrayList<String>();
+		if (param.get("DOI") != null) {
+			if (param.get("DOI") instanceof String) {
+				dois.add(param.get("DOI"));
+			} else {
+				dois.addAll(param.get("DOI"));
+			}
+		}
+		return dois as String[];
+	}
+
 	/**
 	 * File > Open
 	 * ===========
@@ -53,13 +127,13 @@ abstract class CREDSL extends Script {
 	 */
 	public static void openFile (Map<String, Object> map) throws Exception {
 		Map<String, Object> param = makeParamsCaseInsensitive(map);
-		List<File> files = getFiles ("openFile", param); 
+		List<File> files = getFiles ("openFile", param);
 		ImportExportFormat.CRE.load(files, [Integer.MIN_VALUE, Integer.MAX_VALUE] as int[], true, [Integer.MIN_VALUE, Integer.MAX_VALUE] as int[], true, Long.MAX_VALUE, Sampling.NONE);
 	}
 
-	
 
-	
+
+
 	public static void analyzeFile (Map<String, Object> map)  {
 		Map<String, Object> param = makeParamsCaseInsensitive(map);
 		List<File> files = getFiles ("analyzeFile", param);
@@ -67,12 +141,12 @@ abstract class CREDSL extends Script {
 		fileFormat.analyze(files);
 		println CRStatsInfo.get().toString()
 	}
-	
+
 	/**
 	 * File > Import
 	 * =============
 	 * FILE = string | FILE = [string] | DIR = string
-	 * TYPE = "WOS" OR "SCOPUS"
+	 * TYPE = "WOS" OR "SCOPUS" OR "CROSSREF"
 	 * SAMPLING = "NONE" (default), "RANDOM", "SYSTEMATIC", or "CLUSTER"
 	 * RPY = [min, max, importWithoutRPY]; default = [0, 0, true]
 	 * PY = [min, max, importWithoutPY]; default = [0, 0, true]
@@ -84,52 +158,26 @@ abstract class CREDSL extends Script {
 
 		List<File> files = getFiles ("importFile", param);
 		ImportExportFormat fileFormat = getFileFormat("importFile", param);
-
 		fileFormat.analyze(files);
-		
-		// set RPY import range: [min, max, without=true]
-		int[] rangeRPY = CRStatsInfo.get().getRangeRPY()	// default: max range
-		boolean withoutRPY = true	// default: include CRs without RPY
-		if (param["RPY"] != null) {
-			rangeRPY[0] = param["RPY"][0]
-			rangeRPY[1] = param["RPY"][1]
-			if (param["RPY"].size() > 2) {
-				withoutRPY = param["RPY"][2]
-			}
-		}
 
-		// set PY import range: [min, max, without=true]
-		int[] rangePY = CRStatsInfo.get().getRangePY();		// default: max range
-		boolean withoutPY = true	// default: include Pubs without PY
-		if (param["PY"] != null) {
-			rangePY[0] = param["PY"][0]
-			rangePY[1] = param["PY"][1]
-			if (param["PY"].size() > 2) {
-				withoutPY = param["PY"][2]
-			}
-		}
-		
-		// set maximum number of CRs
-		int maxCR = 0
-		if (param["MAXCR"] != null) {
-			maxCR = param["MAXCR"]
-		}
-
-		// sampling
-		Sampling sampling = null;
-		switch (param.getOrDefault("SAMPLING", "NONE").toUpperCase()) {
-			case "NONE": sampling = Sampling.NONE; break;
-			case "RANDOM": sampling = Sampling.RANDOM; break;
-			case "SYSTEMATIC": sampling = Sampling.SYSTEMATIC; break;
-			case "CLUSTER": sampling = Sampling.CLUSTER; break;
-			default: throw new Exception ("importFile: unknown sampling (must be NONE, RANDOM, SYSTEMATIC, or CLUSTER)");
-		}
-		
-		sampling.offset = param.getOrDefault("OFFSET", 0);
-
-		fileFormat.load(files, rangeRPY, withoutRPY, rangePY, withoutPY, maxCR, sampling);
-
+		fileFormat.load(files, getRangeRPY(param), getWithoutRPY(param), getRangePY(param), getWithoutPY(param), param.getOrDefault("MAXCR", 0), getSampling(param));
 	}
+
+	
+	public static void importSearch (Map<String, Object> map)  {
+		
+		Map<String, Object> param = makeParamsCaseInsensitive(map);
+		ImportExportFormat fileFormat = getFileFormat("importSearch", param);
+		
+		if (fileFormat != ImportExportFormat.CROSSREF) {
+			throw new Exception ("importSearch: unsupported file format (must be CROSSREF)");
+		}
+		
+		List<File> files = Crossref.download(getDOI (param), param.getOrDefault("ISSN", ""), getRangePY(param, [-1,-1] as int[]));
+		fileFormat.analyze(files);
+		fileFormat.load(files, getRangeRPY(param), getWithoutRPY(param), getRangePY(param), getWithoutPY(param), param.getOrDefault("MAXCR", 0), getSampling(param));
+	}
+
 
 	/**
 	 * File > Save
@@ -146,7 +194,7 @@ abstract class CREDSL extends Script {
 			throw new Exception ("saveFile: missing parameter file");
 		}
 		File file = new File (param.get("FILE"));
-		
+
 		// set filter
 		Predicate<CRType> filter = { cr -> true };
 		if (param.keySet().contains("RPY")) {
@@ -156,8 +204,8 @@ abstract class CREDSL extends Script {
 
 		ImportExportFormat.CRE.save(file, true, filter);
 	}
-	
-	
+
+
 	/**
 	 * File > Export
 	 * FILE (mandatory)
@@ -172,25 +220,25 @@ abstract class CREDSL extends Script {
 		// set file
 		if (param.get("FILE")==null) {
 			throw new Exception ("saveFile: missing parameter file");
-			
+
 		}
 		File file = new File (param.get("FILE"));
-		
-		
+
+
 		// includePubsWithoutCRs
 		boolean includePubsWithoutCRs = true;
 		if (param.keySet().contains("W/O_CR")) {
 			includePubsWithoutCRs = param.get("W/O_CR");
 		}
-		
+
 		// set filter
 		Predicate<CRType> filter = { cr -> true };
 		if (param.keySet().contains("RPY")) {
 			int[] range = param["RPY"];
 			filter = { CRType cr -> (cr.getRPY() != null) && (cr.getRPY()>=range[0]) && (cr.getRPY()<=range[1]) };
 		}
-		
-		
+
+
 		// set file format
 		ImportExportFormat fileFormat = null;
 		switch (param.getOrDefault("TYPE", "").toUpperCase()) {
@@ -202,7 +250,7 @@ abstract class CREDSL extends Script {
 			case "CSV_GRAPH": fileFormat = ImportExportFormat.GRAPH; break;
 			default: throw new Exception ("importFile: missing or unknown file format (must be WOS, SCOPUS, CSV_CR, CSV_PUB, CSV_CR_PUB, or CSV_GRAPH)");
 		}
-		
+
 
 		fileFormat.save(file, includePubsWithoutCRs, filter);
 	}
@@ -239,8 +287,8 @@ abstract class CREDSL extends Script {
 		throw new Exception ("removeCR: Missing parameter (must have N_CR or RPY)")
 	}
 
-	
-	
+
+
 	/**
 	 * Edit > Retain Publications within Publication Year
 	 * PY = [min, max] 
@@ -280,7 +328,7 @@ abstract class CREDSL extends Script {
 		CRMatch2.get().updateClustering(CRMatch2.ClusteringType2.REFRESH, null, threshold, useVol, usePag, useDOI);
 	}
 
-	
+
 	/**
 	 * Disambiguation > Merge clustered References
 	 */
@@ -288,14 +336,14 @@ abstract class CREDSL extends Script {
 		CRTable.get().merge();
 	}
 
-	
-	
-	public static void set (Map<String, Object> map) throws Exception { 
-	
+
+
+	public static void set (Map<String, Object> map) throws Exception {
+
 		Map<String, Object> param = makeParamsCaseInsensitive(map)
-	
+
 		if (param.get("N_PCT_RANGE") != null) {
-			
+
 			try {
 				CRTable.get().setNpctRange(Integer.valueOf(param.get("N_PCT_RANGE").toString()).intValue())
 				CRTable.get().updateData();
@@ -303,11 +351,11 @@ abstract class CREDSL extends Script {
 				throw new Exception("Wrong value for set parameter N_PCT_RANGE: " + param.get("N_PCT_RANGE"));
 			}
 			param.remove("N_PCT_RANGE");
-			
+
 		}
-		
+
 		if (param.get("MEDIAN_RANGE") != null) {
-			
+
 			try {
 				CRChartData.get().setMedianRange(Integer.valueOf(param.get("MEDIAN_RANGE").toString()).intValue());
 				Indicators.get().updateChartData();
@@ -316,18 +364,18 @@ abstract class CREDSL extends Script {
 			}
 			param.remove("MEDIAN_RANGE");
 		}
-		
-		
+
+
 		/* there should be no remaining parameter */
 		for (String unknownParam: param.keySet()) {
 			throw new Exception("Unknown set parameter: " + unknownParam);
 		}
-		
-			
+
+
 	}
-	
-	
-	
+
+
+
 	public static void progress (boolean b) {
 		status.setShowProgress (b)
 	}
@@ -336,8 +384,8 @@ abstract class CREDSL extends Script {
 		StatusBar.get().updateInfo();
 	}
 
-	
-	
+
+
 	public Class use (String filename) {
 		return  this.class.classLoader.parseClass(new File (new File(getClass().protectionDomain.codeSource.location.path).parent, filename))
 	}
@@ -347,5 +395,5 @@ abstract class CREDSL extends Script {
 			return [(key.toUpperCase()): value]
 		}
 	}
-	
+
 }

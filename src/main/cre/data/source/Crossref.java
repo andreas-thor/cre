@@ -33,6 +33,7 @@ import main.cre.data.CRTable;
 import main.cre.data.type.CRType;
 import main.cre.data.type.CRType_Member;
 import main.cre.data.type.PubType;
+import main.cre.data.type.CRType.FORMATTYPE;
 import main.cre.ui.statusbar.StatusBar;
 
 /**
@@ -196,6 +197,7 @@ public class Crossref extends ImportReader {
 	
 	public static String generateCRString (CRType cr) {
 		/* Generate CR-String in WoS format */
+		cr.setType(FORMATTYPE.WOS);
 		String res = "";
 		
 		if (cr.getAU_L() != null) {
