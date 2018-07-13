@@ -34,6 +34,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.WindowEvent;
 import main.cre.CitedReferencesExplorer;
 import main.cre.Exceptions.AbortedException;
 import main.cre.Exceptions.BadResponseCodeException;
@@ -43,6 +44,7 @@ import main.cre.data.CRChartData;
 import main.cre.data.CRSearch;
 import main.cre.data.CRStatsInfo;
 import main.cre.data.CRTable;
+import main.cre.data.DownloadCrossrefData;
 import main.cre.data.Indicators;
 import main.cre.data.Statistics;
 import main.cre.data.match.CRMatch2;
@@ -68,10 +70,8 @@ import main.cre.ui.dialog.Settings;
 import main.cre.ui.dialog.TextInput;
 import main.cre.ui.dialog.Threshold;
 import main.cre.ui.dialog.Wait;
-import main.cre.ui.dialog.DownloadCrossref.DownloadCrossrefData;
 import main.cre.ui.statusbar.StatusBar;
 import main.cre.ui.statusbar.StatusBarFX;
-import javafx.stage.WindowEvent;
 
 public class MainController {
 

@@ -7,6 +7,7 @@ import java.util.prefs.Preferences;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import main.cre.CitedReferencesExplorer;
+import main.cre.data.DownloadCrossrefData;
 import main.cre.data.Sampling;
 
 public class UISettings {
@@ -18,8 +19,8 @@ public class UISettings {
 	private Preferences userPrefs;
 
 	// ranges
-	public static enum RangeType { FilterByRPYRange, RemoveByRPYRange, RemoveByNCRRange, RetainByRPYRange, ImportRPYRange, CurrentYearRange, ImportPYRange }
-	private int[][] range = new int[][] { { -1, -1 }, { -1, -1 }, { -1, -1 }, { -1, -1 }, {0, 0}, {-1, -1}, {0, 0} };
+	public static enum RangeType { FilterByRPYRange, RemoveByRPYRange, RemoveByNCRRange, RetainByRPYRange, ImportRPYRange, CurrentYearRange, ImportPYRange, CrossRefPYRange }
+	private int[][] range = new int[][] { { -1, -1 }, { -1, -1 }, { -1, -1 }, { -1, -1 }, {0, 0}, {-1, -1}, {0, 0}, {-1, -1} };
 
 	// directory for loading/saving files
 	private File lastFileDir = new File("");
@@ -53,6 +54,8 @@ public class UISettings {
 	private int chartEngine;
 	
 	private Sampling sampling;
+	
+	private DownloadCrossrefData downloadCrossrefData;
 	
 	
 	/**
@@ -116,6 +119,17 @@ public class UISettings {
 				userPrefs.getDouble("WindowY", 100)
 		};
 		
+		
+		downloadCrossrefData = new DownloadCrossrefData(
+			userPrefs.get("DownloadCrossrefDataISSN", ""),
+			new String[] {
+				userPrefs.get("DownloadCrossrefDataPY0", "-1"),
+				userPrefs.get("DownloadCrossrefDataPY1", "-1")
+			},
+			userPrefs.get("DownloadCrossrefDataDOI", "")
+		);
+				
+		
 	}
 
 	public void saveUserPrefs(double windowWidth, double windowHeight, double windowX, double windowY) {
@@ -155,6 +169,11 @@ public class UISettings {
 		userPrefs.putDouble("WindowHeight", windowHeight);
 		userPrefs.putDouble("WindowX", windowX); 
 		userPrefs.putDouble("WindowY", windowY);
+		
+		userPrefs.put("DownloadCrossrefDataISSN", downloadCrossrefData.getISSN());
+		userPrefs.put("DownloadCrossrefDataPY0", String.valueOf(downloadCrossrefData.getRange()[0]));
+		userPrefs.put("DownloadCrossrefDataPY1", String.valueOf(downloadCrossrefData.getRange()[1]));
+		userPrefs.put("DownloadCrossrefDataDOI", String.join("\n", downloadCrossrefData.getDOI()));
 	}
 
 	public double getWindowWidth () {
@@ -424,4 +443,14 @@ public class UISettings {
 		return this.sampling;
 	}
 
+	public int setDownloadCrossrefData (DownloadCrossrefData d) {
+		this.downloadCrossrefData = d;
+		return 0;
+	}
+	
+	public DownloadCrossrefData getDownloadCrossrefData () {
+		return this.downloadCrossrefData;
+	}
+	
+	
 }
