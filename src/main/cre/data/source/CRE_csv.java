@@ -11,12 +11,11 @@ import java.util.stream.Stream;
 import com.opencsv.CSVWriter;
 
 import main.cre.data.CRChartData;
+import main.cre.data.CRChartData.SERIESTYPE;
 import main.cre.data.CRTable;
 import main.cre.data.Statistics;
-import main.cre.data.CRChartData.SERIESTYPE;
 import main.cre.data.type.CRType;
 import main.cre.data.type.PubType.PubColumn;
-import main.cre.ui.UISettings;
 import main.cre.ui.CRTableView.CRColumn;
 import main.cre.ui.statusbar.StatusBar;
 

@@ -19,7 +19,7 @@ public class DownloadCrossrefData {
 				return -1;
 			}
 		}).toArray();
-		this.DOI = Arrays.stream(DOI.split("[,\\s]")).map(s -> s.trim()).filter(s -> s.length() > 0).toArray(String[]::new);
+		this.DOI = Arrays.stream(DOI.split("[\\s]")).map(s -> s.trim()).filter(s -> s.length() > 0).toArray(String[]::new);
 
 
 	}

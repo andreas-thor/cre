@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,14 +25,13 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import main.cre.Exceptions.BadResponseCodeException;
 import main.cre.data.CRTable;
 import main.cre.data.type.CRType;
+import main.cre.data.type.CRType.FORMATTYPE;
 import main.cre.data.type.CRType_Member;
 import main.cre.data.type.PubType;
-import main.cre.data.type.CRType.FORMATTYPE;
 import main.cre.ui.statusbar.StatusBar;
 
 /**
