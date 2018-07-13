@@ -19,8 +19,8 @@ public class UISettings {
 	private Preferences userPrefs;
 
 	// ranges
-	public static enum RangeType { FilterByRPYRange, RemoveByRPYRange, RemoveByNCRRange, RetainByRPYRange, ImportRPYRange, CurrentYearRange, ImportPYRange, CrossRefPYRange }
-	private int[][] range = new int[][] { { -1, -1 }, { -1, -1 }, { -1, -1 }, { -1, -1 }, {0, 0}, {-1, -1}, {0, 0}, {-1, -1} };
+	public static enum RangeType { FilterByRPYRange, RemoveByRPYRange, RemoveByNCRRange, RetainByRPYRange, ImportRPYRange, CurrentYearRange, ImportPYRange }
+	private int[][] range = new int[][] { { -1, -1 }, { -1, -1 }, { -1, -1 }, { -1, -1 }, {0, 0}, {-1, -1}, {0, 0} };
 
 	// directory for loading/saving files
 	private File lastFileDir = new File("");

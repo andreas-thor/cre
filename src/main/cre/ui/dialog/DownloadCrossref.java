@@ -10,7 +10,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import main.cre.data.DownloadCrossrefData;
 import main.cre.ui.UISettings;
-import main.cre.ui.UISettings.RangeType;
 
 public class DownloadCrossref extends Dialog<DownloadCrossrefData> {
 
