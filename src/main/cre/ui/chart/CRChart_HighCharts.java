@@ -126,11 +126,27 @@ public abstract class CRChart_HighCharts extends CRChart {
 
 		
 		// series as JSON data
-		String[] json = Stream.of(SERIESTYPE.NCR, SERIESTYPE.MEDIANDIFF).map(type -> 
-			IntStream.range(0, data.getRPYLength())
-				.mapToObj(index -> "[" + data.getRPYValue(index) + "," + data.getSeriesValue(type, index) + "]")
-				.collect(Collectors.joining(", "))
-			).toArray(size -> new String[size]);
+//		String[] json = Stream.of(SERIESTYPE.NCR, SERIESTYPE.MEDIANDIFF).map(type -> 
+//			IntStream.range(0, data.getRPYLength())
+//				.mapToObj(index -> "[" + data.getRPYValue(index) + "," + data.getSeriesValue(type, index) + "]")
+//				.collect(Collectors.joining(", "))
+//			).toArray(size -> new String[size]);
+		
+		
+		String[] json = new String[2];
+		
+		if (UISettings.get().getChartLine()[0]) {
+			json[0] = IntStream.range(0, data.getRPYLength())
+					.mapToObj(index -> "[" + data.getRPYValue(index) + "," + data.getSeriesValue(SERIESTYPE.NCR, index) + "]")
+					.collect(Collectors.joining(", "));
+		}
+		
+		if (UISettings.get().getChartLine()[1]) {
+			json[1] = IntStream.range(0, data.getRPYLength())
+					.mapToObj(index -> "[" + data.getRPYValue(index) + "," + data.getSeriesValue(SERIESTYPE.MEDIANDIFF, index) + "]")
+					.collect(Collectors.joining(", "));
+		}
+		
 		
 		// call Javascript to render chart
 		if (loaded) {

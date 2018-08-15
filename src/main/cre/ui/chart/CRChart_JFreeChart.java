@@ -181,14 +181,19 @@ public abstract class CRChart_JFreeChart extends CRChart {
 		}
 		
 		// generate chart lines
-		ds.addSeries(getSeriesLabel(0), new double[][] { 
-			Arrays.stream(data.getRPY()).asDoubleStream().toArray(), 
-			Arrays.stream(data.getSeries(SERIESTYPE.NCR)).asDoubleStream().toArray()
-		});
-		ds.addSeries(getSeriesLabel(1), new double[][] { 
-			Arrays.stream(data.getRPY()).asDoubleStream().toArray(), 
-			Arrays.stream(data.getSeries(SERIESTYPE.MEDIANDIFF)).asDoubleStream().toArray()
-		});
+		if (UISettings.get().getChartLine()[0]) {
+			ds.addSeries(getSeriesLabel(0), new double[][] { 
+				Arrays.stream(data.getRPY()).asDoubleStream().toArray(), 
+				Arrays.stream(data.getSeries(SERIESTYPE.NCR)).asDoubleStream().toArray()
+			});
+		}
+		
+		if (UISettings.get().getChartLine()[1]) {
+			ds.addSeries(getSeriesLabel(1), new double[][] { 
+				Arrays.stream(data.getRPY()).asDoubleStream().toArray(), 
+				Arrays.stream(data.getSeries(SERIESTYPE.MEDIANDIFF)).asDoubleStream().toArray()
+			});
+		}
 		
 		this.duringUpdate = false;
 	}
