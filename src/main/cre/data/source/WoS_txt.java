@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -236,9 +237,17 @@ public class WoS_txt extends ImportReader {
 		
 	}
 	
-
+	/**
+	 * 
+	 * @param file_name
+	 * @param includePubsWithoutCRs
+	 * @param filter
+	 * @param comp IS IGNORED
+	 * @throws IOException
+	 * @throws RuntimeException
+	 */
 	
-	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException, RuntimeException {
+	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter, Comparator<CRType> comp) throws IOException, RuntimeException {
 		
 		/* TODO: Filter is not supported yet */
 		

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 
@@ -18,11 +19,17 @@ public abstract class ImportReader implements Iterator<PubType> {
 	protected abstract void computeNextEntry() throws IOException;
 	
 	public void init(File file) throws IOException {
+		this.init (new FileInputStream(file));
+	}
+	
+
+	public void init(InputStream is) throws IOException {
 		this.entry = null;
-		this.br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+		this.br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 		this.stop = false;
 		computeNextEntry();
 	}
+	
 	
 	
 	public void stop () {

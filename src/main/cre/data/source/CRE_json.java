@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -298,8 +299,15 @@ public class CRE_json {
 		
 	}
 
-	
-	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException {
+	/**
+	 * 
+	 * @param file_name
+	 * @param includePubsWithoutCRs
+	 * @param filter
+	 * @param comp IS IGNORED
+	 * @throws IOException
+	 */
+	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter, Comparator<CRType> comp) throws IOException {
 		 
 		/* TODO: filter is not supported yet */
 		

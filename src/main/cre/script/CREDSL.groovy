@@ -1,6 +1,9 @@
 package main.cre.script;
 
+import java.util.Comparator
+import java.util.function.Function
 import java.util.function.Predicate
+
 
 import groovy.io.FileType
 import main.cre.data.CRChartData
@@ -12,6 +15,7 @@ import main.cre.data.match.CRMatch2
 import main.cre.data.source.Crossref
 import main.cre.data.source.ImportExportFormat;
 import main.cre.data.type.CRType
+import main.cre.data.type.CitedReference
 import main.cre.ui.statusbar.StatusBar;
 import main.cre.ui.statusbar.StatusBarText
 
@@ -20,7 +24,10 @@ abstract class CREDSL extends Script {
 
 	public static StatusBarText status
 
-
+	public CREDSL () {
+		status = new StatusBarText()
+		StatusBar.get().setUI(status);
+	}
 
 	private static List<File> getFiles (String operator, Map<String, Object> param) {
 
@@ -216,7 +223,8 @@ abstract class CREDSL extends Script {
 	public static void exportFile (Map<String, String> map) throws Exception {
 
 		Map<String, Object> param = makeParamsCaseInsensitive(map)
-
+		Comparator<CRType> compCRType = null;
+		
 		// set file
 		if (param.get("FILE")==null) {
 			throw new Exception ("saveFile: missing parameter file");
@@ -231,13 +239,51 @@ abstract class CREDSL extends Script {
 			includePubsWithoutCRs = param.get("W/O_CR");
 		}
 
-		// set filter
+		// set filter 
 		Predicate<CRType> filter = { cr -> true };
 		if (param.keySet().contains("RPY")) {
 			int[] range = param["RPY"];
 			filter = { CRType cr -> (cr.getRPY() != null) && (cr.getRPY()>=range[0]) && (cr.getRPY()<=range[1]) };
 		}
+		if (param["FILTER"] != null) {
+			filter = { ((Predicate<CitedReference>) param["FILTER"]).test(CitedReference.createFromCRType(it)) };
+		}
 
+		// set sort order
+		if (param.keySet().contains("SORT")) {
+
+			// building a CitedReferences comparator
+			Comparator<CitedReference> compCitedReference = null; 
+			String[] values = (param["SORT"] instanceof String) ? [param["SORT"]] : param["SORT"];
+			
+			
+			for (String s: values) {		// list of order by properties
+				String[] split = s.split(" ");
+				String prop = split[0];
+				boolean reversed = (split.length>1) && (split[1].toUpperCase().equals("DESC"));		
+				
+				Comparator<CitedReference> compProp = Comparator.comparing({ it."${prop}" }  as Function);
+			
+				
+				
+				compProp = reversed ? compProp.reversed() : compProp;
+				compCitedReference = (compCitedReference == null) ? compProp : compCitedReference.thenComparing (compProp);
+			}
+			
+			// build the "real" comparator
+			compCRType = new Comparator<CRType>() {
+				@Override
+				public int compare(CRType o1, CRType o2) {
+					return compCitedReference.compare(CitedReference.createFromCRType(o1), CitedReference.createFromCRType(o2));
+				}
+			};
+		}
+		
+		
+		
+		
+		
+		
 
 		// set file format
 		ImportExportFormat fileFormat = null;
@@ -252,7 +298,7 @@ abstract class CREDSL extends Script {
 		}
 
 
-		fileFormat.save(file, includePubsWithoutCRs, filter);
+		fileFormat.save(file, includePubsWithoutCRs, filter, compCRType);
 	}
 
 
@@ -284,6 +330,12 @@ abstract class CREDSL extends Script {
 			return;
 		}
 
+		if (param["FILTER"] != null) {
+			CRTable.get().removeCR({ ((Predicate<CitedReference>) param["FILTER"]).test(CitedReference.createFromCRType(it)) });
+			return;
+		}
+		
+		
 		throw new Exception ("removeCR: Missing parameter (must have N_CR or RPY)")
 	}
 

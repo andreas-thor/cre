@@ -150,6 +150,10 @@ public class Indicators {
 			int[] type = new int[11];
 			char[] sequence = new char[pySize];
 			
+			/* just for debugging */
+//			double[] expectedArray = new double[pySize];
+//			double[] zvalueArray  = new double[pySize];
+			
 			
 			for (int pyIdx=0; pyIdx<pySize; pyIdx++) {
 				
@@ -162,6 +166,11 @@ public class Indicators {
 				double expected = (1.0d*NCR_CR[crIdx]*NCR_PY[pyIdx]/NCR[0]);
 				double zvalue = (expected == 0) ? 0 : (NCR_CR_PY[crIdx][pyIdx] - expected) / Math.sqrt(expected);
 
+				
+				/* just for debugging */
+//				expectedArray[pyIdx] = expected;
+//				zvalueArray[pyIdx] = zvalue;
+				
 //				System.out.println(String.format("CR=%d\tPY=%d\tExpected=%10.2f\tzValue=%10.2f", crIdx, pyIdx, expected, zvalue));
 				
 				sequence[pyIdx] = (zvalue>1) ? '+' : ((zvalue<-1) ? '-' : '0');
@@ -221,6 +230,29 @@ public class Indicators {
 			if (hotpaper && lifecycle) 	cr.setTYPE("Hot Paper / Life Cycle");
 			if (evergreen) 				cr.setTYPE("Evergreen performer");
 			 */
+			
+			/*
+			if ((cr.getID()==2797) || (cr.getID()==51687)) {
+				System.out.println("\n-----------------\n" + cr.getID());
+				System.out.println("expectedArray");
+				System.out.println(Arrays.toString(expectedArray));
+				System.out.println("zvalueArray");
+				System.out.println(Arrays.toString(zvalueArray));
+				System.out.println("sequence");
+				System.out.println(Arrays.toString(sequence));
+				System.out.println("NCR_PY");
+				System.out.println(Arrays.toString(NCR_PY));
+				System.out.println("NCR_CR[crIdx]");
+				System.out.println(NCR_CR[crIdx]);
+				System.out.println("NCR_CR_PY[crIdx]");
+				System.out.println(Arrays.toString(NCR_CR_PY[crIdx]));
+				System.out.println("cr.getN_CR()");
+				System.out.println(cr.getN_CR());
+				System.out.println("NCR[0]");
+				System.out.println(NCR[0]);
+			}
+			*/
+			
 		}
 		
 		

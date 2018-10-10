@@ -2,6 +2,7 @@ package main.cre.data.source;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,7 +41,7 @@ public enum ImportExportFormat {
 	
 
 	public interface Export {
-	   void save(String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException, RuntimeException;
+	   void save(String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter, Comparator<CRType> comp) throws IOException, RuntimeException;
 	}
 	
 	private final String label;
@@ -63,18 +64,22 @@ public enum ImportExportFormat {
 	}
 	
 	public void save (File file, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException {
+		this.save (file, includePubsWithoutCRs, (it -> true), null);
+	}
+	
+	public void save (File file, boolean includePubsWithoutCRs, Predicate<CRType> filter, Comparator<CRType> comp) throws IOException {
 		
 		// add extension if necessary
 		String file_name = file.toString();
 		if (!file_name.endsWith("." + this.getFileExtension())) file_name += "." + this.getFileExtension();
 		
 		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s ...", file.getName(), this.getLabel()));
-		this.exportSave.save(file_name, includePubsWithoutCRs, filter);
+		this.exportSave.save(file_name, includePubsWithoutCRs, filter, comp);
 		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s done", file.getName(), this.getLabel()));
 
 	}
 	
-	
+		
 	
 	public CRStatsInfo analyze(List<File> files) throws OutOfMemoryError, UnsupportedFileFormatException, FileTooLargeException, AbortedException, IOException {
 		

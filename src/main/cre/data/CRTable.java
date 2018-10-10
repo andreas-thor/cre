@@ -225,7 +225,7 @@ public class CRTable {
 	
 	
 
-	private void removeCR (Predicate<CRType> cond) {
+	public void removeCR (Predicate<CRType> cond) {
 		
 		crDataMap.keySet().removeIf( cr ->  { 
 			if (cond.test(cr)) {
@@ -238,6 +238,9 @@ public class CRTable {
 		updateData();
 	}
 
+	
+	
+	
 	/**
 	 * Remove list of CRs
 	 * @param toDelete list of CRs to be deleted
