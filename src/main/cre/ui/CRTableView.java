@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import main.cre.data.match.CRCluster;
 import main.cre.data.type.CRType;
+import main.cre.data.type.CRType.PERCENTAGE;
 
 public class CRTableView extends TableView<CRType> {
 
@@ -39,12 +40,16 @@ public class CRTableView extends TableView<CRType> {
 		DOI ("DOI", "DOI", ColGroup.CR, ColDataType.STRING, CRType::getDOIProp),
 		CID2 ("CID2", "ClusterID", ColGroup.CLUSTER, ColDataType.CRCLUSTER, CRType::getCID2),
 		CID_S ("CID_S", "ClusterSize", ColGroup.CLUSTER, ColDataType.INT, CRType::getCID_SProp),
+		
 		N_PYEARS ("N_PYEARS", "Number of Citing Years", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PYEARSProp),
 		PYEAR_PERC ("PERC_PYEARS", "Percentage of Citing Years", ColGroup.INDICATOR, ColDataType.DOUBLE, CRType::getPYEAR_PERCProp),
 		N_PCT50 ("N_TOP50", "Top 50% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT50Prop),
 		N_PCT75 ("N_TOP25", "Top 25% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT75Prop),
 		N_PCT90 ("N_TOP10", "Top 10% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT90Prop),
-
+		N_PCT50_AboveAverage ("N_TOP50+", "Top 50% Cited Reference & Above Average", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT_AboveAverage50Prop),
+		N_PCT75_AboveAverage ("N_TOP25+", "Top 25% Cited Reference & Above Average", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT_AboveAverage75Prop),
+		N_PCT90_AboveAverage ("N_TOP10+", "Top 10% Cited Reference & Above Average", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT_AboveAverage90Prop),
+		
 		SEQUENCE  ("SEQUENCE", "Sequence", ColGroup.INDICATOR, ColDataType.STRING, CRType::getSEQUENCEProp),
 		TYPE  ("TYPE", "Type", ColGroup.INDICATOR, ColDataType.STRING, CRType::getTYPEProp),
 		SEARCH_SCORE  ("SEARCH_SCORE", "Score from Search Process", ColGroup.SEARCH, ColDataType.INT, CRType::getSEARCH_SCOREProp)

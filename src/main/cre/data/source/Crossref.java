@@ -139,7 +139,7 @@ public class Crossref extends ImportReader {
 				}
 				
 				if (cr == null) {
-					cr = new CRType_Member();
+					cr = CRType.create();
 				}
 				
 				// overwrite with JSON data

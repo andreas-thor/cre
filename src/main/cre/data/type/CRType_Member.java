@@ -1,11 +1,14 @@
 package main.cre.data.type;
 
+import java.util.EnumMap;
+
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import main.cre.data.match.CRCluster;
+import main.cre.data.type.CRType.PERCENTAGE;
 
 public class CRType_Member extends CRType {
 
@@ -47,9 +50,9 @@ public class CRType_Member extends CRType {
 	
 	private Integer N_PYEARS;	
 	private Double PYEAR_PERC;
-	private Integer N_PCT50;
-	private Integer N_PCT75;
-	private Integer N_PCT90;
+	private EnumMap<PERCENTAGE, Integer> N_PCT;
+	private EnumMap<PERCENTAGE, Integer> N_PCT_AboveAverage;
+
 	private Integer N_PYEARS2;	
 	
 	private String SEQUENCE;
@@ -87,9 +90,17 @@ public class CRType_Member extends CRType {
 		
 		N_PYEARS = 0;
 		PYEAR_PERC = 0d;
-		N_PCT50 = new Integer(0);
-		N_PCT75 = new Integer(0);
-		N_PCT90 = new Integer(0);
+		
+		N_PCT = new EnumMap<>(PERCENTAGE.class);
+		for (PERCENTAGE perc: PERCENTAGE.values()) {
+			N_PCT.put(perc, new Integer(0));
+		}
+		
+		N_PCT_AboveAverage = new EnumMap<>(PERCENTAGE.class);
+		for (PERCENTAGE perc: PERCENTAGE.values()) {
+			N_PCT_AboveAverage.put(perc, new Integer(0));
+		}
+		
 		N_PYEARS2 = 0;
 //		
 		VI = new Boolean(true);
@@ -375,41 +386,31 @@ public class CRType_Member extends CRType {
 	}
 	
 	
-	
-	public int getN_PCT50() {
-		return N_PCT50;
-	}
-	public SimpleIntegerProperty getN_PCT50Prop() {
-		return new SimpleIntegerProperty(N_PCT50);
-	}
-	public void setN_PCT50(int n_PCT50) {
-		N_PCT50 = n_PCT50;
+	public int getN_PCT(PERCENTAGE perc) {
+		return N_PCT.get(perc);
 	}
 	
-	
-	
-	public int getN_PCT75() {
-		return N_PCT75;
+	public SimpleIntegerProperty getN_PCTProp(PERCENTAGE perc) {
+		 return new SimpleIntegerProperty(getN_PCT(perc));
 	}
-	public SimpleIntegerProperty getN_PCT75Prop() {
-		return new SimpleIntegerProperty(N_PCT75);
-	}
-	public void setN_PCT75(int n_PCT75) {
-		N_PCT75 = n_PCT75;
+	
+	public void setN_PCT(PERCENTAGE perc, int n) {
+		N_PCT.put(perc, n);
 	}
 	
 	
 	
-	public int getN_PCT90() {
-		return N_PCT90;
-	}
-	public SimpleIntegerProperty getN_PCT90Prop() {
-		return new SimpleIntegerProperty(N_PCT90);
-	}
-	public void setN_PCT90(int n_PCT90) {
-		N_PCT90 = n_PCT90;
+	public int getN_PCT_AboveAverage(PERCENTAGE perc) {
+		return N_PCT_AboveAverage.get(perc);
 	}
 	
+	public SimpleIntegerProperty getN_PCT_AboveAverageProp(PERCENTAGE perc) {
+		 return new SimpleIntegerProperty(getN_PCT_AboveAverage(perc));
+	}
+	
+	public void setN_PCT_AboveAverage(PERCENTAGE perc, int n) {
+		N_PCT_AboveAverage.put(perc, n);
+	}	
 	
 	
 	public int getN_PYEARS2() {

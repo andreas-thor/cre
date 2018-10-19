@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import main.cre.data.CRChartData.SERIESTYPE;
 import main.cre.data.type.CRType;
+import main.cre.data.type.CRType.PERCENTAGE;
 
 
 public class Indicators {
@@ -118,35 +119,17 @@ public class Indicators {
 		
 		
  
-		int rangeSize_NPCT = CRTable.get().getNpctRange();
-		int[][] borders = new int[pySize][];	// borders (50%, 75%, 90%) for each PY
-		for (int pyIdx=0; pyIdx<pySize; pyIdx++) {
-			
-			int rangeStart = (pyIdx-rangeSize_NPCT>=0) ? pyIdx-rangeSize_NPCT : 0;
-			int rangeEnd = (pyIdx+rangeSize_NPCT<pySize) ? pyIdx+rangeSize_NPCT : pySize-1;
-			
-			int[] temp = new int[(rangeEnd-rangeStart+1)*crSize];
-			
-			for (int rIdx=0; rIdx<rangeEnd-rangeStart+1; rIdx++) {
-				for (int crIdx=0; crIdx<crSize; crIdx++) {
-					temp[rIdx*crSize + crIdx] = NCR_CR_PY[crIdx][rIdx+rangeStart];
-				}
-			}
-				
-			Arrays.sort(temp);
-			borders[pyIdx] = new int[] { 
-					temp[Math.max(0, (int) Math.floor(0.50d * temp.length)-1)], 
-					temp[Math.max(0, (int) Math.floor(0.75d * temp.length)-1)],
-					temp[Math.max(0, (int) Math.floor(0.90d * temp.length)-1)]};
-		}
+		int[][] borders = this.getPercentileBorders(NCR_CR_PY, crSize, pySize);
+
 		
-		
-		for (int x=0; x<crSize; x++) {
+		for (int crIdx=0; crIdx<crSize; crIdx++) {
 			
 //			System.out.println("CR x=" + x);
+//			final int crIdx = x;
 			
-			final int crIdx = x;
 			int[] NPCT = new int[3];
+			int[] NPCT_AboveAverage = new int[3];
+			
 			int[] type = new int[11];
 			char[] sequence = new char[pySize];
 			
@@ -157,12 +140,6 @@ public class Indicators {
 			
 			for (int pyIdx=0; pyIdx<pySize; pyIdx++) {
 				
-				for (int b=0; b<3; b++) {
-					if (borders[pyIdx][b]<NCR_CR_PY[crIdx][pyIdx]) {
-						NPCT[b]++;
-					}
-				}
-				
 				double expected = (1.0d*NCR_CR[crIdx]*NCR_PY[pyIdx]/NCR[0]);
 				double zvalue = (expected == 0) ? 0 : (NCR_CR_PY[crIdx][pyIdx] - expected) / Math.sqrt(expected);
 
@@ -170,7 +147,6 @@ public class Indicators {
 				/* just for debugging */
 //				expectedArray[pyIdx] = expected;
 //				zvalueArray[pyIdx] = zvalue;
-				
 //				System.out.println(String.format("CR=%d\tPY=%d\tExpected=%10.2f\tzValue=%10.2f", crIdx, pyIdx, expected, zvalue));
 				
 				sequence[pyIdx] = (zvalue>1) ? '+' : ((zvalue<-1) ? '-' : '0');
@@ -182,13 +158,20 @@ public class Indicators {
 				type[4]  += ((pyIdx< 4) 		&& (zvalue<=1)) ? 1 : 0;	// # average or lower in the first 4 py
 				type[5]  += ((pyIdx>=4) 		&& (zvalue> 1)) ? 1 : 0;	// # above average in the 5th+ py 
 				type[6]  += ((pySize-pyIdx<=3) 	&& (zvalue<=1)) ? 1: 0;		// # average or lower in the last 3 py
-				
-				
-				type[7]  += (NCR_CR_PY[crIdx][pyIdx]>0) ? 1 : 0;					// # no of citing years with at least 1 citation
+				type[7]  += (NCR_CR_PY[crIdx][pyIdx]>0) ? 1 : 0;			// # no of citing years with at least 1 citation
 				type[8]  += ((pyIdx==0) || (sequence[pyIdx-1]=='-') ||  (sequence[pyIdx]=='+') || ((sequence[pyIdx-1]=='0') && (sequence[pyIdx]=='0'))) ? 1:0;
-				type[9]  +=                      (zvalue>1)?1:0;
+				type[9]  +=                      (zvalue>1)?1:0;			// above average
 				type[10] += 1;	// # citing years
 				
+				
+				for (int b=0; b<PERCENTAGE.values().length; b++) {
+					if (borders[pyIdx][b]<NCR_CR_PY[crIdx][pyIdx]) {
+						NPCT[b]++;
+						if (zvalue>1) {
+							NPCT_AboveAverage[b]++;
+						}
+					}
+				}
 
 			}
 			
@@ -205,15 +188,23 @@ public class Indicators {
 			boolean lifecycle = (type[4]>=2) && (type[5]>=2) && (type[6]>1);
 			
 		
+			
+			
+			
+			
 			CRType cr = crList.get(crIdx);
 			
 			cr.setPYEAR_PERC (((double)cr.getN_PYEARS()) / (pySize-noPYWithoutCR));
 			cr.setPERC_YR 	 (((double)cr.getN_CR())       / NCR_RPY[rpy-range_RPY[0]]);
 			cr.setPERC_ALL	 (((double)cr.getN_CR())       / NCR_ALL[0]);
 			
-			cr.setN_PCT50(NPCT[0]);
-			cr.setN_PCT75(NPCT[1]);
-			cr.setN_PCT90(NPCT[2]);
+			cr.setN_PCT50(NPCT[PERCENTAGE.P50.ordinal()]);
+			cr.setN_PCT75(NPCT[PERCENTAGE.P75.ordinal()]);
+			cr.setN_PCT90(NPCT[PERCENTAGE.P90.ordinal()]);
+
+			cr.setN_PCT_AboveAverage50(NPCT_AboveAverage[PERCENTAGE.P50.ordinal()]);
+			cr.setN_PCT_AboveAverage75(NPCT_AboveAverage[PERCENTAGE.P75.ordinal()]);
+			cr.setN_PCT_AboveAverage90(NPCT_AboveAverage[PERCENTAGE.P90.ordinal()]);
 			
 			cr.setSEQUENCE(new String (sequence));
 
@@ -260,6 +251,37 @@ public class Indicators {
 		
 	}
 	
+	
+	
+	private int[][] getPercentileBorders (int[][] NCR_CR_PY, int crSize, int pySize) {
+
+		int rangeSize_NPCT = CRTable.get().getNpctRange();
+		
+		
+		int[][] borders = new int[pySize][];	// borders (50%, 75%, 90%) for each PY
+		for (int pyIdx=0; pyIdx<pySize; pyIdx++) {
+			
+			int rangeStart = (pyIdx-rangeSize_NPCT>=0) ? pyIdx-rangeSize_NPCT : 0;
+			int rangeEnd = (pyIdx+rangeSize_NPCT<pySize) ? pyIdx+rangeSize_NPCT : pySize-1;
+			
+			int[] temp = new int[(rangeEnd-rangeStart+1)*crSize];
+			
+			for (int rIdx=0; rIdx<rangeEnd-rangeStart+1; rIdx++) {
+				for (int crIdx=0; crIdx<crSize; crIdx++) {
+					temp[rIdx*crSize + crIdx] = NCR_CR_PY[crIdx][rIdx+rangeStart];
+				}
+			}
+				
+			Arrays.sort(temp);
+			borders[pyIdx] = new int[PERCENTAGE.values().length];
+			for (PERCENTAGE perc: PERCENTAGE.values()) {
+				borders[pyIdx][perc.ordinal()] = temp[Math.max(0, (int) Math.floor(perc.threshold * temp.length)-1)];
+			}
+		}
+		
+		return borders;
+		
+	}
 	
 	
 	public void updateChartData () {

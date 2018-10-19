@@ -19,6 +19,18 @@ public abstract class CRType implements Comparable<CRType>  {
 		SCOPUS 
 	};
 	
+	public static enum PERCENTAGE {
+		
+		P50(0.5d), P75(0.75d), P90(0.9d);
+		
+		public final double threshold;
+		
+		PERCENTAGE (double v) {
+			this.threshold = v;
+		}
+		
+	};
+	
 	private FORMATTYPE type = null;	
 	private boolean flag;
 	
@@ -27,6 +39,13 @@ public abstract class CRType implements Comparable<CRType>  {
 	public CRType() {
 		pubList = new HashSet<PubType>();
 	}
+	
+	public static CRType create() {
+		return new CRType_Member();
+	}
+	
+	
+	
 	
 	public static int mein() {
 		return 3;
@@ -192,17 +211,89 @@ public abstract class CRType implements Comparable<CRType>  {
 	public abstract SimpleDoubleProperty getPYEAR_PERCProp();
 	public abstract void setPYEAR_PERC(Double pYEAR_PERC);
 
-	public abstract int getN_PCT50();
-	public abstract SimpleIntegerProperty getN_PCT50Prop();
-	public abstract void setN_PCT50(int n_PCT50);
+	public abstract int getN_PCT(PERCENTAGE perc);
+	public abstract SimpleIntegerProperty getN_PCTProp(PERCENTAGE perc);
+	public abstract void setN_PCT(PERCENTAGE perc, int n);
+	
+	public int getN_PCT50() {
+		return getN_PCT(PERCENTAGE.P50);
+	}
+	
+	public SimpleIntegerProperty getN_PCT50Prop() {
+		return getN_PCTProp(PERCENTAGE.P50);
+	}
+	
+	public void setN_PCT50(int n) {
+		setN_PCT(PERCENTAGE.P50, n);
+	}
 
-	public abstract int getN_PCT75();
-	public abstract SimpleIntegerProperty getN_PCT75Prop();
-	public abstract void setN_PCT75(int n_PCT75);
+	
+	public int getN_PCT75() {
+		return getN_PCT(PERCENTAGE.P75);
+	}
+	
+	public SimpleIntegerProperty getN_PCT75Prop() {
+		return getN_PCTProp(PERCENTAGE.P75);
+	}
+	
+	public void setN_PCT75(int n) {
+		setN_PCT(PERCENTAGE.P75, n);
+	}
+	
+	public int getN_PCT90() {
+		return getN_PCT(PERCENTAGE.P90);
+	}
+	
+	public SimpleIntegerProperty getN_PCT90Prop() {
+		return getN_PCTProp(PERCENTAGE.P90);
+	}
+	
+	public void setN_PCT90(int n) {
+		setN_PCT(PERCENTAGE.P90, n);
+	}
+	
+	
+	
+	public abstract int getN_PCT_AboveAverage(PERCENTAGE perc);
+	public abstract SimpleIntegerProperty getN_PCT_AboveAverageProp(PERCENTAGE perc);
+	public abstract void setN_PCT_AboveAverage(PERCENTAGE perc, int n);
+	
+	public int getN_PCT_AboveAverage50() {
+		return getN_PCT_AboveAverage(PERCENTAGE.P50);
+	}
+	
+	public SimpleIntegerProperty getN_PCT_AboveAverage50Prop() {
+		return getN_PCT_AboveAverageProp(PERCENTAGE.P50);
+	}
+	
+	public void setN_PCT_AboveAverage50(int n) {
+		setN_PCT_AboveAverage(PERCENTAGE.P50, n);
+	}
 
-	public abstract int getN_PCT90();
-	public abstract SimpleIntegerProperty getN_PCT90Prop();
-	public abstract void setN_PCT90(int n_PCT90);
+	
+	public int getN_PCT_AboveAverage75() {
+		return getN_PCT_AboveAverage(PERCENTAGE.P75);
+	}
+	
+	public SimpleIntegerProperty getN_PCT_AboveAverage75Prop() {
+		return getN_PCT_AboveAverageProp(PERCENTAGE.P75);
+	}
+	
+	public void setN_PCT_AboveAverage75(int n) {
+		setN_PCT_AboveAverage(PERCENTAGE.P75, n);
+	}
+	
+	public int getN_PCT_AboveAverage90() {
+		return getN_PCT_AboveAverage(PERCENTAGE.P90);
+	}
+	
+	public SimpleIntegerProperty getN_PCT_AboveAverage90Prop() {
+		return getN_PCT_AboveAverageProp(PERCENTAGE.P90);
+	}
+	
+	public void setN_PCT_AboveAverage90(int n) {
+		setN_PCT_AboveAverage(PERCENTAGE.P90, n);
+	}	
 
 	public abstract int getN_PYEARS2();
 	public abstract SimpleIntegerProperty getN_PYEARS2Prop();

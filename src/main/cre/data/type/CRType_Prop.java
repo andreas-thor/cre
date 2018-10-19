@@ -1,5 +1,7 @@
 package main.cre.data.type;
 
+import java.util.EnumMap;
+
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -38,9 +40,11 @@ public class CRType_Prop extends CRType {
 	
 	private SimpleIntegerProperty N_PYEARS;	
 	private SimpleDoubleProperty PYEAR_PERC;
-	private SimpleIntegerProperty N_PCT50;
-	private SimpleIntegerProperty N_PCT75;
-	private SimpleIntegerProperty N_PCT90;
+	
+	private EnumMap<PERCENTAGE, SimpleIntegerProperty> N_PCT;
+	private EnumMap<PERCENTAGE, SimpleIntegerProperty> N_PCT_AboveAverage;
+	
+	
 	private SimpleIntegerProperty N_PYEARS2;	
 	
 	private SimpleStringProperty SEQUENCE;
@@ -76,9 +80,17 @@ public class CRType_Prop extends CRType {
 		
 		N_PYEARS = new SimpleIntegerProperty();
 		PYEAR_PERC = new SimpleDoubleProperty();
-		N_PCT50 = new SimpleIntegerProperty(0);
-		N_PCT75 = new SimpleIntegerProperty(0);
-		N_PCT90 = new SimpleIntegerProperty(0);
+		
+		N_PCT = new EnumMap<>(PERCENTAGE.class);
+		for (PERCENTAGE perc: PERCENTAGE.values()) {
+			N_PCT.put(perc, new SimpleIntegerProperty(0));
+		}
+		N_PCT_AboveAverage = new EnumMap<>(PERCENTAGE.class);
+		for (PERCENTAGE perc: PERCENTAGE.values()) {
+			N_PCT_AboveAverage.put(perc, new SimpleIntegerProperty(0));
+		}
+
+		
 		N_PYEARS2 = new SimpleIntegerProperty();
 		
 		VI = new SimpleBooleanProperty(true);
@@ -366,41 +378,38 @@ public class CRType_Prop extends CRType {
 	
 	
 	
-	public int getN_PCT50() {
-		return N_PCT50.get();
+
+
+	@Override
+	public int getN_PCT(PERCENTAGE perc) {
+		return N_PCT.get(perc).get();
 	}
-	public SimpleIntegerProperty getN_PCT50Prop() {
-		return N_PCT50;
+
+	@Override
+	public SimpleIntegerProperty getN_PCTProp(PERCENTAGE perc) {
+		return N_PCT.get(perc);
 	}
-	public void setN_PCT50(int n_PCT50) {
-		N_PCT50.set(n_PCT50);
+
+	@Override
+	public void setN_PCT(PERCENTAGE perc, int n) {
+		getN_PCTProp(perc).set(n);
 	}
-	
-	
-	
-	public int getN_PCT75() {
-		return N_PCT75.get();
+
+	@Override
+	public int getN_PCT_AboveAverage(PERCENTAGE perc) {
+		return N_PCT_AboveAverage.get(perc).get();
 	}
-	public SimpleIntegerProperty getN_PCT75Prop() {
-		return N_PCT75;
+
+	@Override
+	public SimpleIntegerProperty getN_PCT_AboveAverageProp(PERCENTAGE perc) {
+		return N_PCT_AboveAverage.get(perc);
 	}
-	public void setN_PCT75(int n_PCT75) {
-		N_PCT75.set(n_PCT75);
+
+	@Override
+	public void setN_PCT_AboveAverage(PERCENTAGE perc, int n) {
+		getN_PCT_AboveAverageProp(perc).set(n);
 	}
-	
-	
-	
-	public int getN_PCT90() {
-		return N_PCT90.get();
-	}
-	public SimpleIntegerProperty getN_PCT90Prop() {
-		return N_PCT90;
-	}
-	public void setN_PCT90(int n_PCT90) {
-		N_PCT90.set(n_PCT90);
-	}
-	
-	
+
 	
 	public int getN_PYEARS2() {
 		return N_PYEARS2.get();
@@ -444,6 +453,7 @@ public class CRType_Prop extends CRType {
 	public void setTYPE(String tYPE) {
 		TYPE.set(tYPE);
 	}
+
 
 
 

@@ -174,7 +174,7 @@ public class Scopus_csv extends ImportReader {
 		line = line.trim();
 		if (line.length() == 0) return null;
 		
-		CRType res = new CRType_Member();
+		CRType res = CRType.create();
 		res.setType (CRType.FORMATTYPE.SCOPUS);
 		res.setCR(line);
 		

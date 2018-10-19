@@ -108,7 +108,7 @@ public class CRE_json {
 			
 			
 			switch (parser.next()) {
-			case START_OBJECT: 	cr = new CRType_Member(); break; 
+			case START_OBJECT: 	cr = CRType.create(); break; 
 			case END_OBJECT: 	
 				int internalId = cr.getID();
 				cr = crTab.addCR(cr, checkForDuplicates);

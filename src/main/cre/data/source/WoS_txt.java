@@ -155,7 +155,7 @@ public class WoS_txt extends ImportReader {
 	
 	public static CRType parseCR (String line) {
 
-		CRType cr = new CRType_Member();
+		CRType cr = CRType.create();
 		cr.setCR(line); // [3..-1] // .toUpperCase()
 		cr.setType (CRType.FORMATTYPE.WOS);
 		cr.setRPY(null);

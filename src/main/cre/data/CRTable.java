@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import main.cre.data.db.CRTable_DB;
 import main.cre.data.type.CRType;
 import main.cre.data.type.PubType;
 
@@ -17,8 +16,8 @@ public abstract class CRTable {
 	private int npctRange;
 	
 	public static CRTable get() {
-//		return CRTable_MM.get();
-		return CRTable_DB.get();
+		return CRTable_MM.get();
+//		return CRTable_DB.get();
 	}
 	
 
