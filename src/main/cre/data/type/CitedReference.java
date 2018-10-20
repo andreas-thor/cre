@@ -34,6 +34,10 @@ public class CitedReference {
 	public int N_TOP50;
 	public int N_TOP25;
 	public int N_TOP10;
+
+	public int N_TOP50_Plus;
+	public int N_TOP25_Plus;
+	public int N_TOP10_Plus;
 	
 	public String SEQUENCE;
 	public String TYPE;
@@ -75,6 +79,10 @@ public class CitedReference {
 		result.N_TOP50 = cr.getN_PCT50();
 		result.N_TOP25 = cr.getN_PCT75();
 		result.N_TOP10 = cr.getN_PCT90();
+
+		result.N_TOP50_Plus = cr.getN_PCT_AboveAverage50();
+		result.N_TOP25_Plus = cr.getN_PCT_AboveAverage75();
+		result.N_TOP10_Plus = cr.getN_PCT_AboveAverage90();
 		
 		result.SEQUENCE = cr.getSEQUENCE();
 		result.TYPE = cr.getTYPE();

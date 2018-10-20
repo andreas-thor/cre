@@ -2,14 +2,10 @@ package main.cre.data.db;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.SQLType;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
@@ -29,8 +25,11 @@ public class CRTable_DB extends CRTable {
 
 	private Connection dbCon;
 	private PreparedStatement insertPub_PrepStmt;
+
+	private final int insertPub_BatchSize = 100;
+	private int insertPub_BatchCount;
+	
 	private PreparedStatement insertCR_PrepStmt;
-	private int insertPub_BatchSize;
 
 	private int numberOfPubs; 
 	private int numberOfCRs;
@@ -50,7 +49,9 @@ public class CRTable_DB extends CRTable {
 		
 		try {
 			Class.forName("org.h2.Driver" );
-			dbCon = DriverManager.getConnection("jdbc:h2:~/test", "sa", "");
+			
+			dbCon = DriverManager.getConnection("jdbc:h2:~/test", "sa", "");	// embedded (file)
+//			dbCon = DriverManager.getConnection("jdbc:h2:mem:test", "sa", "");	// in-memory
 
 			Statement stmt = dbCon.createStatement();
 			
@@ -69,7 +70,7 @@ public class CRTable_DB extends CRTable {
 			sql.append (");");
 			insertPub_PrepStmt = dbCon.prepareStatement(sql.toString());
 			
-			insertPub_BatchSize = 0;
+			insertPub_BatchCount = 0;
 			
 			stmt.close();
 			
@@ -183,12 +184,13 @@ public class CRTable_DB extends CRTable {
 			}
 			
 			insertPub_PrepStmt.execute();
-			
+//			insertPub_PrepStmt.addBatch();
+//			insertPub_BatchCount++;
 			
 			pub.getCR().forEach(cr -> {
 				
 				try {
-					int id = crTypeDB.insertCR(cr, this.numberOfCRs+1);
+					int id = crTypeDB.insertCR(cr, this.numberOfCRs+1, pub.getID());
 					if (id > this.numberOfCRs) {
 						this.numberOfCRs++;
 					}
@@ -198,6 +200,13 @@ public class CRTable_DB extends CRTable {
 				}
 				
 			});
+			
+			
+//			if (insertPub_BatchCount >= insertPub_BatchSize) {
+//				insertPub_PrepStmt.executeBatch();
+//				crTypeDB.executeBatch();
+//				insertPub_BatchCount = 0;
+//			}
 			
 			
 		} catch (SQLException e) {

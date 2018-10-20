@@ -7,10 +7,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,6 +17,8 @@ import main.cre.data.type.CRType;
 public class CRType_DB {
 
 	private PreparedStatement insertCR_PrepStmt;
+	private PreparedStatement insertPubCR_PrepStmt;
+	
 	private PreparedStatement selectCR_PrepStmt;
 	private PreparedStatement updateCR_PrepStmt;
 	
@@ -40,6 +40,7 @@ public class CRType_DB {
 	
 		/* create prepared statements */
 		insertCR_PrepStmt = dbCon.prepareStatement(sql[1]);
+		insertPubCR_PrepStmt = dbCon.prepareStatement(sql[2]);
 		selectCR_PrepStmt = dbCon.prepareStatement("SELECT CR_ID FROM CR WHERE CR_CR = ?");
 		updateCR_PrepStmt = dbCon.prepareStatement("UPDATE CR SET CR_N_CR = CR_N_CR+1 WHERE CR_ID = ?");
 	}
@@ -51,7 +52,9 @@ public class CRType_DB {
 		stmt.close();
 	}
 	
-	public int insertCR (CRType cr, int defaultId) throws SQLException {
+	public int insertCR (CRType cr, int defaultId, int pubId) throws SQLException {
+		
+		int crId;
 		
 //		selectCR_PrepStmt.setString(1, cr.getCR());
 //		ResultSet rs = selectCR_PrepStmt.executeQuery();
@@ -62,7 +65,9 @@ public class CRType_DB {
 //			updateCR_PrepStmt.execute();
 //			return id;
 //		} else {
-			insertCR_PrepStmt.setInt	( 1, defaultId);
+			crId = defaultId;
+		
+			insertCR_PrepStmt.setInt	( 1, crId);
 			insertCR_PrepStmt.setString	( 2, cr.getCR());
 			
 			if (cr.getRPY() == null) {
@@ -139,11 +144,26 @@ public class CRType_DB {
 				insertCR_PrepStmt.setString	(15, cr.getDOI());
 			}
 			
+//			insertCR_PrepStmt.addBatch();
 			insertCR_PrepStmt.execute();
-			return defaultId;
+			
+			
+			
+			insertPubCR_PrepStmt.setInt(1,  pubId);
+			insertPubCR_PrepStmt.setInt(2, crId);
+//			insertPubCR_PrepStmt.addBatch();
+			insertPubCR_PrepStmt.execute();
+			
+			return crId;
 //		}
 	}
-	
+
+
+//	public void executeBatch() throws SQLException {
+//		insertCR_PrepStmt.executeBatch();
+//		insertPubCR_PrepStmt.executeBatch();
+//	}
+//	
 	
 	
 }

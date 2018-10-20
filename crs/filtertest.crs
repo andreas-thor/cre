@@ -9,16 +9,17 @@ importFile (
 info()	
 
 
-removeCR (
+//removeCR (
 //	filter: { it.N_CR < 100 } 
-	filter: { it.N_TOP10 <= 5  } 
+//	filter: { it.N_TOP10 <= 5  } 
+//	filter: { it.N_TOP50_Plus <= 2  } 
 //	filter: { it.PERC_YR < 30   } 	// percentage values are in 0 to 100 range
 //	filter: { (it.N_CR < 10) || (it.N_TOP10 < 2) } 
 //	filter: { (it.N_CR < 10) && (it.RPY < 2010) } 
 //	filter: { !it.TYPE.contains ("Constant performer")} 
 //	filter: { it.TYPE.equals ("")} 
 //	filter: { !it.CR.startsWith ("A")} 
-)
+//)
 
 info()
 
@@ -26,8 +27,9 @@ exportFile (
 	file 	: "E:/Dev/CRE/data/x3.csv",
 	type	: "CSV_CR",
 //	sort	: ["N_CR DESC", "RPY"], 	// descending by N_CR, then (ascending) by RPY
-	sort	: "N_CR DESC", 				// descending by N_CR (no brackets if only on criteria
-	filter	: { it.N_CR > 5 }
+//	sort	: "N_CR DESC", 				// descending by N_CR (no brackets if only on criteria
+	sort	: "N_TOP50_Plus DESC", 				// descending by N_CR (no brackets if only on criteria
+	filter	: { it.N_TOP50_Plus > 2 }
 )
 
 
