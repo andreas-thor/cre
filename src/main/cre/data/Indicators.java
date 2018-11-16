@@ -127,8 +127,8 @@ public class Indicators {
 //			System.out.println("CR x=" + x);
 //			final int crIdx = x;
 			
-			int[] NPCT = new int[3];
-			int[] NPCT_AboveAverage = new int[3];
+			int[] NPCT = new int[PERCENTAGE.values().length];
+			int[] NPCT_AboveAverage = new int[PERCENTAGE.values().length];
 			
 			int[] type = new int[11];
 			char[] sequence = new char[pySize];
@@ -201,10 +201,14 @@ public class Indicators {
 			cr.setN_PCT50(NPCT[PERCENTAGE.P50.ordinal()]);
 			cr.setN_PCT75(NPCT[PERCENTAGE.P75.ordinal()]);
 			cr.setN_PCT90(NPCT[PERCENTAGE.P90.ordinal()]);
+			cr.setN_PCT99(NPCT[PERCENTAGE.P99.ordinal()]);
+			cr.setN_PCT999(NPCT[PERCENTAGE.P999.ordinal()]);
 
 			cr.setN_PCT_AboveAverage50(NPCT_AboveAverage[PERCENTAGE.P50.ordinal()]);
 			cr.setN_PCT_AboveAverage75(NPCT_AboveAverage[PERCENTAGE.P75.ordinal()]);
 			cr.setN_PCT_AboveAverage90(NPCT_AboveAverage[PERCENTAGE.P90.ordinal()]);
+			cr.setN_PCT_AboveAverage99(NPCT_AboveAverage[PERCENTAGE.P99.ordinal()]);
+			cr.setN_PCT_AboveAverage999(NPCT_AboveAverage[PERCENTAGE.P999.ordinal()]);
 			
 			cr.setSEQUENCE(new String (sequence));
 
@@ -258,7 +262,7 @@ public class Indicators {
 		int rangeSize_NPCT = CRTable.get().getNpctRange();
 		
 		
-		int[][] borders = new int[pySize][];	// borders (50%, 75%, 90%) for each PY
+		int[][] borders = new int[pySize][];	// borders (50%, 75%, 90%, 99%, 99.9%) for each PY
 		for (int pyIdx=0; pyIdx<pySize; pyIdx++) {
 			
 			int rangeStart = (pyIdx-rangeSize_NPCT>=0) ? pyIdx-rangeSize_NPCT : 0;

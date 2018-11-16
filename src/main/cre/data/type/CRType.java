@@ -21,7 +21,7 @@ public abstract class CRType implements Comparable<CRType>  {
 	
 	public static enum PERCENTAGE {
 		
-		P50(0.5d), P75(0.75d), P90(0.9d);
+		P50(0.5d), P75(0.75d), P90(0.9d), P99(0.99d), P999(0.999d);
 		
 		public final double threshold;
 		
@@ -251,6 +251,30 @@ public abstract class CRType implements Comparable<CRType>  {
 	public void setN_PCT90(int n) {
 		setN_PCT(PERCENTAGE.P90, n);
 	}
+
+	public int getN_PCT99() {
+		return getN_PCT(PERCENTAGE.P99);
+	}
+	
+	public SimpleIntegerProperty getN_PCT99Prop() {
+		return getN_PCTProp(PERCENTAGE.P99);
+	}
+	
+	public void setN_PCT99(int n) {
+		setN_PCT(PERCENTAGE.P99, n);
+	}
+
+	public int getN_PCT999() {
+		return getN_PCT(PERCENTAGE.P999);
+	}
+	
+	public SimpleIntegerProperty getN_PCT999Prop() {
+		return getN_PCTProp(PERCENTAGE.P999);
+	}
+	
+	public void setN_PCT999(int n) {
+		setN_PCT(PERCENTAGE.P999, n);
+	}
 	
 	
 	
@@ -295,6 +319,34 @@ public abstract class CRType implements Comparable<CRType>  {
 		setN_PCT_AboveAverage(PERCENTAGE.P90, n);
 	}	
 
+	
+	public int getN_PCT_AboveAverage99() {
+		return getN_PCT_AboveAverage(PERCENTAGE.P99);
+	}
+	
+	public SimpleIntegerProperty getN_PCT_AboveAverage99Prop() {
+		return getN_PCT_AboveAverageProp(PERCENTAGE.P99);
+	}
+	
+	public void setN_PCT_AboveAverage99(int n) {
+		setN_PCT_AboveAverage(PERCENTAGE.P99, n);
+	}	
+	
+
+	public int getN_PCT_AboveAverage999() {
+		return getN_PCT_AboveAverage(PERCENTAGE.P999);
+	}
+	
+	public SimpleIntegerProperty getN_PCT_AboveAverage999Prop() {
+		return getN_PCT_AboveAverageProp(PERCENTAGE.P999);
+	}
+	
+	public void setN_PCT_AboveAverage999(int n) {
+		setN_PCT_AboveAverage(PERCENTAGE.P999, n);
+	}	
+	
+	
+	
 	public abstract int getN_PYEARS2();
 	public abstract SimpleIntegerProperty getN_PYEARS2Prop();
 	public abstract void setN_PYEARS2(int n_PYEARS2);

@@ -43,12 +43,18 @@ public class CRTableView extends TableView<CRType> {
 		
 		N_PYEARS ("N_PYEARS", "Number of Citing Years", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PYEARSProp),
 		PYEAR_PERC ("PERC_PYEARS", "Percentage of Citing Years", ColGroup.INDICATOR, ColDataType.DOUBLE, CRType::getPYEAR_PERCProp),
+		
 		N_PCT50 ("N_TOP50", "Top 50% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT50Prop),
 		N_PCT75 ("N_TOP25", "Top 25% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT75Prop),
 		N_PCT90 ("N_TOP10", "Top 10% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT90Prop),
+		N_PCT99 ("N_TOP1", "Top 1% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT99Prop),
+		N_PCT999 ("N_TOP0_1", "Top 0.1% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT999Prop),
+		
 		N_PCT50_AboveAverage ("N_TOP50+", "Top 50% Cited Reference & Above Average", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT_AboveAverage50Prop),
 		N_PCT75_AboveAverage ("N_TOP25+", "Top 25% Cited Reference & Above Average", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT_AboveAverage75Prop),
 		N_PCT90_AboveAverage ("N_TOP10+", "Top 10% Cited Reference & Above Average", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT_AboveAverage90Prop),
+		N_PCT99_AboveAverage ("N_TOP1+", "Top 1% Cited Reference & Above Average", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT_AboveAverage99Prop),
+		N_PCT999_AboveAverage ("N_TOP0_1+", "Top 0.1% Cited Reference & Above Average", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT_AboveAverage999Prop),
 		
 		SEQUENCE  ("SEQUENCE", "Sequence", ColGroup.INDICATOR, ColDataType.STRING, CRType::getSEQUENCEProp),
 		TYPE  ("TYPE", "Type", ColGroup.INDICATOR, ColDataType.STRING, CRType::getTYPEProp),

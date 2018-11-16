@@ -5,13 +5,18 @@ import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import main.cre.data.CRTable;
 import main.cre.data.type.CRType;
@@ -21,6 +26,18 @@ import main.cre.ui.CRTableView.ColDataType;
 
 public class CRTable_DB extends CRTable {
 
+	interface UncheckedCloseable extends Runnable, AutoCloseable {
+	    default void run() {
+	        try { close(); } catch(Exception ex) { throw new RuntimeException(ex); }
+	    }
+	    static UncheckedCloseable wrap(AutoCloseable c) {
+	        return c::close;
+	    }
+	    default UncheckedCloseable nest(AutoCloseable c) {
+	        return ()->{ try(UncheckedCloseable c1=this) { c.close(); } };
+	    }
+	}
+	
 	private static CRTable_DB crTab = null;
 
 	private Connection dbCon;
@@ -111,11 +128,55 @@ public class CRTable_DB extends CRTable {
 		
 	}
 
+	
+	private CRType createCRFromResultSet (ResultSet rs) throws SQLException {
+		
+		CRType cr = CRType.create();
+		cr.setID(rs.getInt("CR_ID"));
+		return cr;
+	}
+	
 	@Override
 	public Stream<CRType> getCR() {
-		// TODO Auto-generated method stub
 		Stream<CRType> emptyStr = Stream.of();
 		return emptyStr;
+
+		/*
+		UncheckedCloseable close = null;
+		try {
+			close = UncheckedCloseable.wrap(dbCon);
+			String sql = "select * from CR";
+			PreparedStatement pSt = dbCon.prepareStatement(sql);
+			close = close.nest(pSt);
+			dbCon.setAutoCommit(false);
+			pSt.setFetchSize(5000);
+			ResultSet resultSet = pSt.executeQuery();
+			close = close.nest(resultSet);
+			return StreamSupport.stream(new Spliterators.AbstractSpliterator<CRType>(Long.MAX_VALUE, Spliterator.ORDERED) {
+				@Override
+				public boolean tryAdvance(Consumer<? super CRType> action) {
+					try {
+						if (!resultSet.next())
+							return false;
+						action.accept(createCRFromResultSet(resultSet));
+						return true;
+					} catch (SQLException ex) {
+						throw new RuntimeException(ex);
+					}
+				}
+			}, false).onClose(close);
+		} catch (SQLException sqlEx) {
+			if (close != null) {
+				try {
+					close.close();
+				} catch (Exception ex) {
+					sqlEx.addSuppressed(ex);
+				}
+			}
+			Stream<CRType> emptyStr = Stream.of();
+			return emptyStr;
+		}
+*/
 	}
 
 	@Override
@@ -146,10 +207,7 @@ public class CRTable_DB extends CRTable {
 
 	@Override
 	public PubType addPub(PubType pub, boolean addCRs) {
-		
 		return addPub (pub, addCRs, false);
-
-
 	}
 
 	@Override
