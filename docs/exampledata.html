@@ -1,6 +1,66 @@
 <html>
+<head>
+<style>
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0; /* to avoid scrollbars */
+}
+
+div#header {
+    background-color:black;
+    color:white;
+    text-align:center;
+    padding:5px;
+	background-image:url('CRLogo_white.png');
+	background-size: Auto 90%;
+	background-repeat: no-repeat; /* for vertical repeat */
+}
+
+#wrapper {
+	display: flex; /* use the flex model */
+	min-height: 100%;
+	flex-direction: column;
+	/* learn more: http://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer/ */
+}
+
+#header {
+	height: 100px; /* can be variable as well */
+}
+
+#body {
+	flex: 1;
+	border: 1px solid orange;
+}
+
+div#footer {
+    clear:both;
+    text-align:center;
+    padding:5px;
+    border-top-style: solid;
+    border-top-width: 1px;
+}
+</style>
+
+</head>
 <body>
-<h1>Some Example data</h1>
-<iframe width="100%" height="900" frameborder="0" scrolling="no" src="https://onedrive.live.com/embed?resid=863CEC1B9B3400B6%21173&authkey=%21AEvnl_Syths0cmM&em=2&ActiveCell='Sheet1'!A1&Item='Sheet1'!A1%3AF1207&wdInConfigurator=True"></iframe>
+	<div id="wrapper">
+		<div id="header">
+			<h1>Some Example data</h1>
+		</div>
+			<iframe id="body" width="100%"  frameborder="0" scrolling="no"
+				src="https://onedrive.live.com/embed?resid=863CEC1B9B3400B6%21173&authkey=%21AEvnl_Syths0cmM&em=2&ActiveCell='Sheet1'!A1&Item='Sheet1'!A1%3AF1207&wdInConfigurator=True"></iframe>
+	<div id="footer">
+		<a href="https://www.hft-leipzig.de/en.html"><img align="middle"
+			height="50em" src="hftl.jpg" /></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+			href="http://www.mpg.de/en"><img align="middle" height="50em"
+			src="mpg.png" /></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+			href="http://www.uva.nl/en/home"><img align="middle"
+			height="25em" src="uva.jpg" /></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+			href="https://www.ethz.ch/en.html"><img align="middle"
+			height="50em" src="eth.jpg" /></a>
+
+	</div>		
+	</div>
 </body>
 </html>
