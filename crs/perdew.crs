@@ -1,0 +1,6 @@
+
+progress (true)	// show progress of loading etc. in percent
+
+openFile (file: "E:/Dev/CRE/data/perdew/ei_uts.wos.rpys_npct_range_2_VP-filter-RPY_1986.cre")
+
+info()
