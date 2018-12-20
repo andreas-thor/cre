@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import main.cre.data.CRChartData.SERIESTYPE;
 import main.cre.data.type.CRType;
@@ -119,7 +120,7 @@ public class Indicators {
 		
 		
  
-		int[][] borders = this.getPercentileBorders(NCR_CR_PY, crSize, pySize);
+		int[][] borders = this.getPercentileBorders(NCR_CR_PY, crSize, pySize, NCR_PY);
 
 		
 		for (int crIdx=0; crIdx<crSize; crIdx++) {
@@ -225,16 +226,16 @@ public class Indicators {
 			if (hotpaper && lifecycle) 	cr.setTYPE("Hot Paper / Life Cycle");
 			if (evergreen) 				cr.setTYPE("Evergreen performer");
 			 */
-			
 			/*
-			if ((cr.getID()==2797) || (cr.getID()==51687)) {
+			if ((cr.getID()==117407) || (cr.getID()==11988)) {
 				System.out.println("\n-----------------\n" + cr.getID());
-				System.out.println("expectedArray");
-				System.out.println(Arrays.toString(expectedArray));
+				System.out.println();
+//				System.out.println("expectedArray");
+//				System.out.println(Arrays.toString(expectedArray));
 				System.out.println("zvalueArray");
 				System.out.println(Arrays.toString(zvalueArray));
-				System.out.println("sequence");
-				System.out.println(Arrays.toString(sequence));
+//				System.out.println("sequence");
+//				System.out.println(Arrays.toString(sequence));
 				System.out.println("NCR_PY");
 				System.out.println(Arrays.toString(NCR_PY));
 				System.out.println("NCR_CR[crIdx]");
@@ -245,6 +246,16 @@ public class Indicators {
 				System.out.println(cr.getN_CR());
 				System.out.println("NCR[0]");
 				System.out.println(NCR[0]);
+				System.out.println("borders");
+				System.out.println(Arrays.deepToString(borders));
+				System.out.println("firstPY");
+				System.out.println(firstPY);
+				System.out.println("lastPY");
+				System.out.println(lastPY);
+				System.out.println("NPCT");
+				System.out.println(Arrays.toString(NPCT));
+				System.out.println("NPCT_AboveAverage");
+				System.out.println(Arrays.toString(NPCT_AboveAverage));
 			}
 			*/
 			
@@ -257,7 +268,7 @@ public class Indicators {
 	
 	
 	
-	private int[][] getPercentileBorders (int[][] NCR_CR_PY, int crSize, int pySize) {
+	private int[][] getPercentileBorders (int[][] NCR_CR_PY, int crSize, int pySize, int[] NCR_PY) {
 
 		int rangeSize_NPCT = CRTable.get().getNpctRange();
 		
@@ -275,8 +286,9 @@ public class Indicators {
 					temp[rIdx*crSize + crIdx] = NCR_CR_PY[crIdx][rIdx+rangeStart];
 				}
 			}
-				
+			
 			Arrays.sort(temp);
+			
 			borders[pyIdx] = new int[PERCENTAGE.values().length];
 			for (PERCENTAGE perc: PERCENTAGE.values()) {
 				borders[pyIdx][perc.ordinal()] = temp[Math.max(0, (int) Math.floor(perc.threshold * temp.length)-1)];

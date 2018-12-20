@@ -94,7 +94,7 @@ public class Scopus_csv extends ImportReader {
 	
 	private PubType parsePub (String[] line) {
 		
-		PubType pub = new PubType(); // .parseScopus(it, attributes, yearRange);
+		PubType pub = PubType.create(); // .parseScopus(it, attributes, yearRange);
 		
 		pub.setPT("J"); // TODO: what is the default Publication Type? (No value in scopus!)
 				

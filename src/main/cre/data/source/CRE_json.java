@@ -159,7 +159,7 @@ public class CRE_json {
 	private static void loadPubData (InputStream in, boolean checkForDuplicates, Map<Integer, CRType> mapId2CR) {
 		
 		CRTable crTab = CRTable.get(); 
-		
+
 		JsonParser parser = Json.createParser(in);
 		PubType pub = null;
 		List<String> C1List = null;
@@ -169,8 +169,8 @@ public class CRE_json {
 		while (!crTab.isAborted() && parser.hasNext()) {
 			
 			switch (parser.next()) {
-			case START_OBJECT: 	
-				pub = new PubType(); 
+			case START_OBJECT:
+				pub = PubType.create(); 
 				CRList = new ArrayList<CRType>();
 				break; 
 			case END_OBJECT: 	

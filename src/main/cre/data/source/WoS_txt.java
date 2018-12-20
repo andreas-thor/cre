@@ -73,7 +73,7 @@ public class WoS_txt extends ImportReader {
 		String tagBlock = "";
 		String value = "";
 			
-		PubType pub = new PubType();
+		PubType pub = PubType.create();
 		pub.setFS("WoS");
 		pub.length = 0;
 		List<String> C1 = new ArrayList<String>();

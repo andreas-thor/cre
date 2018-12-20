@@ -1,13 +1,10 @@
 package main.cre.data.type;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javafx.beans.property.SimpleIntegerProperty;
@@ -17,7 +14,7 @@ import javafx.beans.value.ObservableValue;
 import main.cre.data.CRStatsInfo;
 import main.cre.ui.CRTableView.ColDataType;
 
-public class PubType implements Comparable<PubType> {
+public abstract class PubType implements Comparable<PubType> {
 
 	public static enum PubColumn {
 		
@@ -79,48 +76,6 @@ public class PubType implements Comparable<PubType> {
 	}
 	
 
-	
-	// private static String[] csvColumnsPub = new String[] {"PUBID", "PT",
-	// "AU", "AF", "C1", "EM", "AA", "TI", "PY", "SO", "VL", "IS", "AR", "BP",
-	// "EP", "PG", "TC", "DI", "LI", "AB", "DE", "DT", "FS", "UT"};
-
-	private SimpleIntegerProperty ID;
-	
-	private SimpleStringProperty PT; // Publication Type (WoS only)
-
-	// Authors; each author has format: "<lastname>, <initials_without_dots>"
-	private List<String> AU; 
-	// Authors Full Name; format: "<lastname>, <firstnames>
-	private List<String> AF; 
-	// Authors with Affiliations / Adresses; format: "array ("<lastname>, <firstnames>]", "<affiliation>")
-	private List<String[]> C1; 
-	// E-Mail Adressess
-	private List<String> EM; 
-	// All affiliations (Scopus only)
-	private List<String> AA; 
-
-	private SimpleStringProperty TI; // Title
-	private SimpleObjectProperty<Integer> PY; // Year
-
-	private SimpleStringProperty SO; // Source title
-	private SimpleStringProperty VL; // Volume
-	private SimpleStringProperty IS; // Issue
-	private SimpleStringProperty AR; // Article Number
-
-	private SimpleObjectProperty<Integer> BP; // Beginning Page / Page Start
-	private SimpleObjectProperty<Integer> EP; // Ending Page / Page End
-	private SimpleObjectProperty<Integer> PG; // Page Count
-
-	private SimpleObjectProperty<Integer> TC; // Times Cited
-
-	private SimpleStringProperty DI; // Digital Object Identifier (DOI)
-	private SimpleStringProperty LI; // Link (Scopus only)
-	private SimpleStringProperty AB; // Abstract
-	private SimpleStringProperty DE; // Author Keywords
-
-	private SimpleStringProperty DT; // Document Typs
-	private SimpleStringProperty FS; // File Source (Scopus only)
-	private SimpleStringProperty UT; // Unique Article Identifier
 
 	public int length; // approx. size for import status bar
 
@@ -129,43 +84,16 @@ public class PubType implements Comparable<PubType> {
 
 	private boolean flag;
 	
+	
+	public static PubType create() {
+		return new PubType_Prop();
+//		return new PubType_Tiny();
+	}
+	
 	public PubType() {
 		super();
 		
 		crList = new LinkedHashSet<CRType>();
-		
-		ID = new SimpleIntegerProperty();
-		PT = new SimpleStringProperty();
-		
-		AU = new ArrayList<String>();
-		AF = new ArrayList<String>();
-		C1 = new ArrayList<String[]>();
-		EM = new ArrayList<String>();
-		AA = new ArrayList<String>();
-		
-		TI = new SimpleStringProperty();
-		PY = new SimpleObjectProperty<Integer>();
-
-		SO = new SimpleStringProperty();
-		VL = new SimpleStringProperty();
-		IS = new SimpleStringProperty();
-		AR = new SimpleStringProperty();
-
-		BP = new SimpleObjectProperty<Integer>();
-		EP = new SimpleObjectProperty<Integer>();
-		PG = new SimpleObjectProperty<Integer>();
-
-		TC = new SimpleObjectProperty<Integer>();
-
-		DI = new SimpleStringProperty();
-		LI = new SimpleStringProperty();
-		AB = new SimpleStringProperty();
-		DE = new SimpleStringProperty();
-
-		DT = new SimpleStringProperty();
-		FS = new SimpleStringProperty();
-		UT = new SimpleStringProperty();
-		
 		setFlag(false);
 	}
 	
@@ -276,299 +204,106 @@ public class PubType implements Comparable<PubType> {
 	}
 
 	
-	public Integer getID() {
-		return ID.get();
-	}
-	public SimpleIntegerProperty getIDProp() {
-		return ID;
-	}
-	public void setID (int iD) {
-		ID.set(iD);
-	}
+	public abstract Integer getID();
+	public abstract SimpleIntegerProperty getIDProp();
+	public abstract void setID (int iD);
 	
-	public String getPT() {
-		return PT.get();
-	}
-
-	public SimpleStringProperty getPTProp() {
-		return PT;
-	}
-
-	public void setPT(String pT) {
-		PT.set(pT);
-	}
-
-	public Stream<String> getAU() {
-		return AU.stream();
-	}
-	public int getAUSize() {
-		return AU.size();
-	}
-	public SimpleStringProperty getAUProp() {
-		return new SimpleStringProperty(String.join("; ", AU));
-	}
-	public void addAU(String e) {
-		AU.add(e);
-	}
-
-
-	public Stream<String> getAF() {
-		return AF.stream();
-	}
-	public int getAFSize() {
-		return AF.size();
-	}
-	public SimpleStringProperty getAFProp() {
-		return new SimpleStringProperty(String.join("; ", AF));
-	}
-	public void addAF(String e) {
-		AF.add(e);
-	}
+	public abstract String getPT();
+	public abstract SimpleStringProperty getPTProp();
+	public abstract void setPT(String pT);
 	
+	public abstract Stream<String> getAU();
+	public abstract int getAUSize();
+	public abstract SimpleStringProperty getAUProp();
+	public abstract void addAU(String e);
 
-	public Stream<String[]> getC1() {
-		return C1.stream();
-	}
-	public int getC1Size() {
-		return C1.size();
-	}
-	public SimpleStringProperty getC1Prop() {
-		return new SimpleStringProperty(String.join("; ", C1.stream().map(it -> "["+String.join("; ", it)+"]").collect(Collectors.toList())));
-	}
-	public void addC1(String[] e) {
-		C1.add(e);
-	}
+	public abstract Stream<String> getAF();
+	public abstract int getAFSize(); 
+	public abstract SimpleStringProperty getAFProp();
+	public abstract void addAF(String e);
 
+	public abstract Stream<String[]> getC1();
+	public abstract int getC1Size();
+	public abstract SimpleStringProperty getC1Prop();
+	public abstract void addC1(String[] e);
 	
-	public Stream<String> getEM() {
-		return EM.stream();
-	}
-	public int getEMSize() {
-		return EM.size();
-	}
-	public SimpleStringProperty getEMProp() {
-		return new SimpleStringProperty(String.join("; ", EM));
-	}
-	public void addEM(String e) {
-		EM.add(e);
-	}
+	public abstract Stream<String> getEM();
+	public abstract int getEMSize();
+	public abstract SimpleStringProperty getEMProp();
+	public abstract void addEM(String e);
+	
+	public abstract Stream<String> getAA();
+	public abstract int getAASize();
+	public abstract SimpleStringProperty getAAProp();
+	public abstract void addAA(String e);
 
-	public Stream<String> getAA() {
-		return AA.stream();
-	}
-	public int getAASize() {
-		return AA.size();
-	}
-	public SimpleStringProperty getAAProp() {
-		return new SimpleStringProperty(String.join("; ", AA));
-	}
-	public void addAA(String e) {
-		AA.add(e);
-	}
+	public abstract String getTI();
+	public abstract SimpleStringProperty getTIProp();
+	public abstract void setTI(String tI);
 
-	public String getTI() {
-		return TI.get();
-	}
+	public abstract Integer getPY();
+	public abstract SimpleObjectProperty<Integer> getPYProp();
+	public abstract void setPY(Integer pY);
 
-	public SimpleStringProperty getTIProp() {
-		return TI;
-	}
+	public abstract String getSO();
+	public abstract SimpleStringProperty getSOProp();
+	public abstract void setSO(String sO);
 
-	public void setTI(String tI) {
-		TI.set(tI);
-	}
+	public abstract String getVL();
+	public abstract SimpleStringProperty getVLProp();
+	public abstract void setVL(String vL);
+	
+	public abstract String getIS();
+	public abstract SimpleStringProperty getISProp();
+	public abstract void setIS(String iS);
+	
+	public abstract String getAR();
+	public abstract SimpleStringProperty getARProp();
+	public abstract void setAR(String aR);
+	
+	public abstract Integer getBP();
+	public abstract SimpleObjectProperty<Integer> getBPProp();
+	public abstract void setBP(Integer bP);
+	
+	public abstract Integer getEP();
+	public abstract SimpleObjectProperty<Integer> getEPProp();
+	public abstract void setEP(Integer eP);
 
-	public Integer getPY() {
-		return this.PY.get();
-	}
+	public abstract Integer getPG();
+	public abstract SimpleObjectProperty<Integer> getPGProp();
+	public abstract void setPG(Integer pG);
 
-	public SimpleObjectProperty<Integer> getPYProp() {
-		return PY;
-	}
+	public abstract Integer getTC();
+	public abstract SimpleObjectProperty<Integer> getTCProp();
+	public abstract void setTC(Integer tC);
 
-	public void setPY(Integer pY) {
-		PY.set(pY);
-	}
+	public abstract String getDI();
+	public abstract SimpleStringProperty getDIProp();
+	public abstract void setDI(String dI);
 
-	public String getSO() {
-		return SO.get();
-	}
+	public abstract String getLI();
+	public abstract SimpleStringProperty getLIProp();
+	public abstract void setLI(String lI);
 
-	public SimpleStringProperty getSOProp() {
-		return SO;
-	}
+	public abstract String getAB();
+	public abstract SimpleStringProperty getABProp();
+	public abstract void setAB(String aB);
 
-	public void setSO(String sO) {
-		SO.set(sO);
-	}
+	public abstract String getDE();
+	public abstract SimpleStringProperty getDEProp();
+	public abstract void setDE(String dE);
 
-	public String getVL() {
-		return VL.get();
-	}
+	public abstract String getDT();
+	public abstract SimpleStringProperty getDTProp();
+	public abstract void setDT(String dT);
 
-	public SimpleStringProperty getVLProp() {
-		return VL;
-	}
+	public abstract String getFS();
+	public abstract SimpleStringProperty getFSProp();
+	public abstract void setFS(String fS);
 
-	public void setVL(String vL) {
-		VL.set(vL);
-	}
-
-	public String getIS() {
-		return IS.get();
-	}
-
-	public SimpleStringProperty getISProp() {
-		return IS;
-	}
-
-	public void setIS(String iS) {
-		IS.set(iS);
-	}
-
-	public String getAR() {
-		return AR.get();
-	}
-
-	public SimpleStringProperty getARProp() {
-		return AR;
-	}
-
-	public void setAR(String aR) {
-		AR.set(aR);
-	}
-
-	public Integer getBP() {
-		return BP.get();
-	}
-
-	public SimpleObjectProperty<Integer> getBPProp() {
-		return BP;
-	}
-
-	public void setBP(Integer bP) {
-		BP.set(bP);
-	}
-
-	public Integer getEP() {
-		return EP.get();
-	}
-
-	public SimpleObjectProperty<Integer> getEPProp() {
-		return EP;
-	}
-
-	public void setEP(Integer eP) {
-		EP.set(eP);
-	}
-
-	public Integer getPG() {
-		return PG.get();
-	}
-
-	public SimpleObjectProperty<Integer> getPGProp() {
-		return PG;
-	}
-
-	public void setPG(Integer pG) {
-		PG.set(pG);
-	}
-
-	public Integer getTC() {
-		return TC.get();
-	}
-
-	public SimpleObjectProperty<Integer> getTCProp() {
-		return TC;
-	}
-
-	public void setTC(Integer tC) {
-		TC.set(tC);
-	}
-
-	public String getDI() {
-		return DI.get();
-	}
-
-	public SimpleStringProperty getDIProp() {
-		return DI;
-	}
-
-	public void setDI(String dI) {
-		DI.set(dI);
-	}
-
-	public String getLI() {
-		return LI.get();
-	}
-
-	public SimpleStringProperty getLIProp() {
-		return LI;
-	}
-
-	public void setLI(String lI) {
-		LI.set(lI);
-	}
-
-	public String getAB() {
-		return AB.get();
-	}
-
-	public SimpleStringProperty getABProp() {
-		return AB;
-	}
-
-	public void setAB(String aB) {
-		AB.set(aB);
-	}
-
-	public String getDE() {
-		return DE.get();
-	}
-
-	public SimpleStringProperty getDEProp() {
-		return DE;
-	}
-
-	public void setDE(String dE) {
-		DE.set(dE);
-	}
-
-	public String getDT() {
-		return DT.get();
-	}
-
-	public SimpleStringProperty getDTProp() {
-		return DT;
-	}
-
-	public void setDT(String dT) {
-		DT.set(dT);
-	}
-
-	public String getFS() {
-		return FS.get();
-	}
-
-	public SimpleStringProperty getFSProp() {
-		return FS;
-	}
-
-	public void setFS(String fS) {
-		FS.set(fS);
-	}
-
-	public String getUT() {
-		return UT.get();
-	}
-
-	public SimpleStringProperty getUTProp() {
-		return UT;
-	}
-
-	public void setUT(String uT) {
-		UT.set(uT);
-	}
+	public abstract String getUT();
+	public abstract SimpleStringProperty getUTProp();
+	public abstract void setUT(String uT);
 
 //	public int getLength() {
 //		return length;
@@ -582,7 +317,7 @@ public class PubType implements Comparable<PubType> {
 
 	@Override
 	public int compareTo(PubType o) {
-		return this.ID.get() - o.ID.get();
+		return this.getID().intValue() - o.getID().intValue();
 	}
 
 
@@ -591,31 +326,31 @@ public class PubType implements Comparable<PubType> {
 
 		PubType p = (PubType) obj;
 		
-		if (!this.TI.getValueSafe().equals(p.TI.getValueSafe())) return false;
-		if (!this.PT.getValueSafe().equals(p.PT.getValueSafe())) return false;
+		if (!this.getTIProp().getValueSafe().equals(p.getTIProp().getValueSafe())) return false;
+		if (!this.getPTProp().getValueSafe().equals(p.getPTProp().getValueSafe())) return false;
 		
-		if (!this.PY.isEqualTo(p.PY).get()) return false;
+		if (!this.getPYProp().isEqualTo(p.getPYProp()).get()) return false;
+
+		if (!this.getAU().equals(p.getAU())) return false;
 		
-		if (!this.AU.equals(p.AU)) return false;
-		
-		if (!this.SO.getValueSafe().equals(p.SO.getValueSafe())) return false;
-		if (!this.VL.getValueSafe().equals(p.VL.getValueSafe())) return false;
-		if (!this.IS.getValueSafe().equals(p.IS.getValueSafe())) return false;
-		if (!this.AR.getValueSafe().equals(p.AR.getValueSafe())) return false;
+		if (!this.getSOProp().getValueSafe().equals(p.getSOProp().getValueSafe())) return false;
+		if (!this.getVLProp().getValueSafe().equals(p.getVLProp().getValueSafe())) return false;
+		if (!this.getISProp().getValueSafe().equals(p.getISProp().getValueSafe())) return false;
+		if (!this.getARProp().getValueSafe().equals(p.getARProp().getValueSafe())) return false;
 
-		if (!this.BP.isEqualTo(p.BP).get()) return false;
-		if (!this.EP.isEqualTo(p.EP).get()) return false;
-		if (!this.PG.isEqualTo(p.PG).get()) return false;
-		if (!this.TC.isEqualTo(p.TC).get()) return false;
+		if (!this.getBPProp().isEqualTo(p.getBPProp()).get()) return false;
+		if (!this.getEPProp().isEqualTo(p.getEPProp()).get()) return false;
+		if (!this.getPGProp().isEqualTo(p.getPGProp()).get()) return false;
+		if (!this.getTCProp().isEqualTo(p.getTCProp()).get()) return false;
 
-		if (!this.DI.getValueSafe().equals(p.DI.getValueSafe())) return false;
-		if (!this.LI.getValueSafe().equals(p.LI.getValueSafe())) return false;
-		if (!this.AB.getValueSafe().equals(p.AB.getValueSafe())) return false;
-		if (!this.DE.getValueSafe().equals(p.DE.getValueSafe())) return false;
+		if (!this.getDIProp().getValueSafe().equals(p.getDIProp().getValueSafe())) return false;
+		if (!this.getLIProp().getValueSafe().equals(p.getLIProp().getValueSafe())) return false;
+		if (!this.getABProp().getValueSafe().equals(p.getABProp().getValueSafe())) return false;
+		if (!this.getDEProp().getValueSafe().equals(p.getDEProp().getValueSafe())) return false;
 
-		if (!this.DT.getValueSafe().equals(p.DT.getValueSafe())) return false;
-		if (!this.FS.getValueSafe().equals(p.FS.getValueSafe())) return false;
-		if (!this.UT.getValueSafe().equals(p.UT.getValueSafe())) return false;
+		if (!this.getDTProp().getValueSafe().equals(p.getDTProp().getValueSafe())) return false;
+		if (!this.getFSProp().getValueSafe().equals(p.getFSProp().getValueSafe())) return false;
+		if (!this.getUTProp().getValueSafe().equals(p.getUTProp().getValueSafe())) return false;
 		
 		return true;
 	}
@@ -623,14 +358,12 @@ public class PubType implements Comparable<PubType> {
 	
 	@Override
 	public int hashCode() {
-		return this.TI.getValueSafe().hashCode();
+		return (this.getTI() == null) ? 0 : this.getTI().hashCode();
 	}
 
 	public boolean isFlag() {
 		return flag;
 	}
-
-
 
 	public void setFlag(boolean flag) {
 		this.flag = flag;

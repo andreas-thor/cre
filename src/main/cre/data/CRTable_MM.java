@@ -79,14 +79,10 @@ public class CRTable_MM extends CRTable {
 		return includePubsWithoutCRs ? allPubs.keySet().stream() : getCR().flatMap(cr -> cr.getPub()).distinct();
 	}
 	
-	public Stream<PubType> getPub() {
-		return getPub(false);
-	}
+
 	
 
-	public CRType addCR(CRType cr) {
-		return this.addCR(cr, false);
-	}
+
 	
 	public CRType addCR(CRType cr, boolean checkForDuplicatesAndSetId) {
 		
@@ -128,8 +124,8 @@ public class CRTable_MM extends CRTable {
 				pub = pubMain;
 			}
 		} else {
+			pub.setID(this.allPubs.size()+1);
 			this.allPubs.put(pub, pub);
-			pub.setID(this.allPubs.size());
 		}
 		
 		if (addCRs) {

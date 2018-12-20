@@ -186,22 +186,16 @@ public class CRTable_DB extends CRTable {
 		return emptyStr;
 	}
 
-	@Override
-	public Stream<PubType> getPub() {
-		// TODO Auto-generated method stub
-		Stream<PubType> emptyStr = Stream.of();
-		return emptyStr;
-	}
 
-	@Override
-	public CRType addCR(CRType cr) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
+
 
 	@Override
 	public CRType addCR(CRType cr, boolean checkForDuplicatesAndSetId) {
-		// TODO Auto-generated method stub
+		
+
+		
+		
 		return null;
 	}
 

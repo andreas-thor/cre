@@ -42,6 +42,7 @@ public abstract class CRType implements Comparable<CRType>  {
 	
 	public static CRType create() {
 		return new CRType_Member();
+//		return new CRType_Tiny();
 	}
 	
 	

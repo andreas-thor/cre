@@ -37,10 +37,13 @@ public abstract class CRTable {
 	 */
 	public abstract Stream<PubType> getPub (boolean includePubsWithoutCRs);
 	
-	public abstract Stream<PubType> getPub();
-	
+	public Stream<PubType> getPub() {
+		return this.getPub(false);
+	}	
 
-	public abstract CRType addCR(CRType cr);
+	public CRType addCR(CRType cr) {
+		return this.addCR(cr, false);
+	}
 	
 	public abstract CRType addCR(CRType cr, boolean checkForDuplicatesAndSetId);
 	

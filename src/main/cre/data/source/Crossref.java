@@ -98,7 +98,7 @@ public class Crossref extends ImportReader {
 		}
 
 		JsonObject item = (JsonObject) jsonObject;
-		this.entry = new PubType();
+		this.entry = PubType.create();
 		this.entry.length = item.toString().length();
 		
 		if (item.getJsonArray("title") != null) {
