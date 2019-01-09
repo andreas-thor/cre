@@ -8,12 +8,12 @@ html, body {
 }
 
 div#header {
-    background-color:black;
-    color:white;
-    text-align:left;
-    padding:5px;
-    padding-left:300px; 
-	background-image:url('CRLogo_white.png');
+	background-color: black;
+	color: white;
+	text-align: left;
+	padding: 5px;
+	padding-left: 300px;
+	background-image: url('CRLogo_white.png');
 	xxxbackground-size: Auto 90%;
 	background-repeat: no-repeat; /* for vertical repeat */
 }
@@ -25,7 +25,7 @@ div#header {
 	/* learn more: http://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer/ */
 }
 
-#header2{
+#header2 {
 	height: 200px; /* can be variable as well */
 }
 
@@ -35,28 +35,27 @@ div#header {
 }
 
 div#footer {
-    clear:both;
-    text-align:center;
-    padding:5px;
-    border-top-style: solid;
-    border-top-width: 1px;
+	clear: both;
+	text-align: center;
+	padding: 5px;
+	border-top-style: solid;
+	border-top-width: 1px;
 }
 </style>
 
 <script>
-function toggleReadMore() {
-  var x = document.getElementById("readMore");
-  var y = document.getElementById("introButton");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-    y.innerHTML = "Show less";
-  } else {
-    x.style.display = "none";
-    y.innerHTML = "Read more";
-  }
-  
-  
-} 
+	function toggleReadMore() {
+		var x = document.getElementById("readMore");
+		var y = document.getElementById("introButton");
+		if (x.style.display === "none") {
+			x.style.display = "block";
+			y.innerHTML = "Show less";
+		} else {
+			x.style.display = "none";
+			y.innerHTML = "Read more";
+		}
+
+	}
 </script>
 
 </head>
@@ -64,63 +63,49 @@ function toggleReadMore() {
 	<div id="wrapper">
 		<div id="header">
 			<h1>Some Example data</h1>
-			<p style="onclick">Here comes some introductory text ... <button id="introButton" onclick="toggleReadMore()">Read More</button>
+			<p style="">
+				What are the landmark
+				papers in scientific fields? On which shoulders does research in
+				these fields stand? Which papers are indispensable for scientific
+				progress? 
+				<button id="introButton" onclick="toggleReadMore()">Read
+					More</button>
 			</p>
-			<p id="readMore" style="display:none">
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			very long text ...
-			
-			</p>
+			<p id="readMore" style="display: none">These are typical questions which are not only of interest
+				for researchers (who frequently know the answers – or are supposed
+				to know them), but also for the interested general public. Citation
+				counts are usually used to identify very useful papers, since they
+				reflect the wisdom of crowds – the many (or few) scientists using
+				the published results for their own research. We identified with
+				recently developed methods for the program CRExplorer landmark
+				publications in all Web of Science (WoS, Clarivate Analytics)
+				subject categories (WoSSC). These are publications which belong more
+				frequently than other publications to the top-‰ in their WoSSC
+				across the citing years. We used the WoS custom data of the Max
+				Planck Society’s in-house database derived from the Science Citation
+				Index Expanded (SCI-E), Social Sciences Citation Index (SSCI), and
+				Arts and Humanities Citation Index (AHCI) produced by Clarivate
+				Analytics (Philadelphia, USA). All records for the papers of the
+				document type “article” published between 1980 and 2017 were
+				exported and analyzed separately for each WoSSC (except
+				“Multidisciplinary Sciences”) with a proportion of at least 30% of
+				linked vs. cited references. The top 10 papers of each of the 204
+				WoSSCs can be found in the table below.</p>
 		</div>
-		
-		<iframe id="body" width="100%" frameborder="0" scrolling="no" 
-				src="https://onedrive.live.com/embed?resid=863CEC1B9B3400B6%21180&authkey=%21ABOVI5fgdbkUrvM&em=2&ActiveCell='Sheet1'!A1&Item='Sheet1'!A1%3AG2041&wdInConfigurator=True"></iframe>
-	<div id="footer">
-		<a href="https://www.hft-leipzig.de/en.html"><img align="middle"
-			height="50em" src="hftl.jpg" /></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
-			href="http://www.mpg.de/en"><img align="middle" height="50em"
-			src="mpg.png" /></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
-			href="http://www.uva.nl/en/home"><img align="middle"
-			height="25em" src="uva.jpg" /></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
-			href="https://www.ethz.ch/en.html"><img align="middle"
-			height="50em" src="eth.jpg" /></a>
 
-	</div>		
+		<iframe id="body" width="100%" frameborder="0" scrolling="no"
+			src="https://onedrive.live.com/embed?resid=863CEC1B9B3400B6%21180&authkey=%21ABOVI5fgdbkUrvM&em=2&ActiveCell='Sheet1'!A1&Item='Sheet1'!A1%3AG2041&wdInConfigurator=True"></iframe>
+		<div id="footer">
+			<a href="https://www.hft-leipzig.de/en.html"><img align="middle"
+				height="50em" src="hftl.jpg" /></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+				href="http://www.mpg.de/en"><img align="middle" height="50em"
+				src="mpg.png" /></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+				href="http://www.uva.nl/en/home"><img align="middle"
+				height="25em" src="uva.jpg" /></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a
+				href="https://www.ethz.ch/en.html"><img align="middle"
+				height="50em" src="eth.jpg" /></a>
+
+		</div>
 	</div>
 </body>
 </html>
