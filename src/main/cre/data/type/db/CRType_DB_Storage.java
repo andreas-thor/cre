@@ -18,7 +18,7 @@ import java.util.stream.StreamSupport;
 import main.cre.data.type.abs.CRCluster;
 import main.cre.data.type.abs.CRType;
 
-class CRType_DB_Storage {
+class CRType_DB_Storage { 
 
 	
 	private static class CRType_ResultSet implements Iterator<CRType_DB> {
