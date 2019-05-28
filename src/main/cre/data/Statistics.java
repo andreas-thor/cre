@@ -3,7 +3,8 @@ package main.cre.data;
 import java.util.IntSummaryStatistics;
 
 import main.cre.data.match.CRMatch2;
-import main.cre.data.type.CRType;
+import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.mm.CRType_MM;
 
 public class Statistics {
 
@@ -42,7 +43,7 @@ public class Statistics {
 	 * @return [min, max]
 	 */
 	public static int[] getMaxRangeNCR () {
-		IntSummaryStatistics stats = CRTable.get().getCR().map((CRType it) -> it.getN_CR()).mapToInt(Integer::intValue).summaryStatistics();
+		IntSummaryStatistics stats = CRTable.get().getCR().map(it -> it.getN_CR()).mapToInt(Integer::intValue).summaryStatistics();
 		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
 	}
 
@@ -121,7 +122,7 @@ public class Statistics {
 	}
 
 	public static int getNumberOfCRsWithoutRPY () {
-		return (int) CRTable.get().getCR().filter( (CRType it) -> it.getRPY() == null).count();  
+		return (int) CRTable.get().getCR().filter(it -> it.getRPY() == null).count();  
 	}
 
 

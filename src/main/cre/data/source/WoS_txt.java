@@ -14,11 +14,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import main.cre.data.CRTable;
 import main.cre.data.Statistics;
-import main.cre.data.type.CRType;
-import main.cre.data.type.CRType_Member;
-import main.cre.data.type.PubType;
+import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.CRType;
+import main.cre.data.type.mm.PubType_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 /** 
@@ -67,13 +66,13 @@ public class WoS_txt extends ImportReader {
 	
 	
 	
-	private PubType parsePub (List<String> it) {
+	private PubType_MM parsePub (List<String> it) {
 
 		String currentTag = "";
 		String tagBlock = "";
 		String value = "";
 			
-		PubType pub = PubType.create();
+		PubType_MM pub = PubType_MM.create();
 		pub.setFS("WoS");
 		pub.length = 0;
 		List<String> C1 = new ArrayList<String>();

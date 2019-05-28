@@ -18,11 +18,10 @@ import java.util.stream.IntStream;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
-import main.cre.data.CRTable;
 import main.cre.data.Statistics;
-import main.cre.data.type.CRType;
-import main.cre.data.type.CRType_Member;
-import main.cre.data.type.PubType;
+import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.CRType;
+import main.cre.data.type.mm.PubType_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 public class Scopus_csv extends ImportReader {
@@ -92,9 +91,9 @@ public class Scopus_csv extends ImportReader {
 	}
 	
 	
-	private PubType parsePub (String[] line) {
+	private PubType_MM parsePub (String[] line) {
 		
-		PubType pub = PubType.create(); // .parseScopus(it, attributes, yearRange);
+		PubType_MM pub = PubType_MM.create(); // .parseScopus(it, attributes, yearRange);
 		
 		pub.setPT("J"); // TODO: what is the default Publication Type? (No value in scopus!)
 				

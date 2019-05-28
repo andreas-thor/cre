@@ -9,7 +9,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import main.cre.data.type.CRType;
+import main.cre.data.type.abs.CRType;
 
 public class CRPubInfo extends Dialog<Void> {
 

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
-import main.cre.data.type.PubType;
+import main.cre.data.type.mm.PubType_MM;
 
 public class CRStatsInfo {
 
@@ -51,7 +51,7 @@ public class CRStatsInfo {
 	}
 	
 	
-	public void updateStats (PubType pub) {
+	public void updateStats (PubType_MM pub) {
 		noOfPubs++;
 		noOfCitingPubs += (pub.getSizeCR()>0) ? 1 : 0;
 		noOfPubsWithoutPY += (pub.getPY() == null) ? 1 : 0;

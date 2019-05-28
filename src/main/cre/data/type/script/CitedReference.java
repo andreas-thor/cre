@@ -1,4 +1,6 @@
-package main.cre.data.type;
+package main.cre.data.type.script;
+
+import main.cre.data.type.mm.CRType_MM;
 
 /**
  * Export data structure for Cited References
@@ -52,7 +54,7 @@ public class CitedReference {
 	private CitedReference () {
 	}
 	
-	public static CitedReference createFromCRType (CRType cr) {
+	public static CitedReference createFromCRType (CRType_MM cr) {
 		
 		CitedReference result = new CitedReference();
 		

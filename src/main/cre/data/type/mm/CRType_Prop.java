@@ -1,4 +1,4 @@
-package main.cre.data.type;
+package main.cre.data.type.mm;
 
 import java.util.EnumMap;
 
@@ -9,7 +9,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import main.cre.data.match.CRCluster;
 
-public class CRType_Prop extends CRType {
+public class CRType_Prop extends CRType_MM {
 
 	private SimpleIntegerProperty ID;
 	private SimpleStringProperty CR;

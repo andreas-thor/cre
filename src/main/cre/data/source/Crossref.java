@@ -27,11 +27,10 @@ import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
 import main.cre.Exceptions.BadResponseCodeException;
-import main.cre.data.CRTable;
-import main.cre.data.type.CRType;
-import main.cre.data.type.CRType.FORMATTYPE;
-import main.cre.data.type.CRType_Member;
-import main.cre.data.type.PubType;
+import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.CRType;
+import main.cre.data.type.abs.CRType.FORMATTYPE;
+import main.cre.data.type.mm.PubType_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 /**
@@ -98,7 +97,7 @@ public class Crossref extends ImportReader {
 		}
 
 		JsonObject item = (JsonObject) jsonObject;
-		this.entry = PubType.create();
+		this.entry = PubType_MM.create();
 		this.entry.length = item.toString().length();
 		
 		if (item.getJsonArray("title") != null) {

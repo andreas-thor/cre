@@ -1,7 +1,5 @@
-package main.cre.data.type;
+package main.cre.data.type.abs;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -9,11 +7,11 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import main.cre.data.match.CRCluster;
+import main.cre.data.type.db.CRType_DB;
+import main.cre.data.type.mm.CRType_Member;
 
-public abstract class CRType implements Comparable<CRType>  {
+public abstract class CRType implements Comparable<CRType> {
 
-	
 	public static enum FORMATTYPE { 
 		WOS, 	
 		SCOPUS 
@@ -31,95 +29,23 @@ public abstract class CRType implements Comparable<CRType>  {
 		
 	};
 	
-	private FORMATTYPE type = null;	
-	private boolean flag;
-	
-	private Set<PubType> pubList;
-	
-	public CRType() {
-		pubList = new HashSet<PubType>();
-	}
 	
 	public static CRType create() {
-		return new CRType_Member();
-//		return new CRType_Tiny();
-	}
-	
-	
-	
-	
-	public static int mein() {
-		return 3;
-	}
-	
-	public boolean isFlag() {
-		return flag;
-	}
-
-	public void setFlag(boolean flag) {
-		this.flag = flag;
-	}
-	
-	public FORMATTYPE getType() {
-		return type;
-	}
-
-	public void setType(FORMATTYPE type) {
-		this.type = type;
-	}
-
-	public Stream<PubType> getPub() {
-		return pubList.stream();
-	}
-
-	public int getNumberOfPubs() {
-		return pubList.size();
-	}
-
-	
-	public Stream<PubType> getPub(int py) {
-		return pubList.stream().filter(pub -> (pub.getPY()!=null) && (pub.getPY().equals(py)));
-	}
-	
-	
-	/**
-	 * Adds a PUB to the CR
-	 * @param pub to be added
-	 * @param inverse true, if this CR should also be added to the PUB
-	 */
-	public void addPub(PubType pub, boolean inverse) {
-		if (inverse) {
-			pub.addCR(this, false);
+		
+		switch (CRTable.type) {
+		case MM: return new CRType_Member();	//		return new CRType_Tiny();
+		case DB: return new CRType_DB();
+		default: return null;
 		}
-		this.resetN_CR();	// invalidate N_CR --> updated on next get access
-		this.pubList.add(pub);
-	}
-
-
-	/**
-	 * Removes a PUB from the CR
-	 * @param pub to be removed
-	 * @param inverse true, if this CR should also be remove from the PUB
-	 * @return if the PUB was in the publist
-	 */
-	public boolean removePub(PubType pub, boolean inverse) {
-		if (inverse) {
-			pub.removeCR(this, false);
-		}
-		this.resetN_CR();	// invalidate N_CR --> updated on next get access
-		return this.pubList.remove(pub);
-	}
-	
-	
-	public void removeAllPubs(boolean inverse) {
-		if (inverse) {
-			pubList.forEach(pub -> pub.removeCR(this, false));
-		}
-		this.resetN_CR();
-		pubList.clear();
 		
 	}
 	
+	public abstract int getNumberOfPubs();
+	public abstract Stream<? extends PubType> getPub();
+	public abstract void addPub(PubType pubType, boolean b);
+	
+	public abstract boolean removePub(PubType pub, boolean inverse);
+	public abstract void removeAllPubs(boolean inverse);
 	
 	public abstract int getID();
 	public abstract SimpleIntegerProperty getIDProp();
@@ -184,6 +110,9 @@ public abstract class CRType implements Comparable<CRType>  {
 
 	public abstract CRCluster getCID2();
 	public abstract void setCID2(CRCluster cID2);
+	public abstract void setCID2(String s);
+	public abstract void setCID2(CRType cr);
+	public abstract void setCID2(CRType cr, int c1);
 
 	public abstract int getCID_S();
 	public abstract SimpleIntegerProperty getCID_SProp();
@@ -365,6 +294,13 @@ public abstract class CRType implements Comparable<CRType>  {
 	public abstract void setTYPE(String tYPE);
 	
 	
+	public abstract boolean isFlag();
+	public abstract void setFlag(boolean flag);
+
+	public abstract FORMATTYPE getType();
+	public abstract void setType(FORMATTYPE type);
+	
+	
 	public void copyNotNULLValues (CRType cr) {
 		
 		if (cr.getCR()!=null) 		this.setCR(cr.getCR());
@@ -380,6 +316,24 @@ public abstract class CRType implements Comparable<CRType>  {
 		if (cr.getPAG()!=null) 		this.setPAG(cr.getPAG());
 		if (cr.getVOL()!=null) 		this.setVOL(cr.getVOL());
 		if (cr.getDOI()!=null) 		this.setDOI(cr.getDOI());
+	}
+	
+
+	@Override
+	public boolean equals(Object obj) {
+		return this.getCR().equals(((CRType)obj).getCR());
+	}
+	
+
+	@Override
+	public int hashCode() {
+		return this.getCR().hashCode();
+	}
+
+
+	@Override
+	public int compareTo(CRType o) {
+		return this.getID() - o.getID();
 	}
 	
 	
@@ -427,32 +381,8 @@ public abstract class CRType implements Comparable<CRType>  {
 		// TODO Auto-generated method stub
 		return result.toString();
 	}
-
-
-
-
-	@Override
-	public boolean equals(Object obj) {
-		return this.getCR().equals(((CRType)obj).getCR());
-	}
 	
 
-	@Override
-	public int hashCode() {
-		return this.getCR().hashCode();
-	}
-
-
-	@Override
-	public int compareTo(CRType o) {
-		return this.getID() - o.getID();
-	}
-
-
-
-
+	
 	
 }
-
-
-

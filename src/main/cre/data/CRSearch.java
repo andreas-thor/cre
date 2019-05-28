@@ -20,6 +20,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.RAMDirectory;
 
+import main.cre.data.type.abs.CRTable;
 import main.cre.ui.CRTableView.CRColumn;
 
 public class CRSearch {

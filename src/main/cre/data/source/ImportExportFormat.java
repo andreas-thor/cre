@@ -14,9 +14,10 @@ import main.cre.Exceptions.AbortedException;
 import main.cre.Exceptions.FileTooLargeException;
 import main.cre.Exceptions.UnsupportedFileFormatException;
 import main.cre.data.CRStatsInfo;
-import main.cre.data.CRTable;
 import main.cre.data.Sampling;
-import main.cre.data.type.CRType;
+import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.CRType;
+import main.cre.data.type.mm.CRType_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 public enum ImportExportFormat {
@@ -197,7 +198,7 @@ public enum ImportExportFormat {
 							}
 					
 							if (pub.getSizeCR()>0) {		
-								crTab.addPub(pub, true);
+								crTab.addPub(pub, true, false);
 								
 //								if ((UserSettings.get().getMaxCR()>0) && (numberOfCRs.addAndGet(pub.getSizeCR()) >= UserSettings.get().getMaxCR())) {
 //									this.importReader.stop(); 

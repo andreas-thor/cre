@@ -1,43 +1,48 @@
-package main.cre.data;
+package main.cre.data.type.abs;
 
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import main.cre.data.db.CRTable_DB;
-import main.cre.data.type.CRType;
-import main.cre.data.type.PubType;
+import main.cre.data.type.db.CRTable_DB;
+import main.cre.data.type.mm.CRTable_MM;
 
 public abstract class CRTable {
  
 	public static enum COMPARATOR { LT, LTE, EQ, GTE, GT };
 	
-
+	public static enum TABLE_IMPL_TYPES { MM, DB }
+	
 	private boolean aborted;
 	private int npctRange;
 	
+	public static TABLE_IMPL_TYPES type = TABLE_IMPL_TYPES.MM;
+	
 	public static CRTable get() {
-		return CRTable_MM.get();
-//		return CRTable_DB.get();
+		
+		switch (type) {
+		case MM: return CRTable_MM.get();
+		case DB: return CRTable_DB.get();
+		default: return null;
+		}
 	}
 	
-
 	/**
 	 * Initialize empty CRTable
 	 */
 	
 	public abstract void init();
 	
-	public abstract Stream<CRType> getCR();
+	public abstract Stream<? extends CRType> getCR();
 
 	/**
 	 * 
 	 * @param includePubsWithoutCRs default=false
 	 * @return
 	 */
-	public abstract Stream<PubType> getPub (boolean includePubsWithoutCRs);
+	public abstract Stream<? extends PubType> getPub (boolean includePubsWithoutCRs);
 	
-	public Stream<PubType> getPub() {
+	public Stream<? extends PubType> getPub() {
 		return this.getPub(false);
 	}	
 
@@ -48,12 +53,15 @@ public abstract class CRTable {
 	public abstract CRType addCR(CRType cr, boolean checkForDuplicatesAndSetId);
 	
 	
+	
+	
+	
 	/*
 	 * We additionally store all pubs in allPubs
 	 * This is later only used for export (to Scopus, WoS, CSV_Pub) when the user setting "include pubs without CRs" is set
 	 */
 	
-	public abstract PubType addPub (PubType pub, boolean addCRs);
+//	public abstract PubType addPub (PubType pub, boolean addCRs);
 	
 	public abstract PubType addPub (PubType pub, boolean addCRs, boolean checkForDuplicates);
 	
@@ -78,8 +86,6 @@ public abstract class CRTable {
 	
 	
 	
-
-	public abstract void removeCR (Predicate<CRType> cond);
 
 	
 	

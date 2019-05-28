@@ -8,11 +8,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 
-import main.cre.data.type.PubType;
+import main.cre.data.type.mm.PubType_MM;
 
-public abstract class ImportReader implements Iterator<PubType> {
+public abstract class ImportReader implements Iterator<PubType_MM> {
 
-	protected PubType entry = null;
+	protected PubType_MM entry = null;
 	protected BufferedReader br = null;
 	protected boolean stop = false;
 	
@@ -42,8 +42,8 @@ public abstract class ImportReader implements Iterator<PubType> {
 	}
 	
 	
-	public PubType next() {
-		PubType result = entry;
+	public PubType_MM next() {
+		PubType_MM result = entry;
 		
 		try {
 			computeNextEntry();
@@ -60,7 +60,7 @@ public abstract class ImportReader implements Iterator<PubType> {
 		br.close();
 	}
 	
-	public Iterable<PubType> getIterable () { 
+	public Iterable<PubType_MM> getIterable () { 
 		return () -> this;
 	}
 	

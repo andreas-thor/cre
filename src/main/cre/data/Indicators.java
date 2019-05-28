@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import main.cre.data.CRChartData.SERIESTYPE;
-import main.cre.data.type.CRType;
-import main.cre.data.type.CRType.PERCENTAGE;
+import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.CRType;
+import main.cre.data.type.abs.CRType.PERCENTAGE;
+import main.cre.data.type.mm.CRType_MM;
 
 
 public class Indicators {

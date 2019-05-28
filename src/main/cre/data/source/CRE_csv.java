@@ -14,11 +14,12 @@ import com.opencsv.CSVWriter;
 import main.cre.CitedReferencesExplorer;
 import main.cre.data.CRChartData;
 import main.cre.data.CRChartData.SERIESTYPE;
-import main.cre.data.CRTable;
 import main.cre.data.Statistics;
-import main.cre.data.type.CRType;
-import main.cre.data.type.CitedReference;
-import main.cre.data.type.PubType.PubColumn;
+import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.CRType;
+import main.cre.data.type.mm.CRType_MM;
+import main.cre.data.type.mm.PubType_MM.PubColumn;
+import main.cre.data.type.script.CitedReference;
 import main.cre.ui.CRTableView.CRColumn;
 import main.cre.ui.statusbar.StatusBar;
 

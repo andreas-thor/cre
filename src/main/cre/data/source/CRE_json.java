@@ -22,15 +22,13 @@ import javax.json.stream.JsonParser;
 import main.cre.Exceptions.AbortedException;
 import main.cre.Exceptions.FileTooLargeException;
 import main.cre.Exceptions.UnsupportedFileFormatException;
-import main.cre.data.CRTable;
 import main.cre.data.Statistics;
-import main.cre.data.match.CRCluster;
 import main.cre.data.match.CRMatch2;
-import main.cre.data.match.CRPair2;
-import main.cre.data.type.CRType;
-import main.cre.data.type.CRType.FORMATTYPE;
-import main.cre.data.type.CRType_Member;
-import main.cre.data.type.PubType;
+import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.CRType;
+import main.cre.data.type.abs.CRType.FORMATTYPE;
+import main.cre.data.type.abs.PubType;
+import main.cre.data.type.mm.PubType_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 
@@ -112,7 +110,7 @@ public class CRE_json {
 			case END_OBJECT: 	
 				int internalId = cr.getID();
 				cr = crTab.addCR(cr, checkForDuplicates);
-				cr.setCID2(new CRCluster (cr));
+				cr.setCID2(cr);
 				result.put(internalId, cr);  
 				break;
 			case KEY_NAME:		key = parser.getString(); break;
@@ -130,7 +128,7 @@ public class CRE_json {
 				case "PAG": 	cr.setPAG(parser.getString()); break;
 				case "VOL": 	cr.setVOL(parser.getString()); break;
 				case "DOI": 	cr.setDOI(parser.getString()); break;
-				case "CID2": 	cr.setCID2(new CRCluster(parser.getString())); break;
+				case "CID2": 	cr.setCID2(parser.getString()); break;
 				default: System.out.println("CRDATA.json >> Unknow Key with String Value: " + key); 
 				}
 				break;
@@ -170,7 +168,7 @@ public class CRE_json {
 			
 			switch (parser.next()) {
 			case START_OBJECT:
-				pub = PubType.create(); 
+				pub = PubType_MM.create(); 
 				CRList = new ArrayList<CRType>();
 				break; 
 			case END_OBJECT: 	
@@ -289,7 +287,7 @@ public class CRE_json {
 				CRType cr1 = mapId2CR.get(id1);
 				CRType cr2 = mapId2CR.get(id2);
 				if (!(cr1==null) && !(cr2==null)) {
-					CRMatch2.get().addPair(new CRPair2 (cr1, cr2, parser.getBigDecimal().doubleValue()), isManual, false, null);
+					CRMatch2.get().addPair(cr1, cr2, parser.getBigDecimal().doubleValue(), isManual, false, null);
 				}
 				break;
 			default:break;  

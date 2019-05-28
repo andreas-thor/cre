@@ -9,14 +9,42 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import main.cre.data.CRTable;
 import main.cre.data.Statistics;
-import main.cre.data.type.CRType;
+import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.CRType;
 import main.cre.ui.statusbar.StatusBar;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
 public class CRMatch2 {
 
+	
+	private class CRPair2 {
+		
+		CRType cr1;
+		CRType cr2;
+		Double s;
+
+		public CRPair2(CRType cr1, CRType cr2, Double s) {
+			super();
+			
+			if (cr1.getID()<cr2.getID()) {
+				this.cr1 = cr1;
+				this.cr2 = cr2;
+			} else {
+				this.cr1 = cr2;
+				this.cr2 = cr1;
+			}
+			this.s = s;
+		}
+		
+
+		@Override
+		public String toString () {
+			return (this.cr1.getID() + "/" + this.cr2.getID() + "/" + this.s);
+		}
+		
+	}	
+	
 	private static CRMatch2 crmatch = null;
 	
 	public static enum ManualMatchType2 { 
@@ -232,12 +260,12 @@ public class CRMatch2 {
 		int pbSize = matchResult.get(false).size()+matchResult.get(true).size();
 		
 		if (type == ClusteringType2.INIT) {	// consider manual matches only
-			CRTable.get().getCR().forEach(cr -> cr.setCID2(new CRCluster(cr)));
+			CRTable.get().getCR().forEach(cr -> cr.setCID2(cr));
 			pbSize = matchResult.get(false).size();
 		}
 		
 		if (type == ClusteringType2.REFRESH) {
-			((changeCR == null) ? CRTable.get().getCR() : changeCR.stream()).forEach(cr -> cr.setCID2(new CRCluster(cr, cr.getCID2().c1)));
+			((changeCR == null) ? CRTable.get().getCR() : changeCR.stream()).forEach(cr -> cr.setCID2(cr, cr.getCID2().getC1()));
 		}
 
 		StatusBar.get().initProgressbar(pbSize, String.format("Clustering %d objects (%s) with threshold %.2f", Statistics.getNumberOfCRs(), type.label, threshold));
@@ -292,6 +320,10 @@ public class CRMatch2 {
 		return matchResult.get(isManual).entrySet().stream().mapToLong( entry -> entry.getValue().size()).sum();
 	}
 	
+	public void addPair (CRType cr1, CRType cr2, double s, boolean isManual, boolean add, Long timestamp) {
+		addPair(new CRPair2 (cr1, cr2, s), isManual, false, null);
+	}
+
 	public void addPair (CRPair2 matchPair, boolean isManual, boolean add, Long timestamp) {
 
 		if (matchPair.cr1==matchPair.cr2) return;

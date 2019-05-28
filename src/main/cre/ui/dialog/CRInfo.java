@@ -9,10 +9,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import main.cre.data.match.CRCluster;
-import main.cre.data.type.CRType;
-import main.cre.ui.UISettings;
+import main.cre.data.type.abs.CRCluster;
+import main.cre.data.type.abs.CRType;
 import main.cre.ui.CRTableView.CRColumn;
+import main.cre.ui.UISettings;
 
 public class CRInfo extends Dialog<Void> {
 

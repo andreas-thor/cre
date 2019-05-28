@@ -10,9 +10,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import main.cre.data.match.CRCluster;
-import main.cre.data.type.CRType;
-import main.cre.data.type.CRType.PERCENTAGE;
+import main.cre.data.type.abs.CRCluster;
+import main.cre.data.type.abs.CRType;
 
 public class CRTableView extends TableView<CRType> {
 

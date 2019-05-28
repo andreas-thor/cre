@@ -1,4 +1,4 @@
-package main.cre.data.type;
+package main.cre.data.type.mm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class PubType_Prop extends PubType {
+public class PubType_Prop extends PubType_MM {
 
 
 	

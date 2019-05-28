@@ -1,4 +1,4 @@
-package main.cre.data.type;
+package main.cre.data.type.mm;
 
 import java.util.stream.Stream;
 
@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class PubType_Tiny extends PubType {
+public class PubType_Tiny extends PubType_MM {
 
 	private int iD;
 	private Integer pY;

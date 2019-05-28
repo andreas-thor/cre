@@ -9,6 +9,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.CRTable.TABLE_IMPL_TYPES;
 
 public class CitedReferencesExplorer extends Application {
 
@@ -24,6 +26,13 @@ public class CitedReferencesExplorer extends Application {
 
 		if ((args.length > 1) && (args[0].equals("-open"))) {
 			loadOnOpen = args[1];
+		}
+		
+		
+		for (String arg: args) {
+			if (arg.equalsIgnoreCase("-db")) {
+				CRTable.type = TABLE_IMPL_TYPES.DB;
+			}
 		}
 
 		launch(args);

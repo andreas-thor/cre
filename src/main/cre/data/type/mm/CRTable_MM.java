@@ -1,4 +1,4 @@
-package main.cre.data;
+package main.cre.data.type.mm;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,19 +7,22 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import main.cre.data.match.CRCluster;
+import main.cre.data.CRSearch;
+import main.cre.data.Indicators;
 import main.cre.data.match.CRMatch2;
-import main.cre.data.type.CRType;
-import main.cre.data.type.PubType;
+import main.cre.data.type.abs.CRCluster;
+import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.CRType;
+import main.cre.data.type.abs.PubType;
 import main.cre.ui.statusbar.StatusBar;
 
 public class CRTable_MM extends CRTable {
 
 	private static CRTable_MM crTab = null;
 
-	private HashMap<CRType, CRType> crDataMap;	// map: CR -> CR to get duplicates
+	private HashMap<CRType_MM, CRType_MM> crDataMap;	// map: CR -> CR to get duplicates
 	
-	private HashMap<PubType, PubType> allPubs; 
+	private HashMap<PubType_MM, PubType_MM> allPubs; 
 	
 	
 	private boolean duringUpdate;
@@ -34,6 +37,8 @@ public class CRTable_MM extends CRTable {
 	}
 	
 	
+
+	
 	private CRTable_MM () { 
 		init();
 	}
@@ -47,14 +52,14 @@ public class CRTable_MM extends CRTable {
 		
 		
 		if (allPubs != null) {
-			for (PubType pub: allPubs.keySet()) {
+			for (PubType_MM pub: allPubs.keySet()) {
 				pub.removeAllCRs(true);
 			}
 		}
 		
 		this.setNpctRange(1);
-		crDataMap = new HashMap<CRType, CRType>();
-		allPubs = new HashMap<PubType, PubType>();
+		crDataMap = new HashMap<CRType_MM, CRType_MM>();
+		allPubs = new HashMap<PubType_MM, PubType_MM>();
 		
 		CRMatch2.get().init();
 		duringUpdate = false;
@@ -66,7 +71,8 @@ public class CRTable_MM extends CRTable {
 		
 	}	
 	
-	public Stream<CRType> getCR() {
+	@Override
+	public Stream<CRType_MM> getCR() {
 		return crDataMap.keySet().stream();
 	}
 
@@ -75,7 +81,7 @@ public class CRTable_MM extends CRTable {
 	 * @param includePubsWithoutCRs default=false
 	 * @return
 	 */
-	public Stream<PubType> getPub (boolean includePubsWithoutCRs) {
+	public Stream<PubType_MM> getPub (boolean includePubsWithoutCRs) {
 		return includePubsWithoutCRs ? allPubs.keySet().stream() : getCR().flatMap(cr -> cr.getPub()).distinct();
 	}
 	
@@ -83,22 +89,24 @@ public class CRTable_MM extends CRTable {
 	
 
 
-	
+	@Override
 	public CRType addCR(CRType cr, boolean checkForDuplicatesAndSetId) {
 		
+		CRType_MM cr_mm = (CRType_MM)cr;
+		
 		if (checkForDuplicatesAndSetId) {
-			CRType crMain = this.crDataMap.get(cr);
+			CRType_MM crMain = this.crDataMap.get(cr_mm);
 			if (crMain == null) {
-				this.crDataMap.put(cr, cr);
-				cr.setID(this.crDataMap.size());
-				cr.setCID2(new CRCluster (cr));
-				return cr;
+				this.crDataMap.put(cr_mm, cr_mm);
+				cr_mm.setID(this.crDataMap.size());
+				cr_mm.setCID2(cr_mm);
+				return cr_mm;
 			} else {
 				return crMain;
 			}
 		} else {
-			crDataMap.put(cr, cr);
-			return cr;
+			crDataMap.put(cr_mm, cr_mm);
+			return cr_mm;
 		}
 	}
 	
@@ -108,44 +116,46 @@ public class CRTable_MM extends CRTable {
 	 * This is later only used for export (to Scopus, WoS, CSV_Pub) when the user setting "include pubs without CRs" is set
 	 */
 	
-	public PubType addPub (PubType pub, boolean addCRs) {
-//		return null;
-		return addPub (pub, addCRs, false);
-	}
+//	public PubType addPub (PubType pub, boolean addCRs) {
+//		return addPub (pub, addCRs, false);
+//	}
 	
+	@Override
 	public PubType addPub (PubType pub, boolean addCRs, boolean checkForDuplicates) {
 		
+		PubType_MM pub_mm = (PubType_MM) pub;
+		
 		if (checkForDuplicates) {
-			PubType pubMain = this.allPubs.get(pub);
+			PubType_MM pubMain = this.allPubs.get(pub_mm);
 			if (pubMain == null) {
-				this.allPubs.put(pub, pub);
-				pub.setID(this.allPubs.size());
+				this.allPubs.put(pub_mm, pub_mm);
+				pub_mm.setID(this.allPubs.size());
 			} else {
-				pub = pubMain;
+				pub_mm = pubMain;
 			}
 		} else {
-			pub.setID(this.allPubs.size()+1);
-			this.allPubs.put(pub, pub);
+			pub_mm.setID(this.allPubs.size()+1);
+			this.allPubs.put(pub_mm, pub_mm);
 		}
 		
 		if (addCRs) {
 		
-			for(CRType cr: pub.getCR().collect(Collectors.toSet())) {
+			for(CRType_MM cr: pub_mm.getCR().collect(Collectors.toSet())) {
 				
-				CRType crMain = this.crDataMap.get(cr);
+				CRType_MM crMain = this.crDataMap.get(cr);
 				if (crMain == null) {
 					this.crDataMap.put(cr, cr);
 					cr.setID(this.crDataMap.size());
-					cr.setCID2(new CRCluster (cr));
+					cr.setCID2(cr);
 				} else {
-					pub.removeCR(cr, false);	
-					pub.addCR(crMain, false);
-					crMain.addPub(pub, false);	
+					pub_mm.removeCR(cr, false);	
+					pub_mm.addCR(crMain, false);
+					crMain.addPub(pub_mm, false);	
 				}
 			}
 		}
 		
-		return pub;
+		return pub_mm;
 	}
 	
 
@@ -183,7 +193,7 @@ public class CRTable_MM extends CRTable {
 		});
 		
 		// reset clusters and match result
-		getCR().forEach(cr -> cr.setCID2(new CRCluster(cr)));
+		getCR().forEach(cr -> cr.setCID2(cr));
 		CRMatch2.get().init();
 		
 		updateData();
@@ -238,6 +248,7 @@ public class CRTable_MM extends CRTable {
 	 * Remove list of CRs
 	 * @param toDelete list of CRs to be deleted
 	 */
+	@Override
 	public void removeCR (List<CRType> toDelete) {
 		getCR().forEach(cr -> cr.setFlag(false));
 		toDelete.forEach(cr -> cr.setFlag(true));

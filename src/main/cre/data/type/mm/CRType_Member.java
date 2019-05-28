@@ -1,4 +1,4 @@
-package main.cre.data.type;
+package main.cre.data.type.mm;
 
 import java.util.EnumMap;
 
@@ -7,10 +7,10 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import main.cre.data.match.CRCluster;
-import main.cre.data.type.CRType.PERCENTAGE;
+import main.cre.data.type.abs.CRCluster;
+import main.cre.data.type.abs.CRType;
 
-public class CRType_Member extends CRType {
+public class CRType_Member extends CRType_MM {
 
 	/**
 	 * !!! Probleme durch unterschiedliche Init-Werte, z.B. bei AU_L
@@ -38,7 +38,7 @@ public class CRType_Member extends CRType {
 	private String PAG;
 	private String VOL;
 	private String DOI;
-	private CRCluster CID2;
+	private CRCluster_MM CID2;
 	
 	private Boolean VI;	// visible
 	private Integer CO;	// background color
@@ -134,7 +134,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(CR);
 	}
 	public void setCR(String cR) {
-		CR = new String(cR);
+		CR = cR==null? null : new String(cR);
 	}
 	
 	
@@ -145,7 +145,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(AU);
 	}
 	public void setAU(String aU) {
-		AU = new String(aU);
+		AU = aU==null? null : new String(aU);
 	}
 	
 	
@@ -156,7 +156,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(AU_F);
 	}
 	public void setAU_F(String aU_F) {
-		AU_F = new String(aU_F);
+		AU_F = aU_F==null? null : new String(aU_F);
 	}
 	
 	
@@ -167,7 +167,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(AU_L);
 	}
 	public void setAU_L(String aU_L) {
-		AU_L = new String(aU_L);
+		AU_L = aU_L==null? null : new String(aU_L);
 	}
 	
 	
@@ -178,7 +178,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(AU_A);
 	}
 	public void setAU_A(String aU_A) {
-		AU_A = new String(aU_A);
+		AU_A = aU_A==null? null : new String(aU_A);
 	}
 	
 	
@@ -189,7 +189,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(TI);
 	}
 	public void setTI(String tI) {
-		TI = new String(tI);
+		TI = tI==null? null : new String(tI);
 	}
 	
 	
@@ -200,7 +200,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(J);
 	}
 	public void setJ(String j) {
-		J = new String(j);
+		J = j==null? null : new String(j);
 	}
 	
 	
@@ -211,7 +211,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(J_N);
 	}
 	public void setJ_N(String j_N) {
-		J_N = new String(j_N);
+		J_N = j_N==null? null : new String(j_N);
 	}
 	
 	
@@ -222,7 +222,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(J_S);
 	}
 	public void setJ_S(String j_S) {
-		J_S = new String(j_S);
+		J_S = j_S==null? null : new String(j_S);
 	}
 	
 	
@@ -274,7 +274,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(PAG);
 	}
 	public void setPAG(String pAG) {
-		PAG = new String(pAG);
+		PAG = pAG==null? null : new String(pAG);
 	}
 	
 	
@@ -285,7 +285,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty (VOL);
 	}
 	public void setVOL(String vOL) {
-		VOL = new String(vOL);
+		VOL = vOL==null? null : new String(vOL);
 	}
 	
 	
@@ -296,7 +296,7 @@ public class CRType_Member extends CRType {
 		return new SimpleStringProperty(DOI);
 	}
 	public void setDOI(String dOI) {
-		DOI = new String(dOI);
+		DOI = dOI==null? null : new String(dOI);
 	}
 	
 	
@@ -304,15 +304,28 @@ public class CRType_Member extends CRType {
 		return CID2;
 	}
 	public void setCID2(CRCluster cID2) {
-		CID2 = cID2;
+		CID2 = (CRCluster_MM) cID2;
 	}
 	
+	
+	public void setCID2(String s) {
+		CID2 = new CRCluster_MM (s);
+	}
+	
+	public  void setCID2(CRType cr) {
+		CID2 = new CRCluster_MM (cr);
+
+	}
+	public void setCID2(CRType cr, int c1) {
+		CID2 = new CRCluster_MM (cr, c1);
+	}
 	
 	public int getCID_S() {
-		return CID2.getCID_SProp().get();
+		return CID2.getSize();
 	}
+	
 	public SimpleIntegerProperty getCID_SProp() {
-		return CID2.getCID_SProp();
+		return new SimpleIntegerProperty(CID2.getSize());
 	}
 //	public void setCID_S(int cID_S) {
 //		CID_S.set(cID_S);

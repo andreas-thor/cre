@@ -8,14 +8,14 @@ import java.util.function.Predicate
 import groovy.io.FileType
 import main.cre.data.CRChartData
 import main.cre.data.CRStatsInfo
-import main.cre.data.CRTable
 import main.cre.data.Indicators
 import main.cre.data.Sampling
 import main.cre.data.match.CRMatch2
 import main.cre.data.source.Crossref
 import main.cre.data.source.ImportExportFormat;
-import main.cre.data.type.CRType
-import main.cre.data.type.CitedReference
+import main.cre.data.type.abs.CRTable
+import main.cre.data.type.mm.CRType_MM
+import main.cre.data.type.script.CitedReference
 import main.cre.ui.statusbar.StatusBar;
 import main.cre.ui.statusbar.StatusBarText
 
@@ -203,10 +203,10 @@ abstract class CREDSL extends Script {
 		File file = new File (param.get("FILE"));
 
 		// set filter
-		Predicate<CRType> filter = { cr -> true };
+		Predicate<CRType_MM> filter = { cr -> true };
 		if (param.keySet().contains("RPY")) {
 			int[] range = param["RPY"];
-			filter = { CRType cr -> (cr.getRPY() != null) && (cr.getRPY()>=range[0]) && (cr.getRPY()<=range[1]) };
+			filter = { CRType_MM cr -> (cr.getRPY() != null) && (cr.getRPY()>=range[0]) && (cr.getRPY()<=range[1]) };
 		}
 
 		ImportExportFormat.CRE.save(file, true, filter);
@@ -223,7 +223,7 @@ abstract class CREDSL extends Script {
 	public static void exportFile (Map<String, String> map) throws Exception {
 
 		Map<String, Object> param = makeParamsCaseInsensitive(map)
-		Comparator<CRType> compCRType = null;
+		Comparator<CRType_MM> compCRType = null;
 		
 		// set file
 		if (param.get("FILE")==null) {
@@ -240,10 +240,10 @@ abstract class CREDSL extends Script {
 		}
 
 		// set filter 
-		Predicate<CRType> filter = { cr -> true };
+		Predicate<CRType_MM> filter = { cr -> true };
 		if (param.keySet().contains("RPY")) {
 			int[] range = param["RPY"];
-			filter = { CRType cr -> (cr.getRPY() != null) && (cr.getRPY()>=range[0]) && (cr.getRPY()<=range[1]) };
+			filter = { CRType_MM cr -> (cr.getRPY() != null) && (cr.getRPY()>=range[0]) && (cr.getRPY()<=range[1]) };
 		}
 		if (param["FILTER"] != null) {
 			filter = { ((Predicate<CitedReference>) param["FILTER"]).test(CitedReference.createFromCRType(it)) };
@@ -271,9 +271,9 @@ abstract class CREDSL extends Script {
 			}
 			
 			// build the "real" comparator
-			compCRType = new Comparator<CRType>() {
+			compCRType = new Comparator<CRType_MM>() {
 				@Override
-				public int compare(CRType o1, CRType o2) {
+				public int compare(CRType_MM o1, CRType_MM o2) {
 					return compCitedReference.compare(CitedReference.createFromCRType(o1), CitedReference.createFromCRType(o2));
 				}
 			};
