@@ -23,15 +23,15 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import main.cre.ui.CRTableView;
+import main.cre.data.type.abs.CRType_ColumnView;
+import main.cre.data.type.abs.CRType_ColumnView.CRColumn;
+import main.cre.data.type.abs.CRType_ColumnView.ColGroup;
 import main.cre.ui.UISettings;
-import main.cre.ui.CRTableView.CRColumn;
-import main.cre.ui.CRTableView.ColGroup;
 
 public class Settings extends Dialog<Integer> {
 
 	
-	private final CheckBox[] cbCol = new CheckBox[CRTableView.CRColumn.values().length];
+	private final CheckBox[] cbCol = new CheckBox[CRType_ColumnView.CRColumn.values().length];
 	private final TextField tfDigits = new TextField();
 	private final TextField tfNPCT = new TextField();
 	private final CheckBox[] cbLine = new CheckBox[2];
@@ -69,10 +69,10 @@ public class Settings extends Dialog<Integer> {
 		    }
 		});
 		
-		tabTable.getChildren().add(new TitledPane("Cited References", createTableColPane(ColGroup.CR)));
-		tabTable.getChildren().add(new TitledPane("Indicators", createTableColPane(ColGroup.INDICATOR)));
-		tabTable.getChildren().add(new TitledPane("Clustering", createTableColPane(ColGroup.CLUSTER)));
-		tabTable.getChildren().add(new TitledPane("Searching", createTableColPane(ColGroup.SEARCH)));
+		tabTable.getChildren().add(new TitledPane("Cited References", createTableColPane(CRType_ColumnView.ColGroup.CR)));
+		tabTable.getChildren().add(new TitledPane("Indicators", createTableColPane(CRType_ColumnView.ColGroup.INDICATOR)));
+		tabTable.getChildren().add(new TitledPane("Clustering", createTableColPane(CRType_ColumnView.ColGroup.CLUSTER)));
+		tabTable.getChildren().add(new TitledPane("Searching", createTableColPane(CRType_ColumnView.ColGroup.SEARCH)));
 		tabTable.getChildren().add(new TitledPane("Value Settings", createTableDataPane()));
 		tpane.getTabs().add(new Tab("Table", tabTable));
 
@@ -223,7 +223,7 @@ public class Settings extends Dialog<Integer> {
 		
 	}
 	
-	private GridPane createTableColPane(ColGroup group) {
+	private GridPane createTableColPane(CRType_ColumnView.ColGroup group) {
 		GridPane result =  new GridPane();
 		result.setHgap(10);
 		result.setVgap(10);
@@ -242,7 +242,7 @@ public class Settings extends Dialog<Integer> {
 		int col = 0;
 		int row = 0;
 		int idx = 0;
-		for (CRColumn e: CRTableView.CRColumn.values()) {
+		for (CRType_ColumnView.CRColumn e: CRType_ColumnView.CRColumn.values()) {
 			
 			if (e.group == group) {
 				cbCol[idx] = new CheckBox(String.format("%s (%s)", e.id, e.title));

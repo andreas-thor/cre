@@ -12,11 +12,10 @@ import main.cre.data.Indicators;
 import main.cre.data.match.CRMatch2;
 import main.cre.data.type.abs.CRCluster;
 import main.cre.data.type.abs.CRTable;
-import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.PubType;
 import main.cre.ui.statusbar.StatusBar;
 
-public class CRTable_MM extends CRTable {
+public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 
 	private static CRTable_MM crTab = null;
 
@@ -90,23 +89,21 @@ public class CRTable_MM extends CRTable {
 
 
 	@Override
-	public CRType addCR(CRType cr, boolean checkForDuplicatesAndSetId) {
-		
-		CRType_MM cr_mm = (CRType_MM)cr;
+	public CRType_MM addCR(CRType_MM cr, boolean checkForDuplicatesAndSetId) {
 		
 		if (checkForDuplicatesAndSetId) {
-			CRType_MM crMain = this.crDataMap.get(cr_mm);
+			CRType_MM crMain = this.crDataMap.get(cr);
 			if (crMain == null) {
-				this.crDataMap.put(cr_mm, cr_mm);
-				cr_mm.setID(this.crDataMap.size());
-				cr_mm.setCID2(cr_mm);
-				return cr_mm;
+				this.crDataMap.put(cr, cr);
+				cr.setID(this.crDataMap.size());
+				cr.setCID2(cr);
+				return cr;
 			} else {
 				return crMain;
 			}
 		} else {
-			crDataMap.put(cr_mm, cr_mm);
-			return cr_mm;
+			crDataMap.put(cr, cr);
+			return cr;
 		}
 	}
 	
@@ -121,26 +118,24 @@ public class CRTable_MM extends CRTable {
 //	}
 	
 	@Override
-	public PubType addPub (PubType pub, boolean addCRs, boolean checkForDuplicates) {
-		
-		PubType_MM pub_mm = (PubType_MM) pub;
+	public PubType_MM addPub (PubType_MM pub, boolean addCRs, boolean checkForDuplicates) {
 		
 		if (checkForDuplicates) {
-			PubType_MM pubMain = this.allPubs.get(pub_mm);
+			PubType_MM pubMain = this.allPubs.get(pub);
 			if (pubMain == null) {
-				this.allPubs.put(pub_mm, pub_mm);
-				pub_mm.setID(this.allPubs.size());
+				this.allPubs.put(pub, pub);
+				pub.setID(this.allPubs.size());
 			} else {
-				pub_mm = pubMain;
+				pub = pubMain;
 			}
 		} else {
-			pub_mm.setID(this.allPubs.size()+1);
-			this.allPubs.put(pub_mm, pub_mm);
+			pub.setID(this.allPubs.size()+1);
+			this.allPubs.put(pub, pub);
 		}
 		
 		if (addCRs) {
 		
-			for(CRType_MM cr: pub_mm.getCR().collect(Collectors.toSet())) {
+			for(CRType_MM cr: pub.getCR().collect(Collectors.toSet())) {
 				
 				CRType_MM crMain = this.crDataMap.get(cr);
 				if (crMain == null) {
@@ -148,14 +143,14 @@ public class CRTable_MM extends CRTable {
 					cr.setID(this.crDataMap.size());
 					cr.setCID2(cr);
 				} else {
-					pub_mm.removeCR(cr, false);	
-					pub_mm.addCR(crMain, false);
-					crMain.addPub(pub_mm, false);	
+					pub.removeCR(cr, false);	
+					pub.addCR(crMain, false);
+					crMain.addPub(pub, false);	
 				}
 			}
 		}
 		
-		return pub_mm;
+		return pub;
 	}
 	
 
@@ -176,12 +171,12 @@ public class CRTable_MM extends CRTable {
 			StatusBar.get().incProgressbar();
 			
 			// get mainCR = CR with highest number of citations
-			CRType crMain = cl.getMainCR();
-			Set<CRType> crMerge = cl.getCR().collect(Collectors.toSet());
+			CRType_MM crMain = cl.getMainCR();
+			Set<CRType_MM> crMerge = cl.getCR().collect(Collectors.toSet());
 			crMerge.remove(crMain);
 
 			// merge CRs with main CR
-			for (CRType cr:crMerge) {
+			for (CRType_MM cr:crMerge) {
 				cr.getPub().collect(Collectors.toList()).stream().forEach(crPub -> {		// make a copy to avoid concurrent modification
 					crPub.addCR(crMain, true);
 					crPub.removeCR(cr, true);
@@ -228,7 +223,7 @@ public class CRTable_MM extends CRTable {
 	
 	
 
-	public void removeCR (Predicate<CRType> cond) {
+	public void removeCR (Predicate<CRType_MM> cond) {
 		
 		crDataMap.keySet().removeIf( cr ->  { 
 			if (cond.test(cr)) {
@@ -249,7 +244,7 @@ public class CRTable_MM extends CRTable {
 	 * @param toDelete list of CRs to be deleted
 	 */
 	@Override
-	public void removeCR (List<CRType> toDelete) {
+	public void removeCR (List<CRType_MM> toDelete) {
 		getCR().forEach(cr -> cr.setFlag(false));
 		toDelete.forEach(cr -> cr.setFlag(true));
 		removeCR(cr -> cr.isFlag());
@@ -260,7 +255,7 @@ public class CRTable_MM extends CRTable {
 	 * Remove all but the given list of CRs
 	 * @param toRetain list of CRs to be retained
 	 */
-	public void retainCR (List<CRType> toRetain) {
+	public void retainCR (List<CRType_MM> toRetain) {
 		getCR().forEach(cr -> cr.setFlag(true));
 		toRetain.forEach(cr -> cr.setFlag(false));
 		removeCR(cr -> cr.isFlag());
@@ -314,7 +309,7 @@ public class CRTable_MM extends CRTable {
 	 * Remove all citing publications, that do *not* reference any of the given CRs 
 	 * @param selCR list of CRs
 	 */
-	public void removePubByCR (List<CRType> selCR) {
+	public void removePubByCR (List<CRType_MM> selCR) {
 		selCR.stream().flatMap (cr -> cr.getPub()).forEach(pub -> pub.setFlag(true));
 		removePub (pub -> !pub.isFlag());
 		getPub().forEach(pub -> pub.setFlag(false));
@@ -355,7 +350,7 @@ public class CRTable_MM extends CRTable {
 	
 
 	
-	public void filterByCluster (List<CRType> sel) {
+	public void filterByCluster (List<CRType_MM> sel) {
 		if (!duringUpdate) {
 			getCR().forEach(cr -> cr.setVI(false));
 			sel.stream().map(cr -> cr.getCID2()).flatMap(cluster -> cluster.getCR()).forEach ( cr -> cr.setVI(true) );

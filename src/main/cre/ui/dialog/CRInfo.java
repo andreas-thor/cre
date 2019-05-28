@@ -11,7 +11,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import main.cre.data.type.abs.CRCluster;
 import main.cre.data.type.abs.CRType;
-import main.cre.ui.CRTableView.CRColumn;
+import main.cre.data.type.abs.CRType_ColumnView;
+import main.cre.data.type.abs.CRType_ColumnView.CRColumn;
 import main.cre.ui.UISettings;
 
 public class CRInfo extends Dialog<Void> {
@@ -31,7 +32,7 @@ public class CRInfo extends Dialog<Void> {
 		grid.setPadding(new Insets(20, 20, 20, 20));
 
 		int row = 0;
-		for (CRColumn col: CRColumn.values()) {
+		for (CRType_ColumnView.CRColumn col: CRType_ColumnView.CRColumn.values()) {
 			
 			ObservableValue<?> prop = col.prop.apply(cr);
 			String value = null;
@@ -47,9 +48,9 @@ public class CRInfo extends Dialog<Void> {
 			case STRING: 
 				value = ((ObservableValue<String>)prop).getValue();
 				break;
-			case CRCLUSTER: 
-				value = ((ObservableValue<CRCluster>)prop).getValue().toString();
-				break;
+//			case CRCLUSTER: 
+//				value = ((ObservableValue<CRCluster>)prop).getValue().toString();
+//				break;
 			default: assert false;
 			}			
 			

@@ -48,7 +48,7 @@ public class CRE_json {
 		ZipEntry entry = null;
 		ZipFile zipFile = new ZipFile(file);
 		
-		Map<Integer, CRType> mapId2CR;
+		Map<Integer, CRType<?>> mapId2CR;
 	
 		entry = zipFile.getEntry("crdata.json");
 		if (entry != null) {
@@ -94,13 +94,13 @@ public class CRE_json {
 	 * @throws OutOfMemoryError
 	 * @throws IOException
 	 */
-	private static Map<Integer, CRType> loadCRData (InputStream in, boolean checkForDuplicates) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
+	private static Map<Integer, CRType<?>> loadCRData (InputStream in, boolean checkForDuplicates) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 		
-		Map<Integer, CRType> result = new HashMap<Integer, CRType>();
+		Map<Integer, CRType<?>> result = new HashMap<Integer, CRType<?>>();
 		
-		CRTable crTab = CRTable.get(); 
+		CRTable<?, ?> crTab = CRTable.get(); 
 		JsonParser parser = Json.createParser(in);
-		CRType cr = null;
+		CRType<? extends PubType> cr = null;
 		String key = "";
 		while (!crTab.isAborted() && parser.hasNext()) {
 			
@@ -154,7 +154,7 @@ public class CRE_json {
 	}
 
 	
-	private static void loadPubData (InputStream in, boolean checkForDuplicates, Map<Integer, CRType> mapId2CR) {
+	private static void loadPubData (InputStream in, boolean checkForDuplicates, Map<Integer, CRType<?>> mapId2CR) {
 		
 		CRTable crTab = CRTable.get(); 
 
@@ -168,7 +168,7 @@ public class CRE_json {
 			
 			switch (parser.next()) {
 			case START_OBJECT:
-				pub = PubType_MM.create(); 
+				pub = PubType.create(); 
 				CRList = new ArrayList<CRType>();
 				break; 
 			case END_OBJECT: 	
@@ -305,7 +305,7 @@ public class CRE_json {
 	 * @param comp IS IGNORED
 	 * @throws IOException
 	 */
-	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter, Comparator<CRType> comp) throws IOException {
+	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException {
 		 
 		/* TODO: filter is not supported yet */
 		
@@ -351,7 +351,7 @@ public class CRE_json {
 			if (cr.getPAG()!=null) 	jgenCR.write("PAG", cr.getPAG());
 			if (cr.getVOL()!=null) 	jgenCR.write("VOL", cr.getVOL());
 			if (cr.getDOI()!=null) 	jgenCR.write("DOI", cr.getDOI());
-			if (cr.getCID2()!=null) jgenCR.write("CID2", cr.getCID2().toString());
+			if (cr.getCID_String()!=null) jgenCR.write("CID2", cr.getCID_String());
 			 						jgenCR.write("CID_S", cr.getCID_S());
 									jgenCR.write("VI", cr.getVI()?1:0);
 									jgenCR.write("CO", cr.getCO());
@@ -371,9 +371,9 @@ public class CRE_json {
 			jgenPub.writeStartObject();
 			
 			if (pub.getPT()!=null) 	jgenPub.write("PT", pub.getPT());
-			if (pub.getAUSize()>0) {	jgenPub.writeStartArray("AU"); pub.getAU().forEach(x -> jgenPub.write(x)); jgenPub.writeEnd(); }
-			if (pub.getAFSize()>0) {	jgenPub.writeStartArray("AF"); pub.getAF().forEach(x -> jgenPub.write(x)); jgenPub.writeEnd(); }
-			if (pub.getC1Size()>0) {
+			if (pub.getAU().size()>0) {	jgenPub.writeStartArray("AU"); pub.getAU().forEach(x -> jgenPub.write(x)); jgenPub.writeEnd(); }
+			if (pub.getAF().count()>0) {	jgenPub.writeStartArray("AF"); pub.getAF().forEach(x -> jgenPub.write(x)); jgenPub.writeEnd(); }
+			if (pub.getC1().count()>0) {
 				jgenPub.writeStartArray("C1");
 				pub.getC1().forEach(y -> { 
 					jgenPub.writeStartArray();
@@ -382,8 +382,8 @@ public class CRE_json {
 				});
 				jgenPub.writeEnd();
 			}
-			if (pub.getEMSize()>0) {	jgenPub.writeStartArray("EM"); pub.getEM().forEach(x -> jgenPub.write(x)); jgenPub.writeEnd(); }
-			if (pub.getAASize()>0) {	jgenPub.writeStartArray("AA"); pub.getAA().forEach(x -> jgenPub.write(x)); jgenPub.writeEnd(); }
+			if (pub.getEM().count()>0) {	jgenPub.writeStartArray("EM"); pub.getEM().forEach(x -> jgenPub.write(x)); jgenPub.writeEnd(); }
+			if (pub.getAA().count()>0) {	jgenPub.writeStartArray("AA"); pub.getAA().forEach(x -> jgenPub.write(x)); jgenPub.writeEnd(); }
 			if (pub.getTI()!=null) 	jgenPub.write("TI", pub.getTI());
 			if (pub.getPY()!=null) 	jgenPub.write("PY", pub.getPY());
 			if (pub.getSO()!=null) 	jgenPub.write("SO", pub.getSO());

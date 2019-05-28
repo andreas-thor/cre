@@ -1,16 +1,12 @@
 package main.cre.data.type.abs;
 
+import java.util.EnumMap;
 import java.util.stream.Stream;
 
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import main.cre.data.type.db.CRType_DB;
-import main.cre.data.type.mm.CRType_Member;
+import main.cre.data.type.mm.CRType_MM;
 
-public abstract class CRType implements Comparable<CRType> {
+public abstract class CRType<P extends PubType<?>> implements Comparable<CRType<P>> {
 
 	public static enum FORMATTYPE { 
 		WOS, 	
@@ -30,278 +26,341 @@ public abstract class CRType implements Comparable<CRType> {
 	};
 	
 	
+	private Integer ID;
+	private String CR;
+	private String AU;
+	private String AU_F; 
+	private String AU_L;
+	private String AU_A;	// all Authors
+	private String TI; 		// title
+	private String J;
+	private String J_N;
+	private String J_S;
+	
+
+	private Integer RPY;
+//	private boolean isNullRPY;
+	
+	private String PAG;
+	private String VOL;
+	private String DOI;
+	
+	
+	private Boolean VI;	// visible
+	private Integer CO;	// background color
+	private Integer SEARCH_SCORE;
+	
+	
+	private Double PERC_YR;
+	private Double PERC_ALL;
+	
+	private Integer N_PYEARS;	
+	private Double PYEAR_PERC;
+	private EnumMap<PERCENTAGE, Integer> N_PCT;
+	private EnumMap<PERCENTAGE, Integer> N_PCT_AboveAverage;
+
+	private Integer N_PYEARS2;	
+	
+	private String SEQUENCE;
+	private String TYPE;	
+	
+	private FORMATTYPE type = null;	
+	private boolean flag;
+	
 	public static CRType create() {
 		
 		switch (CRTable.type) {
-		case MM: return new CRType_Member();	//		return new CRType_Tiny();
+		case MM: return new CRType_MM();	//		return new CRType_Tiny();
 		case DB: return new CRType_DB();
 		default: return null;
 		}
 		
 	}
 	
-	public abstract int getNumberOfPubs();
-	public abstract Stream<? extends PubType> getPub();
-	public abstract void addPub(PubType pubType, boolean b);
 	
-	public abstract boolean removePub(PubType pub, boolean inverse);
+	public CRType () {
+		
+		PERC_YR = 0d;
+		PERC_ALL = 0d;
+		
+		N_PYEARS = 0;
+		PYEAR_PERC = 0d;
+		
+		N_PCT = new EnumMap<>(PERCENTAGE.class);
+		for (PERCENTAGE perc: PERCENTAGE.values()) {
+			N_PCT.put(perc, new Integer(0));
+		}
+		
+		N_PCT_AboveAverage = new EnumMap<>(PERCENTAGE.class);
+		for (PERCENTAGE perc: PERCENTAGE.values()) {
+			N_PCT_AboveAverage.put(perc, new Integer(0));
+		}
+		
+		N_PYEARS2 = 0;
+
+		VI = new Boolean(true);
+		CO = new Integer(0);
+		SEARCH_SCORE = new Integer(0);
+		
+		SEQUENCE = new String();
+		TYPE = new String();
+	}
+	
+	
+	public abstract Stream<P> getPub();
+	
+	public abstract void addPub(P pubType, boolean b);
+	
+	public abstract boolean removePub(P pub, boolean inverse);
+	
 	public abstract void removeAllPubs(boolean inverse);
 	
-	public abstract int getID();
-	public abstract SimpleIntegerProperty getIDProp();
-	public abstract void setID(int iD);
-
-	public abstract String getCR();
-	public abstract SimpleStringProperty getCRProp();
-	public abstract void setCR(String cR);
-
-	public abstract String getAU();
-	public abstract SimpleStringProperty getAUProp();
-	public abstract void setAU(String aU);
-
-	public abstract String getAU_F();
-	public abstract SimpleStringProperty getAU_FProp();
-	public abstract void setAU_F(String aU_F);
-
-	public abstract String getAU_L();
-	public abstract SimpleStringProperty getAU_LProp();
-	public abstract void setAU_L(String aU_L);
-
-	public abstract String getAU_A();
-	public abstract SimpleStringProperty getAU_AProp();
-	public abstract void setAU_A(String aU_A);
-
-	public abstract String getTI();
-	public abstract SimpleStringProperty getTIProp();
-	public abstract void setTI(String tI);
-
-	public abstract String getJ();
-	public abstract SimpleStringProperty getJProp();
-	public abstract void setJ(String j);
-
-	public abstract String getJ_N();
-	public abstract SimpleStringProperty getJ_NProp();
-	public abstract void setJ_N(String j_N);
-
-	public abstract String getJ_S();
-	public abstract SimpleStringProperty getJ_SProp();
-	public abstract void setJ_S(String j_S);
-
-	public abstract int getN_CR();
-	public abstract SimpleIntegerProperty getN_CRProp();
-	public abstract void resetN_CR();
-	public abstract void setN_CR(int n_CR);
 	
-	public abstract Integer getRPY();
-	public abstract SimpleObjectProperty<Integer> getRPYProp();
-	public abstract void setRPY(Integer rPY);
+	
+	public abstract int getN_CR();
+	
+	
+	
+//	public abstract CRCluster getCID2();
+	
+	
+	
+//	public abstract void setCID2(String s);
+//	public abstract void setCID2(CRType cr);
+//	public abstract void setCID2(CRType cr, int c1);
 
-	public abstract String getPAG();
-	public abstract SimpleStringProperty getPAGProp();
-	public abstract void setPAG(String pAG);
-
-	public abstract String getVOL();
-	public abstract SimpleStringProperty getVOLProp();
-	public abstract void setVOL(String vOL);
-
-	public abstract String getDOI();
-	public abstract SimpleStringProperty getDOIProp();
-	public abstract void setDOI(String dOI);
-
-	public abstract CRCluster getCID2();
-	public abstract void setCID2(CRCluster cID2);
-	public abstract void setCID2(String s);
-	public abstract void setCID2(CRType cr);
-	public abstract void setCID2(CRType cr, int c1);
+	public abstract void setCID2(CRType<P> cr);
+	public abstract void setCID2(String cID2);
+	public abstract String getCID_String(); 
 
 	public abstract int getCID_S();
-	public abstract SimpleIntegerProperty getCID_SProp();
-
-	public abstract boolean getVI();
-	public abstract SimpleBooleanProperty getVIProp();
-	public abstract void setVI(boolean vI);
-
-	public abstract int getCO();
-	public abstract SimpleIntegerProperty getCOProp();
-	public abstract void setCO(int cO);
-
-	public abstract Double getPERC_YR();
-	public abstract SimpleDoubleProperty getPERC_YRProp();
-	public abstract void setPERC_YR(Double pERC_YR);
-
-	public abstract Double getPERC_ALL();
-	public abstract SimpleDoubleProperty getPERC_ALLProp();
-	public abstract void setPERC_ALL(Double pERC_ALL);
-
-	public abstract int getN_PYEARS();
-	public abstract SimpleIntegerProperty getN_PYEARSProp();
-	public abstract void setN_PYEARS(int n_PYEARS);
-
-	public abstract Double getPYEAR_PERC();
-	public abstract SimpleDoubleProperty getPYEAR_PERCProp();
-	public abstract void setPYEAR_PERC(Double pYEAR_PERC);
-
-	public abstract int getN_PCT(PERCENTAGE perc);
-	public abstract SimpleIntegerProperty getN_PCTProp(PERCENTAGE perc);
-	public abstract void setN_PCT(PERCENTAGE perc, int n);
-	
-	public int getN_PCT50() {
-		return getN_PCT(PERCENTAGE.P50);
+	public int getID() {
+		return ID;
 	}
-	
-	public SimpleIntegerProperty getN_PCT50Prop() {
-		return getN_PCTProp(PERCENTAGE.P50);
-	}
-	
-	public void setN_PCT50(int n) {
-		setN_PCT(PERCENTAGE.P50, n);
-	}
-
-	
-	public int getN_PCT75() {
-		return getN_PCT(PERCENTAGE.P75);
-	}
-	
-	public SimpleIntegerProperty getN_PCT75Prop() {
-		return getN_PCTProp(PERCENTAGE.P75);
-	}
-	
-	public void setN_PCT75(int n) {
-		setN_PCT(PERCENTAGE.P75, n);
-	}
-	
-	public int getN_PCT90() {
-		return getN_PCT(PERCENTAGE.P90);
-	}
-	
-	public SimpleIntegerProperty getN_PCT90Prop() {
-		return getN_PCTProp(PERCENTAGE.P90);
-	}
-	
-	public void setN_PCT90(int n) {
-		setN_PCT(PERCENTAGE.P90, n);
-	}
-
-	public int getN_PCT99() {
-		return getN_PCT(PERCENTAGE.P99);
-	}
-	
-	public SimpleIntegerProperty getN_PCT99Prop() {
-		return getN_PCTProp(PERCENTAGE.P99);
-	}
-	
-	public void setN_PCT99(int n) {
-		setN_PCT(PERCENTAGE.P99, n);
-	}
-
-	public int getN_PCT999() {
-		return getN_PCT(PERCENTAGE.P999);
-	}
-	
-	public SimpleIntegerProperty getN_PCT999Prop() {
-		return getN_PCTProp(PERCENTAGE.P999);
-	}
-	
-	public void setN_PCT999(int n) {
-		setN_PCT(PERCENTAGE.P999, n);
+	public void setID(int iD) {
+		ID=iD;
 	}
 	
 	
-	
-	public abstract int getN_PCT_AboveAverage(PERCENTAGE perc);
-	public abstract SimpleIntegerProperty getN_PCT_AboveAverageProp(PERCENTAGE perc);
-	public abstract void setN_PCT_AboveAverage(PERCENTAGE perc, int n);
-	
-	public int getN_PCT_AboveAverage50() {
-		return getN_PCT_AboveAverage(PERCENTAGE.P50);
+	public String getCR() {
+		return CR;
+	}
+	public void setCR(String cR) {
+		CR = cR==null? null : new String(cR);
 	}
 	
-	public SimpleIntegerProperty getN_PCT_AboveAverage50Prop() {
-		return getN_PCT_AboveAverageProp(PERCENTAGE.P50);
+	
+	public String getAU() {
+		return AU;
+	}
+	public void setAU(String aU) {
+		AU = aU==null? null : new String(aU);
 	}
 	
-	public void setN_PCT_AboveAverage50(int n) {
-		setN_PCT_AboveAverage(PERCENTAGE.P50, n);
+	
+	public String getAU_F() {
+		return AU_F;
+	}
+	public void setAU_F(String aU_F) {
+		AU_F = aU_F==null? null : new String(aU_F);
+	}
+	
+	
+	public String getAU_L() {
+		return AU_L;
+	}
+	public void setAU_L(String aU_L) {
+		AU_L = aU_L==null? null : new String(aU_L);
+	}
+	
+	
+	public String getAU_A() {
+		return AU_A;
+	}
+	public void setAU_A(String aU_A) {
+		AU_A = aU_A==null? null : new String(aU_A);
+	}
+	
+	
+	public String getTI() {
+		return TI;
+	}
+	public void setTI(String tI) {
+		TI = tI==null? null : new String(tI);
+	}
+	
+	
+	public String getJ() {
+		return J;
+	}
+	public void setJ(String j) {
+		J = j==null? null : new String(j);
+	}
+	
+	
+	public String getJ_N() {
+		return J_N;
+	}
+	public void setJ_N(String j_N) {
+		J_N = j_N==null? null : new String(j_N);
+	}
+	
+	
+	public String getJ_S() {
+		return J_S;
+	}
+	public void setJ_S(String j_S) {
+		J_S = j_S==null? null : new String(j_S);
 	}
 
 	
-	public int getN_PCT_AboveAverage75() {
-		return getN_PCT_AboveAverage(PERCENTAGE.P75);
+	public Integer getRPY() {
+		return RPY;
+	}
+	public void setRPY(Integer rPY) {
+		RPY = rPY;
 	}
 	
-	public SimpleIntegerProperty getN_PCT_AboveAverage75Prop() {
-		return getN_PCT_AboveAverageProp(PERCENTAGE.P75);
+	
+	public String getPAG() {
+		return PAG;
+	}
+	public void setPAG(String pAG) {
+		PAG = pAG==null? null : new String(pAG);
 	}
 	
-	public void setN_PCT_AboveAverage75(int n) {
-		setN_PCT_AboveAverage(PERCENTAGE.P75, n);
+	
+	public String getVOL() {
+		return VOL;
+	}
+	public void setVOL(String vOL) {
+		VOL = vOL==null? null : new String(vOL);
 	}
 	
-	public int getN_PCT_AboveAverage90() {
-		return getN_PCT_AboveAverage(PERCENTAGE.P90);
+	
+	public String getDOI() {
+		return DOI;
+	}
+	public void setDOI(String dOI) {
+		DOI = dOI==null? null : new String(dOI);
 	}
 	
-	public SimpleIntegerProperty getN_PCT_AboveAverage90Prop() {
-		return getN_PCT_AboveAverageProp(PERCENTAGE.P90);
+
+	public boolean getVI() {
+		return VI;
+	}
+	public void setVI(boolean vI) {
+		VI = vI;
 	}
 	
-	public void setN_PCT_AboveAverage90(int n) {
-		setN_PCT_AboveAverage(PERCENTAGE.P90, n);
+	
+	public int getCO() {
+		return CO;
+	}
+	public void setCO(int cO) {
+		CO = cO;
+	}
+	
+	
+	public Double getPERC_YR() {
+		return PERC_YR;
+	}
+	public void setPERC_YR(Double pERC_YR) {
+		PERC_YR = pERC_YR;
+	}
+	
+	
+	public Double getPERC_ALL() {
+		return PERC_ALL;
+	}
+	public void setPERC_ALL(Double pERC_ALL) {
+		PERC_ALL = pERC_ALL;
+	}
+	
+		
+	public int getN_PYEARS() {
+		return N_PYEARS;
+	}
+	public void setN_PYEARS(int n_PYEARS) {
+		N_PYEARS = n_PYEARS;
+	}
+	
+	
+	public Double getPYEAR_PERC() {
+		return PYEAR_PERC;
+	}
+	public void setPYEAR_PERC(Double pYEAR_PERC) {
+		PYEAR_PERC = pYEAR_PERC;
+	}
+	
+	
+	public int getN_PYEARS2() {
+		return N_PYEARS2;
+	}
+	public void setN_PYEARS2(int n_PYEARS2) {
+		N_PYEARS2 = n_PYEARS2;
+	}
+		
+	
+	public int getSEARCH_SCORE() {
+		return SEARCH_SCORE;
+	}
+	public void setSEARCH_SCORE(Double sEARCH_SCORE) {
+		SEARCH_SCORE = sEARCH_SCORE > 0 ? 1 : 0;
+	}
+	
+		
+	public String getSEQUENCE() {
+		return SEQUENCE;
+	}
+	public void setSEQUENCE(String sEQUENCE) {
+		SEQUENCE = new String(sEQUENCE);
+	}
+		
+	
+	public String getTYPE() {
+		return TYPE;
+	}
+	public void setTYPE(String tYPE) {
+		TYPE = new String(tYPE);
 	}	
+    
+	
+	public boolean isFlag() {
+		return flag;
+	}
+	public void setFlag(boolean flag) {
+		this.flag = flag;
+	}
 
 	
-	public int getN_PCT_AboveAverage99() {
-		return getN_PCT_AboveAverage(PERCENTAGE.P99);
+	public FORMATTYPE getType() {
+		return type;
+	}
+	public void setType(FORMATTYPE type) {
+		this.type = type;
 	}
 	
-	public SimpleIntegerProperty getN_PCT_AboveAverage99Prop() {
-		return getN_PCT_AboveAverageProp(PERCENTAGE.P99);
+	
+	public int getN_PCT(PERCENTAGE perc) {
+		return N_PCT.get(perc);
+	}
+	public void setN_PCT(PERCENTAGE perc, int n) {
+		N_PCT.put(perc, n);
 	}
 	
-	public void setN_PCT_AboveAverage99(int n) {
-		setN_PCT_AboveAverage(PERCENTAGE.P99, n);
+	
+	public int getN_PCT_AboveAverage(PERCENTAGE perc) {
+		return N_PCT_AboveAverage.get(perc);
+	}
+	public void setN_PCT_AboveAverage(PERCENTAGE perc, int n) {
+		N_PCT_AboveAverage.put(perc, n);
 	}	
 	
 
-	public int getN_PCT_AboveAverage999() {
-		return getN_PCT_AboveAverage(PERCENTAGE.P999);
-	}
-	
-	public SimpleIntegerProperty getN_PCT_AboveAverage999Prop() {
-		return getN_PCT_AboveAverageProp(PERCENTAGE.P999);
-	}
-	
-	public void setN_PCT_AboveAverage999(int n) {
-		setN_PCT_AboveAverage(PERCENTAGE.P999, n);
-	}	
 	
 	
-	
-	public abstract int getN_PYEARS2();
-	public abstract SimpleIntegerProperty getN_PYEARS2Prop();
-	public abstract void setN_PYEARS2(int n_PYEARS2);
-
-	public abstract int getSEARCH_SCORE();
-	public abstract SimpleIntegerProperty getSEARCH_SCOREProp();
-	public abstract void setSEARCH_SCORE(Double sEARCH_SCORE);
-
-	public abstract String getSEQUENCE();
-	public abstract SimpleStringProperty getSEQUENCEProp();
-	public abstract void setSEQUENCE(String sEQUENCE);
-
-	public abstract String getTYPE();
-	public abstract SimpleStringProperty getTYPEProp();
-	public abstract void setTYPE(String tYPE);
-	
-	
-	public abstract boolean isFlag();
-	public abstract void setFlag(boolean flag);
-
-	public abstract FORMATTYPE getType();
-	public abstract void setType(FORMATTYPE type);
-	
-	
-	public void copyNotNULLValues (CRType cr) {
+	public void copyNotNULLValues (CRType<?> cr) {
 		
 		if (cr.getCR()!=null) 		this.setCR(cr.getCR());
 		if (cr.getAU()!=null) 		this.setAU(cr.getAU());
@@ -332,7 +391,7 @@ public abstract class CRType implements Comparable<CRType> {
 
 
 	@Override
-	public int compareTo(CRType o) {
+	public int compareTo(CRType<P> o) {
 		return this.getID() - o.getID();
 	}
 	
@@ -383,6 +442,5 @@ public abstract class CRType implements Comparable<CRType> {
 	}
 	
 
-	
 	
 }

@@ -1,7 +1,6 @@
 package main.cre.ui;
 
 import java.util.Optional;
-import java.util.function.Function;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.SelectionMode;
@@ -10,77 +9,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import main.cre.data.type.abs.CRCluster;
 import main.cre.data.type.abs.CRType;
+import main.cre.data.type.abs.CRType_ColumnView;
 
 public class CRTableView extends TableView<CRType> {
-
-	// Column Information
-	public static enum ColGroup { CR, INDICATOR, CLUSTER, SEARCH }
-	public static enum ColDataType { INT, DOUBLE, STRING, CRCLUSTER } 
-	public static enum CRColumn {
-		
-		ID 	("ID", "ID", ColGroup.CR, ColDataType.INT, CRType::getIDProp),
-		CR 	("CR", "Cited Reference", ColGroup.CR, ColDataType.STRING, CRType::getCRProp),
-		RPY ("RPY", "Reference Publication Year", ColGroup.CR, ColDataType.INT, CRType::getRPYProp),
-		N_CR ("N_CR", "Number of Cited References", ColGroup.CR, ColDataType.INT, CRType::getN_CRProp),
-		PERC_YR ("PERC_YR", "Percent in Year", ColGroup.INDICATOR, ColDataType.DOUBLE, CRType::getPERC_YRProp),
-		PERC_ALL ("PERC_ALL", "Percent over all Years", ColGroup.INDICATOR, ColDataType.DOUBLE, CRType::getPERC_ALLProp),
-		AU ("AU", "Author", ColGroup.CR, ColDataType.STRING, CRType::getAUProp),
-		AU_L ("AU_L", "Last Name", ColGroup.CR, ColDataType.STRING, CRType::getAU_LProp),
-		AU_F ("AU_F", "First Name Initial", ColGroup.CR, ColDataType.STRING, CRType::getAU_FProp),
-		AU_A ("AU_A", "Authors", ColGroup.CR, ColDataType.STRING, CRType::getAU_AProp),
-		TI ("TI", "Title", ColGroup.CR, ColDataType.STRING, CRType::getTIProp),
-		J ("J", "Source", ColGroup.CR, ColDataType.STRING, CRType::getJProp),
-		J_N ("J_N", "Source Title", ColGroup.CR, ColDataType.STRING, CRType::getJ_NProp),
-		J_S ("J_S", "Title short", ColGroup.CR, ColDataType.STRING, CRType::getJ_SProp),
-		VOL ("VOL", "Volume", ColGroup.CR, ColDataType.STRING, CRType::getVOLProp),
-		PAG ("PAG", "Page", ColGroup.CR, ColDataType.STRING, CRType::getPAGProp),
-		DOI ("DOI", "DOI", ColGroup.CR, ColDataType.STRING, CRType::getDOIProp),
-		CID2 ("CID2", "ClusterID", ColGroup.CLUSTER, ColDataType.CRCLUSTER, CRType::getCID2),
-		CID_S ("CID_S", "ClusterSize", ColGroup.CLUSTER, ColDataType.INT, CRType::getCID_SProp),
-		
-		N_PYEARS ("N_PYEARS", "Number of Citing Years", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PYEARSProp),
-		PYEAR_PERC ("PERC_PYEARS", "Percentage of Citing Years", ColGroup.INDICATOR, ColDataType.DOUBLE, CRType::getPYEAR_PERCProp),
-		
-		N_PCT50 ("N_TOP50", "Top 50% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT50Prop),
-		N_PCT75 ("N_TOP25", "Top 25% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT75Prop),
-		N_PCT90 ("N_TOP10", "Top 10% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT90Prop),
-		N_PCT99 ("N_TOP1", "Top 1% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT99Prop),
-		N_PCT999 ("N_TOP0_1", "Top 0.1% Cited Reference", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT999Prop),
-		
-		N_PCT50_AboveAverage ("N_TOP50+", "Top 50% Cited Reference & Above Average", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT_AboveAverage50Prop),
-		N_PCT75_AboveAverage ("N_TOP25+", "Top 25% Cited Reference & Above Average", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT_AboveAverage75Prop),
-		N_PCT90_AboveAverage ("N_TOP10+", "Top 10% Cited Reference & Above Average", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT_AboveAverage90Prop),
-		N_PCT99_AboveAverage ("N_TOP1+", "Top 1% Cited Reference & Above Average", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT_AboveAverage99Prop),
-		N_PCT999_AboveAverage ("N_TOP0_1+", "Top 0.1% Cited Reference & Above Average", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PCT_AboveAverage999Prop),
-		
-		SEQUENCE  ("SEQUENCE", "Sequence", ColGroup.INDICATOR, ColDataType.STRING, CRType::getSEQUENCEProp),
-		TYPE  ("TYPE", "Type", ColGroup.INDICATOR, ColDataType.STRING, CRType::getTYPEProp),
-		SEARCH_SCORE  ("SEARCH_SCORE", "Score from Search Process", ColGroup.SEARCH, ColDataType.INT, CRType::getSEARCH_SCOREProp)
-		
-		
-		
-//		CO  ("CO", "CO", ColGroup.INVISIBLE, ColDataType.INT, CRType::getCOProp), 
-
-		;
-//		N_PYEARS2 ("N_PYEARS2", "N_PYEARS2", ColGroup.INDICATOR, ColDataType.INT, CRType::getN_PYEARS2Prop);
-		
-		public String id;
-		public String title;
-		public ColGroup group;	
-		public ColDataType type;
-		public Function<CRType, ObservableValue<?>> prop;
-		
-		CRColumn(String id, String title, ColGroup group, ColDataType type, Function<CRType, ObservableValue<?>> prop) {
-			this.id = id;
-			this.title = title;
-			this.group = group;
-			this.type = type;
-			this.prop = prop;
-		}
-	}
-	
 
 	private TableColumn<CRType, ?>[] columns;
 
@@ -95,11 +27,11 @@ public class CRTableView extends TableView<CRType> {
 		GridPane.setVgrow(this, Priority.ALWAYS);
 		GridPane.setHgrow(this, Priority.ALWAYS);
 		
-		CRColumn[] colInfo = CRColumn.values();
+		CRType_ColumnView.CRColumn[] colInfo = CRType_ColumnView.CRColumn.values();
 		columns = new TableColumn[colInfo.length];
 		for (int i=0; i<colInfo.length; i++) {
 			
-			CRColumn col = colInfo[i];
+			CRType_ColumnView.CRColumn col = colInfo[i];
 			switch (col.type) {
 				case INT:  
 					columns[i] = new TableColumn<CRType, Number>(col.id); 
@@ -127,10 +59,10 @@ public class CRTableView extends TableView<CRType> {
 						return o1.compareToIgnoreCase(o2); 
 					});
 					break;
-				case CRCLUSTER: 
-					columns[i] = new TableColumn<CRType, CRCluster>(col.id); 
-					((TableColumn<CRType, CRCluster>) columns[i]).setCellValueFactory(cellData -> (ObservableValue<CRCluster>) col.prop.apply (cellData.getValue()));
-					break;
+//				case CRCLUSTER: 
+//					columns[i] = new TableColumn<CRType, CRCluster>(col.id); 
+//					((TableColumn<CRType, CRCluster>) columns[i]).setCellValueFactory(cellData -> (ObservableValue<CRCluster>) col.prop.apply (cellData.getValue()));
+//					break;
 				default: assert false;
 			}
 			
@@ -196,14 +128,14 @@ public class CRTableView extends TableView<CRType> {
 
 		/* remove SEARCH_SCORE as order criteria */
 		for (int i=getSortOrder().size()-1; i>=0; i--) {
-			if (getSortOrder().get(i).getText().equals(CRColumn.SEARCH_SCORE.id)) {
+			if (getSortOrder().get(i).getText().equals(CRType_ColumnView.CRColumn.SEARCH_SCORE.id)) {
 				getSortOrder().remove(i);
 			}
 		}
 		
 		/* sort by search first; remains other (if existing) search criteria */
-		columns[CRColumn.SEARCH_SCORE.ordinal()].setSortType(TableColumn.SortType.DESCENDING);
-		getSortOrder().add(0, columns[CRColumn.SEARCH_SCORE.ordinal()]);
+		columns[CRType_ColumnView.CRColumn.SEARCH_SCORE.ordinal()].setSortType(TableColumn.SortType.DESCENDING);
+		getSortOrder().add(0, columns[CRType_ColumnView.CRColumn.SEARCH_SCORE.ordinal()]);
 		sort();
 		
 		Optional<CRType> first = getItems().stream().findFirst();
@@ -217,11 +149,11 @@ public class CRTableView extends TableView<CRType> {
 
 	public void orderByYearAndSelect (int year) {
 		/* sort by year ASC, n_cr desc */
-		columns[CRColumn.RPY.ordinal()].setSortType(TableColumn.SortType.ASCENDING);
-		columns[CRColumn.N_CR.ordinal()].setSortType(TableColumn.SortType.DESCENDING);
+		columns[CRType_ColumnView.CRColumn.RPY.ordinal()].setSortType(TableColumn.SortType.ASCENDING);
+		columns[CRType_ColumnView.CRColumn.N_CR.ordinal()].setSortType(TableColumn.SortType.DESCENDING);
 		getSortOrder().clear();
-		getSortOrder().add(columns[CRColumn.RPY.ordinal()]);
-		getSortOrder().add(columns[CRColumn.N_CR.ordinal()]);
+		getSortOrder().add(columns[CRType_ColumnView.CRColumn.RPY.ordinal()]);
+		getSortOrder().add(columns[CRType_ColumnView.CRColumn.N_CR.ordinal()]);
 		sort();
 		Optional<CRType> first = getItems().stream().filter(cr -> (cr.getRPY()!=null) && (cr.getRPY().intValue() == year)).findFirst();
 		if (first.isPresent()) {

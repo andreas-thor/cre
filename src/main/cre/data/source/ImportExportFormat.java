@@ -100,7 +100,7 @@ public enum ImportExportFormat {
 				.filter(pub -> pub != null)
 				.forEach(pub -> {
 					if (crTab.isAborted()) this.importReader.stop();
-					StatusBar.get().incProgressbar(pub.length);
+					StatusBar.get().incProgressbar(pub.getLength());
 					crStatsInfo.updateStats(pub);
 				});
 			this.importReader.close();
@@ -171,7 +171,7 @@ public enum ImportExportFormat {
 							this.importReader.stop();
 						}
 
-						StatusBar.get().incProgressbar(pub.length);
+						StatusBar.get().incProgressbar(pub.getLength());
 						
 						
 						boolean addPub = true;

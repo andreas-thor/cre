@@ -1,13 +1,12 @@
 package main.cre.data.type.abs;
 
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import main.cre.data.type.db.CRTable_DB;
 import main.cre.data.type.mm.CRTable_MM;
 
-public abstract class CRTable {
+public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
  
 	public static enum COMPARATOR { LT, LTE, EQ, GTE, GT };
 	
@@ -18,7 +17,7 @@ public abstract class CRTable {
 	
 	public static TABLE_IMPL_TYPES type = TABLE_IMPL_TYPES.MM;
 	
-	public static CRTable get() {
+	public static CRTable<?, ?> get() {
 		
 		switch (type) {
 		case MM: return CRTable_MM.get();
@@ -33,24 +32,24 @@ public abstract class CRTable {
 	
 	public abstract void init();
 	
-	public abstract Stream<? extends CRType> getCR();
+	public abstract Stream<C> getCR();
 
 	/**
 	 * 
 	 * @param includePubsWithoutCRs default=false
 	 * @return
 	 */
-	public abstract Stream<? extends PubType> getPub (boolean includePubsWithoutCRs);
+	public abstract Stream<P> getPub (boolean includePubsWithoutCRs);
 	
-	public Stream<? extends PubType> getPub() {
+	public Stream<P> getPub() {
 		return this.getPub(false);
 	}	
 
-	public CRType addCR(CRType cr) {
+	public C addCR(C cr) {
 		return this.addCR(cr, false);
 	}
 	
-	public abstract CRType addCR(CRType cr, boolean checkForDuplicatesAndSetId);
+	public abstract C addCR(C cr, boolean checkForDuplicatesAndSetId);
 	
 	
 	
@@ -63,7 +62,7 @@ public abstract class CRTable {
 	
 //	public abstract PubType addPub (PubType pub, boolean addCRs);
 	
-	public abstract PubType addPub (PubType pub, boolean addCRs, boolean checkForDuplicates);
+	public abstract P addPub (P pub, boolean addCRs, boolean checkForDuplicates);
 	
 
 	
@@ -94,14 +93,14 @@ public abstract class CRTable {
 	 * Remove list of CRs
 	 * @param toDelete list of CRs to be deleted
 	 */
-	public abstract void removeCR (List<CRType> toDelete);
+	public abstract void removeCR (List<C> toDelete);
 	
 
 	/**
 	 * Remove all but the given list of CRs
 	 * @param toRetain list of CRs to be retained
 	 */
-	public abstract void retainCR (List<CRType> toRetain);
+	public abstract void retainCR (List<C> toRetain);
 	
 	
 	/**
@@ -137,7 +136,7 @@ public abstract class CRTable {
 	 * Remove all citing publications, that do *not* reference any of the given CRs 
 	 * @param selCR list of CRs
 	 */
-	public abstract void removePubByCR (List<CRType> selCR);
+	public abstract void removePubByCR (List<C> selCR);
 	
 	
 	
@@ -161,7 +160,7 @@ public abstract class CRTable {
 	
 
 	
-	public abstract void filterByCluster (List<CRType> sel);
+	public abstract void filterByCluster (List<C> sel);
 	
 	
 

@@ -17,13 +17,13 @@ import java.util.stream.Stream;
 import main.cre.data.Statistics;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
-import main.cre.data.type.mm.PubType_MM;
+import main.cre.data.type.abs.PubType;
 import main.cre.ui.statusbar.StatusBar;
 
 /** 
  * Provides iterator over all PubType elements in a list of Scopus files
  */
-public class WoS_txt extends ImportReader {
+public class WoS_txt<P extends PubType<CRType<P>>> extends ImportReader<P> {
 
 	static Pattern sWoS_matchAuthor = Pattern.compile("([^ ]*)( )?(.*)?");
 	
@@ -66,19 +66,19 @@ public class WoS_txt extends ImportReader {
 	
 	
 	
-	private PubType_MM parsePub (List<String> it) {
+	private P parsePub (List<String> it) {
 
 		String currentTag = "";
 		String tagBlock = "";
 		String value = "";
 			
-		PubType_MM pub = PubType_MM.create();
+		P pub = (P) P.create();
 		pub.setFS("WoS");
-		pub.length = 0;
+		pub.setLength(0);
 		List<String> C1 = new ArrayList<String>();
 		
 		for (String l: it) {
-			pub.length += 1 + l.length();
+			pub.setLength (pub.getLength() + 1 + l.length());
 			if (l.length()<2) continue;
 			currentTag = l.substring(0, 2);
 			if (currentTag.equals("ER")) continue;
@@ -113,7 +113,7 @@ public class WoS_txt extends ImportReader {
 
 			/* Parse Cited References */
 			case "CR":
-				CRType cr = parseCR(value);
+				CRType<P> cr = parseCR(value);
 				if (cr != null) {
 					pub.addCR(cr, true);  
 				}
@@ -152,9 +152,9 @@ public class WoS_txt extends ImportReader {
 	
 	
 	
-	public static CRType parseCR (String line) {
+	public static <C extends CRType<P>, P extends PubType<?>> C parseCR (String line) {
 
-		CRType cr = CRType.create();
+		C cr = (C) C.create();
 		cr.setCR(line); // [3..-1] // .toUpperCase()
 		cr.setType (CRType.FORMATTYPE.WOS);
 		cr.setRPY(null);
@@ -246,7 +246,7 @@ public class WoS_txt extends ImportReader {
 	 * @throws RuntimeException
 	 */
 	
-	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter, Comparator<CRType> comp) throws IOException, RuntimeException {
+	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException, RuntimeException {
 		
 		/* TODO: Filter is not supported yet */
 		

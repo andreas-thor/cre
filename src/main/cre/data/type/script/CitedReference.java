@@ -1,5 +1,6 @@
 package main.cre.data.type.script;
 
+import main.cre.data.type.abs.CRType.PERCENTAGE;
 import main.cre.data.type.mm.CRType_MM;
 
 /**
@@ -82,17 +83,17 @@ public class CitedReference {
 		result.N_PYEARS = cr.getN_PYEARS();
 		result.PERC_PYEARS = 100d*cr.getPYEAR_PERC();
 		
-		result.N_TOP50 = cr.getN_PCT50();
-		result.N_TOP25 = cr.getN_PCT75();
-		result.N_TOP10 = cr.getN_PCT90();
-		result.N_TOP1 = cr.getN_PCT99();
-		result.N_TOP0_1 = cr.getN_PCT999();
+		result.N_TOP50 = cr.getN_PCT(PERCENTAGE.P50);
+		result.N_TOP25 = cr.getN_PCT(PERCENTAGE.P75);
+		result.N_TOP10 = cr.getN_PCT(PERCENTAGE.P90);
+		result.N_TOP1 = cr.getN_PCT(PERCENTAGE.P99);
+		result.N_TOP0_1 = cr.getN_PCT(PERCENTAGE.P999);
 
-		result.N_TOP50_Plus = cr.getN_PCT_AboveAverage50();
-		result.N_TOP25_Plus = cr.getN_PCT_AboveAverage75();
-		result.N_TOP10_Plus = cr.getN_PCT_AboveAverage90();
-		result.N_TOP1_Plus = cr.getN_PCT_AboveAverage99();
-		result.N_TOP0_1_Plus = cr.getN_PCT_AboveAverage999();
+		result.N_TOP50_Plus = cr.getN_PCT_AboveAverage(PERCENTAGE.P50);
+		result.N_TOP25_Plus = cr.getN_PCT_AboveAverage(PERCENTAGE.P75);
+		result.N_TOP10_Plus = cr.getN_PCT_AboveAverage(PERCENTAGE.P90);
+		result.N_TOP1_Plus = cr.getN_PCT_AboveAverage(PERCENTAGE.P99);
+		result.N_TOP0_1_Plus = cr.getN_PCT_AboveAverage(PERCENTAGE.P999);
 		
 		result.SEQUENCE = cr.getSEQUENCE();
 		result.TYPE = cr.getTYPE();

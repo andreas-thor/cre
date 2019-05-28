@@ -7,18 +7,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import main.cre.data.type.abs.CRCluster;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
-import main.cre.data.type.abs.PubType;
-import main.cre.data.type.mm.CRType_MM;
-import main.cre.data.type.mm.PubType_MM;
 
-public class CRTable_DB extends CRTable {
+public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
 
 	
@@ -106,9 +101,9 @@ public class CRTable_DB extends CRTable {
 	}
 
 	@Override
-	public Stream<PubType_MM> getPub(boolean includePubsWithoutCRs) {
+	public Stream<PubType_DB> getPub(boolean includePubsWithoutCRs) {
 		// TODO Auto-generated method stub
-		Stream<PubType_MM> emptyStr = Stream.of();
+		Stream<PubType_DB> emptyStr = Stream.of();
 		return emptyStr;
 	}
 
@@ -117,7 +112,7 @@ public class CRTable_DB extends CRTable {
 
 
 	@Override
-	public CRType_MM addCR(CRType cr, boolean checkForDuplicatesAndSetId) {
+	public CRType_DB addCR(CRType_DB cr, boolean checkForDuplicatesAndSetId) {
 		
 
 		
@@ -131,7 +126,7 @@ public class CRTable_DB extends CRTable {
 //	}
 
 	@Override
-	public PubType_MM addPub(PubType pub, boolean addCRs, boolean checkForDuplicates) {
+	public PubType_DB addPub(PubType_DB pub, boolean addCRs, boolean checkForDuplicates) {
 
 		/* TODO: Check for Duplicates */
 		this.numberOfPubs++;
@@ -217,13 +212,13 @@ public class CRTable_DB extends CRTable {
 
 
 	@Override
-	public void removeCR(List<CRType> toDelete) {
+	public void removeCR(List<CRType_DB> toDelete) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void retainCR(List<CRType> toRetain) {
+	public void retainCR(List<CRType_DB> toRetain) {
 		// TODO Auto-generated method stub
 
 	}
@@ -253,7 +248,7 @@ public class CRTable_DB extends CRTable {
 	}
 
 	@Override
-	public void removePubByCR(List<CRType> selCR) {
+	public void removePubByCR(List<CRType_DB> selCR) {
 		// TODO Auto-generated method stub
 
 	}
@@ -271,7 +266,7 @@ public class CRTable_DB extends CRTable {
 	}
 
 	@Override
-	public void filterByCluster(List<CRType> sel) {
+	public void filterByCluster(List<CRType_DB> sel) {
 		// TODO Auto-generated method stub
 
 	}

@@ -9,6 +9,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import main.cre.CitedReferencesExplorer;
 import main.cre.data.DownloadCrossrefData;
 import main.cre.data.Sampling;
+import main.cre.data.type.abs.CRType_ColumnView;
 
 public class UISettings {
 
@@ -26,7 +27,7 @@ public class UISettings {
 	private File lastFileDir = new File("");
 
 	// visibility of table columns and number of digits
-	private SimpleBooleanProperty[] columnVisible = new SimpleBooleanProperty[CRTableView.CRColumn.values().length];
+	private SimpleBooleanProperty[] columnVisible = new SimpleBooleanProperty[CRType_ColumnView.CRColumn.values().length];
 	private int formatDigits = 2;
 	private DecimalFormat format;
 

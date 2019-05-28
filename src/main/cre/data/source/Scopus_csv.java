@@ -21,10 +21,10 @@ import com.opencsv.CSVWriter;
 import main.cre.data.Statistics;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
-import main.cre.data.type.mm.PubType_MM;
+import main.cre.data.type.abs.PubType;
 import main.cre.ui.statusbar.StatusBar;
 
-public class Scopus_csv extends ImportReader {
+public class Scopus_csv<P extends PubType<CRType<P>>> extends ImportReader<P>  {
 
 	static Pattern sScopus_matchEMail = Pattern.compile ("\\s(\\S+@\\w+(\\.\\w+)+)\\W*");
 	
@@ -91,9 +91,9 @@ public class Scopus_csv extends ImportReader {
 	}
 	
 	
-	private PubType_MM parsePub (String[] line) {
+	private P parsePub (String[] line) {
 		
-		PubType_MM pub = PubType_MM.create(); // .parseScopus(it, attributes, yearRange);
+		P pub = (P) P.create(); // .parseScopus(it, attributes, yearRange);
 		
 		pub.setPT("J"); // TODO: what is the default Publication Type? (No value in scopus!)
 				
@@ -148,7 +148,7 @@ public class Scopus_csv extends ImportReader {
 		if ((attribute2Index.get("REFERENCES") != null) && (line[attribute2Index.get("REFERENCES")] != null)) {
 			for (String crString: line[attribute2Index.get("REFERENCES")].split(";")) {
 //				pub.addCR (parseCR (crString), true);
-				CRType cr = parseCR(crString);
+				CRType<P> cr = parseCR(crString);
 				if (cr != null) {
 					pub.addCR(cr, true);  
 				}				
@@ -168,12 +168,12 @@ public class Scopus_csv extends ImportReader {
 		return pub;
 	}
 	
-	protected static CRType parseCR (String line) {
+	protected static <C extends CRType<P>, P extends PubType<C>> C parseCR (String line) {
 		
 		line = line.trim();
 		if (line.length() == 0) return null;
 		
-		CRType res = CRType.create();
+		C res = (C) C.create();
 		res.setType (CRType.FORMATTYPE.SCOPUS);
 		res.setCR(line);
 		
@@ -276,7 +276,7 @@ public class Scopus_csv extends ImportReader {
 	 * @param comp IS IGNORED
 	 * @throws IOException
 	 */
-	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter, Comparator<CRType> comp) throws IOException {
+	public static <C> void save (String file_name, boolean includePubsWithoutCRs, Predicate<C> filter, Comparator<C> comp) throws IOException {
 		
 		/* TODO: Filter not supported yet */
 		
@@ -288,7 +288,7 @@ public class Scopus_csv extends ImportReader {
 		CRTable.get().getPub(includePubsWithoutCRs).forEach(pub -> {
 			ArrayList<String> row = new ArrayList<String>();
 			
-			row.add ((pub.getAUSize() == 0) ? "" :
+			row.add ((pub.getAU().count() == 0) ? "" :
 				pub.getAU().map ( a -> {
 					String[] split = a.split(", ", 2);
 					String res = (split.length==2) ? split[0] + ", " + split[1].replaceAll("([A-Z])", "$1.") : a; 
@@ -309,9 +309,9 @@ public class Scopus_csv extends ImportReader {
 			row.add (pub.getDI() == null ? "" : pub.getDI());
 			row.add (pub.getLI() == null ? "" : pub.getLI());
 
-			row.add (pub.getAASize() == 0 ? "" : pub.getAA().collect(Collectors.joining("; ")));
+			row.add (pub.getAA().count() == 0 ? "" : pub.getAA().collect(Collectors.joining("; ")));
 			
-			row.add ((pub.getC1Size() == 0) ? "" :
+			row.add ((pub.getC1().count() == 0) ? "" :
 				pub.getC1().map(it -> {
 					String[] split = it[0].split(", ", 2);
 					String res = (split.length==2) ? (split[0] + ", " + split[1].replaceAll("([A-Z])", "$1.") + ", " + it[1]) : (it[0] + ", " + it[1]);
@@ -341,7 +341,7 @@ public class Scopus_csv extends ImportReader {
 	}
 	
 	
-	public static String generateCRString (CRType cr) {
+	public static <C extends CRType<P>, P extends PubType<C>> String generateCRString (C cr) {
 		/* generate CR string in Scopus format */
 		String res = "";
 		if (cr.getAU_A() == null) {

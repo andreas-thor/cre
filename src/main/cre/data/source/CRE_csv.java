@@ -11,16 +11,13 @@ import java.util.stream.Stream;
 
 import com.opencsv.CSVWriter;
 
-import main.cre.CitedReferencesExplorer;
 import main.cre.data.CRChartData;
 import main.cre.data.CRChartData.SERIESTYPE;
 import main.cre.data.Statistics;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
-import main.cre.data.type.mm.CRType_MM;
-import main.cre.data.type.mm.PubType_MM.PubColumn;
-import main.cre.data.type.script.CitedReference;
-import main.cre.ui.CRTableView.CRColumn;
+import main.cre.data.type.abs.CRType_ColumnView;
+import main.cre.data.type.abs.PubType_ColumnView;
 import main.cre.ui.statusbar.StatusBar;
 
 public class CRE_csv {
@@ -32,18 +29,18 @@ public class CRE_csv {
 	 */
 	
 	
-	public static void saveCR (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter, Comparator<CRType> comp) throws IOException {
+	public static void saveCR (String file_name, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException {
 
 		StatusBar.get().initProgressbar(Statistics.getNumberOfCRs());
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
-		csv.writeNext(Arrays.stream(CRColumn.values()).map(col -> col.id).toArray(String[]::new)); 
+		csv.writeNext(Arrays.stream(CRType_ColumnView.CRColumn.values()).map(col -> col.id).toArray(String[]::new)); 
 
-		if (comp == null) comp = CRType::compareTo;		// default: sort by ID
+		if (comp == null) comp = CRType<?>::compareTo;		// default: sort by ID
 		
 		CRTable.get().getCR().filter(filter).sorted(comp).forEach(cr -> {
 			StatusBar.get().incProgressbar();
-			csv.writeNext(Arrays.stream(CRColumn.values()).map(col -> col.prop.apply(cr)).map(val -> val == null ? "" : String.valueOf(val.getValue())).toArray(String[]::new)); 
+			csv.writeNext(Arrays.stream(CRType_ColumnView.CRColumn.values()).map(col -> col.prop.apply(cr)).map(val -> val == null ? "" : String.valueOf(val.getValue())).toArray(String[]::new)); 
 		});
 		
 		csv.close();
@@ -58,16 +55,16 @@ public class CRE_csv {
 	 * @param comp IS IGNORED
 	 * @throws IOException
 	 */
-	public static void savePub (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter, Comparator<CRType> comp) throws IOException {
+	public static void savePub (String file_name, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException {
 
 		StatusBar.get().initProgressbar(Statistics.getNumberOfPubs());
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
-		csv.writeNext(Arrays.stream(PubColumn.values()).map(col -> col.id).toArray(String[]::new)); 
+		csv.writeNext(Arrays.stream(PubType_ColumnView.PubColumn.values()).map(col -> col.id).toArray(String[]::new)); 
 		
 		CRTable.get().getPub(includePubsWithoutCRs).sorted().forEach(pub -> {
 			StatusBar.get().incProgressbar();
-			csv.writeNext(Arrays.stream(PubColumn.values()).map(col -> col.prop.apply(pub)).map(val -> val==null ? "" : String.valueOf(val.getValue())).toArray(String[]::new)); 
+			csv.writeNext(Arrays.stream(PubType_ColumnView.PubColumn.values()).map(col -> col.prop.apply(pub)).map(val -> val==null ? "" : String.valueOf(val.getValue())).toArray(String[]::new)); 
 		});
 		
 		csv.close();
@@ -75,25 +72,25 @@ public class CRE_csv {
 	
 	
 	
-	public static void saveCRPub (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter, Comparator<CRType> comp) throws IOException {
+	public static void saveCRPub (String file_name, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException {
 
 		StatusBar.get().initProgressbar(Statistics.getNumberOfPubs());
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext (Stream.concat (
-				Arrays.stream(PubColumn.values()).map(col -> col.id),
-				Arrays.stream(CRColumn.values()).map(col -> col.id))
+				Arrays.stream(PubType_ColumnView.PubColumn.values()).map(col -> col.id),
+				Arrays.stream(CRType_ColumnView.CRColumn.values()).map(col -> col.id))
 		.toArray(String[]::new)); 
 		
-		final Comparator<CRType> crComp = (comp == null) ? CRType::compareTo : comp;
+		final Comparator<CRType<?>> crComp = (comp == null) ? CRType::compareTo : comp;
 		
 		CRTable.get().getPub().sorted().forEach(pub -> {
 			StatusBar.get().incProgressbar();
 			
 			pub.getCR().filter(filter).sorted(crComp).forEach(cr -> {
 				csv.writeNext (Stream.concat (
-					Arrays.stream(PubColumn.values()).map(col -> col.prop.apply(pub)).map(val -> val==null ? "" : String.valueOf(val.getValue())), 
-					Arrays.stream(CRColumn.values()).map(col -> col.prop.apply(cr)).map(val -> val==null ? "" : String.valueOf(val.getValue())) 
+					Arrays.stream(PubType_ColumnView.PubColumn.values()).map(col -> col.prop.apply(pub)).map(val -> val==null ? "" : String.valueOf(val.getValue())), 
+					Arrays.stream(CRType_ColumnView.CRColumn.values()).map(col -> col.prop.apply(cr)).map(val -> val==null ? "" : String.valueOf(val.getValue())) 
 				).toArray(String[]::new)); 
 			});
 		});
@@ -110,7 +107,7 @@ public class CRE_csv {
 	 * @param comp IS IGNORED
 	 * @throws IOException
 	 */
-	public static void saveGraph (String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter, Comparator<CRType> comp) throws IOException {
+	public static void saveGraph (String file_name, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException {
 
 		/* TODO: Filter not supported yet */
 		

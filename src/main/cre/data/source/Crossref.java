@@ -30,7 +30,7 @@ import main.cre.Exceptions.BadResponseCodeException;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.CRType.FORMATTYPE;
-import main.cre.data.type.mm.PubType_MM;
+import main.cre.data.type.abs.PubType;
 import main.cre.ui.statusbar.StatusBar;
 
 /**
@@ -47,7 +47,7 @@ import main.cre.ui.statusbar.StatusBar;
  */
 
 
-public class Crossref extends ImportReader {
+public class Crossref<C extends CRType<P>, P extends PubType<C>> extends ImportReader<C, P> {
 
 	private JsonArray items;
 	private int currentItemIndex;
@@ -97,8 +97,8 @@ public class Crossref extends ImportReader {
 		}
 
 		JsonObject item = (JsonObject) jsonObject;
-		this.entry = PubType_MM.create();
-		this.entry.length = item.toString().length();
+		this.entry = PubType.create();
+		this.entry.setLength(item.toString().length());
 		
 		if (item.getJsonArray("title") != null) {
 			if (item.getJsonArray("title").size()>0) {
@@ -120,12 +120,12 @@ public class Crossref extends ImportReader {
 		if (item.get("reference") != null) {
 			item.getJsonArray("reference").stream().map(jsonCR -> (JsonObject)jsonCR).forEach(jsonCR -> { 
 
-				CRType cr = null;
+				C cr = null;
 				
 				// default values from parsing unstructured string
 				if (jsonCR.get("unstructured") != null) {
-					CRType crScopus = Scopus_csv.parseCR (jsonCR.getString("unstructured").replace("\n", "").replace("\r", ""));
-					CRType crWoS = WoS_txt.parseCR (jsonCR.getString("unstructured").replace("\n", "").replace("\r", ""));
+					C crScopus = Scopus_csv.parseCR (jsonCR.getString("unstructured").replace("\n", "").replace("\r", ""));
+					C crWoS = WoS_txt.parseCR (jsonCR.getString("unstructured").replace("\n", "").replace("\r", ""));
 					
 					if (crScopus != null) {
 						cr = crScopus;
@@ -192,7 +192,7 @@ public class Crossref extends ImportReader {
 	
 	
 	
-	public static String generateCRString (CRType cr) {
+	private String generateCRString (C cr) {
 		/* Generate CR-String in WoS format */
 		cr.setType(FORMATTYPE.WOS);
 		String res = "";

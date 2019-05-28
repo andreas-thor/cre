@@ -14,7 +14,7 @@ import main.cre.data.type.abs.CRType;
 public class CRPubInfo extends Dialog<Void> {
 
 	
-	public CRPubInfo(CRType cr) {
+	public CRPubInfo(CRType<?> cr) {
 		super();
 		
 		setTitle ("Info");

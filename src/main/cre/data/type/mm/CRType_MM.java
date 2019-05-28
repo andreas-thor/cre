@@ -4,52 +4,33 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import main.cre.data.type.abs.CRCluster;
 import main.cre.data.type.abs.CRType;
-import main.cre.data.type.abs.PubType;
 
-public abstract class CRType_MM extends CRType  {
+public class CRType_MM extends CRType<PubType_MM>  {
 
-	
-	
-	
-	private FORMATTYPE type = null;	
-	private boolean flag;
 	
 	private Set<PubType_MM> pubList;
+	private CRCluster_MM CID2;
+	
 	
 	public CRType_MM() {
+		super();
 		pubList = new HashSet<PubType_MM>();
 	}
 	
 	
-	public static int mein() {
-		return 3;
+	@Override
+	public int getN_CR() {
+		return this.pubList.size();
 	}
 	
-	public boolean isFlag() {
-		return flag;
-	}
-
-	public void setFlag(boolean flag) {
-		this.flag = flag;
-	}
-	
-	public FORMATTYPE getType() {
-		return type;
-	}
-
-	public void setType(FORMATTYPE type) {
-		this.type = type;
-	}
-
+	@Override
 	public Stream<PubType_MM> getPub() {
 		return pubList.stream();
 	}
 
-	@Override
-	public int getNumberOfPubs() {
-		return pubList.size();
-	}
+
 
 	
 	public Stream<PubType_MM> getPub(int py) {
@@ -63,12 +44,11 @@ public abstract class CRType_MM extends CRType  {
 	 * @param inverse true, if this CR should also be added to the PUB
 	 */
 	@Override
-	public void addPub(PubType pub, boolean inverse) {
+	public void addPub(PubType_MM pub, boolean inverse) {
 		if (inverse) {
 			pub.addCR(this, false);
 		}
-		this.resetN_CR();	// invalidate N_CR --> updated on next get access
-		this.pubList.add((PubType_MM) pub);
+		this.pubList.add(pub);
 	}
 
 
@@ -79,11 +59,10 @@ public abstract class CRType_MM extends CRType  {
 	 * @return if the PUB was in the publist
 	 */
 	@Override
-	public boolean removePub(PubType pub, boolean inverse) {
+	public boolean removePub(PubType_MM pub, boolean inverse) {
 		if (inverse) {
 			pub.removeCR(this, false);
 		}
-		this.resetN_CR();	// invalidate N_CR --> updated on next get access
 		return this.pubList.remove(pub);
 	}
 	
@@ -92,24 +71,49 @@ public abstract class CRType_MM extends CRType  {
 		if (inverse) {
 			pubList.forEach(pub -> pub.removeCR(this, false));
 		}
-		this.resetN_CR();
 		pubList.clear();
 		
 	}
 	
 	
-
+	public CRCluster getCID2() {
+		return CID2;
+	}
+	public void setCID2(CRCluster cID2) {
+		CID2 = (CRCluster_MM) cID2;
+	}
 	
 	
-
+	@Override
+	public void setCID2(String s) {
+		CID2 = new CRCluster_MM (s);
+	}
+	
+	@Override
+	public  void setCID2(CRType cr) {
+		CID2 = new CRCluster_MM (cr);
+	}
+	
+	public void setCID2(CRType cr, int c1) {
+		CID2 = new CRCluster_MM (cr, c1);
+	}
+	
+	
+	@Override
+	public String getCID_String() {
+		return CID2.toString();
+	}
+	
+	@Override
+	public int getCID_S() {
+		return CID2.getSize();
+	}
 	
 
 
 
 
-
-
-
+	
 
 	
 }

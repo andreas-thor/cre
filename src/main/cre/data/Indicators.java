@@ -10,7 +10,6 @@ import main.cre.data.CRChartData.SERIESTYPE;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.CRType.PERCENTAGE;
-import main.cre.data.type.mm.CRType_MM;
 
 
 public class Indicators {
@@ -47,7 +46,7 @@ public class Indicators {
 		
 		// Group CRs by RPY, compute NCR_ALL and NCR_RPY
 		System.out.println("mapRPY_CRs");
-		Map<Integer, List<CRType>> map_RPY_CRs = CRTable.get().getCR().filter(cr -> {
+		Map<Integer, List<CRType<?>>> map_RPY_CRs = CRTable.get().getCR().filter(cr -> {
 			
 			this.NCR_ALL[0] += cr.getN_CR();
 			if (cr.getRPY()!=null) {
@@ -57,7 +56,7 @@ public class Indicators {
 			} else {
 				return false;
 			}
-		}).collect(Collectors.groupingBy(CRType::getRPY, Collectors.mapping(Function.identity(), Collectors.toList())));
+		}).collect(Collectors.groupingBy(CRType<?>::getRPY, Collectors.mapping(Function.identity(), Collectors.toList())));
 		
 		
 		map_RPY_CRs.entrySet().stream().parallel().forEach(rpyGroup -> {	
@@ -69,7 +68,7 @@ public class Indicators {
 	
 	
 	
-	private void computeForAllCRsOfTheSameRPY (int rpy, List<CRType> crList) {
+	private void computeForAllCRsOfTheSameRPY (int rpy, List<CRType<?>> crList) {
 		
 		int firstPY = (rpy<=this.range_PY[0]) ? this.range_PY[0] : rpy;	// usually: rpy<=range_PY[0] 
 		int lastPY = this.range_PY[1];
@@ -87,7 +86,7 @@ public class Indicators {
 		for (int x=0; x<crSize; x++) {
 
 			final int crIdx = x;
-			CRType cr = crList.get(crIdx);
+			CRType<?> cr = crList.get(crIdx);
 			int[] NPYEARS = new int[1];
 			cr.getPub().filter(pub -> pub.getPY() != null).forEach(pub -> {
 				
@@ -194,23 +193,23 @@ public class Indicators {
 			
 			
 			
-			CRType cr = crList.get(crIdx);
+			CRType<?> cr = crList.get(crIdx);
 			
 			cr.setPYEAR_PERC (((double)cr.getN_PYEARS()) / (pySize-noPYWithoutCR));
 			cr.setPERC_YR 	 (((double)cr.getN_CR())       / NCR_RPY[rpy-range_RPY[0]]);
 			cr.setPERC_ALL	 (((double)cr.getN_CR())       / NCR_ALL[0]);
 			
-			cr.setN_PCT50(NPCT[PERCENTAGE.P50.ordinal()]);
-			cr.setN_PCT75(NPCT[PERCENTAGE.P75.ordinal()]);
-			cr.setN_PCT90(NPCT[PERCENTAGE.P90.ordinal()]);
-			cr.setN_PCT99(NPCT[PERCENTAGE.P99.ordinal()]);
-			cr.setN_PCT999(NPCT[PERCENTAGE.P999.ordinal()]);
+			cr.setN_PCT(PERCENTAGE.P50,  NPCT[PERCENTAGE.P50.ordinal()]);
+			cr.setN_PCT(PERCENTAGE.P75,  NPCT[PERCENTAGE.P75.ordinal()]);
+			cr.setN_PCT(PERCENTAGE.P90,  NPCT[PERCENTAGE.P90.ordinal()]);
+			cr.setN_PCT(PERCENTAGE.P99,  NPCT[PERCENTAGE.P99.ordinal()]);
+			cr.setN_PCT(PERCENTAGE.P999, NPCT[PERCENTAGE.P999.ordinal()]);
 
-			cr.setN_PCT_AboveAverage50(NPCT_AboveAverage[PERCENTAGE.P50.ordinal()]);
-			cr.setN_PCT_AboveAverage75(NPCT_AboveAverage[PERCENTAGE.P75.ordinal()]);
-			cr.setN_PCT_AboveAverage90(NPCT_AboveAverage[PERCENTAGE.P90.ordinal()]);
-			cr.setN_PCT_AboveAverage99(NPCT_AboveAverage[PERCENTAGE.P99.ordinal()]);
-			cr.setN_PCT_AboveAverage999(NPCT_AboveAverage[PERCENTAGE.P999.ordinal()]);
+			cr.setN_PCT_AboveAverage(PERCENTAGE.P50,  NPCT_AboveAverage[PERCENTAGE.P50.ordinal()]);
+			cr.setN_PCT_AboveAverage(PERCENTAGE.P75,  NPCT_AboveAverage[PERCENTAGE.P75.ordinal()]);
+			cr.setN_PCT_AboveAverage(PERCENTAGE.P90,  NPCT_AboveAverage[PERCENTAGE.P90.ordinal()]);
+			cr.setN_PCT_AboveAverage(PERCENTAGE.P99,  NPCT_AboveAverage[PERCENTAGE.P99.ordinal()]);
+			cr.setN_PCT_AboveAverage(PERCENTAGE.P999, NPCT_AboveAverage[PERCENTAGE.P999.ordinal()]);
 			
 			cr.setSEQUENCE(new String (sequence));
 

@@ -20,11 +20,11 @@ public class CRMatch2 {
 	
 	private class CRPair2 {
 		
-		CRType cr1;
-		CRType cr2;
+		CRType<?> cr1;
+		CRType<?> cr2;
 		Double s;
 
-		public CRPair2(CRType cr1, CRType cr2, Double s) {
+		public CRPair2(CRType<?> cr1, CRType<?> cr2, Double s) {
 			super();
 			
 			if (cr1.getID()<cr2.getID()) {
@@ -206,7 +206,7 @@ public class CRMatch2 {
 	}
 	
 	
-	public void addManuMatching (List<CRType> selCR, ManualMatchType2 matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
+	public void addManuMatching (List<CRType<?>> selCR, ManualMatchType2 matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
 		
 		
 		assert selCR != null;

@@ -1,146 +1,106 @@
 package main.cre.data.type.abs;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
+import main.cre.data.type.db.PubType_DB;
+import main.cre.data.type.mm.PubType_MM;
 
-public abstract class PubType implements Comparable<PubType> {
+public abstract class PubType<C extends CRType<?>> implements Comparable<PubType<C>> {
+
+
+	private Integer ID;
+	
+	private String PT; // Publication Type (WoS only)
+
+	// Authors; each author has format: "<lastname>, <initials_without_dots>"
+	private List<String> AU; 
+	// Authors Full Name; format: "<lastname>, <firstnames>
+	private List<String> AF; 
+	// Authors with Affiliations / Adresses; format: "array ("<lastname>, <firstnames>]", "<affiliation>")
+	private List<String[]> C1; 
+	// E-Mail Adressess
+	private List<String> EM; 
+	// All affiliations (Scopus only)
+	private List<String> AA; 
+
+	private String TI; // Title
+	private Integer PY; // Year
+
+	private String SO; // Source title
+	private String VL; // Volume
+	private String IS; // Issue
+	private String AR; // Article Number
+
+	private Integer BP; // Beginning Page / Page Start
+	private Integer EP; // Ending Page / Page End
+	private Integer PG; // Page Count
+
+	private Integer TC; // Times Cited
+
+	private String DI; // Digital Object Identifier (DOI)
+	private String LI; // Link (Scopus only)
+	private String AB; // Abstract
+	private String DE; // Author Keywords
+
+	private String DT; // Document Typs
+	private String FS; // File Source (Scopus only)
+	private String UT; // Unique Article Identifier
+	
+	private boolean flag;
+	
+	private int length; // approx. size for import status bar
 
 	
-	public abstract Stream<? extends CRType> getCR();
+	public static PubType create() {
+		
+		switch (CRTable.type) {
+		case MM: return new PubType_MM();	
+		case DB: return new PubType_DB();
+		default: return null;
+		}
+		
+	}
+	
+	
+	public PubType() {
+		AU = new ArrayList<String>();
+		AF = new ArrayList<String>();
+		C1 = new ArrayList<String[]>();
+		EM = new ArrayList<String>();
+		AA = new ArrayList<String>();
+	}
+	
+	public abstract Stream<C> getCR();
 	public abstract int getSizeCR();
-	public abstract void addCR(CRType cr, boolean inverse);	
+	public abstract void addCR(C cr, boolean inverse);	
 
 	
-	public abstract boolean removeCR(CRType cr, boolean inverse);
+	public abstract boolean removeCR(C cr, boolean inverse);
 	public abstract void removeCRByYear (int[] range, boolean keepCRsWithoutYear, boolean inverse);	
 	public abstract void removeCRByProbability (float probability, int offset, AtomicLong noToImportCRs, AtomicLong noAvailableCRs, AtomicInteger currentOffset);
 	public abstract void removeAllCRs(boolean inverse);
 	
-	
-	public abstract boolean isFlag();
-	public abstract void setFlag(boolean flag);
-	
-	public abstract Integer getID();
-	public abstract SimpleIntegerProperty getIDProp();
-	public abstract void setID (int iD);
-	
-	public abstract String getPT();
-	public abstract SimpleStringProperty getPTProp();
-	public abstract void setPT(String pT);
-	
-	public abstract Stream<String> getAU();
-	public abstract int getAUSize();
-	public abstract SimpleStringProperty getAUProp();
-	public abstract void addAU(String e);
 
-	public abstract Stream<String> getAF();
-	public abstract int getAFSize(); 
-	public abstract SimpleStringProperty getAFProp();
-	public abstract void addAF(String e);
-
-	public abstract Stream<String[]> getC1();
-	public abstract int getC1Size();
-	public abstract SimpleStringProperty getC1Prop();
-	public abstract void addC1(String[] e);
-	
-	public abstract Stream<String> getEM();
-	public abstract int getEMSize();
-	public abstract SimpleStringProperty getEMProp();
-	public abstract void addEM(String e);
-	
-	public abstract Stream<String> getAA();
-	public abstract int getAASize();
-	public abstract SimpleStringProperty getAAProp();
-	public abstract void addAA(String e);
-
-	public abstract String getTI();
-	public abstract SimpleStringProperty getTIProp();
-	public abstract void setTI(String tI);
-
-	public abstract Integer getPY();
-	public abstract SimpleObjectProperty<Integer> getPYProp();
-	public abstract void setPY(Integer pY);
-
-	public abstract String getSO();
-	public abstract SimpleStringProperty getSOProp();
-	public abstract void setSO(String sO);
-
-	public abstract String getVL();
-	public abstract SimpleStringProperty getVLProp();
-	public abstract void setVL(String vL);
-	
-	public abstract String getIS();
-	public abstract SimpleStringProperty getISProp();
-	public abstract void setIS(String iS);
-	
-	public abstract String getAR();
-	public abstract SimpleStringProperty getARProp();
-	public abstract void setAR(String aR);
-	
-	public abstract Integer getBP();
-	public abstract SimpleObjectProperty<Integer> getBPProp();
-	public abstract void setBP(Integer bP);
-	
-	public abstract Integer getEP();
-	public abstract SimpleObjectProperty<Integer> getEPProp();
-	public abstract void setEP(Integer eP);
-
-	public abstract Integer getPG();
-	public abstract SimpleObjectProperty<Integer> getPGProp();
-	public abstract void setPG(Integer pG);
-
-	public abstract Integer getTC();
-	public abstract SimpleObjectProperty<Integer> getTCProp();
-	public abstract void setTC(Integer tC);
-
-	public abstract String getDI();
-	public abstract SimpleStringProperty getDIProp();
-	public abstract void setDI(String dI);
-
-	public abstract String getLI();
-	public abstract SimpleStringProperty getLIProp();
-	public abstract void setLI(String lI);
-
-	public abstract String getAB();
-	public abstract SimpleStringProperty getABProp();
-	public abstract void setAB(String aB);
-
-	public abstract String getDE();
-	public abstract SimpleStringProperty getDEProp();
-	public abstract void setDE(String dE);
-
-	public abstract String getDT();
-	public abstract SimpleStringProperty getDTProp();
-	public abstract void setDT(String dT);
-
-	public abstract String getFS();
-	public abstract SimpleStringProperty getFSProp();
-	public abstract void setFS(String fS);
-
-	public abstract String getUT();
-	public abstract SimpleStringProperty getUTProp();
-	public abstract void setUT(String uT);
-	
-	
-	
-	public abstract String toLineString();
-	
+	public String toLineString() {
+		return String.format("[%d] %s: %s (%d)", getID(), getAU(), getTI(), getPY());
+	}	
 	
 	@Override
-	public int compareTo(PubType o) {
+	public int compareTo(PubType<C> o) {
 		return this.getID().intValue() - o.getID().intValue();
 	}
 
-
+/*
 	@Override
 	public boolean equals(Object obj) {
 
 		PubType p = (PubType) obj;
+		
+
 		
 		if (!this.getTIProp().getValueSafe().equals(p.getTIProp().getValueSafe())) return false;
 		if (!this.getPTProp().getValueSafe().equals(p.getPTProp().getValueSafe())) return false;
@@ -172,11 +132,177 @@ public abstract class PubType implements Comparable<PubType> {
 	}
 	
 	
+	
 	@Override
 	public int hashCode() {
 		return (this.getTI() == null) ? 0 : this.getTI().hashCode();
 	}
 	
+	*/
+
+	public Integer getID() {
+		return ID;
+	}
+	public void setID(Integer iD) {
+		ID = iD;
+	}
+	public String getPT() {
+		return PT;
+	}
+	public void setPT(String pT) {
+		PT = pT;
+	}
+	public Stream<String> getAU() {
+		return AU.stream();
+	}
+	public void addAU(String aU) {
+		AU.add(aU);
+	}
+	public Stream<String> getAF() {
+		return AF.stream();
+	}
+	public void addAF(String aF) {
+		AF.add(aF);
+	}
+	public Stream<String[]> getC1() {
+		return C1.stream();
+	}
+	public void addC1(String[] c1) {
+		C1.add(c1);
+	}
+	public Stream<String> getEM() {
+		return EM.stream();
+	}
+	public void addEM(String eM) {
+		EM.add(eM);
+	}
+	public Stream<String> getAA() {
+		return AA.stream();
+	}
+	public void addAA(String aA) {
+		AA.add(aA);
+	}
+	public String getTI() {
+		return TI;
+	}
+	public void setTI(String tI) {
+		TI = tI;
+	}
+	public Integer getPY() {
+		return PY;
+	}
+	public void setPY(Integer pY) {
+		PY = pY;
+	}
+	public String getSO() {
+		return SO;
+	}
+	public void setSO(String sO) {
+		SO = sO;
+	}
+	public String getVL() {
+		return VL;
+	}
+	public void setVL(String vL) {
+		VL = vL;
+	}
+	public String getIS() {
+		return IS;
+	}
+	public void setIS(String iS) {
+		IS = iS;
+	}
+	public String getAR() {
+		return AR;
+	}
+	public void setAR(String aR) {
+		AR = aR;
+	}
+	public Integer getBP() {
+		return BP;
+	}
+	public void setBP(Integer bP) {
+		BP = bP;
+	}
+	public Integer getEP() {
+		return EP;
+	}
+	public void setEP(Integer eP) {
+		EP = eP;
+	}
+	public Integer getPG() {
+		return PG;
+	}
+	public void setPG(Integer pG) {
+		PG = pG;
+	}
+	public Integer getTC() {
+		return TC;
+	}
+	public void setTC(Integer tC) {
+		TC = tC;
+	}
+	public String getDI() {
+		return DI;
+	}
+	public void setDI(String dI) {
+		DI = dI;
+	}
+	public String getLI() {
+		return LI;
+	}
+	public void setLI(String lI) {
+		LI = lI;
+	}
+	public String getAB() {
+		return AB;
+	}
+	public void setAB(String aB) {
+		AB = aB;
+	}
+	public String getDE() {
+		return DE;
+	}
+	public void setDE(String dE) {
+		DE = dE;
+	}
+	public String getDT() {
+		return DT;
+	}
+	public void setDT(String dT) {
+		DT = dT;
+	}
+	public String getFS() {
+		return FS;
+	}
+	public void setFS(String fS) {
+		FS = fS;
+	}
+	public String getUT() {
+		return UT;
+	}
+	public void setUT(String uT) {
+		UT = uT;
+	}
+	public boolean isFlag() {
+		return flag;
+	}
+	public void setFlag(boolean flag) {
+		this.flag = flag;
+	}
+	
+	
+	public int getLength() {
+		return length;
+	}
 
 
+	public void setLength(int length) {
+		this.length = length;
+	}
+
+
+
+	
+		
 }

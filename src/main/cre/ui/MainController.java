@@ -75,7 +75,7 @@ import main.cre.ui.statusbar.StatusBarFX;
 
 public class MainController {
 
-	CRTable crTable;
+	CRTable<?, ?> crTable;
 	CRChart crChart[] = new CRChart[2];
 
 	@FXML
@@ -132,7 +132,7 @@ public class MainController {
 				OnMenuDataRemoveSelected();
 			}
 			if (e.getCode() == KeyCode.SPACE) {
-				List<CRType> sel = getSelectedCRs();
+				List<CRType<?>> sel = getSelectedCRs();
 				if (sel.size() == 1) {
 					new CRInfo(sel.get(0)).showAndWait();
 				}
@@ -155,7 +155,7 @@ public class MainController {
 			@Override
 			public void onMatchManual(ManualMatchType2 type, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
 
-				List<CRType> toMatch = getSelectedCRs();
+				List<CRType<?>> toMatch = getSelectedCRs();
 				if ((toMatch.size() == 0) || ((toMatch.size() == 1) && (type != ManualMatchType2.EXTRACT))) {
 					new ConfirmAlert("Error during clustering!", true, new String[] { "Too few Cited References selected!" }).showAndWait();
 				} else {
@@ -317,7 +317,7 @@ public class MainController {
 	 * tableView.getItems().get(idx)).collect(Collectors.toList()); ==> GEHT AUCH
 	 * NICHT
 	 */
-	private List<CRType> getSelectedCRs() {
+	private List<CRType<?>> getSelectedCRs() {
 		return tableView.getSelectionModel().getSelectedItems().stream().filter(cr -> cr != null).collect(Collectors.toList());
 	}
 
@@ -714,7 +714,7 @@ public class MainController {
 
 	@FXML
 	public void OnMenuViewCR() {
-		List<CRType> sel = getSelectedCRs();
+		List<CRType<?>> sel = getSelectedCRs();
 		if (sel.size() == 1) {
 			new CRInfo(sel.get(0)).showAndWait();
 		} else {
@@ -724,7 +724,7 @@ public class MainController {
 
 	@FXML
 	public void OnMenuViewPub() {
-		List<CRType> sel = getSelectedCRs();
+		List<CRType<?>> sel = getSelectedCRs();
 		if (sel.size() == 1) {
 			new CRPubInfo(sel.get(0)).showAndWait();
 		} else {
@@ -747,7 +747,7 @@ public class MainController {
 
 	@FXML
 	public void OnMenuViewShowCluster() {
-		List<CRType> sel = getSelectedCRs();
+		List<CRType<?>> sel = getSelectedCRs();
 		if (sel.size() > 0) {
 
 			crTable.filterByCluster(sel);
@@ -817,7 +817,7 @@ public class MainController {
 	@FXML
 	public void OnMenuDataRemoveSelected() {
 
-		List<CRType> toDelete = getSelectedCRs();
+		List<CRType<?>> toDelete = getSelectedCRs();
 		int n = toDelete.size();
 		new ConfirmAlert("Remove Cited References", n == 0, new String[] { "No Cited References selected.", String.format("Would you like to remove all %d selected Cited References?", n) }).showAndWait().ifPresent(btn -> {
 			if (btn == ButtonType.YES) {
@@ -914,7 +914,7 @@ public class MainController {
 		new TextInput("Retain Cited References By Id", "Specify list if CR Ids").showAndWait().ifPresent(list -> {
 			if (list != null) {
 				int[] id = Arrays.stream(list.split("\\D")).mapToInt(Integer::valueOf).toArray();
-				List<CRType> toRetain = crTable.getCR().filter(cr -> IntStream.of(id).anyMatch(it -> cr.getID() == it)).collect(Collectors.toList());
+				List<CRType<?>> toRetain = crTable.getCR().filter(cr -> IntStream.of(id).anyMatch(it -> cr.getID() == it)).collect(Collectors.toList());
 				crTable.retainCR(toRetain);
 			}
 		});
@@ -923,7 +923,7 @@ public class MainController {
 	@FXML
 	public void OnMenuDataRetainSelected() {
 
-		List<CRType> toDelete = getSelectedCRs();
+		List<CRType<?>> toDelete = getSelectedCRs();
 		int n = toDelete.size();
 		new ConfirmAlert("Remove Publications", n == 0, new String[] { "No Cited References selected.", String.format("Would you like to remove all citing publications that do not cite any of the selected %d Cited References?", n) }).showAndWait()
 				.ifPresent(btn -> {
