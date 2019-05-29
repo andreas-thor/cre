@@ -34,8 +34,8 @@ public class CRType_ColumnView {
 			VOL ("VOL", "Volume", ColGroup.CR, ColDataType.STRING, cr -> new SimpleStringProperty (cr.getVOL())),
 			PAG ("PAG", "Page", ColGroup.CR, ColDataType.STRING, cr -> new SimpleStringProperty(cr.getPAG())),
 			DOI ("DOI", "DOI", ColGroup.CR, ColDataType.STRING, cr -> new SimpleStringProperty(cr.getDOI())),
-			CID2 ("CID2", "ClusterID", ColGroup.CLUSTER, ColDataType.STRING, cr -> new SimpleStringProperty(cr.getCID_String())),
-			CID_S ("CID_S", "ClusterSize", ColGroup.CLUSTER, ColDataType.INT, cr -> new SimpleIntegerProperty(cr.getCID_S())),
+			CID2 ("CID2", "ClusterID", ColGroup.CLUSTER, ColDataType.STRING, cr -> new SimpleStringProperty(cr.getClusterId())),
+			CID_S ("CID_S", "ClusterSize", ColGroup.CLUSTER, ColDataType.INT, cr -> new SimpleIntegerProperty(cr.getClusterSize())),
 			
 			N_PYEARS ("N_PYEARS", "Number of Citing Years", ColGroup.INDICATOR, ColDataType.INT, cr -> new SimpleIntegerProperty(cr.getN_PYEARS())),
 			PYEAR_PERC ("PERC_PYEARS", "Percentage of Citing Years", ColGroup.INDICATOR, ColDataType.DOUBLE, cr -> new SimpleDoubleProperty(cr.getPYEAR_PERC())),

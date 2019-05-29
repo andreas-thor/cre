@@ -1,4 +1,4 @@
-package main.cre.data.match;
+package main.cre.data.type.mm.clustering;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,64 +11,14 @@ import java.util.stream.Collectors;
 
 import main.cre.data.Statistics;
 import main.cre.data.type.abs.CRTable;
-import main.cre.data.type.abs.CRType;
+import main.cre.data.type.abs.Clustering;
+import main.cre.data.type.mm.CRTable_MM;
+import main.cre.data.type.mm.CRType_MM;
 import main.cre.ui.statusbar.StatusBar;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
 public class CRMatch2 {
 
-	
-	private class CRPair2 {
-		
-		CRType<?> cr1;
-		CRType<?> cr2;
-		Double s;
-
-		public CRPair2(CRType<?> cr1, CRType<?> cr2, Double s) {
-			super();
-			
-			if (cr1.getID()<cr2.getID()) {
-				this.cr1 = cr1;
-				this.cr2 = cr2;
-			} else {
-				this.cr1 = cr2;
-				this.cr2 = cr1;
-			}
-			this.s = s;
-		}
-		
-
-		@Override
-		public String toString () {
-			return (this.cr1.getID() + "/" + this.cr2.getID() + "/" + this.s);
-		}
-		
-	}	
-	
-	private static CRMatch2 crmatch = null;
-	
-	public static enum ManualMatchType2 { 
-		SAME ("Same"), 
-		DIFFERENT ("Different"),
-		EXTRACT ("Extract");
-		
-		public final String label;
-		ManualMatchType2(String label) {
-			this.label = label;
-		}
-	};
-	
-	
-	public static enum ClusteringType2 {
-		INIT ("Init"), 
-		REFRESH ("Refresh");
-		
-		public final String label;
-		ClusteringType2 (String label) {
-			this.label = label;
-		}
-	}
-	
 	
 	/**
 	 * matchResult: M -> (CR1 -> (CR2 -> sim)
@@ -76,27 +26,23 @@ public class CRMatch2 {
 	 * M=true --> manual match; M=false --> automatic match
 	 * sim=similarity : -2=manual NON MATCH, +2=manual MATCH, in [0,1]=automatic match
 	 */
-	public Map <Boolean, Map<CRType, Map<CRType, Double>>> matchResult;
+	public Map <Boolean, Map<CRType_MM, Map<CRType_MM, Double>>> matchResult;
 	private TreeMap <Long, ArrayList<CRPair2>> timestampedPairs;
 
+	private CRTable_MM crTab;
 	
-	private CRMatch2 () {
+	
+	public CRMatch2 (CRTable_MM crTab) {
+		this.crTab = crTab;
 		init();
 	}
 	
-	public static CRMatch2 get() {
-		
-		if (crmatch==null) {
-			crmatch = new CRMatch2();
-		}
-	 	return crmatch;
-	}
 	
 	
 	public void init() {
-		matchResult = new HashMap<Boolean, Map<CRType, Map<CRType,Double>>>();
-		matchResult.put(false, new HashMap<CRType,Map<CRType,Double>>());		// automatic match result
-		matchResult.put(true,  new HashMap<CRType,Map<CRType,Double>>());		// manual match result
+		matchResult = new HashMap<Boolean, Map<CRType_MM, Map<CRType_MM,Double>>>();
+		matchResult.put(false, new HashMap<CRType_MM,Map<CRType_MM,Double>>());		// automatic match result
+		matchResult.put(true,  new HashMap<CRType_MM,Map<CRType_MM,Double>>());		// manual match result
 		timestampedPairs = new TreeMap<Long, ArrayList<CRPair2>>();
 	}
 	
@@ -111,13 +57,13 @@ public class CRMatch2 {
 		
 		// standard blocking: year + first letter of last name
 		StatusBar.get().setValue(String.format("Blocking of %d objects...", Statistics.getNumberOfCRs()));
-		Map<String, List<CRType>> blocks = CRTable.get().getCR().collect(Collectors.groupingBy(
+		Map<String, List<CRType_MM>> blocks = crTab.getCR().collect(Collectors.groupingBy(
 			cr -> ((cr.getRPY() != null) && (cr.getAU_L() != null) && (cr.getAU_L().length() > 0)) ? cr.getRPY() + cr.getAU_L().substring(0,1).toLowerCase() : "",
 			Collectors.toList()
 		));
 
 		StatusBar.get().initProgressbar(blocks.entrySet().stream().mapToInt(entry -> (entry.getValue().size()*(entry.getValue().size()-1))/2).sum(), String.format("Matching %d objects in %d blocks", Statistics.getNumberOfCRs(), blocks.size()));
-		matchResult.put(false, new HashMap<CRType,Map<CRType,Double>>());		// remove automatic match result, but preserve manual matching
+		matchResult.put(false, new HashMap<CRType_MM,Map<CRType_MM,Double>>());		// remove automatic match result, but preserve manual matching
 		Levenshtein l = new Levenshtein();
 		
 		AtomicLong testCount = new AtomicLong(0);
@@ -135,7 +81,7 @@ public class CRMatch2 {
 			List<CRPair2> result = new ArrayList<CRPair2>();
 			if (entry.getKey().equals("")) return result;	// non-matchable block 
 
-			List<CRType> crlist = entry.getValue();
+			List<CRType_MM> crlist = entry.getValue();
 			
 			// allX = List of all AU_L values; compareY = List of compare string 
 			List<String> allX = crlist.stream().map ( cr -> cr.getAU_L().toLowerCase()).collect (Collectors.toList());
@@ -153,7 +99,7 @@ public class CRMatch2 {
 					if (s1>=threshold) {
 
 						// the two CRs to be compared
-						CRType[] comp_CR = new CRType[] { crlist.get(xIndx), crlist.get(xIndx+yIndx+1/*ySize-yIndx-1*/) };
+						CRType_MM[] comp_CR = new CRType_MM[] { crlist.get(xIndx), crlist.get(xIndx+yIndx+1/*ySize-yIndx-1*/) };
 						
 						// increasing sim + weight if data is available; weight for author is 2
 						double sim = weight_author*s1;
@@ -201,12 +147,12 @@ public class CRMatch2 {
 		assert testCount.get() == getSize(false);
 		
 		StatusBar.get().setValue("Matching done");
-		updateClustering(ClusteringType2.INIT, null, threshold, false, false, false);
+		updateClustering(Clustering.ClusteringType.INIT, null, threshold, false, false, false);
 		
 	}
 	
 	
-	public void addManuMatching (List<CRType<?>> selCR, ManualMatchType2 matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
+	public void addManuMatching (List<CRType_MM> selCR, Clustering.ManualMatchType matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
 		
 		
 		assert selCR != null;
@@ -215,25 +161,25 @@ public class CRMatch2 {
 		Long timestamp = System.currentTimeMillis();		// used to group together all individual mapping pairs of match operation
 		
 		// manual-same is indicated by similarity = 2; different = -2
-		if ((matchType==ManualMatchType2.SAME) || (matchType==ManualMatchType2.DIFFERENT)) {
-			double sim = (matchType==ManualMatchType2.SAME) ? 2d : -2d;
-			for (CRType cr1: selCR) {
-				for (CRType cr2: selCR) {
+		if ((matchType==Clustering.ManualMatchType.SAME) || (matchType==Clustering.ManualMatchType.DIFFERENT)) {
+			double sim = (matchType==Clustering.ManualMatchType.SAME) ? 2d : -2d;
+			for (CRType_MM cr1: selCR) {
+				for (CRType_MM cr2: selCR) {
 					if (cr1.getID()<cr2.getID()) addPair(new CRPair2 (cr1, cr2, sim), true, false, timestamp);
 				}
 			}
 		}
 
-		if (matchType==ManualMatchType2.EXTRACT) {
-			for (CRType cr1: selCR) {
-				cr1.getCID2().getCR().filter(cr2 -> cr1!=cr2).forEach(cr2 -> addPair (new CRPair2 (cr1, cr2, -2d), true, false, timestamp));
+		if (matchType==Clustering.ManualMatchType.EXTRACT) {
+			for (CRType_MM cr1: selCR) {
+				cr1.getCluster().getCR().filter(cr2 -> cr1!=cr2).forEach(cr2 -> addPair (new CRPair2 (cr1, cr2, -2d), true, false, timestamp));
 			}
 		}
 		
 		
-		Set<CRType> changeCR = selCR.stream().flatMap(cr -> cr.getCID2().getCR()).distinct().collect(Collectors.toSet());
+		Set<CRType_MM> changeCR = selCR.stream().flatMap(cr -> cr.getCluster().getCR()).distinct().collect(Collectors.toSet());
 		
-		updateClustering(ClusteringType2.REFRESH, changeCR, matchThreshold, useVol, usePag, useDOI);
+		updateClustering(Clustering.ClusteringType.REFRESH, changeCR, matchThreshold, useVol, usePag, useDOI);
 	}	
 	
 
@@ -248,24 +194,24 @@ public class CRMatch2 {
 		undoPairs.forEach(pair -> addPair(pair, true, false, null));
 		
 		// get changed CRs and update clustering
-		Set<CRType> changeCR = undoPairs.stream().map(pair -> pair.cr1).distinct().collect(Collectors.toSet());
+		Set<CRType_MM> changeCR = undoPairs.stream().map(pair -> pair.cr1).distinct().collect(Collectors.toSet());
 		changeCR.addAll(undoPairs.stream().map(pair -> pair.cr2).distinct().collect(Collectors.toSet()));
-		updateClustering(ClusteringType2.REFRESH, changeCR, matchThreshold, useVol, usePag, useDOI);
+		updateClustering(Clustering.ClusteringType.REFRESH, changeCR, matchThreshold, useVol, usePag, useDOI);
 	}
 	
 	
-	public void updateClustering (ClusteringType2 type, Set<CRType> changeCR, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
+	public void updateClustering (Clustering.ClusteringType type, Set<CRType_MM> changeCR, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
 		
 
 		int pbSize = matchResult.get(false).size()+matchResult.get(true).size();
 		
-		if (type == ClusteringType2.INIT) {	// consider manual matches only
-			CRTable.get().getCR().forEach(cr -> cr.setCID2(cr));
+		if (type == Clustering.ClusteringType.INIT) {	// consider manual (automatic?) matches only
+			crTab.getCR().forEach(cr -> cr.setCluster(new CRCluster_MM(cr)));
 			pbSize = matchResult.get(false).size();
 		}
 		
-		if (type == ClusteringType2.REFRESH) {
-			((changeCR == null) ? CRTable.get().getCR() : changeCR.stream()).forEach(cr -> cr.setCID2(cr, cr.getCID2().getC1()));
+		if (type == Clustering.ClusteringType.REFRESH) {
+			((changeCR == null) ? crTab.getCR() : changeCR.stream()).forEach(cr -> cr.setCluster (new CRCluster_MM(cr, cr.getCluster().getC1())));
 		}
 
 		StatusBar.get().initProgressbar(pbSize, String.format("Clustering %d objects (%s) with threshold %.2f", Statistics.getNumberOfCRs(), type.label, threshold));
@@ -280,27 +226,27 @@ public class CRMatch2 {
 				boolean changed = (changeCR == null) || (changeCR.contains(cr1) && changeCR.contains(cr2));
 				boolean manualDifferent = (matchResult.get(true).get(cr1) != null) && (matchResult.get(true).get(cr1).get(cr2) != null) && (matchResult.get(true).get(cr1).get(cr2) == -2d);
 				
-				if (changed && (cr1.getCID2() != cr2.getCID2()) && (sim >= threshold) && !manualDifferent) {
+				if (changed && (cr1.getCluster() != cr2.getCluster()) && (sim >= threshold) && !manualDifferent) {
 					
 					boolean vol = (!useVol) || ((cr1.getVOL()!=null) && (cr2.getVOL()!=null) && (cr1.getVOL().equals (cr2.getVOL()))); // || (cr1.VOL.equals("")) || (cr2.VOL.equals(""))
 					boolean pag = (!usePag) || ((cr1.getPAG()!=null) && (cr2.getPAG()!=null) && (cr1.getPAG().equals (cr2.getPAG()))); // || (cr1.PAG.equals("")) || (cr2.PAG.equals(""))
 					boolean doi = (!useDOI) || ((cr1.getDOI()!=null) && (cr2.getDOI()!=null) && (cr1.getDOI().equalsIgnoreCase (cr2.getDOI()))); // || (cr1.DOI.equals("")) || (cr2.DOI.equals(""))
 					
 					if (vol && pag && doi) {
-						cr1.getCID2().merge(cr2.getCID2());
+						cr1.getCluster().merge(cr2.getCluster());
 					}
 				}
 			});
 		});
 
 		// add manual matches
-		if (type != ClusteringType2.INIT) {
+		if (type != Clustering.ClusteringType.INIT) {
 			matchResult.get(true).forEach((cr1, pairs) -> {
 				StatusBar.get().incProgressbar();
 				pairs.forEach((cr2, sim) -> {
 					boolean changed = (changeCR == null) || (changeCR.contains(cr1) && changeCR.contains(cr2));
 					if (changed && (sim!=null) && (sim==2d)) {
-						cr1.getCID2().merge(cr2.getCID2());
+						cr1.getCluster().merge(cr2.getCluster());
 					}
 				});
 			});
@@ -320,7 +266,7 @@ public class CRMatch2 {
 		return matchResult.get(isManual).entrySet().stream().mapToLong( entry -> entry.getValue().size()).sum();
 	}
 	
-	public void addPair (CRType cr1, CRType cr2, double s, boolean isManual, boolean add, Long timestamp) {
+	public void addPair (CRType_MM cr1, CRType_MM cr2, double s, boolean isManual, boolean add, Long timestamp) {
 		addPair(new CRPair2 (cr1, cr2, s), isManual, false, null);
 	}
 
@@ -328,8 +274,8 @@ public class CRMatch2 {
 
 		if (matchPair.cr1==matchPair.cr2) return;
 		
-		matchResult.get( isManual).putIfAbsent(matchPair.cr1, new HashMap<CRType, Double>());
-		matchResult.get(!isManual).putIfAbsent(matchPair.cr1, new HashMap<CRType, Double>());
+		matchResult.get( isManual).putIfAbsent(matchPair.cr1, new HashMap<CRType_MM, Double>());
+		matchResult.get(!isManual).putIfAbsent(matchPair.cr1, new HashMap<CRType_MM, Double>());
 
 		// store old value for undo operation of manual mappings
 		if ((isManual) && (timestamp!=null)) {
@@ -341,6 +287,8 @@ public class CRMatch2 {
 		double v = add ? matchResult.get(isManual).get(matchPair.cr1).getOrDefault(matchPair.cr2, 0d) : 0d;
 		matchResult.get(isManual).get(matchPair.cr1).put(matchPair.cr2, (matchPair.s==null) ? null : matchPair.s+v);
 	}
+
+
 	
 	
 }

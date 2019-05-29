@@ -17,13 +17,14 @@ import java.util.stream.Stream;
 import main.cre.data.Statistics;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
-import main.cre.data.type.abs.PubType;
+import main.cre.data.type.mm.CRType_MM;
+import main.cre.data.type.mm.PubType_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 /** 
  * Provides iterator over all PubType elements in a list of Scopus files
  */
-public class WoS_txt<P extends PubType<CRType<P>>> extends ImportReader<P> {
+public class WoS_txt extends ImportReader {
 
 	static Pattern sWoS_matchAuthor = Pattern.compile("([^ ]*)( )?(.*)?");
 	
@@ -66,13 +67,13 @@ public class WoS_txt<P extends PubType<CRType<P>>> extends ImportReader<P> {
 	
 	
 	
-	private P parsePub (List<String> it) {
+	private static PubType_MM parsePub (List<String> it) {
 
 		String currentTag = "";
 		String tagBlock = "";
 		String value = "";
 			
-		P pub = (P) P.create();
+		PubType_MM pub = new PubType_MM();
 		pub.setFS("WoS");
 		pub.setLength(0);
 		List<String> C1 = new ArrayList<String>();
@@ -113,7 +114,7 @@ public class WoS_txt<P extends PubType<CRType<P>>> extends ImportReader<P> {
 
 			/* Parse Cited References */
 			case "CR":
-				CRType<P> cr = parseCR(value);
+				CRType_MM cr = parseCR(value);
 				if (cr != null) {
 					pub.addCR(cr, true);  
 				}
@@ -152,9 +153,9 @@ public class WoS_txt<P extends PubType<CRType<P>>> extends ImportReader<P> {
 	
 	
 	
-	public static <C extends CRType<P>, P extends PubType<?>> C parseCR (String line) {
+	public static CRType_MM parseCR (String line) {
 
-		C cr = (C) C.create();
+		CRType_MM cr = new CRType_MM();
 		cr.setCR(line); // [3..-1] // .toUpperCase()
 		cr.setType (CRType.FORMATTYPE.WOS);
 		cr.setRPY(null);
@@ -346,7 +347,8 @@ public class WoS_txt<P extends PubType<CRType<P>>> extends ImportReader<P> {
 		}
 	}
 	
-	public static String generateCRString (CRType cr) {
+	
+	public static String generateCRString (CRType<?> cr) {
 		/* Generate CR-String in WoS format */
 		String res = (cr.getAU_L() != null) ? cr.getAU_L() + " " : "";
 		if (cr.getAU_F() != null) res += cr.getAU_F();

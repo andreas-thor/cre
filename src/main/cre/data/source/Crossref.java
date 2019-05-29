@@ -30,7 +30,8 @@ import main.cre.Exceptions.BadResponseCodeException;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.CRType.FORMATTYPE;
-import main.cre.data.type.abs.PubType;
+import main.cre.data.type.mm.CRType_MM;
+import main.cre.data.type.mm.PubType_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 /**
@@ -47,7 +48,7 @@ import main.cre.ui.statusbar.StatusBar;
  */
 
 
-public class Crossref<C extends CRType<P>, P extends PubType<C>> extends ImportReader<C, P> {
+public class Crossref extends ImportReader {
 
 	private JsonArray items;
 	private int currentItemIndex;
@@ -97,7 +98,7 @@ public class Crossref<C extends CRType<P>, P extends PubType<C>> extends ImportR
 		}
 
 		JsonObject item = (JsonObject) jsonObject;
-		this.entry = PubType.create();
+		this.entry = new PubType_MM();
 		this.entry.setLength(item.toString().length());
 		
 		if (item.getJsonArray("title") != null) {
@@ -120,12 +121,12 @@ public class Crossref<C extends CRType<P>, P extends PubType<C>> extends ImportR
 		if (item.get("reference") != null) {
 			item.getJsonArray("reference").stream().map(jsonCR -> (JsonObject)jsonCR).forEach(jsonCR -> { 
 
-				C cr = null;
+				CRType_MM cr = null;
 				
 				// default values from parsing unstructured string
 				if (jsonCR.get("unstructured") != null) {
-					C crScopus = Scopus_csv.parseCR (jsonCR.getString("unstructured").replace("\n", "").replace("\r", ""));
-					C crWoS = WoS_txt.parseCR (jsonCR.getString("unstructured").replace("\n", "").replace("\r", ""));
+					CRType_MM crScopus = Scopus_csv.parseCR (jsonCR.getString("unstructured").replace("\n", "").replace("\r", ""));
+					CRType_MM crWoS = WoS_txt.parseCR (jsonCR.getString("unstructured").replace("\n", "").replace("\r", ""));
 					
 					if (crScopus != null) {
 						cr = crScopus;
@@ -138,7 +139,7 @@ public class Crossref<C extends CRType<P>, P extends PubType<C>> extends ImportR
 				}
 				
 				if (cr == null) {
-					cr = CRType.create();
+					cr = new CRType_MM();
 				}
 				
 				// overwrite with JSON data
@@ -192,7 +193,7 @@ public class Crossref<C extends CRType<P>, P extends PubType<C>> extends ImportR
 	
 	
 	
-	private String generateCRString (C cr) {
+	private String generateCRString (CRType<?> cr) {
 		/* Generate CR-String in WoS format */
 		cr.setType(FORMATTYPE.WOS);
 		String res = "";

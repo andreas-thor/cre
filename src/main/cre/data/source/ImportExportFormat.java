@@ -42,7 +42,7 @@ public enum ImportExportFormat {
 	
 
 	public interface Export {
-	   void save(String file_name, boolean includePubsWithoutCRs, Predicate<CRType> filter, Comparator<CRType> comp) throws IOException, RuntimeException;
+	   void save(String file_name, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException, RuntimeException;
 	}
 	
 	private final String label;
@@ -64,11 +64,11 @@ public enum ImportExportFormat {
 		this.save (file, includePubsWithoutCRs, (it -> true));
 	}
 	
-	public void save (File file, boolean includePubsWithoutCRs, Predicate<CRType> filter) throws IOException {
+	public void save (File file, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter) throws IOException {
 		this.save (file, includePubsWithoutCRs, (it -> true), null);
 	}
 	
-	public void save (File file, boolean includePubsWithoutCRs, Predicate<CRType> filter, Comparator<CRType> comp) throws IOException {
+	public void save (File file, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException {
 		
 		// add extension if necessary
 		String file_name = file.toString();

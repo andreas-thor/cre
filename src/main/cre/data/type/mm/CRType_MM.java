@@ -4,14 +4,15 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import main.cre.data.type.abs.CRCluster;
 import main.cre.data.type.abs.CRType;
+import main.cre.data.type.mm.clustering.CRCluster_MM;
 
 public class CRType_MM extends CRType<PubType_MM>  {
 
 	
 	private Set<PubType_MM> pubList;
-	private CRCluster_MM CID2;
+	
+	private CRCluster_MM cluster;
 	
 	
 	public CRType_MM() {
@@ -75,41 +76,54 @@ public class CRType_MM extends CRType<PubType_MM>  {
 		
 	}
 	
-	
+/*	
 	public CRCluster getCID2() {
-		return CID2;
+		return cluster;
 	}
 	public void setCID2(CRCluster cID2) {
-		CID2 = (CRCluster_MM) cID2;
+		cluster = (CRCluster_MM) cID2;
 	}
 	
 	
 	@Override
 	public void setCID2(String s) {
-		CID2 = new CRCluster_MM (s);
+		cluster = new CRCluster_MM (s);
 	}
 	
 	@Override
 	public  void setCID2(CRType cr) {
-		CID2 = new CRCluster_MM (cr);
+		cluster = new CRCluster_MM (cr);
 	}
 	
 	public void setCID2(CRType cr, int c1) {
-		CID2 = new CRCluster_MM (cr, c1);
+		cluster = new CRCluster_MM (cr, c1);
 	}
+*/	
 	
 	
 	@Override
-	public String getCID_String() {
-		return CID2.toString();
+	public int getClusterC1() {
+		return cluster.getC1();
+	}
+
+	@Override
+	public int getClusterC2() {
+		return cluster.getC2();
 	}
 	
 	@Override
-	public int getCID_S() {
-		return CID2.getSize();
+	public int getClusterSize() {
+		return cluster.getSize();
 	}
 	
 
+	public CRCluster_MM getCluster() {
+		return this.cluster;
+	}
+	
+	public void setCluster (CRCluster_MM cluster) {
+		this.cluster = cluster;
+	}
 
 
 

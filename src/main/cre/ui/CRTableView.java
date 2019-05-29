@@ -12,9 +12,9 @@ import javafx.scene.layout.Priority;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.CRType_ColumnView;
 
-public class CRTableView extends TableView<CRType> {
+public class CRTableView extends TableView<CRType<?>> {
 
-	private TableColumn<CRType, ?>[] columns;
+	private TableColumn<CRType<?>, ?>[] columns;
 
 	
 	@SuppressWarnings("unchecked")
@@ -34,14 +34,14 @@ public class CRTableView extends TableView<CRType> {
 			CRType_ColumnView.CRColumn col = colInfo[i];
 			switch (col.type) {
 				case INT:  
-					columns[i] = new TableColumn<CRType, Number>(col.id); 
-					((TableColumn<CRType, Number>) columns[i]).setCellValueFactory(cellData -> (ObservableValue<Number>) col.prop.apply (cellData.getValue()));
+					columns[i] = new TableColumn<CRType<?>, Number>(col.id); 
+					((TableColumn<CRType<?>, Number>) columns[i]).setCellValueFactory(cellData -> (ObservableValue<Number>) col.prop.apply (cellData.getValue()));
 					break;
 				case DOUBLE: 
-					columns[i] = new TableColumn<CRType, Number>(col.id); 
-					((TableColumn<CRType, Number>) columns[i]).setCellValueFactory(cellData -> (ObservableValue<Number>) col.prop.apply (cellData.getValue()));
-					((TableColumn<CRType, Number>) columns[i]).setCellFactory(column -> { 
-						return new TableCell<CRType, Number>() {
+					columns[i] = new TableColumn<CRType<?>, Number>(col.id); 
+					((TableColumn<CRType<?>, Number>) columns[i]).setCellValueFactory(cellData -> (ObservableValue<Number>) col.prop.apply (cellData.getValue()));
+					((TableColumn<CRType<?>, Number>) columns[i]).setCellFactory(column -> { 
+						return new TableCell<CRType<?>, Number>() {
 					        @Override
 					        protected void updateItem(Number value , boolean empty) {
 					            super.updateItem(value, empty);
@@ -51,9 +51,9 @@ public class CRTableView extends TableView<CRType> {
 					}); 
 					break;
 				case STRING: 
-					columns[i] = new TableColumn<CRType, String>(col.id); 
-					((TableColumn<CRType, String>) columns[i]).setCellValueFactory(cellData -> (ObservableValue<String>) col.prop.apply (cellData.getValue()));
-					((TableColumn<CRType, String>) columns[i]).setComparator((o1, o2) -> { 
+					columns[i] = new TableColumn<CRType<?>, String>(col.id); 
+					((TableColumn<CRType<?>, String>) columns[i]).setCellValueFactory(cellData -> (ObservableValue<String>) col.prop.apply (cellData.getValue()));
+					((TableColumn<CRType<?>, String>) columns[i]).setComparator((o1, o2) -> { 
 						if (o1==null) return 1;
 						if (o2==null) return -1;
 						return o1.compareToIgnoreCase(o2); 
@@ -69,7 +69,7 @@ public class CRTableView extends TableView<CRType> {
 			columns[i].visibleProperty().bindBidirectional(UISettings.get().getColumnVisibleProperty(i));
 			
 			if (i==0) {
-				((TableColumn<CRType, Number>) columns[ 0]).setCellValueFactory(cellData -> (ObservableValue<Number>) col.prop.apply (cellData.getValue()));
+				((TableColumn<CRType<?>, Number>) columns[ 0]).setCellValueFactory(cellData -> (ObservableValue<Number>) col.prop.apply (cellData.getValue()));
 			}
 
 
@@ -138,7 +138,7 @@ public class CRTableView extends TableView<CRType> {
 		getSortOrder().add(0, columns[CRType_ColumnView.CRColumn.SEARCH_SCORE.ordinal()]);
 		sort();
 		
-		Optional<CRType> first = getItems().stream().findFirst();
+		Optional<CRType<?>> first = getItems().stream().findFirst();
 		if (first.isPresent()) {
 			getSelectionModel().clearSelection();
 			getSelectionModel().select(first.get());
@@ -155,7 +155,7 @@ public class CRTableView extends TableView<CRType> {
 		getSortOrder().add(columns[CRType_ColumnView.CRColumn.RPY.ordinal()]);
 		getSortOrder().add(columns[CRType_ColumnView.CRColumn.N_CR.ordinal()]);
 		sort();
-		Optional<CRType> first = getItems().stream().filter(cr -> (cr.getRPY()!=null) && (cr.getRPY().intValue() == year)).findFirst();
+		Optional<CRType<?>> first = getItems().stream().filter(cr -> (cr.getRPY()!=null) && (cr.getRPY().intValue() == year)).findFirst();
 		if (first.isPresent()) {
 			getSelectionModel().clearSelection();
 			getSelectionModel().select(first.get());

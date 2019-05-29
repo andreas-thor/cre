@@ -9,10 +9,11 @@ import java.util.stream.Stream;
 
 import main.cre.data.CRSearch;
 import main.cre.data.Indicators;
-import main.cre.data.match.CRMatch2;
-import main.cre.data.type.abs.CRCluster;
 import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.Clustering;
 import main.cre.data.type.abs.PubType;
+import main.cre.data.type.mm.clustering.CRCluster_MM;
+import main.cre.data.type.mm.clustering.CRMatch2;
 import main.cre.ui.statusbar.StatusBar;
 
 public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
@@ -27,6 +28,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	private boolean duringUpdate;
 	private boolean showNull;
 	
+	private CRMatch2 crmatch;
 	
 	public static CRTable_MM get() {
 		if (crTab == null) {
@@ -60,7 +62,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 		crDataMap = new HashMap<CRType_MM, CRType_MM>();
 		allPubs = new HashMap<PubType_MM, PubType_MM>();
 		
-		CRMatch2.get().init();
+		crmatch = new CRMatch2(this);
 		duringUpdate = false;
 		this.setAborted(false);
 		showNull = true;
@@ -96,7 +98,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 			if (crMain == null) {
 				this.crDataMap.put(cr, cr);
 				cr.setID(this.crDataMap.size());
-				cr.setCID2(cr);
+				cr.setCluster(new CRCluster_MM(cr));
 				return cr;
 			} else {
 				return crMain;
@@ -141,7 +143,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 				if (crMain == null) {
 					this.crDataMap.put(cr, cr);
 					cr.setID(this.crDataMap.size());
-					cr.setCID2(cr);
+					cr.setCluster(new CRCluster_MM(cr));
 				} else {
 					pub.removeCR(cr, false);	
 					pub.addCR(crMain, false);
@@ -162,7 +164,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	public void merge () {
 		
 		// get all clusters with size > 1
-		Set<CRCluster> clusters = getCR().filter(cr -> cr.getCID_S()>1).map(cr -> cr.getCID2()).distinct().collect(Collectors.toSet());
+		Set<CRCluster_MM> clusters = getCR().filter(cr -> cr.getClusterSize()>1).map(cr -> cr.getCluster()).distinct().collect(Collectors.toSet());
 		StatusBar.get().setValue(String.format("Merging of %d clusters...", clusters.size()));
 
 		// merge clusters
@@ -188,8 +190,8 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 		});
 		
 		// reset clusters and match result
-		getCR().forEach(cr -> cr.setCID2(cr));
-		CRMatch2.get().init();
+		getCR().forEach(cr -> cr.setCluster(new CRCluster_MM(cr)));
+		crmatch.init();
 		
 		updateData();
 		StatusBar.get().setValue("Merging done");
@@ -353,7 +355,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	public void filterByCluster (List<CRType_MM> sel) {
 		if (!duringUpdate) {
 			getCR().forEach(cr -> cr.setVI(false));
-			sel.stream().map(cr -> cr.getCID2()).flatMap(cluster -> cluster.getCR()).forEach ( cr -> cr.setVI(true) );
+			sel.stream().map(cr -> cr.getCluster()).flatMap(cluster -> cluster.getCR()).forEach ( cr -> cr.setVI(true) );
 		}
 	}
 	
@@ -370,10 +372,39 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 		this.showNull = true;
 		getCR().forEach ( cr -> cr.setVI(true) );
 	}
-	
-	
 
+
+
+
+	@Override
+	public void addManuMatching(List<CRType_MM> selCR, Clustering.ManualMatchType matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
+		crmatch.addManuMatching(selCR, matchType, matchThreshold, useVol, usePag, useDOI);
+	}
+
+	@Override
+	public void generateAutoMatching() {
+		crmatch.generateAutoMatching();
+	}
+
+	@Override
+	public void undoManuMatching(double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
+		crmatch.undoManuMatching(matchThreshold, useVol, usePag, useDOI);
+	}
+
+	@Override
+	public void updateClustering(Clustering.ClusteringType type, Set<CRType_MM> changeCR, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
+		crmatch.updateClustering(type, changeCR, threshold, useVol, usePag, useDOI);
+	}
 	
+	@Override
+	public long getNumberOfMatches (boolean manual) {
+		return crmatch.getSize(manual);
+	}
+
+	@Override
+	public long getNumberOfClusters() {
+		return getCR().map(cr -> cr.getCluster()).distinct().count();
+	}
 
 	
 	

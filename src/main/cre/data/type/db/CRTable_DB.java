@@ -5,13 +5,20 @@ import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import main.cre.data.type.abs.CRTable;
-import main.cre.data.type.abs.CRType;
+import main.cre.data.type.abs.Clustering.ClusteringType;
+import main.cre.data.type.abs.Clustering.ManualMatchType;
+import main.cre.data.type.mm.CRType_MM;
+import main.cre.data.type.mm.PubType_MM;
+import main.cre.data.type.mm.clustering.CRCluster_MM;
 
 public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
@@ -126,7 +133,7 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 //	}
 
 	@Override
-	public PubType_DB addPub(PubType_DB pub, boolean addCRs, boolean checkForDuplicates) {
+	public PubType_DB addPub(PubType_MM pub, boolean addCRs, boolean checkForDuplicates) {
 
 		/* TODO: Check for Duplicates */
 		this.numberOfPubs++;
@@ -140,7 +147,7 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 //			insertPub_PrepStmt.addBatch();
 //			insertPub_BatchCount++;
 			
-			for(CRType cr: pub.getCR().collect(Collectors.toSet())) {
+			for(CRType_MM cr: pub.getCR().collect(Collectors.toSet())) {
 				
 //				CRType crMain = this.crDataMap.get(cr);
 //				if (crMain == null) {
@@ -156,7 +163,7 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 				
 				try {
 					cr.setID(this.numberOfCRs+1);
-					cr.setCID2(new CRCluster_DB(cr.getID()));
+					cr.setCluster(new CRCluster_MM(cr));
 					int id = crTypeDB.insertCR(cr, this.numberOfCRs+1, pub.getID());
 					if (id > this.numberOfCRs) {
 						this.numberOfCRs++;
@@ -201,7 +208,9 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 		
 		// we may have some insert statements in the batch to be executed
 		try {
+			pubTypeDB.finishInsertPub();
 			crTypeDB.finishInsertCR();
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -281,6 +290,72 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 	public void showAll() {
 		// TODO Auto-generated method stub
 
+	}
+
+
+
+
+	@Override
+	public void addManuMatching(List<CRType_DB> selCR, ManualMatchType matchType, double matchThreshold, boolean useVol,
+			boolean usePag, boolean useDOI) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+
+	@Override
+	public void generateAutoMatching() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+
+	@Override
+	public void undoManuMatching(double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+
+	@Override
+	public void updateClustering(ClusteringType type, Set<CRType_DB> changeCR, double threshold, boolean useVol,
+			boolean usePag, boolean useDOI) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+
+	@Override
+	public long getNumberOfMatches(boolean manual) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+
+
+	@Override
+	public long getNumberOfClusters() {
+		
+		try {
+			dbCon.setAutoCommit(true);
+			Statement stmt = dbCon.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM ( SELECT  DISTINCT CR_ClusterId1, CR_ClusterId2  FROM CR ) AS T");
+			rs.next();
+			long res = rs.getLong(1);
+			stmt.close();
+			return res;
+		} catch (Exception e) {
+			return -1l;
+		}
 	}
 
 }

@@ -3,9 +3,6 @@ package main.cre.data.type.abs;
 import java.util.EnumMap;
 import java.util.stream.Stream;
 
-import main.cre.data.type.db.CRType_DB;
-import main.cre.data.type.mm.CRType_MM;
-
 public abstract class CRType<P extends PubType<?>> implements Comparable<CRType<P>> {
 
 	public static enum FORMATTYPE { 
@@ -67,15 +64,7 @@ public abstract class CRType<P extends PubType<?>> implements Comparable<CRType<
 	private FORMATTYPE type = null;	
 	private boolean flag;
 	
-	public static CRType create() {
-		
-		switch (CRTable.type) {
-		case MM: return new CRType_MM();	//		return new CRType_Tiny();
-		case DB: return new CRType_DB();
-		default: return null;
-		}
-		
-	}
+
 	
 	
 	public CRType () {
@@ -129,11 +118,20 @@ public abstract class CRType<P extends PubType<?>> implements Comparable<CRType<
 //	public abstract void setCID2(CRType cr);
 //	public abstract void setCID2(CRType cr, int c1);
 
-	public abstract void setCID2(CRType<P> cr);
-	public abstract void setCID2(String cID2);
-	public abstract String getCID_String(); 
+//	public abstract void setCID2(CRType<P> cr);
+//	public abstract void setCID2(String cID2);
 
-	public abstract int getCID_S();
+	public String getClusterId() {
+		return getClusterC1() + "/" + getClusterC2();
+	}
+
+	public abstract int getClusterC1();
+	
+	public abstract int getClusterC2();
+	
+	public abstract int getClusterSize();
+	
+	
 	public int getID() {
 		return ID;
 	}

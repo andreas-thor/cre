@@ -98,8 +98,8 @@ public class CitedReference {
 		result.SEQUENCE = cr.getSEQUENCE();
 		result.TYPE = cr.getTYPE();
 		
-		result.CID2 = cr.getCID2().toString();
-		result.CID_S = cr.getCID_S();
+		result.CID2 = cr.getClusterId();
+		result.CID_S = cr.getClusterSize();
 		
 		return result;
 	}

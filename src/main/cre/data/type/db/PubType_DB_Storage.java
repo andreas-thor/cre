@@ -20,8 +20,8 @@ public class PubType_DB_Storage {
 
 	
 	private Connection dbCon;
-	private final int insertPub_BatchSize = 100;
-	private int insertPub_BatchCount;
+	private final int insertPub_BATCH_SIZE_MAX = 1000;
+	private int insertPub_BatchCountCounter;
 	private PreparedStatement insertPub_PrepStmt;
 
 	
@@ -46,7 +46,7 @@ public class PubType_DB_Storage {
 		sql.append (");");
 		insertPub_PrepStmt = dbCon.prepareStatement(sql.toString());
 		
-		insertPub_BatchCount = 0;
+		insertPub_BatchCountCounter = 0;
 		
 		stmt.close();
 		
@@ -76,7 +76,20 @@ public class PubType_DB_Storage {
 			parameterIndex++;
 		}
 		
-		insertPub_PrepStmt.execute();		
+		insertPub_PrepStmt.addBatch();
+		insertPub_BatchCountCounter++;
+		if (insertPub_BatchCountCounter>=insertPub_BATCH_SIZE_MAX) {
+			insertPub_PrepStmt.executeBatch();
+			insertPub_BatchCountCounter = 0;
+		}
+		
+	}
+
+	public void finishInsertPub() throws SQLException {
+		if (insertPub_BatchCountCounter>0) {
+			insertPub_PrepStmt.executeBatch();
+			insertPub_BatchCountCounter = 0;
+		}
 		
 	}
 

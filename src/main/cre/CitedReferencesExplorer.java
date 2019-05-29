@@ -19,7 +19,7 @@ public class CitedReferencesExplorer extends Application {
 	public static String manual_url = "http://andreas-thor.github.io/cre/manual.pdf";
 	public static String url = "http://www.crexplorer.net";
 //	public static String title = "CRExplorer (Version 1.9)";
-	public static String title = "CRExplorer (DEVELOPMENT; November-16-2018)";
+	public static String title = "CRExplorer (DEVELOPMENT; May-29-2019)";
 	public static String loadOnOpen = null;
 
 	public static void main(String[] args) {
@@ -27,6 +27,8 @@ public class CitedReferencesExplorer extends Application {
 		if ((args.length > 1) && (args[0].equals("-open"))) {
 			loadOnOpen = args[1];
 		}
+
+		title += " " + String.join(" ", args);
 		
 		
 		for (String arg: args) {

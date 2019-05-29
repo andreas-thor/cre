@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import main.cre.data.type.abs.CRCluster;
 import main.cre.data.type.abs.CRType;
 
 class CRType_DB_Storage { 
@@ -65,7 +64,7 @@ class CRType_DB_Storage {
 				cr.setVOL(rs.getString("CR_VOL"));
 				cr.setPAG(rs.getString("CR_PAG"));
 				cr.setDOI(rs.getString("CR_DOI"));
-				cr.setCID2(rs.getInt("CR_ClusterId1"), rs.getInt("CR_ClusterId2"), rs.getInt("CR_ClusterSize"));
+				cr.setCluster(rs.getInt("CR_ClusterId1"), rs.getInt("CR_ClusterId2"), rs.getInt("CR_ClusterSize"));
 				return cr;
 			} catch (Exception e) {
 				return null;
@@ -79,15 +78,17 @@ class CRType_DB_Storage {
 	}	
 	
 	private PreparedStatement insertCR_PrepStmt;
-	private PreparedStatement insertPubCR_PrepStmt;
+	private int batchSizeCounter = 0;
+	private final int BATCH_SIZE_MAX = 100;
+	
 	
 	private PreparedStatement selectCR_PrepStmt;
 	private PreparedStatement updateCR_PrepStmt;
 	
 	private Connection dbCon;
-	
-	private int insertCR_batchSize = 0;
-	private int insertPubCR_batchSize = 0;
+
+	private String finishSQL;
+	private String startSQL;
 	
 	
 	CRType_DB_Storage(Connection dbCon) throws SQLException, URISyntaxException, IOException {
@@ -99,26 +100,29 @@ class CRType_DB_Storage {
 		String[] sql = lines.collect(Collectors.joining("\n")).split("###");
 		lines.close();
 		
-		/* create tables */
-		Statement stmt = dbCon.createStatement();
-		stmt.execute(sql[0]);
-		stmt.close();
-	
+
+		startSQL = sql[0];
+		finishSQL = sql[2];
+		
 		/* create prepared statements */
 		insertCR_PrepStmt = dbCon.prepareStatement(sql[1]);
-		insertPubCR_PrepStmt = dbCon.prepareStatement(sql[2]);
 		selectCR_PrepStmt = dbCon.prepareStatement("SELECT CR_ID FROM CR WHERE CR_CR = ?");
 		updateCR_PrepStmt = dbCon.prepareStatement("UPDATE CR SET CR_N_CR = CR_N_CR+1 WHERE CR_ID = ?");
 	}
 	
 	
 	void init () throws SQLException {
+		/* create tables */
 		Statement stmt = dbCon.createStatement();
-		stmt.execute("TRUNCATE TABLE CR; TRUNCATE TABLE PUB_CR;");
+		stmt.execute(startSQL);
 		stmt.close();
+		
+		dbCon.commit();
+		dbCon.setAutoCommit(false);
+		
 	}
 	
-	int insertCR (CRType cr, int defaultId, int pubId) throws SQLException {
+	int insertCR (CRType<?> cr, int defaultId, int pubId) throws SQLException {
 		
 		int crId;
 		
@@ -133,109 +137,48 @@ class CRType_DB_Storage {
 //		} else {
 			crId = defaultId;
 		
-			insertCR_PrepStmt.setString	( 1, cr.getCR());
-			insertCR_PrepStmt.setInt	( 2, crId);
-			insertCR_PrepStmt.setString	( 3, cr.getCR());
+			
+			
+//			insertCR_PrepStmt.setString	( 1, cr.getCR());
+			
+			
+			int start = 0;
+			insertCR_PrepStmt.setInt	(start+ 1, crId);
+			insertCR_PrepStmt.setString	(start+ 2, cr.getCR());
 			
 			if (cr.getRPY() == null) {
-				insertCR_PrepStmt.setNull(4, java.sql.Types.INTEGER);
+				insertCR_PrepStmt.setNull(start+ 3, java.sql.Types.INTEGER);
 			} else {
-				insertCR_PrepStmt.setInt	( 4, cr.getRPY());
+				insertCR_PrepStmt.setInt (start+ 3, cr.getRPY());
 			}
 			
-			insertCR_PrepStmt.setInt	( 5, 1);
-
-			if (cr.getAU() == null) {
-				insertCR_PrepStmt.setNull	( 6, java.sql.Types.VARCHAR);
-			} else {
-				insertCR_PrepStmt.setString	( 6, cr.getAU());
-			}
-			
-			if (cr.getAU_L() == null) {
-				insertCR_PrepStmt.setNull	( 7, java.sql.Types.VARCHAR);
-			} else {
-				insertCR_PrepStmt.setString	( 7, cr.getAU_L());
-			}
-			
-			if (cr.getAU_F() == null) {
-				insertCR_PrepStmt.setNull	( 8, java.sql.Types.VARCHAR);
-			} else {
-				insertCR_PrepStmt.setString	( 8, cr.getAU_F());
-			}
-
-			if (cr.getAU_A() == null) {
-				insertCR_PrepStmt.setNull	( 9, java.sql.Types.VARCHAR);
-			} else {
-				insertCR_PrepStmt.setString	( 9, cr.getAU_A());
-			}
-
-			if (cr.getTI() == null) {
-				insertCR_PrepStmt.setNull	(10, java.sql.Types.VARCHAR);
-			} else {
-				insertCR_PrepStmt.setString	(10, cr.getTI());
-			}
-			
-			if (cr.getJ() == null) {
-				insertCR_PrepStmt.setNull	(11, java.sql.Types.VARCHAR);
-			} else {
-				insertCR_PrepStmt.setString	(11, cr.getJ());
-			}
-			
-			if (cr.getJ_N() == null) {
-				insertCR_PrepStmt.setNull	(12, java.sql.Types.VARCHAR);
-			} else {
-				insertCR_PrepStmt.setString	(12, cr.getJ_N());
-			}
-			
-			if (cr.getJ_S() == null) {
-				insertCR_PrepStmt.setNull	(13, java.sql.Types.VARCHAR);
-			} else {
-				insertCR_PrepStmt.setString	(13, cr.getJ_S());
-			}
-			
-			if (cr.getVOL() == null) {
-				insertCR_PrepStmt.setNull	(14, java.sql.Types.VARCHAR);
-			} else {
-				insertCR_PrepStmt.setString	(14, cr.getVOL());
-			}
-			
-			if (cr.getPAG() == null) {
-				insertCR_PrepStmt.setNull	(15, java.sql.Types.VARCHAR);
-			} else {
-				insertCR_PrepStmt.setString	(15, cr.getPAG());
-			}
-			
-			if (cr.getDOI() == null) {
-				insertCR_PrepStmt.setNull	(16, java.sql.Types.VARCHAR);
-			} else {
-				insertCR_PrepStmt.setString	(16, cr.getDOI());
-			}
-			
-			insertCR_PrepStmt.setInt(17,  cr.getCID2().getC1());
-			insertCR_PrepStmt.setInt(18,  cr.getCID2().getC2());
-			insertCR_PrepStmt.setInt(19,  cr.getCID2().getSize());
-			
+			insertCR_PrepStmt.setString	(start+ 4, cr.getAU());
+			insertCR_PrepStmt.setString	(start+ 5, cr.getAU_L());
+			insertCR_PrepStmt.setString	(start+ 6, cr.getAU_F());
+			insertCR_PrepStmt.setString	(start+ 7, cr.getAU_A());
+			insertCR_PrepStmt.setString	(start+ 8, cr.getTI());
+			insertCR_PrepStmt.setString	(start+ 9, cr.getJ());
+			insertCR_PrepStmt.setString	(start+10, cr.getJ_N());
+			insertCR_PrepStmt.setString	(start+11, cr.getJ_S());
+			insertCR_PrepStmt.setString	(start+12, cr.getVOL());
+			insertCR_PrepStmt.setString	(start+13, cr.getPAG());
+			insertCR_PrepStmt.setString	(start+14, cr.getDOI());
+			insertCR_PrepStmt.setInt	(start+15,  cr.getClusterC1());
+			insertCR_PrepStmt.setInt	(start+16,  cr.getClusterC2());
+			insertCR_PrepStmt.setInt	(start+17,  cr.getClusterSize());
+			insertCR_PrepStmt.setInt	(start+18,  pubId);
 			insertCR_PrepStmt.addBatch();
 			
+			batchSizeCounter++;
 			
-			insertCR_batchSize++;
 			
-			if (insertCR_batchSize==10000) {
+			
+			if (batchSizeCounter>=BATCH_SIZE_MAX) {
+//				insertPubCR_PrepStmt.executeBatch();	// PUBCR must be executed before CR, since CR might update PUBCR
 				insertCR_PrepStmt.executeBatch();
-				insertCR_batchSize = 0;
+				batchSizeCounter = 0;
 			}
 			
-			
-			
-			insertPubCR_PrepStmt.setInt(1, pubId);
-			insertPubCR_PrepStmt.setInt(2, crId);
-			insertPubCR_PrepStmt.addBatch();
-			insertPubCR_batchSize++;
-			
-			if (insertPubCR_batchSize==10000) {
-				insertPubCR_PrepStmt.executeBatch();
-				insertPubCR_batchSize=0;
-			}
 			
 			return crId;
 //		}
@@ -258,14 +201,18 @@ class CRType_DB_Storage {
 
 
 	void finishInsertCR() throws SQLException {
-		if (insertCR_batchSize>1000) {
+		if (batchSizeCounter>0) {
 			insertCR_PrepStmt.executeBatch();
-			insertCR_batchSize = 0;
+			batchSizeCounter = 0;
 		}
-		if (insertPubCR_batchSize>1000) {
-			insertPubCR_PrepStmt.executeBatch();
-			insertPubCR_batchSize=0;
-		}
+		
+
+		
+		System.out.println("Executing " + finishSQL);
+		Statement stmt = dbCon.createStatement();
+		stmt.execute(finishSQL);
+		stmt.close();
+		dbCon.commit();
 				
 	}
 

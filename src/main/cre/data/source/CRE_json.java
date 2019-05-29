@@ -23,12 +23,12 @@ import main.cre.Exceptions.AbortedException;
 import main.cre.Exceptions.FileTooLargeException;
 import main.cre.Exceptions.UnsupportedFileFormatException;
 import main.cre.data.Statistics;
-import main.cre.data.match.CRMatch2;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.CRType.FORMATTYPE;
 import main.cre.data.type.abs.PubType;
-import main.cre.data.type.mm.PubType_MM;
+import main.cre.data.type.mm.CRType_MM;
+import main.cre.data.type.mm.clustering.CRMatch2;
 import main.cre.ui.statusbar.StatusBar;
 
 
@@ -48,7 +48,7 @@ public class CRE_json {
 		ZipEntry entry = null;
 		ZipFile zipFile = new ZipFile(file);
 		
-		Map<Integer, CRType<?>> mapId2CR;
+		Map<Integer, CRType_MM> mapId2CR;
 	
 		entry = zipFile.getEntry("crdata.json");
 		if (entry != null) {
@@ -94,22 +94,22 @@ public class CRE_json {
 	 * @throws OutOfMemoryError
 	 * @throws IOException
 	 */
-	private static Map<Integer, CRType<?>> loadCRData (InputStream in, boolean checkForDuplicates) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
+	private static Map<Integer, CRType_MM> loadCRData (InputStream in, boolean checkForDuplicates) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 		
-		Map<Integer, CRType<?>> result = new HashMap<Integer, CRType<?>>();
+		Map<Integer, CRType_MM> result = new HashMap<Integer, CRType_MM>();
 		
-		CRTable<?, ?> crTab = CRTable.get(); 
+		CRTable crTab = CRTable.get(); 
 		JsonParser parser = Json.createParser(in);
-		CRType<? extends PubType> cr = null;
+		CRType_MM cr = null;
 		String key = "";
 		while (!crTab.isAborted() && parser.hasNext()) {
 			
 			
 			switch (parser.next()) {
-			case START_OBJECT: 	cr = CRType.create(); break; 
+			case START_OBJECT: 	cr = new CRType_MM(); break; 
 			case END_OBJECT: 	
 				int internalId = cr.getID();
-				cr = crTab.addCR(cr, checkForDuplicates);
+				cr = (CRType_MM) crTab.addCR(cr, checkForDuplicates);
 				cr.setCID2(cr);
 				result.put(internalId, cr);  
 				break;
@@ -154,7 +154,7 @@ public class CRE_json {
 	}
 
 	
-	private static void loadPubData (InputStream in, boolean checkForDuplicates, Map<Integer, CRType<?>> mapId2CR) {
+	private static void loadPubData (InputStream in, boolean checkForDuplicates, Map<Integer, CRType_MM> mapId2CR) {
 		
 		CRTable crTab = CRTable.get(); 
 
@@ -259,7 +259,7 @@ public class CRE_json {
 	
 	
 	
-	private static void loadCRMatchData (InputStream in, Map<Integer, CRType> mapId2CR) {
+	private static void loadCRMatchData (InputStream in, Map<Integer, CRType_MM> mapId2CR) {
 
 		CRTable crTab = CRTable.get(); 
 		JsonParser parser = Json.createParser(in);
@@ -351,8 +351,8 @@ public class CRE_json {
 			if (cr.getPAG()!=null) 	jgenCR.write("PAG", cr.getPAG());
 			if (cr.getVOL()!=null) 	jgenCR.write("VOL", cr.getVOL());
 			if (cr.getDOI()!=null) 	jgenCR.write("DOI", cr.getDOI());
-			if (cr.getCID_String()!=null) jgenCR.write("CID2", cr.getCID_String());
-			 						jgenCR.write("CID_S", cr.getCID_S());
+			if (cr.getClusterId()!=null) jgenCR.write("CID2", cr.getClusterId());
+			 						jgenCR.write("CID_S", cr.getClusterSize());
 									jgenCR.write("VI", cr.getVI()?1:0);
 									jgenCR.write("CO", cr.getCO());
 									jgenCR.write("type", cr.getType().ordinal()+1);	// LEGACY: Types were encoded 1,2, ...			
@@ -371,7 +371,7 @@ public class CRE_json {
 			jgenPub.writeStartObject();
 			
 			if (pub.getPT()!=null) 	jgenPub.write("PT", pub.getPT());
-			if (pub.getAU().size()>0) {	jgenPub.writeStartArray("AU"); pub.getAU().forEach(x -> jgenPub.write(x)); jgenPub.writeEnd(); }
+			if (pub.getAU().count()>0) {	jgenPub.writeStartArray("AU"); pub.getAU().forEach(x -> jgenPub.write(x)); jgenPub.writeEnd(); }
 			if (pub.getAF().count()>0) {	jgenPub.writeStartArray("AF"); pub.getAF().forEach(x -> jgenPub.write(x)); jgenPub.writeEnd(); }
 			if (pub.getC1().count()>0) {
 				jgenPub.writeStartArray("C1");

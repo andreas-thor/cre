@@ -2,9 +2,9 @@ package main.cre.data;
 
 import java.util.IntSummaryStatistics;
 
-import main.cre.data.match.CRMatch2;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.mm.CRType_MM;
+import main.cre.data.type.mm.clustering.CRMatch2;
 
 public class Statistics {
 
@@ -24,7 +24,7 @@ public class Statistics {
 	}
 	
 	public static long getNumberOfMatches (boolean manual) {
-		return CRMatch2.get().getSize(manual);
+		return CRTable.get().getNumberOfMatches(manual);
 	}
 
 	public static int[] getMaxRangePY () {
@@ -67,7 +67,7 @@ public class Statistics {
 
 	
 	public static long getNumberOfClusters() {
-		return CRTable.get().getCR().map(cr -> cr.getCID2()).distinct().count();
+		return CRTable.get().getNumberOfClusters();
 	}
 
 	

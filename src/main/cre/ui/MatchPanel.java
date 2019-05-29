@@ -6,7 +6,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
-import main.cre.data.match.CRMatch2.ManualMatchType2;
+import main.cre.data.type.abs.Clustering;
+import main.cre.data.type.abs.Clustering.ManualMatchType;
 
 public abstract class MatchPanel extends TitledPane {
 
@@ -17,7 +18,7 @@ public abstract class MatchPanel extends TitledPane {
 	
 	
 	public abstract void onUpdateClustering(double threshold, boolean useClustering, boolean useVol, boolean usePag, boolean useDOI); 
-	public abstract void onMatchManual(ManualMatchType2 type, double threshold, boolean useVol, boolean usePag, boolean useDOI); 
+	public abstract void onMatchManual(Clustering.ManualMatchType type, double threshold, boolean useVol, boolean usePag, boolean useDOI); 
 	public abstract void onMatchUnDo (double threshold, boolean useVol, boolean usePag, boolean useDOI); 
 	
 	
@@ -55,8 +56,8 @@ public abstract class MatchPanel extends TitledPane {
 		GridPane.setMargin(g, new Insets(0, 0, 0, 30));
 	
 		// Match Buttons
-		for (int i=0; i<ManualMatchType2.values().length; i++) {
-			ManualMatchType2 type = ManualMatchType2.values()[i];
+		for (int i=0; i<Clustering.ManualMatchType.values().length; i++) {
+			Clustering.ManualMatchType type = Clustering.ManualMatchType.values()[i];
 			matchManual[i] = new Button (type.label);
 			matchManual[i].setPrefSize(100, 25);
 			matchManual[i].setOnAction(e -> { onMatchManual(type, 0.01d*threshold.getValue(), volPagDOI[0].isSelected(), volPagDOI[1].isSelected(), volPagDOI[2].isSelected()); });

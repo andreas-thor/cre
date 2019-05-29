@@ -56,7 +56,7 @@ public class Indicators {
 			} else {
 				return false;
 			}
-		}).collect(Collectors.groupingBy(CRType<?>::getRPY, Collectors.mapping(Function.identity(), Collectors.toList())));
+		}).collect(Collectors.groupingBy(CRType::getRPY, Collectors.mapping(Function.identity(), Collectors.toList())));
 		
 		
 		map_RPY_CRs.entrySet().stream().parallel().forEach(rpyGroup -> {	

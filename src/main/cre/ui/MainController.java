@@ -46,12 +46,12 @@ import main.cre.data.CRStatsInfo;
 import main.cre.data.DownloadCrossrefData;
 import main.cre.data.Indicators;
 import main.cre.data.Statistics;
-import main.cre.data.match.CRMatch2;
-import main.cre.data.match.CRMatch2.ManualMatchType2;
 import main.cre.data.source.Crossref;
 import main.cre.data.source.ImportExportFormat;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
+import main.cre.data.type.abs.Clustering;
+import main.cre.data.type.abs.PubType;
 import main.cre.ui.UISettings.RangeType;
 import main.cre.ui.chart.CRChart;
 import main.cre.ui.chart.CRChart_HighCharts;
@@ -75,7 +75,7 @@ import main.cre.ui.statusbar.StatusBarFX;
 
 public class MainController {
 
-	CRTable<?, ?> crTable;
+	CRTable<? extends CRType<?>, ? extends PubType<?>> crTable;
 	CRChart crChart[] = new CRChart[2];
 
 	@FXML
@@ -146,23 +146,23 @@ public class MainController {
 				if (t != null)
 					t.interrupt();
 				t = new Thread(() -> {
-					CRMatch2.get().updateClustering(CRMatch2.ClusteringType2.REFRESH, null, threshold, useVol, usePag, useDOI);
+					crTable.updateClustering(Clustering.ClusteringType.REFRESH, null, threshold, useVol, usePag, useDOI);
 					refreshTableValues();
 				});
 				t.start();
 			}
 
 			@Override
-			public void onMatchManual(ManualMatchType2 type, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
+			public void onMatchManual(Clustering.ManualMatchType type, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
 
 				List<CRType<?>> toMatch = getSelectedCRs();
-				if ((toMatch.size() == 0) || ((toMatch.size() == 1) && (type != ManualMatchType2.EXTRACT))) {
+				if ((toMatch.size() == 0) || ((toMatch.size() == 1) && (type != Clustering.ManualMatchType.EXTRACT))) {
 					new ConfirmAlert("Error during clustering!", true, new String[] { "Too few Cited References selected!" }).showAndWait();
 				} else {
-					if ((toMatch.size() > 5) && (type != ManualMatchType2.EXTRACT)) {
+					if ((toMatch.size() > 5) && (type != Clustering.ManualMatchType.EXTRACT)) {
 						new ConfirmAlert("Error during clustering!", true, new String[] { "Too many Cited References selected (at most 5)!" }).showAndWait();
 					} else {
-						CRMatch2.get().addManuMatching(toMatch, type, threshold, useVol, usePag, useDOI);
+						crTable.addManuMatching(toMatch, type, threshold, useVol, usePag, useDOI);
 						refreshTableValues();
 					}
 				}
@@ -170,7 +170,7 @@ public class MainController {
 
 			@Override
 			public void onMatchUnDo(double threshold, boolean useVol, boolean usePag, boolean useDOI) {
-				CRMatch2.get().undoManuMatching(threshold, useVol, usePag, useDOI);
+				crTable.undoManuMatching(threshold, useVol, usePag, useDOI);
 				refreshTableValues();
 			}
 
@@ -264,7 +264,7 @@ public class MainController {
 		Platform.runLater(() -> {
 
 			// save sort order ...
-			List<TableColumn<CRType, ?>> oldSort = new ArrayList<TableColumn<CRType, ?>>();
+			List<TableColumn<CRType<?>, ?>> oldSort = new ArrayList<TableColumn<CRType<?>, ?>>();
 			tableView.getSortOrder().forEach(it -> oldSort.add(it));
 
 			// ... update rows ...
@@ -273,7 +273,7 @@ public class MainController {
 			tableView.setItems(FXCollections.observableArrayList(crTable.getCR().filter(cr -> cr.getVI()).collect(Collectors.toList())));
 
 			// ... reset old sort order
-			for (TableColumn<CRType, ?> x : oldSort) {
+			for (TableColumn<CRType<?>, ?> x : oldSort) {
 				tableView.getSortOrder().add(x);
 			}
 
@@ -404,7 +404,7 @@ public class MainController {
 						}
 
 						// show match panel if applicable
-						matchView.setVisible((CRMatch2.get().getSize(true) + CRMatch2.get().getSize(false)) > 0);
+						matchView.setVisible((crTable.getNumberOfMatches(true) + crTable.getNumberOfMatches(false)) > 0);
 						matchView.updateClustering();
 
 						return null;
@@ -957,7 +957,7 @@ public class MainController {
 	public void OnMenuStdCluster() {
 
 		new Thread(() -> {
-			CRMatch2.get().generateAutoMatching();
+			crTable.generateAutoMatching();
 			matchView.setVisible(true);
 			tablePane.requestLayout();
 			matchView.updateClustering();

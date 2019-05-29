@@ -9,16 +9,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import main.cre.data.type.abs.CRCluster;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.CRType_ColumnView;
-import main.cre.data.type.abs.CRType_ColumnView.CRColumn;
 import main.cre.ui.UISettings;
 
 public class CRInfo extends Dialog<Void> {
 
 	
-	public CRInfo(CRType cr) {
+	public CRInfo(CRType<?> cr) {
 		super();
 		
 		setTitle("Info");

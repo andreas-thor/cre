@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import main.cre.data.type.db.PubType_DB;
+import main.cre.data.type.mm.CRType_MM;
 import main.cre.data.type.mm.PubType_MM;
 
 public abstract class PubType<C extends CRType<?>> implements Comparable<PubType<C>> {
@@ -78,6 +79,7 @@ public abstract class PubType<C extends CRType<?>> implements Comparable<PubType
 	public abstract int getSizeCR();
 	public abstract void addCR(C cr, boolean inverse);	
 
+	
 	
 	public abstract boolean removeCR(C cr, boolean inverse);
 	public abstract void removeCRByYear (int[] range, boolean keepCRsWithoutYear, boolean inverse);	

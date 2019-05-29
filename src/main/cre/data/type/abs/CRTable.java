@@ -1,10 +1,12 @@
 package main.cre.data.type.abs;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import main.cre.data.type.db.CRTable_DB;
 import main.cre.data.type.mm.CRTable_MM;
+import main.cre.data.type.mm.PubType_MM;
 
 public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
  
@@ -17,7 +19,7 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	
 	public static TABLE_IMPL_TYPES type = TABLE_IMPL_TYPES.MM;
 	
-	public static CRTable<?, ?> get() {
+	public static CRTable<? extends CRType<?>, ? extends PubType<?>> get() {
 		
 		switch (type) {
 		case MM: return CRTable_MM.get();
@@ -62,7 +64,7 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	
 //	public abstract PubType addPub (PubType pub, boolean addCRs);
 	
-	public abstract P addPub (P pub, boolean addCRs, boolean checkForDuplicates);
+	public abstract P addPub (PubType_MM pub, boolean addCRs, boolean checkForDuplicates);
 	
 
 	
@@ -195,5 +197,16 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	
 	
 
+	public abstract void addManuMatching (List<C> selCR, Clustering.ManualMatchType matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI);
+
+	public abstract void generateAutoMatching ();
+
+	public abstract void undoManuMatching (double matchThreshold, boolean useVol, boolean usePag, boolean useDOI);
+
+	public abstract void updateClustering (Clustering.ClusteringType type, Set<C> changeCR, double threshold, boolean useVol, boolean usePag, boolean useDOI);
+
+	public abstract long getNumberOfMatches (boolean manual);
+	
+	public abstract long getNumberOfClusters();
 }
 

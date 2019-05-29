@@ -6,53 +6,36 @@ import main.cre.data.type.abs.CRType;
 
 public class CRType_DB extends CRType<PubType_DB> {
 
-	private CRCluster_DB CID2;
 	private int N_CR;
+	private int c1;
+	private int c2;
+	private int clusterSize;
 	
 	public CRType_DB() {
 		super();
 		this.N_CR = 0;
 	}
 	
-//	@Override
-//	public CRCluster getCID2() {
-//		return CID2;
-//	}
-//	
-//	@Override
-//	public void setCID2(CRCluster cID2) {
-//		CID2 = (CRCluster_DB) cID2;
-//	}
-	
-	@Override
-	public void setCID2(String s) {
-		CID2 = new CRCluster_DB (s);
-	}
-	
-	@Override
-	public  void setCID2(CRType cr) {
-		CID2 = new CRCluster_DB (cr.getID());
+
+	public void setCluster(int c1, int c2, int size) {
+		this.c1 = c1;
+		this.c2 = c2;
+		this.clusterSize = size;
 	}
 
-//	public void setCID2(int c1, int c2, int size) {
-//		CID2 = new CRCluster_DB(c1, c2, size);
-//	}
-//	
-//	
-//	@Override
-//	public void setCID2(CRType cr, int c1) {
-//		CID2 = new CRCluster_DB(c1, cr.getCID2().getC2(), 1);
-//	}
-	
-	
 	@Override
-	public String getCID_String() {
-		return CID2.toString();
+	public int getClusterC1() {
+		return c1;
+	}
+
+	@Override
+	public int getClusterC2() {
+		return c2;
 	}
 	
 	@Override
-	public int getCID_S() {
-		return CID2.getSize();
+	public int getClusterSize() {
+		return clusterSize;
 	}
 	
 

@@ -1,19 +1,17 @@
 package main.cre.script;
 
-import java.util.Comparator
 import java.util.function.Function
 import java.util.function.Predicate
-
 
 import groovy.io.FileType
 import main.cre.data.CRChartData
 import main.cre.data.CRStatsInfo
 import main.cre.data.Indicators
 import main.cre.data.Sampling
-import main.cre.data.match.CRMatch2
 import main.cre.data.source.Crossref
 import main.cre.data.source.ImportExportFormat;
 import main.cre.data.type.abs.CRTable
+import main.cre.data.type.abs.Clustering.ClusteringType
 import main.cre.data.type.mm.CRType_MM
 import main.cre.data.type.script.CitedReference
 import main.cre.ui.statusbar.StatusBar;
@@ -370,14 +368,14 @@ abstract class CREDSL extends Script {
 
 		Map<String, Object> param = makeParamsCaseInsensitive(map)
 
-		CRMatch2.get().generateAutoMatching();
+		CRTable.get().generateAutoMatching();
 
 		double threshold = param.getOrDefault ("THRESHOLD", 0.8)
 		boolean useVol = param.getOrDefault ("VOLUME", false)
 		boolean usePag = param.getOrDefault ("PAGE", false)
 		boolean useDOI = param.getOrDefault ("DOI", false)
 
-		CRMatch2.get().updateClustering(CRMatch2.ClusteringType2.REFRESH, null, threshold, useVol, usePag, useDOI);
+		CRTable.get().updateClustering(ClusteringType.REFRESH, null, threshold, useVol, usePag, useDOI);
 	}
 
 
@@ -436,6 +434,11 @@ abstract class CREDSL extends Script {
 		StatusBar.get().updateInfo();
 	}
 
+	
+	public static void input() {
+		println "input..."
+		new Scanner(System.in).nextLine();
+	}
 
 
 	public Class use (String filename) {
