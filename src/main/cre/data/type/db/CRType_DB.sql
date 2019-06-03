@@ -19,6 +19,7 @@ CREATE TABLE CR (
 	CR_ClusterId1 int, 
 	CR_ClusterId2 int,  
 	CR_ClusterSize int,  
+	CR_VI boolean, 
 	PRIMARY KEY (CR_ID)  
 );
 
@@ -42,6 +43,7 @@ CREATE TABLE CR_Temp (
 	CR_ClusterId1 int, 
 	CR_ClusterId2 int,  
 	CR_ClusterSize int, 
+	CR_VI boolean,	
 	PUB_ID int, 
 	PRIMARY KEY (CR_ID)  
 );
@@ -77,10 +79,11 @@ INSERT INTO CR_Temp  (
 	CR_ClusterId1, 
 	CR_ClusterId2,
 	CR_ClusterSize,
+	CR_VI,	
 	PUB_ID
 ) 
 VALUES (
-	?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+	?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 
 ###
@@ -91,9 +94,9 @@ FROM CR_Temp;
 
 INSERT INTO CR 
 (       CR_ID, CR_CR, CR_RPY, CR_N_CR, CR_AU, CR_AU_L, CR_AU_F, CR_AU_A, CR_TI, CR_J, CR_J_N, CR_J_S, CR_VOL, CR_PAG, CR_DOI, 
-       	CR_ClusterId1, CR_ClusterId2, CR_ClusterSize)
+       	CR_ClusterId1, CR_ClusterId2, CR_ClusterSize, CR_VI)
 SELECT CR_Temp.CR_ID, CR_CR, CR_RPY, T.PUBCOUNT, CR_AU, CR_AU_L, CR_AU_F, CR_AU_A, CR_TI, CR_J, CR_J_N, CR_J_S, CR_VOL, CR_PAG, CR_DOI, 
-       CR_ClusterId1, CR_ClusterId2, CR_ClusterSize
+       CR_ClusterId1, CR_ClusterId2, CR_ClusterSize, CR_VI
 FROM CR_Temp
 JOIN (
 	SELECT CR_ID, COUNT(*) AS PUBCOUNT

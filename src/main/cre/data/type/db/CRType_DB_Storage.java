@@ -65,6 +65,7 @@ class CRType_DB_Storage {
 				cr.setPAG(rs.getString("CR_PAG"));
 				cr.setDOI(rs.getString("CR_DOI"));
 				cr.setCluster(rs.getInt("CR_ClusterId1"), rs.getInt("CR_ClusterId2"), rs.getInt("CR_ClusterSize"));
+				cr.setVI(rs.getBoolean("CR_VI"));
 				return cr;
 			} catch (Exception e) {
 				return null;
@@ -95,6 +96,12 @@ class CRType_DB_Storage {
 		
 		this.dbCon = dbCon;
 		
+
+	}
+	
+	
+	void init () throws SQLException, URISyntaxException, IOException {
+
 		Path path = Paths.get(getClass().getClassLoader().getResource("main/cre/data/type/db/CRType_DB.sql").toURI());
 		Stream<String> lines = Files.lines(path);
 		String[] sql = lines.collect(Collectors.joining("\n")).split("###");
@@ -104,18 +111,16 @@ class CRType_DB_Storage {
 		startSQL = sql[0];
 		finishSQL = sql[2];
 		
-		/* create prepared statements */
-		insertCR_PrepStmt = dbCon.prepareStatement(sql[1]);
-		selectCR_PrepStmt = dbCon.prepareStatement("SELECT CR_ID FROM CR WHERE CR_CR = ?");
-		updateCR_PrepStmt = dbCon.prepareStatement("UPDATE CR SET CR_N_CR = CR_N_CR+1 WHERE CR_ID = ?");
-	}
-	
-	
-	void init () throws SQLException {
+		
 		/* create tables */
 		Statement stmt = dbCon.createStatement();
 		stmt.execute(startSQL);
 		stmt.close();
+
+		/* create prepared statements */
+		insertCR_PrepStmt = dbCon.prepareStatement(sql[1]);
+		selectCR_PrepStmt = dbCon.prepareStatement("SELECT CR_ID FROM CR WHERE CR_CR = ?");
+		updateCR_PrepStmt = dbCon.prepareStatement("UPDATE CR SET CR_N_CR = CR_N_CR+1 WHERE CR_ID = ?");
 		
 		dbCon.commit();
 		dbCon.setAutoCommit(false);
@@ -166,7 +171,8 @@ class CRType_DB_Storage {
 			insertCR_PrepStmt.setInt	(start+15,  cr.getClusterC1());
 			insertCR_PrepStmt.setInt	(start+16,  cr.getClusterC2());
 			insertCR_PrepStmt.setInt	(start+17,  cr.getClusterSize());
-			insertCR_PrepStmt.setInt	(start+18,  pubId);
+			insertCR_PrepStmt.setBoolean(start+18,  cr.getVI());
+			insertCR_PrepStmt.setInt	(start+19,  pubId);
 			insertCR_PrepStmt.addBatch();
 			
 			batchSizeCounter++;

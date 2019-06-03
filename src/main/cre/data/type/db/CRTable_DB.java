@@ -28,6 +28,7 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
 	private Connection dbCon;
 
+	private boolean showNull;
 
 	
 	private PreparedStatement insertCR_PrepStmt;
@@ -87,9 +88,11 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 		this.setAborted(false);
 		this.numberOfPubs = 0;
 		this.numberOfCRs = 0;
+		this.showNull = true;
+
 		try {
 			this.crTypeDB.init();
-		} catch (SQLException e) {
+		} catch (SQLException | URISyntaxException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -270,26 +273,51 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
 	@Override
 	public void filterByYear(int[] range) {
-		// TODO Auto-generated method stub
-
+		try {
+			String predicate = String.format("(NOT(CR_RPY IS NULL) AND (%d<=CR_RPY) AND (%d>=CR_RPY))", range[0], range[1]);  
+			if (this.showNull) {
+				predicate += " OR (CR_RPY IS NULL)";
+			}
+			Statement stmt = dbCon.createStatement();
+			stmt.executeUpdate(String.format("UPDATE CR SET CR_VI = %s", predicate));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void filterByCluster(List<CRType_DB> sel) {
-		// TODO Auto-generated method stub
-
+		
+		try {
+			String predicate = sel.stream().map(cr -> "(" + cr.getClusterC1() + "," + cr.getClusterC2() + ")").collect (Collectors.joining( "," ));
+			Statement stmt = dbCon.createStatement();
+			stmt.executeUpdate(String.format("UPDATE CR SET CR_VI = (CR_Clusterid1, CR_Clusterid2) in (%s)", predicate));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void setShowNull(boolean showNull) {
-		// TODO Auto-generated method stub
-
+		try {
+			Statement stmt = dbCon.createStatement();
+			stmt.executeUpdate(String.format ("UPDATE CR SET CR_VI = %d WHERE CR_RPY IS NULL", showNull?1:0));
+			this.showNull = showNull;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void showAll() {
-		// TODO Auto-generated method stub
-
+		
+		try {
+			Statement stmt = dbCon.createStatement();
+			stmt.executeUpdate("UPDATE CR SET CR_VI = 1");
+			this.showNull = true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 
