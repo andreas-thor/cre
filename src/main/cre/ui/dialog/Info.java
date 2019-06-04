@@ -6,7 +6,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import main.cre.data.Statistics;
+import main.cre.data.type.abs.CRTable;
 
 public class Info extends Dialog<Void> {
 
@@ -26,17 +26,17 @@ public class Info extends Dialog<Void> {
 		
 		grid.addRow(0, 
 			new Label("Number of Cited References"),
-			createTF (Statistics.getNumberOfCRs()));
+			createTF (CRTable.get().getStatistics().getNumberOfCRs()));
 		
 		grid.addRow(1, 
 			new Label("Number of Cited References (shown)"),
-			createTF (Statistics.getNumberOfCRsByVisibility(true)));
+			createTF (CRTable.get().getStatistics().getNumberOfCRsByVisibility(true)));
 		
 		grid.addRow(2, 
 			new Label("Number of Cited References Clusters"), 
-			createTF (Statistics.getNumberOfClusters()));
+			createTF (CRTable.get().getClustering().getNumberOfClusters()));
 		
-		int[] r = Statistics.getMaxRangeRPY();
+		int[] r = CRTable.get().getStatistics().getMaxRangeRPY();
 		grid.addRow(3, 
 			new Label("Range of Cited References Years"), 
 			createTF (r[0], 1),
@@ -45,17 +45,17 @@ public class Info extends Dialog<Void> {
 		
 		grid.addRow(4, 
 			new Label("Number of different Cited References Years"), 
-			createTF (Statistics.getNumberOfDistinctRPY()));
+			createTF (CRTable.get().getStatistics().getNumberOfDistinctRPY()));
 		
 		grid.addRow(5, 
 			new Label("Number of Publications"), 
-			createTF (Statistics.getNumberOfPubs(true)));
+			createTF (CRTable.get().getStatistics().getNumberOfPubs(true)));
 
 		grid.addRow(6, 
 				new Label("Number of Citing Publications"), 
-				createTF (Statistics.getNumberOfPubs()));
+				createTF (CRTable.get().getStatistics().getNumberOfPubs()));
 		
-		r = Statistics.getMaxRangePY();
+		r = CRTable.get().getStatistics().getMaxRangePY();
 		grid.addRow(7, 
 			new Label("Range of Citing Publications Years"),
 			createTF (r[0], 1),
@@ -64,7 +64,7 @@ public class Info extends Dialog<Void> {
 		
 		grid.addRow(8,
 			new Label("Number of different Citing Publications Years"),
-			createTF (Statistics.getNumberOfDistinctPY()));
+			createTF (CRTable.get().getStatistics().getNumberOfDistinctPY()));
 		
 		
 		getDialogPane().setContent(grid);

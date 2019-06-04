@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import main.cre.data.Statistics;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.mm.CRType_MM;
@@ -251,7 +250,7 @@ public class WoS_txt extends ImportReader {
 		
 		/* TODO: Filter is not supported yet */
 		
-		StatusBar.get().initProgressbar(Statistics.getNumberOfPubs());
+		StatusBar.get().initProgressbar(CRTable.get().getStatistics().getNumberOfPubs());
 						
 		BufferedWriter bw = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		bw.write("FN Thomson Reuters Web of Science\u0153 modified by CRExplorer");

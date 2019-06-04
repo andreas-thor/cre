@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 
 import main.cre.data.type.abs.PubType;
-import main.cre.data.type.mm.PubType_MM;
 
 public class CRStatsInfo {
 

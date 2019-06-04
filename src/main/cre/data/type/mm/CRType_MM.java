@@ -5,14 +5,14 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import main.cre.data.type.abs.CRType;
-import main.cre.data.type.mm.clustering.CRCluster_MM;
+import main.cre.data.type.mm.clustering.CRCluster;
 
 public class CRType_MM extends CRType<PubType_MM>  {
 
 	
 	private Set<PubType_MM> pubList;
 	
-	private CRCluster_MM cluster;
+	private CRCluster cluster;
 	
 	
 	public CRType_MM() {
@@ -117,11 +117,11 @@ public class CRType_MM extends CRType<PubType_MM>  {
 	}
 	
 
-	public CRCluster_MM getCluster() {
+	public CRCluster getCluster() {
 		return this.cluster;
 	}
 	
-	public void setCluster (CRCluster_MM cluster) {
+	public void setCluster (CRCluster cluster) {
 		this.cluster = cluster;
 	}
 

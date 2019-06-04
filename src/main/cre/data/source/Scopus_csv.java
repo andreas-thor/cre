@@ -18,10 +18,8 @@ import java.util.stream.IntStream;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
-import main.cre.data.Statistics;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
-import main.cre.data.type.abs.PubType;
 import main.cre.data.type.mm.CRType_MM;
 import main.cre.data.type.mm.PubType_MM;
 import main.cre.ui.statusbar.StatusBar;
@@ -283,7 +281,7 @@ public class Scopus_csv extends ImportReader  {
 		
 		/* TODO: Filter not supported yet ... nun drin? */
 		
-		StatusBar.get().initProgressbar(Statistics.getNumberOfPubs());
+		StatusBar.get().initProgressbar(CRTable.get().getStatistics().getNumberOfPubs());
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		
 		csv.writeNext(new String[] {"Authors","Title","Year","Source title","Volume","Issue","Art. No.","Page start","Page end","Page count","Cited by","DOI","Link","Affiliations","Authors with affiliations","Abstract","Author Keywords","References","Document Type","Source","EID"});

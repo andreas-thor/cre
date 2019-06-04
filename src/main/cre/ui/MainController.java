@@ -45,7 +45,6 @@ import main.cre.data.CRSearch;
 import main.cre.data.CRStatsInfo;
 import main.cre.data.DownloadCrossrefData;
 import main.cre.data.Indicators;
-import main.cre.data.Statistics;
 import main.cre.data.source.Crossref;
 import main.cre.data.source.ImportExportFormat;
 import main.cre.data.type.abs.CRTable;
@@ -121,8 +120,8 @@ public class MainController {
 
 		StatusBar.get().setUI(stat);
 		StatusBar.get().setOnUpdateInfo(x -> {
-			noOfVisibleCRs.setDisable(Statistics.getNumberOfCRs() == Statistics.getNumberOfCRsByVisibility(true));
-			noOfVisibleCRs.setText(String.format("Show all Cited References (currently %d of %d)", Statistics.getNumberOfCRsByVisibility(true), Statistics.getNumberOfCRs()));
+			noOfVisibleCRs.setDisable(CRTable.get().getStatistics().getNumberOfCRs() == CRTable.get().getStatistics().getNumberOfCRsByVisibility(true));
+			noOfVisibleCRs.setText(String.format("Show all Cited References (currently %d of %d)", CRTable.get().getStatistics().getNumberOfCRsByVisibility(true), CRTable.get().getStatistics().getNumberOfCRs()));
 		});
 
 		tableView = new CRTableView();
@@ -146,7 +145,7 @@ public class MainController {
 				if (t != null)
 					t.interrupt();
 				t = new Thread(() -> {
-					crTable.updateClustering(Clustering.ClusteringType.REFRESH, null, threshold, useVol, usePag, useDOI);
+					crTable.getClustering().updateClustering(Clustering.ClusteringType.REFRESH, null, threshold, useVol, usePag, useDOI);
 					refreshTableValues();
 				});
 				t.start();
@@ -162,7 +161,7 @@ public class MainController {
 					if ((toMatch.size() > 5) && (type != Clustering.ManualMatchType.EXTRACT)) {
 						new ConfirmAlert("Error during clustering!", true, new String[] { "Too many Cited References selected (at most 5)!" }).showAndWait();
 					} else {
-						crTable.addManuMatching(toMatch, type, threshold, useVol, usePag, useDOI);
+						crTable.getClustering().addManuMatching(toMatch, type, threshold, useVol, usePag, useDOI);
 						refreshTableValues();
 					}
 				}
@@ -170,7 +169,7 @@ public class MainController {
 
 			@Override
 			public void onMatchUnDo(double threshold, boolean useVol, boolean usePag, boolean useDOI) {
-				crTable.undoManuMatching(threshold, useVol, usePag, useDOI);
+				crTable.getClustering().undoManuMatching(threshold, useVol, usePag, useDOI);
 				refreshTableValues();
 			}
 
@@ -209,7 +208,7 @@ public class MainController {
 
 			event.consume();
 
-			if (Statistics.getNumberOfCRs() == 0) {
+			if (CRTable.get().getStatistics().getNumberOfCRs() == 0) {
 
 				UISettings.get().saveUserPrefs(CitedReferencesExplorer.stage.getWidth(), CitedReferencesExplorer.stage.getHeight(), CitedReferencesExplorer.stage.getX(), CitedReferencesExplorer.stage.getY());
 				CitedReferencesExplorer.stage.close();
@@ -282,7 +281,7 @@ public class MainController {
 				Stream.of(crChart).forEach(it -> {
 					if (it.isVisible()) {
 						it.updateData(CRChartData.get());
-						it.setDomainRange(Statistics.getMaxRangeRPY(true));
+						it.setDomainRange(CRTable.get().getStatistics().getMaxRangeRPY(true));
 					}
 				});
 			}
@@ -404,7 +403,7 @@ public class MainController {
 						}
 
 						// show match panel if applicable
-						matchView.setVisible((crTable.getNumberOfMatches(true) + crTable.getNumberOfMatches(false)) > 0);
+						matchView.setVisible((crTable.getClustering().getNumberOfMatches(true) + crTable.getClustering().getNumberOfMatches(false)) > 0);
 						matchView.updateClustering();
 
 						return null;
@@ -740,7 +739,7 @@ public class MainController {
 
 	@FXML
 	public void OnMenuViewFilterByRPY(ActionEvent event) {
-		new Range("Filter Cited References", "Select Range of Cited References Years", UISettings.RangeType.FilterByRPYRange, Statistics.getMaxRangeRPY()).showAndWait().ifPresent(range -> {
+		new Range("Filter Cited References", "Select Range of Cited References Years", UISettings.RangeType.FilterByRPYRange, CRTable.get().getStatistics().getMaxRangeRPY()).showAndWait().ifPresent(range -> {
 			filterByRPY(range, false);
 		});
 	}
@@ -849,7 +848,7 @@ public class MainController {
 	@FXML
 	public void OnMenuDataRemovewoYears() {
 
-		int n = Statistics.getNumberOfCRsWithoutRPY();
+		int n = CRTable.get().getStatistics().getNumberOfCRsWithoutRPY();
 		new ConfirmAlert("Remove Cited References", n == 0, new String[] { "No Cited References w/o Year.", String.format("Would you like to remove all %d Cited References w/o Year?", n) }).showAndWait().ifPresent(btn -> {
 			if (btn == ButtonType.YES) {
 				crTable.removeCRWithoutYear();
@@ -862,8 +861,8 @@ public class MainController {
 	public void OnMenuDataRemoveByRPY() {
 
 		final String header = "Remove Cited References";
-		new Range(header, "Select Range of Cited References Years", UISettings.RangeType.RemoveByRPYRange, Statistics.getMaxRangeRPY()).showAndWait().ifPresent(range -> {
-			long n = Statistics.getNumberOfCRsByRPY(range);
+		new Range(header, "Select Range of Cited References Years", UISettings.RangeType.RemoveByRPYRange, CRTable.get().getStatistics().getMaxRangeRPY()).showAndWait().ifPresent(range -> {
+			long n = CRTable.get().getStatistics().getNumberOfCRsByRPY(range);
 			new ConfirmAlert(header, n == 0, new String[] { String.format("No Cited References with Cited Reference Year between %d and %d.", range[0], range[1]),
 					String.format("Would you like to remove all %d Cited References with Cited Reference Year between %d and %d?", n, range[0], range[1]) }).showAndWait().ifPresent(btn -> {
 						if (btn == ButtonType.YES) {
@@ -878,8 +877,8 @@ public class MainController {
 	public void OnMenuDataRemoveByNCR() {
 
 		final String header = "Remove Cited References";
-		new Range(header, "Select Number of Cited References", UISettings.RangeType.RemoveByNCRRange, Statistics.getMaxRangeNCR()).showAndWait().ifPresent(range -> {
-			long n = Statistics.getNumberOfCRsByNCR(range);
+		new Range(header, "Select Number of Cited References", UISettings.RangeType.RemoveByNCRRange, CRTable.get().getStatistics().getMaxRangeNCR()).showAndWait().ifPresent(range -> {
+			long n = CRTable.get().getStatistics().getNumberOfCRsByNCR(range);
 			new ConfirmAlert(header, n == 0, new String[] { String.format("No Cited References with Number of Cited References between %d and %d.", range[0], range[1]),
 					String.format("Would you like to remove all %d Cited References with Number of Cited References between %d and %d?", n, range[0], range[1]) }).showAndWait().ifPresent(btn -> {
 						if (btn == ButtonType.YES) {
@@ -897,7 +896,7 @@ public class MainController {
 		new Threshold(header, "Select Threshold for Percent in Year", "<", 0.0).showAndWait().ifPresent(cond -> {
 			String comp = cond.getKey();
 			double threshold = cond.getValue().doubleValue();
-			long n = Statistics.getNumberOfCRsByPercentYear(comp, threshold);
+			long n = CRTable.get().getStatistics().getNumberOfCRsByPercentYear(comp, threshold);
 			new ConfirmAlert(header, n == 0, new String[] { String.format("No Cited References with Percent in Year %s %.1f%%.", comp, 100 * threshold),
 					String.format("Would you like to remove all %d Cited References with Percent in Year %s %.1f%%?", n, comp, 100 * threshold) }).showAndWait().ifPresent(btn -> {
 						if (btn == ButtonType.YES) {
@@ -937,12 +936,12 @@ public class MainController {
 	@FXML
 	public void OnMenuDataRetainByRPY() {
 
-		new Range("Retain Publications", "Select Range of Citing Publication Years", UISettings.RangeType.RetainByRPYRange, Statistics.getMaxRangePY()).showAndWait().ifPresent(range -> {
-			long n = Statistics.getNumberOfPubs() - Statistics.getNumberOfPubsByCitingYear(range);
+		new Range("Retain Publications", "Select Range of Citing Publication Years", UISettings.RangeType.RetainByRPYRange, CRTable.get().getStatistics().getMaxRangePY()).showAndWait().ifPresent(range -> {
+			long n = CRTable.get().getStatistics().getNumberOfPubs() - CRTable.get().getStatistics().getNumberOfPubsByCitingYear(range);
 			new ConfirmAlert("Remove Publications", n == 0, new String[] { String.format("All Citing Publication Years are between between %d and %d.", range[0], range[1]),
 					String.format("Would you like to remove all %d citing publications with publication year lower than %d or higher than %d?", n, range[0], range[1]) }).showAndWait().ifPresent(btn -> {
 						if (btn == ButtonType.YES) {
-							crTable.removePubByCitingYear(range);
+							crTable.retainPubByCitingYear(range);
 							updateTableCRList();
 						}
 					});
@@ -957,7 +956,7 @@ public class MainController {
 	public void OnMenuStdCluster() {
 
 		new Thread(() -> {
-			crTable.generateAutoMatching();
+			crTable.getClustering().generateAutoMatching();
 			matchView.setVisible(true);
 			tablePane.requestLayout();
 			matchView.updateClustering();
@@ -967,7 +966,7 @@ public class MainController {
 	@FXML
 	public void OnMenuStdMerge() {
 
-		long n = Statistics.getNumberOfCRs() - Statistics.getNumberOfClusters();
+		long n = CRTable.get().getStatistics().getNumberOfCRs() - CRTable.get().getClustering().getNumberOfClusters();
 		new ConfirmAlert("Merge clusters", n == 0, new String[] { "No Clusters to merge.", String.format("Merging will aggregate %d Cited References! Are you sure?", n) }).showAndWait().ifPresent(btn -> {
 			if (btn == ButtonType.YES) {
 				new Thread(() -> {

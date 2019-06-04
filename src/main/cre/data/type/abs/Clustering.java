@@ -1,6 +1,9 @@
 package main.cre.data.type.abs;
 
-public class Clustering {
+import java.util.List;
+import java.util.Set;
+
+public abstract class Clustering<C extends CRType<P>, P extends PubType<C>> {
 
 	public static enum ManualMatchType { 
 		SAME ("Same"), 
@@ -25,4 +28,15 @@ public class Clustering {
 		}
 	}
 
+	public abstract void addManuMatching (List<C> selCR, ManualMatchType matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI);
+
+	public abstract void generateAutoMatching ();
+
+	public abstract void undoManuMatching (double matchThreshold, boolean useVol, boolean usePag, boolean useDOI);
+
+	public abstract void updateClustering (ClusteringType type, Set<C> changeCR, double threshold, boolean useVol, boolean usePag, boolean useDOI);
+
+	public abstract long getNumberOfMatches (boolean manual);
+	
+	public abstract long getNumberOfClusters();
 }

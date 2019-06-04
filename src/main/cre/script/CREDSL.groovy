@@ -349,7 +349,7 @@ abstract class CREDSL extends Script {
 
 		if (param["PY"] != null) {
 			int[] range = param["PY"]
-			CRTable.get().removePubByCitingYear(range)
+			CRTable.get().retainPubByCitingYear(range)
 		} else {
 			throw new Exception ("retainPub: Missing parameter PY")
 		}

@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import main.cre.data.type.db.PubType_DB;
-import main.cre.data.type.mm.CRType_MM;
 import main.cre.data.type.mm.PubType_MM;
 
 public abstract class PubType<C extends CRType<?>> implements Comparable<PubType<C>> {

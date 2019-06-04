@@ -9,7 +9,7 @@ import main.cre.data.type.mm.CRType_MM;
 
 
 
-public class CRCluster_MM implements Serializable, Comparable<CRCluster_MM> {  
+public class CRCluster implements Serializable, Comparable<CRCluster> {  
 	
 	private static final long serialVersionUID = 1L;
 
@@ -18,14 +18,14 @@ public class CRCluster_MM implements Serializable, Comparable<CRCluster_MM> {
 	private int c1;
 	private int c2;
 	
-	public CRCluster_MM(CRType_MM cr) {
+	public CRCluster(CRType_MM cr) {
 		this.crSet = new HashSet<CRType_MM>();
 		this.crSet.add(cr);
 		this.c1 = cr.getID();
 		this.c2 = this.c1;
 	}
 
-	public CRCluster_MM (CRType_MM cr, int c1) {
+	public CRCluster (CRType_MM cr, int c1) {
 		this (cr);
 		this.c1 = c1;
 	}
@@ -54,7 +54,7 @@ public class CRCluster_MM implements Serializable, Comparable<CRCluster_MM> {
 	}
 */	
 
-	public void merge (CRCluster_MM clus) {
+	public void merge (CRCluster clus) {
 		this.crSet.addAll(clus.crSet);
 		this.c1 = Math.min (this.c1, clus.c1);
 		this.c2 = this.crSet.stream().mapToInt(cr -> cr.getID()).min().getAsInt();
@@ -106,7 +106,7 @@ public class CRCluster_MM implements Serializable, Comparable<CRCluster_MM> {
 	}
 	
 	@Override
-	public int compareTo(CRCluster_MM o) {
+	public int compareTo(CRCluster o) {
 		if (this.c1<o.c1) return -1;
 		if (this.c1>o.c1) return +1;
 		if (this.c2<o.c2) return -1;
@@ -117,7 +117,7 @@ public class CRCluster_MM implements Serializable, Comparable<CRCluster_MM> {
 	
 	@Override
 	public boolean equals(Object obj) {
-		CRCluster_MM o = (CRCluster_MM)obj;
+		CRCluster o = (CRCluster)obj;
 		return ((this.c1==o.c1) && (this.c2==o.c2));
 	}
 	

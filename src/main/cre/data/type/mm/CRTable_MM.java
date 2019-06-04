@@ -12,8 +12,11 @@ import main.cre.data.Indicators;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.Clustering;
 import main.cre.data.type.abs.PubType;
-import main.cre.data.type.mm.clustering.CRCluster_MM;
-import main.cre.data.type.mm.clustering.CRMatch2;
+import main.cre.data.type.abs.Statistics;
+import main.cre.data.type.db.CRType_DB;
+import main.cre.data.type.db.PubType_DB;
+import main.cre.data.type.mm.clustering.CRCluster;
+import main.cre.data.type.mm.clustering.Clustering_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
@@ -24,11 +27,12 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	
 	private HashMap<PubType_MM, PubType_MM> allPubs; 
 	
+	private Statistics_MM statistics;
 	
 	private boolean duringUpdate;
 	private boolean showNull;
 	
-	private CRMatch2 crmatch;
+	private Clustering_MM crmatch;
 	
 	public static CRTable_MM get() {
 		if (crTab == null) {
@@ -37,10 +41,20 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 		return crTab;
 	}
 	
+	@Override
+	public Statistics getStatistics() {
+		return this.statistics;
+	}
 	
+	@Override
+	public Clustering_MM getClustering() {
+		return this.crmatch;
+	}
+
 
 	
 	private CRTable_MM () { 
+		this.statistics = new Statistics_MM();
 		init();
 	}
 	
@@ -62,7 +76,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 		crDataMap = new HashMap<CRType_MM, CRType_MM>();
 		allPubs = new HashMap<PubType_MM, PubType_MM>();
 		
-		crmatch = new CRMatch2(this);
+		crmatch = new Clustering_MM(this);
 		duringUpdate = false;
 		this.setAborted(false);
 		showNull = true;
@@ -98,7 +112,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 			if (crMain == null) {
 				this.crDataMap.put(cr, cr);
 				cr.setID(this.crDataMap.size());
-				cr.setCluster(new CRCluster_MM(cr));
+				cr.setCluster(new CRCluster(cr));
 				return cr;
 			} else {
 				return crMain;
@@ -143,7 +157,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 				if (crMain == null) {
 					this.crDataMap.put(cr, cr);
 					cr.setID(this.crDataMap.size());
-					cr.setCluster(new CRCluster_MM(cr));
+					cr.setCluster(new CRCluster(cr));
 				} else {
 					pub.removeCR(cr, false);	
 					pub.addCR(crMain, false);
@@ -164,7 +178,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	public void merge () {
 		
 		// get all clusters with size > 1
-		Set<CRCluster_MM> clusters = getCR().filter(cr -> cr.getClusterSize()>1).map(cr -> cr.getCluster()).distinct().collect(Collectors.toSet());
+		Set<CRCluster> clusters = getCR().filter(cr -> cr.getClusterSize()>1).map(cr -> cr.getCluster()).distinct().collect(Collectors.toSet());
 		StatusBar.get().setValue(String.format("Merging of %d clusters...", clusters.size()));
 
 		// merge clusters
@@ -190,7 +204,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 		});
 		
 		// reset clusters and match result
-		getCR().forEach(cr -> cr.setCluster(new CRCluster_MM(cr)));
+		getCR().forEach(cr -> cr.setCluster(new CRCluster(cr)));
 		crmatch.init();
 		
 		updateData();
@@ -327,10 +341,12 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	}
 	
 	/**
-	 * Remove all citing publications OUTSIDE the given citing year (PY) range
+	 * Retail all citing publications within given citiny year (PY) range, 
+	 * i.e., remove all citing publications OUTSIDE the given citing year (PY) range
 	 * @param range
 	 */
-	public void removePubByCitingYear (int[] range) {
+	@Override
+	public void retainPubByCitingYear (int[] range) {
 		removePub (pub -> (pub.getPY()==null) || (range[0] > pub.getPY()) || (pub.getPY() > range[1]));
 	}
 	
@@ -376,35 +392,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 
 
 
-	@Override
-	public void addManuMatching(List<CRType_MM> selCR, Clustering.ManualMatchType matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
-		crmatch.addManuMatching(selCR, matchType, matchThreshold, useVol, usePag, useDOI);
-	}
 
-	@Override
-	public void generateAutoMatching() {
-		crmatch.generateAutoMatching();
-	}
-
-	@Override
-	public void undoManuMatching(double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
-		crmatch.undoManuMatching(matchThreshold, useVol, usePag, useDOI);
-	}
-
-	@Override
-	public void updateClustering(Clustering.ClusteringType type, Set<CRType_MM> changeCR, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
-		crmatch.updateClustering(type, changeCR, threshold, useVol, usePag, useDOI);
-	}
-	
-	@Override
-	public long getNumberOfMatches (boolean manual) {
-		return crmatch.getSize(manual);
-	}
-
-	@Override
-	public long getNumberOfClusters() {
-		return getCR().map(cr -> cr.getCluster()).distinct().count();
-	}
 
 	
 	

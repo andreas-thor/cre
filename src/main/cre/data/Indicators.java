@@ -38,8 +38,8 @@ public class Indicators {
 	public void update() {
 
 		System.out.println("Compute Ranges");
-		this.range_RPY = Statistics.getMaxRangeRPY();
-		this.range_PY  = Statistics.getMaxRangePY();
+		this.range_RPY = CRTable.get().getStatistics().getMaxRangeRPY();
+		this.range_PY  = CRTable.get().getStatistics().getMaxRangePY();
 		this.NCR_ALL = new int[1];
 		this.NCR_RPY = new int[this.range_RPY[1]-this.range_RPY[0]+1];
 		this.CNT_RPY = new int[this.range_RPY[1]-this.range_RPY[0]+1];

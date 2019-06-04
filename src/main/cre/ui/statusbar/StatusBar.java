@@ -3,7 +3,7 @@ package main.cre.ui.statusbar;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import main.cre.data.Statistics;
+import main.cre.data.type.abs.CRTable;
 
 public class StatusBar {
 
@@ -51,15 +51,15 @@ public class StatusBar {
 	
 	
 	public void updateInfo () {
-		int[] yearsRPY = Statistics.getMaxRangeRPY();
-		int[] yearsRPYVisible = Statistics.getMaxRangeRPY(true);
-		int[] yearsPY  = Statistics.getMaxRangePY();
+		int[] yearsRPY = CRTable.get().getStatistics().getMaxRangeRPY();
+		int[] yearsRPYVisible = CRTable.get().getStatistics().getMaxRangeRPY(true);
+		int[] yearsPY  = CRTable.get().getStatistics().getMaxRangePY();
 
 		if (this.statUI != null) {
 			statUI.printInfo(String.format("#CRs: %d (%d shown), #Clusters: %d, RPY: %d-%d (%d-%d shown), PY: %d-%d",
-				Statistics.getNumberOfCRs(),
-				Statistics.getNumberOfCRsByVisibility(true),
-				Statistics.getNumberOfClusters(), 
+				CRTable.get().getStatistics().getNumberOfCRs(),
+				CRTable.get().getStatistics().getNumberOfCRsByVisibility(true),
+				CRTable.get().getClustering().getNumberOfClusters(), 
 				yearsRPY[0], 
 				yearsRPY[1],
 				yearsRPYVisible[0], 

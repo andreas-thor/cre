@@ -5,20 +5,17 @@ import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import main.cre.data.type.abs.CRTable;
-import main.cre.data.type.abs.Clustering.ClusteringType;
-import main.cre.data.type.abs.Clustering.ManualMatchType;
+import main.cre.data.type.abs.Clustering;
+import main.cre.data.type.abs.Statistics;
 import main.cre.data.type.mm.CRType_MM;
 import main.cre.data.type.mm.PubType_MM;
-import main.cre.data.type.mm.clustering.CRCluster_MM;
+import main.cre.data.type.mm.clustering.CRCluster;
 
 public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
@@ -39,7 +36,9 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 	private CRType_DB_Storage crTypeDB;
 	private PubType_DB_Storage pubTypeDB;
 	
-	
+	private Statistics_DB statistics;
+	private Clustering_DB clustering;
+
 	public static CRTable_DB get() {
 		if (crTab == null) {
 			crTab = new CRTable_DB();
@@ -47,11 +46,18 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 		return crTab;
 	}
 	
+	@Override
+	public Statistics getStatistics() {
+		return this.statistics;
+	}
 	
+	@Override
+	public Clustering_DB getClustering() {
+		return this.clustering;
+	}
 
 	
 	private CRTable_DB () { 
-		
 		
 		try {
 			Class.forName("org.h2.Driver" );
@@ -61,6 +67,8 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
 			pubTypeDB = new PubType_DB_Storage(dbCon);
 			crTypeDB = new CRType_DB_Storage(dbCon);
+			statistics = new Statistics_DB(dbCon);
+			clustering = new Clustering_DB(dbCon);
 			
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -166,7 +174,7 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 				
 				try {
 					cr.setID(this.numberOfCRs+1);
-					cr.setCluster(new CRCluster_MM(cr));
+					cr.setCluster(new CRCluster(cr));
 					int id = crTypeDB.insertCR(cr, this.numberOfCRs+1, pub.getID());
 					if (id > this.numberOfCRs) {
 						this.numberOfCRs++;
@@ -225,37 +233,34 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
 	@Override
 	public void removeCR(List<CRType_DB> toDelete) {
-		// TODO Auto-generated method stub
-
+		String crList = toDelete.stream().map(cr -> String.valueOf(cr.getID())).collect(Collectors.joining(","));
+		crTypeDB.removeCR(String.format("CR_ID IN (%s)", crList));
 	}
 
 	@Override
 	public void retainCR(List<CRType_DB> toRetain) {
-		// TODO Auto-generated method stub
-
+		String crList = toRetain.stream().map(cr -> String.valueOf(cr.getID())).collect(Collectors.joining(","));
+		crTypeDB.removeCR(String.format("CR_ID NOT IN (%s)", crList));
 	}
 
 	@Override
 	public void removeCRWithoutYear() {
-		// TODO Auto-generated method stub
-
+		crTypeDB.removeCR("CR_RPY IS NULL");
 	}
 
 	@Override
 	public void removeCRByYear(int[] range) {
-		// TODO Auto-generated method stub
-
+		crTypeDB.removeCR(String.format("NOT(CR_RPY IS NULL) AND (%d<=CR_RPY) AND (%d>=CR_RPY)", range[0], range[1]));  
 	}
 
 	@Override
 	public void removeCRByN_CR(int[] range) {
-		// TODO Auto-generated method stub
-
+		crTypeDB.removeCR(String.format("(%d<=CR_N_CR) AND (%d>=CR_N_CR)", range[0], range[1]));  
 	}
 
 	@Override
 	public void removeCRByPERC_YR(String comp, double threshold) {
-		// TODO Auto-generated method stub
+		// TODO NOT YET SUPPORTED
 
 	}
 
@@ -266,124 +271,37 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 	}
 
 	@Override
-	public void removePubByCitingYear(int[] range) {
-		// TODO Auto-generated method stub
-
+	public void retainPubByCitingYear(int[] range) {
+		crTypeDB.removePub(String.format("(PUB_PY IS NULL) OR (%d > PUB_PY) OR (PUB_PY > %d)", range[0], range[1]));
 	}
 
 	@Override
 	public void filterByYear(int[] range) {
-		try {
-			String predicate = String.format("(NOT(CR_RPY IS NULL) AND (%d<=CR_RPY) AND (%d>=CR_RPY))", range[0], range[1]);  
-			if (this.showNull) {
-				predicate += " OR (CR_RPY IS NULL)";
-			}
-			Statement stmt = dbCon.createStatement();
-			stmt.executeUpdate(String.format("UPDATE CR SET CR_VI = %s", predicate));
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		String newValue = String.format("(NOT(CR_RPY IS NULL) AND (%d<=CR_RPY) AND (%d>=CR_RPY)) %s", range[0], range[1], this.showNull?" OR (CR_RPY IS NULL)":"");  
+		crTypeDB.updateCR_VI(newValue, null);
 	}
 
 	@Override
 	public void filterByCluster(List<CRType_DB> sel) {
-		
-		try {
-			String predicate = sel.stream().map(cr -> "(" + cr.getClusterC1() + "," + cr.getClusterC2() + ")").collect (Collectors.joining( "," ));
-			Statement stmt = dbCon.createStatement();
-			stmt.executeUpdate(String.format("UPDATE CR SET CR_VI = (CR_Clusterid1, CR_Clusterid2) in (%s)", predicate));
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		String clList = sel.stream().map(cr -> "(" + cr.getClusterC1() + "," + cr.getClusterC2() + ")").collect (Collectors.joining( "," ));
+		crTypeDB.updateCR_VI(String.format("(CR_Clusterid1, CR_Clusterid2) in (%s)", clList), null);
 	}
 
 	@Override
 	public void setShowNull(boolean showNull) {
-		try {
-			Statement stmt = dbCon.createStatement();
-			stmt.executeUpdate(String.format ("UPDATE CR SET CR_VI = %d WHERE CR_RPY IS NULL", showNull?1:0));
-			this.showNull = showNull;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		crTypeDB.updateCR_VI(showNull?"1":"0", "CR_RPY IS NULL");
+		this.showNull = showNull;
 	}
 
 	@Override
 	public void showAll() {
-		
-		try {
-			Statement stmt = dbCon.createStatement();
-			stmt.executeUpdate("UPDATE CR SET CR_VI = 1");
-			this.showNull = true;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		crTypeDB.updateCR_VI("1", null);
+		this.showNull = true;		
 	}
 
 
 
 
-	@Override
-	public void addManuMatching(List<CRType_DB> selCR, ManualMatchType matchType, double matchThreshold, boolean useVol,
-			boolean usePag, boolean useDOI) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-
-
-	@Override
-	public void generateAutoMatching() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-
-
-	@Override
-	public void undoManuMatching(double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-
-
-	@Override
-	public void updateClustering(ClusteringType type, Set<CRType_DB> changeCR, double threshold, boolean useVol,
-			boolean usePag, boolean useDOI) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-
-
-	@Override
-	public long getNumberOfMatches(boolean manual) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-
-
-
-	@Override
-	public long getNumberOfClusters() {
-		
-		try {
-			dbCon.setAutoCommit(true);
-			Statement stmt = dbCon.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM ( SELECT  DISTINCT CR_ClusterId1, CR_ClusterId2  FROM CR ) AS T");
-			rs.next();
-			long res = rs.getLong(1);
-			stmt.close();
-			return res;
-		} catch (Exception e) {
-			return -1l;
-		}
-	}
+	
 
 }

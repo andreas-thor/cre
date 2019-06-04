@@ -22,13 +22,12 @@ import javax.json.stream.JsonParser;
 import main.cre.Exceptions.AbortedException;
 import main.cre.Exceptions.FileTooLargeException;
 import main.cre.Exceptions.UnsupportedFileFormatException;
-import main.cre.data.Statistics;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.CRType.FORMATTYPE;
 import main.cre.data.type.abs.PubType;
 import main.cre.data.type.mm.CRType_MM;
-import main.cre.data.type.mm.clustering.CRMatch2;
+import main.cre.data.type.mm.clustering.Clustering_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 
@@ -287,7 +286,7 @@ public class CRE_json {
 				CRType cr1 = mapId2CR.get(id1);
 				CRType cr2 = mapId2CR.get(id2);
 				if (!(cr1==null) && !(cr2==null)) {
-					CRMatch2.get().addPair(cr1, cr2, parser.getBigDecimal().doubleValue(), isManual, false, null);
+					Clustering_MM.get().addPair(cr1, cr2, parser.getBigDecimal().doubleValue(), isManual, false, null);
 				}
 				break;
 			default:break;  
@@ -309,7 +308,7 @@ public class CRE_json {
 		 
 		/* TODO: filter is not supported yet */
 		
-		StatusBar.get().initProgressbar(Statistics.getNumberOfCRs() + Statistics.getNumberOfPubs() + Statistics.getNumberOfMatches(true) + Statistics.getNumberOfMatches(false));
+		StatusBar.get().initProgressbar(CRTable.get().getStatistics().getNumberOfCRs() + CRTable.get().getStatistics().getNumberOfPubs() + CRTable.get().getClustering().getNumberOfMatches(true) + CRTable.get().getClustering().getNumberOfMatches(false));
 		
 		ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(file_name), Charset.forName("UTF-8"));
 		
@@ -426,7 +425,7 @@ public class CRE_json {
 		for (boolean loop: new boolean[] { false, true }) {
 			jgenMatch.writeStartObject(loop?"MATCH_MANU":"MATCH_AUTO");
 //			for (Entry<Integer, Map<Integer, Double>> it: crTab.crMatch.match.get(loop).entrySet()) {
-			CRMatch2.get().matchResult.get(loop).forEach((cr1, pairs) -> {
+			Clustering_MM.get().matchResult.get(loop).forEach((cr1, pairs) -> {
 				if (pairs.size()>0) {
 					jgenMatch.writeStartObject(String.valueOf(cr1.getID()));
 					pairs.forEach((cr2, sim) -> {

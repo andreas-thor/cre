@@ -2,13 +2,13 @@ package main.cre.data.type.mm.clustering;
 
 import main.cre.data.type.mm.CRType_MM;
 
-public class CRPair2 {
+public class CRPair {
 	
 	CRType_MM cr1;
 	CRType_MM cr2;
 	Double s;
 
-	public CRPair2(CRType_MM cr1, CRType_MM cr2, Double s) {
+	public CRPair(CRType_MM cr1, CRType_MM cr2, Double s) {
 		super();
 		
 		if (cr1.getID()<cr2.getID()) {

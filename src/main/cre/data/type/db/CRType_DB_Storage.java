@@ -52,6 +52,7 @@ class CRType_DB_Storage {
 				cr.setID(rs.getInt("CR_ID"));
 				cr.setCR(rs.getString("CR_CR"));
 				cr.setRPY(rs.getInt("CR_RPY"));
+				if (rs.wasNull()) { cr.setRPY(null);}
 				cr.setN_CR(rs.getInt("CR_N_CR"));
 				cr.setAU(rs.getString("CR_AU"));
 				cr.setAU_L(rs.getString("CR_AU_L"));
@@ -222,6 +223,55 @@ class CRType_DB_Storage {
 				
 	}
 
+	
+	void updateCR_VI (String newValue, String predicate) {
+		try {
+			Statement stmt = dbCon.createStatement();
+			stmt.executeUpdate(String.format ("UPDATE CR SET CR_VI = %s %s", newValue, (predicate==null)?"":"WHERE " + predicate)); 
+			dbCon.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	void removeCR (String predicate) {
+		try {
+			Statement stmt = dbCon.createStatement();
+			stmt.executeUpdate(String.format ("DELETE PUB_CR WHERE CR_ID IN (SELECT CR_ID FROM CR WHERE %s)",  predicate)); 
+			stmt.executeUpdate(String.format ("DELETE CR WHERE %s",  predicate)); 
+			dbCon.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
+	
+	void removePub (String predicate) {
+		
+		try {
+			Statement stmt = dbCon.createStatement();
+
+			// mark CR that reference at least one publication (--> N_CR=NULL)
+			stmt.executeUpdate(String.format ("UPDATE CR SET CR_N_CR = NULL WHERE CR_ID IN (SELECT CR_ID FROM PUB_CR WHERE PUB_ID IN (SELECT PUB_ID FROM PUB WHERE %s))",  predicate));
+			
+			// delete pub-cr-relationship and pubs
+			stmt.executeUpdate(String.format ("DELETE PUB_CR WHERE PUB_ID IN (SELECT PUB_ID FROM PUB WHERE %s)",  predicate));
+			stmt.executeUpdate(String.format ("DELETE PUB WHERE %s",  predicate));
+			
+			// update N_CR 
+			stmt.executeUpdate("UPDATE CR SET CR_N_CR = (SELECT COUNT(*) FROM PUB_CR WHERE PUB_CR.CR_ID = CR.CR_ID) WHERE CR_N_CR IS NULL");
+			
+			// remove CRs with N_CR=0
+			removeCR("CR_N_CR = 0"); 
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	
 //	public void executeBatch() throws SQLException {
 //		insertCR_PrepStmt.executeBatch();
 //		insertPubCR_PrepStmt.executeBatch();

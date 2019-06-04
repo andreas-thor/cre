@@ -28,6 +28,11 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 		}
 	}
 	
+	
+	public abstract Statistics getStatistics();
+	
+	public abstract Clustering<C,P> getClustering();
+	
 	/**
 	 * Initialize empty CRTable
 	 */
@@ -144,10 +149,11 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	
 	
 	/**
-	 * Remove all citing publications OUTSIDE the given citing year (PY) range
+	 * Retail all citing publications within given citiny year (PY) range, 
+	 * i.e., remove all citing publications OUTSIDE the given citing year (PY) range
 	 * @param range
 	 */
-	public abstract void removePubByCitingYear (int[] range);
+	public abstract void retainPubByCitingYear (int[] range);
 	
 
 	
@@ -197,16 +203,6 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	
 	
 
-	public abstract void addManuMatching (List<C> selCR, Clustering.ManualMatchType matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI);
 
-	public abstract void generateAutoMatching ();
-
-	public abstract void undoManuMatching (double matchThreshold, boolean useVol, boolean usePag, boolean useDOI);
-
-	public abstract void updateClustering (Clustering.ClusteringType type, Set<C> changeCR, double threshold, boolean useVol, boolean usePag, boolean useDOI);
-
-	public abstract long getNumberOfMatches (boolean manual);
-	
-	public abstract long getNumberOfClusters();
 }
 
