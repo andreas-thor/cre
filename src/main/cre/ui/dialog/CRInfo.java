@@ -10,7 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import main.cre.data.type.abs.CRType;
-import main.cre.data.type.abs.CRType_ColumnView;
+import main.cre.data.type.extern.CRType_ColumnView;
 import main.cre.ui.UISettings;
 
 public class CRInfo extends Dialog<Void> {

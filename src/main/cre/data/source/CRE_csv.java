@@ -15,8 +15,8 @@ import main.cre.data.CRChartData;
 import main.cre.data.CRChartData.SERIESTYPE;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
-import main.cre.data.type.abs.CRType_ColumnView;
-import main.cre.data.type.abs.PubType_ColumnView;
+import main.cre.data.type.extern.CRType_ColumnView;
+import main.cre.data.type.extern.PubType_ColumnView;
 import main.cre.ui.statusbar.StatusBar;
 
 public class CRE_csv {

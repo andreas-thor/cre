@@ -1,4 +1,4 @@
-package main.cre.data.type.abs;
+package main.cre.data.type.extern;
 
 import java.util.function.Function;
 
@@ -7,6 +7,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import main.cre.data.type.abs.CRType;
+import main.cre.data.type.abs.CRType.PERCENTAGE;
 
 public class CRType_ColumnView {
 

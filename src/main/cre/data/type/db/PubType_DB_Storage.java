@@ -9,9 +9,9 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import main.cre.data.type.abs.CRType_ColumnView;
 import main.cre.data.type.abs.PubType;
-import main.cre.data.type.abs.PubType_ColumnView;
+import main.cre.data.type.extern.CRType_ColumnView;
+import main.cre.data.type.extern.PubType_ColumnView;
 
 public class PubType_DB_Storage {
 

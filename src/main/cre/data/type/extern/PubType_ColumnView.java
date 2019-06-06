@@ -1,4 +1,4 @@
-package main.cre.data.type.abs;
+package main.cre.data.type.extern;
 
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import main.cre.data.type.abs.PubType;
 
 public class PubType_ColumnView {
 

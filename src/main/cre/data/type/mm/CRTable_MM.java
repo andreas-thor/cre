@@ -15,8 +15,6 @@ import main.cre.data.type.abs.PubType;
 import main.cre.data.type.abs.Statistics;
 import main.cre.data.type.db.CRType_DB;
 import main.cre.data.type.db.PubType_DB;
-import main.cre.data.type.mm.clustering.CRCluster;
-import main.cre.data.type.mm.clustering.Clustering_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {

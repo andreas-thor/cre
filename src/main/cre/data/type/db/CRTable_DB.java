@@ -13,9 +13,9 @@ import java.util.stream.Stream;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.Clustering;
 import main.cre.data.type.abs.Statistics;
+import main.cre.data.type.mm.CRCluster;
 import main.cre.data.type.mm.CRType_MM;
 import main.cre.data.type.mm.PubType_MM;
-import main.cre.data.type.mm.clustering.CRCluster;
 
 public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
@@ -173,12 +173,9 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 			
 				
 				try {
-					cr.setID(this.numberOfCRs+1);
+					cr.setID(++this.numberOfCRs);
 					cr.setCluster(new CRCluster(cr));
-					int id = crTypeDB.insertCR(cr, this.numberOfCRs+1, pub.getID());
-					if (id > this.numberOfCRs) {
-						this.numberOfCRs++;
-					}
+					int id = crTypeDB.insertCR(cr, pub.getID());
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

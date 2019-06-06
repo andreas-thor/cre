@@ -12,8 +12,8 @@ import main.cre.data.source.Crossref
 import main.cre.data.source.ImportExportFormat;
 import main.cre.data.type.abs.CRTable
 import main.cre.data.type.abs.Clustering.ClusteringType
+import main.cre.data.type.extern.CitedReference
 import main.cre.data.type.mm.CRType_MM
-import main.cre.data.type.script.CitedReference
 import main.cre.ui.statusbar.StatusBar;
 import main.cre.ui.statusbar.StatusBarText
 

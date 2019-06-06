@@ -1,4 +1,4 @@
-package main.cre.data.type.mm.clustering;
+package main.cre.data.type.mm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,14 +11,40 @@ import java.util.stream.Collectors;
 
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.Clustering;
-import main.cre.data.type.mm.CRTable_MM;
-import main.cre.data.type.mm.CRType_MM;
-import main.cre.data.type.mm.PubType_MM;
 import main.cre.ui.statusbar.StatusBar;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
 public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 
+	
+	private class CRPair {
+		
+		CRType_MM cr1;
+		CRType_MM cr2;
+		Double s;
+
+		public CRPair(CRType_MM cr1, CRType_MM cr2, Double s) {
+			super();
+			
+			if (cr1.getID()<cr2.getID()) {
+				this.cr1 = cr1;
+				this.cr2 = cr2;
+			} else {
+				this.cr1 = cr2;
+				this.cr2 = cr1;
+			}
+			this.s = s;
+		}
+		
+
+		@Override
+		public String toString () {
+			return (this.cr1.getID() + "/" + this.cr2.getID() + "/" + this.s);
+		}
+		
+	}
+	
+	
 	
 	/**
 	 * matchResult: M -> (CR1 -> (CR2 -> sim)

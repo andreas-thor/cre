@@ -1,7 +1,7 @@
-package main.cre.data.type.script;
+package main.cre.data.type.extern;
 
+import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.CRType.PERCENTAGE;
-import main.cre.data.type.mm.CRType_MM;
 
 /**
  * Export data structure for Cited References
@@ -55,7 +55,7 @@ public class CitedReference {
 	private CitedReference () {
 	}
 	
-	public static CitedReference createFromCRType (CRType_MM cr) {
+	public static CitedReference createFromCRType (CRType cr) {
 		
 		CitedReference result = new CitedReference();
 		

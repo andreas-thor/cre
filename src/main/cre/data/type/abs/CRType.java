@@ -100,7 +100,7 @@ public abstract class CRType<P extends PubType<?>> implements Comparable<CRType<
 	
 	public abstract void addPub(P pubType, boolean b);
 	
-	public abstract boolean removePub(P pub, boolean inverse);
+//	public abstract boolean removePub(P pub, boolean inverse);
 	
 	public abstract void removeAllPubs(boolean inverse);
 	

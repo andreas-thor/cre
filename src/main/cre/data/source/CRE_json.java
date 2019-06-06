@@ -27,7 +27,7 @@ import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.CRType.FORMATTYPE;
 import main.cre.data.type.abs.PubType;
 import main.cre.data.type.mm.CRType_MM;
-import main.cre.data.type.mm.clustering.Clustering_MM;
+import main.cre.data.type.mm.Clustering_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 

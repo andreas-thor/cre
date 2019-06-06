@@ -1,12 +1,9 @@
-package main.cre.data.type.mm.clustering;
+package main.cre.data.type.mm;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import main.cre.data.type.mm.CRType_MM;
-
 
 
 public class CRCluster implements Serializable, Comparable<CRCluster> {  
@@ -31,28 +28,6 @@ public class CRCluster implements Serializable, Comparable<CRCluster> {
 	}
 	
 	
-
-
-	/*
-	public CRCluster_MM (CRType cr) {
-		this.crSet = new HashSet<CRType>();
-		this.crSet.add(cr);
-		this.c1 = cr.getID();
-		this.c2 = this.c1;
-	}
-
-	public CRCluster_MM (CRType cr, int c1) {
-		this (cr);
-		this.c1 = c1;
-	}
-	
-	
-	public CRCluster_MM(String s) {
-		String[] split = s.split ("/");
-		this.c1 = Integer.valueOf(split[0]).intValue();
-		this.c2 = Integer.valueOf(split[1]).intValue();
-	}
-*/	
 
 	public void merge (CRCluster clus) {
 		this.crSet.addAll(clus.crSet);
@@ -80,12 +55,9 @@ public class CRCluster implements Serializable, Comparable<CRCluster> {
 	}
 	
 
-	
-	
 	public Stream<CRType_MM> getCR() {
 		return this.crSet.stream();
 	}
-
 
 	public int getC1 () {
 		return this.c1;
@@ -94,7 +66,6 @@ public class CRCluster implements Serializable, Comparable<CRCluster> {
 	public int getC2 () {
 		return this.c2;
 	}
-	
 	
 	public int getSize() {
 		return crSet.size();
@@ -128,3 +99,4 @@ public class CRCluster implements Serializable, Comparable<CRCluster> {
 	
 	
 }
+

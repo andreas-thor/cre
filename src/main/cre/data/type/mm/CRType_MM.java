@@ -5,9 +5,10 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import main.cre.data.type.abs.CRType;
-import main.cre.data.type.mm.clustering.CRCluster;
 
 public class CRType_MM extends CRType<PubType_MM>  {
+
+	
 
 	
 	private Set<PubType_MM> pubList;
@@ -59,8 +60,7 @@ public class CRType_MM extends CRType<PubType_MM>  {
 	 * @param inverse true, if this CR should also be remove from the PUB
 	 * @return if the PUB was in the publist
 	 */
-	@Override
-	public boolean removePub(PubType_MM pub, boolean inverse) {
+	boolean removePub(PubType_MM pub, boolean inverse) {
 		if (inverse) {
 			pub.removeCR(this, false);
 		}

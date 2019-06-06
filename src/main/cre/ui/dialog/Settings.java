@@ -23,9 +23,9 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import main.cre.data.type.abs.CRType_ColumnView;
-import main.cre.data.type.abs.CRType_ColumnView.CRColumn;
-import main.cre.data.type.abs.CRType_ColumnView.ColGroup;
+import main.cre.data.type.extern.CRType_ColumnView;
+import main.cre.data.type.extern.CRType_ColumnView.CRColumn;
+import main.cre.data.type.extern.CRType_ColumnView.ColGroup;
 import main.cre.ui.UISettings;
 
 public class Settings extends Dialog<Integer> {

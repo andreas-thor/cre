@@ -9,7 +9,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import main.cre.CitedReferencesExplorer;
 import main.cre.data.DownloadCrossrefData;
 import main.cre.data.Sampling;
-import main.cre.data.type.abs.CRType_ColumnView;
+import main.cre.data.type.extern.CRType_ColumnView;
 
 public class UISettings {
 
