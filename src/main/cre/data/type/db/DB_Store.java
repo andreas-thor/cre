@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.stream.Collectors;
@@ -15,16 +16,20 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import main.cre.data.type.abs.CRType;
+import main.cre.data.type.abs.PubType;
+import main.cre.data.type.extern.CRType_ColumnView;
+import main.cre.data.type.extern.PubType_ColumnView;
 
-class CRType_DB_Storage { 
+class DB_Store { 
 
 	private final static String SQL_FILE_PREFIX = "main/cre/data/type/db/sql/"; 
 	
 	private PreparedStatement insertCR_PrepStmt;
+	private int insertCR_Counter;
 	private PreparedStatement insertPub_PrepStmt;
+	private int insertPub_Counter;
 	
 	
-	private int batchSizeCounter = 0;
 	private final int BATCH_SIZE_MAX = 100;
 	
 	
@@ -35,7 +40,7 @@ class CRType_DB_Storage {
 	private String wrapup_insert_SQL;
 	
 	
-	CRType_DB_Storage(Connection dbCon) throws SQLException, URISyntaxException, IOException {
+	DB_Store(Connection dbCon) throws SQLException, URISyntaxException, IOException {
 		
 		this.dbCon = dbCon;
 		
@@ -53,10 +58,11 @@ class CRType_DB_Storage {
 		stmt.execute(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(SQL_FILE_PREFIX + "create_schema.sql").toURI())), StandardCharsets.UTF_8));
 		stmt.close();
 		
-
 		/* create prepared statements & sql scripts */
 		insertCR_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(SQL_FILE_PREFIX + "pst_insert_cr.sql").toURI())), StandardCharsets.UTF_8));
+		insertCR_Counter = 0;
 		insertPub_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(SQL_FILE_PREFIX + "pst_insert_pub.sql").toURI())), StandardCharsets.UTF_8));
+		insertPub_Counter = 0;
 		wrapup_insert_SQL = new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(SQL_FILE_PREFIX + "wrapup_insert.sql").toURI())), StandardCharsets.UTF_8);
 		
 		dbCon.commit();
@@ -65,19 +71,37 @@ class CRType_DB_Storage {
 	void insertCR (CRType<?> cr, int pubId) throws SQLException {
 		
 		CRType_DB.addToBatch(insertCR_PrepStmt, cr, pubId);
-		batchSizeCounter++;
 		
-		if (batchSizeCounter>=BATCH_SIZE_MAX) {
+		if (++insertCR_Counter>=BATCH_SIZE_MAX) {
 			insertCR_PrepStmt.executeBatch();
-			batchSizeCounter = 0;
+			insertCR_Counter = 0;
+			dbCon.commit();
 		}		
 	}
+	
+	void insertPub (PubType<?> pub) throws SQLException {
+		
+		PubType_DB.addToBatch(insertPub_PrepStmt, pub);
+		
+		if (++insertPub_Counter>=BATCH_SIZE_MAX) {
+			insertPub_PrepStmt.executeBatch();
+			insertPub_Counter = 0;
+			dbCon.commit();
+		}	
+	}
+	
 
-	void finishInsertCR() throws SQLException {
-		if (batchSizeCounter>0) {
+	void finishInsert() throws SQLException {
+		
+		if (insertCR_Counter>0) {
 			insertCR_PrepStmt.executeBatch();
-			batchSizeCounter = 0;
+			insertCR_Counter = 0;
 		}
+		
+		if (insertPub_Counter>0) {
+			insertPub_PrepStmt.executeBatch();
+			insertPub_Counter = 0;
+		}	
 		
 		System.out.println("Executing " + wrapup_insert_SQL);
 		Statement stmt = dbCon.createStatement();
@@ -88,14 +112,27 @@ class CRType_DB_Storage {
 	}	
 	
 
-	Stream<CRType_DB> selectCR() {
+	Stream<CRType_DB> selectCR(String where ) {
 		
 		System.out.println("selectCR");
 		try {
-			return StreamSupport.stream(new CRType_DB.CRType_ResultSet(dbCon.prepareStatement("SELECT * FROM CR").executeQuery()).getIterable().spliterator(), false);
+			return StreamSupport.stream(new CRType_DB.CRType_ResultSet(dbCon.prepareStatement("SELECT * FROM CR " + where).executeQuery()).getIterable().spliterator(), false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Stream<CRType_DB> emptyStr = Stream.of();
+			return emptyStr;
+		}
+
+	}
+	
+	Stream<PubType_DB> selectPub(String where) {
+		
+		System.out.println("selectPub");
+		try {
+			return StreamSupport.stream(new PubType_DB.PubType_ResultSet(dbCon.prepareStatement("SELECT * FROM Pub " + where).executeQuery()).getIterable().spliterator(), false);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Stream<PubType_DB> emptyStr = Stream.of();
 			return emptyStr;
 		}
 
@@ -153,11 +190,18 @@ class CRType_DB_Storage {
 	}
 	
 	
-//	public void executeBatch() throws SQLException {
-//		insertCR_PrepStmt.executeBatch();
-//		insertPubCR_PrepStmt.executeBatch();
-//	}
-//	
+
+	int getNumber (String sql) {
+		
+		try {
+			ResultSet rs = dbCon.createStatement().executeQuery(sql);
+			return rs.getInt(1);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
+	}
 	
 	
 }

@@ -45,7 +45,6 @@ public class CRType_MM extends CRType<PubType_MM>  {
 	 * @param pub to be added
 	 * @param inverse true, if this CR should also be added to the PUB
 	 */
-	@Override
 	public void addPub(PubType_MM pub, boolean inverse) {
 		if (inverse) {
 			pub.addCR(this, false);
@@ -67,7 +66,6 @@ public class CRType_MM extends CRType<PubType_MM>  {
 		return this.pubList.remove(pub);
 	}
 	
-	@Override
 	public void removeAllPubs(boolean inverse) {
 		if (inverse) {
 			pubList.forEach(pub -> pub.removeCR(this, false));

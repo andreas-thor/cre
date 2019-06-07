@@ -113,7 +113,7 @@ public class MainController {
 		crTable = CRTable.get();
 		crTable.setNpctRange(UISettings.get().getNPCTRange());
 		
-		CRChartData.get().setMedianRange(UISettings.get().getMedianRange());
+		crTable.getChartData().setMedianRange(UISettings.get().getMedianRange());
 		
 		StatusBarFX stat = new StatusBarFX();
 		statPane.add(stat, 0, 0);
@@ -280,7 +280,7 @@ public class MainController {
 			if (!triggeredByChartZoom) {
 				Stream.of(crChart).forEach(it -> {
 					if (it.isVisible()) {
-						it.updateData(CRChartData.get());
+						it.updateData(CRTable.get().getChartData());
 						it.setDomainRange(CRTable.get().getStatistics().getMaxRangeRPY(true));
 					}
 				});
@@ -682,7 +682,7 @@ public class MainController {
 				crTable.updateData();
 			} else {
 				if (old_MedianRange != UISettings.get().getMedianRange()) {
-					CRChartData.get().setMedianRange(UISettings.get().getMedianRange());
+					crTable.getChartData().setMedianRange(UISettings.get().getMedianRange());
 					Indicators.get().updateChartData();
 				}
 			}

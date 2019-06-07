@@ -11,6 +11,18 @@ import main.cre.data.type.abs.CRType;
 
 public class CRType_DB extends CRType<PubType_DB> {
 
+	
+	private int N_CR;
+	private int c1;
+	private int c2;
+	private int clusterSize;
+	
+	
+	/**
+	 * Iterator to generate a stream of CRType_DB from SQL result set
+	 * @author Andreas
+	 *
+	 */
 	public static class CRType_ResultSet implements Iterator<CRType_DB> {
 	
 		private ResultSet rs; 
@@ -42,7 +54,7 @@ public class CRType_DB extends CRType<PubType_DB> {
 				cr.setCR(rs.getString("CR_CR"));
 				cr.setRPY(rs.getInt("CR_RPY"));
 				if (rs.wasNull()) { cr.setRPY(null);}
-				cr.setN_CR(rs.getInt("CR_N_CR"));
+				cr.N_CR = rs.getInt("CR_N_CR");
 				cr.setAU(rs.getString("CR_AU"));
 				cr.setAU_L(rs.getString("CR_AU_L"));
 				cr.setAU_F(rs.getString("CR_AU_F"));
@@ -54,7 +66,9 @@ public class CRType_DB extends CRType<PubType_DB> {
 				cr.setVOL(rs.getString("CR_VOL"));
 				cr.setPAG(rs.getString("CR_PAG"));
 				cr.setDOI(rs.getString("CR_DOI"));
-				cr.setCluster(rs.getInt("CR_ClusterId1"), rs.getInt("CR_ClusterId2"), rs.getInt("CR_ClusterSize"));
+				cr.c1 = rs.getInt("CR_ClusterId1");
+				cr.c2 = rs.getInt("CR_ClusterId2");
+				cr.clusterSize = rs.getInt("CR_ClusterSize");
 				cr.setVI(rs.getBoolean("CR_VI"));
 				return cr;
 			} catch (Exception e) {
@@ -68,55 +82,56 @@ public class CRType_DB extends CRType<PubType_DB> {
 		
 	}
 
-	private int N_CR;
-	private int c1;
-	private int c2;
-	private int clusterSize;
+
 	
-	public CRType_DB() {
-		super();
-		this.N_CR = 0;
-	}
+
 	
+	
+	/**
+	 * Add cr to the batch of pst that eventually inserts the cr into the database
+	 * @param pst
+	 * @param cr
+	 * @param pubId
+	 * @throws SQLException
+	 */
 	
 	public static void addToBatch (PreparedStatement pst, CRType<?> cr, int pubId) throws SQLException {
 		
-		int start = 0;
 		pst.clearParameters();
-		pst.setInt		(start+ 1, cr.getID());
-		pst.setString	(start+ 2, cr.getCR());
+		pst.setInt		(1, cr.getID());
+		pst.setString	(2, cr.getCR());
 		
 		if (cr.getRPY() == null) {
-			pst.setNull(start+ 3, java.sql.Types.INTEGER);
+			pst.setNull	(3, java.sql.Types.INTEGER);
 		} else {
-			pst.setInt (start+ 3, cr.getRPY());
+			pst.setInt 	(3, cr.getRPY());
 		}
 		
-		pst.setString	(start+ 4, cr.getAU());
-		pst.setString	(start+ 5, cr.getAU_L());
-		pst.setString	(start+ 6, cr.getAU_F());
-		pst.setString	(start+ 7, cr.getAU_A());
-		pst.setString	(start+ 8, cr.getTI());
-		pst.setString	(start+ 9, cr.getJ());
-		pst.setString	(start+10, cr.getJ_N());
-		pst.setString	(start+11, cr.getJ_S());
-		pst.setString	(start+12, cr.getVOL());
-		pst.setString	(start+13, cr.getPAG());
-		pst.setString	(start+14, cr.getDOI());
-		pst.setInt		(start+15, cr.getClusterC1());
-		pst.setInt		(start+16, cr.getClusterC2());
-		pst.setInt		(start+17, cr.getClusterSize());
-		pst.setBoolean	(start+18, cr.getVI());
-		pst.setInt		(start+19, pubId);
+		pst.setString	( 4, cr.getAU());
+		pst.setString	( 5, cr.getAU_L());
+		pst.setString	( 6, cr.getAU_F());
+		pst.setString	( 7, cr.getAU_A());
+		pst.setString	( 8, cr.getTI());
+		pst.setString	( 9, cr.getJ());
+		pst.setString	(10, cr.getJ_N());
+		pst.setString	(11, cr.getJ_S());
+		pst.setString	(12, cr.getVOL());
+		pst.setString	(13, cr.getPAG());
+		pst.setString	(14, cr.getDOI());
+		pst.setInt		(15, cr.getClusterC1());
+		pst.setInt		(16, cr.getClusterC2());
+		pst.setInt		(17, cr.getClusterSize());
+		pst.setBoolean	(18, cr.getVI());
+		pst.setInt		(19, pubId);
 		pst.addBatch();
 	}
 	
 
-	public void setCluster(int c1, int c2, int size) {
-		this.c1 = c1;
-		this.c2 = c2;
-		this.clusterSize = size;
+	@Override
+	public int getN_CR() {
+		return this.N_CR;
 	}
+
 
 	@Override
 	public int getClusterC1() {
@@ -133,44 +148,9 @@ public class CRType_DB extends CRType<PubType_DB> {
 		return clusterSize;
 	}
 	
-
-	
-
-
 	@Override
 	public Stream<PubType_DB> getPub() {
-		// TODO Auto-generated method stub
-		return null;
+		return CRTable_DB.get().getDBStore().selectPub(String.format("WHERE Pub_ID IN (SELECT PUB_ID FROM PUB_CR WHERE CR_ID = %d)", this.getID()));
 	}
-
-	@Override
-	public void addPub(PubType_DB pubType, boolean b) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-
-	@Override
-	public void removeAllPubs(boolean inverse) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	
-	public void setN_CR(int n_CR) {
-		this.N_CR = n_CR;
-	}
-	
-	@Override
-	public int getN_CR() {
-		return this.N_CR;
-	}
-
-
-
-
-	
-	
 	
 }

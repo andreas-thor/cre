@@ -45,7 +45,6 @@ public class PubType_MM extends PubType<CRType_MM> {
 	 *            CR
 	 */
 
-	@Override
 	public void addCR(CRType_MM cr, boolean inverse) {
 		if (cr == null)
 			return;
@@ -65,7 +64,6 @@ public class PubType_MM extends PubType<CRType_MM> {
 	 *            the CR
 	 */
 	
-	@Override
 	public boolean removeCR(CRType_MM cr, boolean inverse) {
 		if (cr == null)
 			return false;
@@ -75,7 +73,6 @@ public class PubType_MM extends PubType<CRType_MM> {
 		return this.crList.remove(cr);
 	}
 
-	@Override
 	public void removeCRByYear (int[] range, boolean keepCRsWithoutYear, boolean inverse) {
 		
 		
@@ -98,7 +95,6 @@ public class PubType_MM extends PubType<CRType_MM> {
 		
 	}
 	
-	@Override
 	public void removeCRByProbability (float probability, int offset, AtomicLong noToImportCRs, AtomicLong noAvailableCRs, AtomicInteger currentOffset) {
 		
 		this.crList.removeIf(cr -> {
@@ -122,7 +118,6 @@ public class PubType_MM extends PubType<CRType_MM> {
 		});
 	}
 
-	@Override
 	public void removeAllCRs(boolean inverse) {
 		if (inverse) {
 			crList.forEach(cr -> cr.removePub(this, false));

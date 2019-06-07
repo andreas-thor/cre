@@ -4,9 +4,7 @@ import java.util.function.Function
 import java.util.function.Predicate
 
 import groovy.io.FileType
-import main.cre.data.CRChartData
 import main.cre.data.CRStatsInfo
-import main.cre.data.Indicators
 import main.cre.data.Sampling
 import main.cre.data.source.Crossref
 import main.cre.data.source.ImportExportFormat;
@@ -407,7 +405,7 @@ abstract class CREDSL extends Script {
 		if (param.get("MEDIAN_RANGE") != null) {
 
 			try {
-				CRChartData.get().setMedianRange(Integer.valueOf(param.get("MEDIAN_RANGE").toString()).intValue());
+				CRTable.get().getChartData().setMedianRange(Integer.valueOf(param.get("MEDIAN_RANGE").toString()).intValue());
 				Indicators.get().updateChartData();
 			} catch (Exception e) {
 				throw new Exception("Wrong value for set parameter MEDIAN_RANGE: " + param.get("MEDIAN_RANGE"));

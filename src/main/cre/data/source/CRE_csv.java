@@ -110,7 +110,7 @@ public class CRE_csv {
 
 		/* TODO: Filter not supported yet */
 		
-		CRChartData data = CRChartData.get();
+		CRChartData data = CRTable.get().getChartData();
 		
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(new String[] {"Year", "NCR", String.format("Median-%d", 2*data.getMedianRange()+1), "AVG"});

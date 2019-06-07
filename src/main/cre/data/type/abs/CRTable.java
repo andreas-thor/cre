@@ -1,8 +1,11 @@
 package main.cre.data.type.abs;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import main.cre.data.CRChartData;
+import main.cre.data.CRChartData.SERIESTYPE;
 import main.cre.data.type.db.CRTable_DB;
 import main.cre.data.type.mm.CRTable_MM;
 import main.cre.data.type.mm.PubType_MM;
@@ -12,11 +15,18 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	public static enum COMPARATOR { LT, LTE, EQ, GTE, GT };
 	
 	public static enum TABLE_IMPL_TYPES { MM, DB }
-	
+	public static TABLE_IMPL_TYPES type = TABLE_IMPL_TYPES.MM;
+
 	private boolean aborted;
 	private int npctRange;
 	
-	public static TABLE_IMPL_TYPES type = TABLE_IMPL_TYPES.MM;
+	private CRChartData chartData;
+	protected int[] range_RPY;
+	protected int[] range_PY;
+	protected int[] NCR_ALL;		// NCR overall (array length=1; array to make it effectively final)
+	protected int[] NCR_RPY;		// (sum of) NCR by RPY
+	protected int[] CNT_RPY;		// number of CRs by RPY
+	
 	
 	public static CRTable<? extends CRType<?>, ? extends PubType<?>> get() {
 		
@@ -31,6 +41,13 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	public abstract Statistics getStatistics();
 	
 	public abstract Clustering<C,P> getClustering();
+	
+	public CRChartData getChartData() {
+		if (chartData == null) {
+			chartData = new CRChartData();
+		}
+		return chartData;
+	}
 	
 	/**
 	 * Initialize empty CRTable
@@ -51,12 +68,7 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 		return this.getPub(false);
 	}	
 
-	public C addCR(C cr) {
-		return this.addCR(cr, false);
-	}
-	
-	public abstract C addCR(C cr, boolean checkForDuplicatesAndSetId);
-	
+
 	
 	
 	
@@ -86,10 +98,50 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	 * @param removed Data has been removed --> adjust clustering data structures; adjust CR lists per publication
 	 */
 	
-	public abstract void updateData () throws OutOfMemoryError;
+	public void updateData () throws OutOfMemoryError {
+		
+		System.out.println("Compute Ranges in CRTable");
+		this.range_RPY = getStatistics().getMaxRangeRPY();
+		this.range_PY  = getStatistics().getMaxRangePY();
+		this.NCR_ALL = new int[1];
+		this.NCR_RPY = new int[this.range_RPY[1]-this.range_RPY[0]+1];
+		this.CNT_RPY = new int[this.range_RPY[1]-this.range_RPY[0]+1];
+		
+		// Group CRs by RPY, compute NCR_ALL and NCR_RPY
+		System.out.println("mapRPY_CRs");
+		CRTable.get().getCR().forEach(cr -> {
+			this.NCR_ALL[0] += cr.getN_CR();
+			if (cr.getRPY()!=null) {
+				this.NCR_RPY[cr.getRPY()-this.range_RPY[0]] += cr.getN_CR();
+				this.CNT_RPY[cr.getRPY()-this.range_RPY[0]] += 1;
+			}
+		});
+		
+		updateChartData();
+	}
 
 	
-	
+	private void updateChartData () {
+		
+		int medianRange = getChartData().getMedianRange();
+		
+		// compute difference to median
+		int[] RPY_MedianDiff = new int[this.NCR_RPY.length];	// RPY_idx -> SumNCR - (median of sumPerYear[year-range] ... sumPerYear[year+range])   
+		for (int rpyIdx=0; rpyIdx<this.NCR_RPY.length; rpyIdx++) {
+			int[] temp = new int[2*medianRange+1];
+			for (int m=-medianRange; m<=medianRange; m++) {
+				temp[m+medianRange] = (rpyIdx+m<0) || (rpyIdx+m>this.NCR_RPY.length-1) ? 0 : this.NCR_RPY[rpyIdx+m];
+			}
+			Arrays.sort(temp);
+			RPY_MedianDiff[rpyIdx] = this.NCR_RPY[rpyIdx] - temp[medianRange];
+		}
+		
+		
+		getChartData().init(this.range_RPY[0], this.range_RPY[1]);
+		getChartData().addSeries(SERIESTYPE.NCR, this.NCR_RPY);
+		getChartData().addSeries(SERIESTYPE.MEDIANDIFF, RPY_MedianDiff);
+		getChartData().addSeries(SERIESTYPE.CNT, this.CNT_RPY);
+	}
 	
 
 	

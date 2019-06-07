@@ -15,24 +15,15 @@ public class CRChartData  {
 		CNT		// Count the number of CRs 
 	};
 
-	private static CRChartData chartData;	
-
 	
 	private int[] rangeRPY;
 	private int[][] series;	// #years x 4; 4 elements = RPY, NCR, MedianDiff, number of CR
 	private int medianRange;
 	
 
-	public static CRChartData get() {
-		if (chartData == null) {
-			chartData = new CRChartData();
-		}
-		return chartData;
-	}
 	
 	
-	
-	private CRChartData() {
+	public CRChartData() {
 		this.medianRange = 2;
 		this.init(0, 0);
 	}
@@ -84,8 +75,4 @@ public class CRChartData  {
 	public void setMedianRange(int medianRange) {
 		this.medianRange = medianRange;
 	}
-	
-	
-	
-	
 }

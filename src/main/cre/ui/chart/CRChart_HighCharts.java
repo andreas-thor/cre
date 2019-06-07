@@ -14,6 +14,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import main.cre.data.CRChartData;
 import main.cre.data.CRChartData.SERIESTYPE;
+import main.cre.data.type.abs.CRTable;
 import main.cre.ui.UISettings;
 import netscape.javascript.JSException;
 import netscape.javascript.JSObject;
@@ -61,7 +62,7 @@ public abstract class CRChart_HighCharts extends CRChart {
 					Platform.runLater( () -> {
 						JSObject jsobj = (JSObject) webEngine.executeScript("window");
 						jsobj.setMember("crejava", cb);
-						updateData(CRChartData.get());
+						updateData(CRTable.get().getChartData());
 					});
 				}
 				

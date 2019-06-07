@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import main.cre.data.type.db.PubType_DB;
@@ -76,18 +77,11 @@ public abstract class PubType<C extends CRType<?>> implements Comparable<PubType
 	
 	public abstract Stream<C> getCR();
 	public abstract int getSizeCR();
-	public abstract void addCR(C cr, boolean inverse);	
+	
 
-	
-	
-	public abstract boolean removeCR(C cr, boolean inverse);
-	public abstract void removeCRByYear (int[] range, boolean keepCRsWithoutYear, boolean inverse);	
-	public abstract void removeCRByProbability (float probability, int offset, AtomicLong noToImportCRs, AtomicLong noAvailableCRs, AtomicInteger currentOffset);
-	public abstract void removeAllCRs(boolean inverse);
-	
 
 	public String toLineString() {
-		return String.format("[%d] %s: %s (%d)", getID(), getAU(), getTI(), getPY());
+		return String.format("[%d] %s: %s (%d)", getID(), getAU().collect(Collectors.joining("; ")), getTI(), getPY());
 	}	
 	
 	@Override
