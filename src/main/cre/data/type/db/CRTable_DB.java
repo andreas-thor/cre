@@ -9,15 +9,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import main.cre.data.type.abs.CRIndicatorsUpdate;
 import main.cre.data.type.abs.CRTable;
-import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.Statistics;
-import main.cre.data.type.abs.CRType.PERCENTAGE;
 import main.cre.data.type.mm.CRCluster;
 import main.cre.data.type.mm.CRType_MM;
 import main.cre.data.type.mm.PubType_MM;
@@ -36,7 +32,7 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
 	
 	private int numberOfPubs; 
-	private int numberOfCRs;
+//	private int numberOfCRs;
 	
 	
 	
@@ -94,7 +90,7 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 		this.setNpctRange(1);
 		this.setAborted(false);
 		this.numberOfPubs = 0;
-		this.numberOfCRs = 0;
+//		this.numberOfCRs = 0;
 		this.showNull = true;
 
 		try {
@@ -136,8 +132,6 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 			for(CRType_MM cr: pub.getCR().collect(Collectors.toSet())) {
 				
 				try {
-					cr.setID(++this.numberOfCRs);
-					cr.setCluster(new CRCluster(cr));
 					dbStore.insertCR(cr, pub.getID());
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
@@ -241,12 +235,13 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 		try {
 			Statement stmt = dbCon.createStatement();
 			ResultSet rs = stmt.executeQuery(String.format(
-					"SELECT CR.CR_ID, CR.CR_N_CR, PUB.PUB_PY, COUNT(*) \r\n" + 
-					"FROM CR \r\n" + 
-					"JOIN PUB_CR ON (CR.CR_ID = PUB_CR.CR_ID)\r\n" + 
-					"JOIN PUB ON (PUB_CR.PUB_ID = PUB.PUB_ID) \r\n" + 
-					"WHERE CR_RPY = %d \r\n" + 
-					"GROUP BY CR.CR_ID, CR.CR_N_CR, PUB.PUB_PY", rpy));
+					"SELECT CR.CR_ID, CR.CR_N_CR, PUB.PUB_PY, COUNT(*) " + 
+					"FROM CR " + 
+					"JOIN PUB_CR ON (CR.CR_ID = PUB_CR.CR_ID) " + 
+					"JOIN PUB ON (PUB_CR.PUB_ID = PUB.PUB_ID) " + 
+					"WHERE CR_RPY = %d " + 
+					"GROUP BY CR.CR_ID, CR.CR_N_CR, PUB.PUB_PY " +
+					"ORDER BY CR.CR_ID ", rpy));
 			
 			
 			int lastCrId = -1;
@@ -362,9 +357,5 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 		this.showNull = true;		
 	}
 
-
-
-
-	
 
 }

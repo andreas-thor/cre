@@ -17,6 +17,7 @@ import main.cre.data.CRStatsInfo;
 import main.cre.data.Sampling;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
+import main.cre.data.type.mm.CRCluster;
 import main.cre.data.type.mm.CRType_MM;
 import main.cre.ui.statusbar.StatusBar;
 
@@ -119,7 +120,7 @@ public enum ImportExportFormat {
 		long ms1 = Runtime.getRuntime().totalMemory();
 
 		Random rand = new Random();
-		CRTable crTab = CRTable.get(); 
+		CRTable<?, ?> crTab = CRTable.get(); 
 		crTab.init();
 
 //		final long noMaxCRs = UserSettings.get().getMaxCR();
@@ -145,7 +146,7 @@ public enum ImportExportFormat {
 		AtomicLong noAvailableCRs = new AtomicLong (CRStatsInfo.get().getNumberOfCRs (rpyRange, importCRsWithoutYear, pyRange, importPubsWithoutYear));
 		AtomicLong noToImportCRs = new AtomicLong(Math.min(noMaxCRs, noAvailableCRs.get()));
 		AtomicInteger currentOffset = new AtomicInteger(0);	
-		
+		AtomicInteger crId = new AtomicInteger(0);
 		
 		float ratio = 1.0f*noToImportCRs.get()/noAvailableCRs.get();
 		
@@ -197,7 +198,14 @@ public enum ImportExportFormat {
 								
 							}
 					
-							if (pub.getSizeCR()>0) {		
+							if (pub.getSizeCR()>0) {	
+								
+								
+								pub.getCR().forEach(cr -> {
+									cr.setID(crId.incrementAndGet());
+									cr.setCluster(new CRCluster(cr));
+								});
+								
 								crTab.addPub(pub, true, false);
 								
 //								if ((UserSettings.get().getMaxCR()>0) && (numberOfCRs.addAndGet(pub.getSizeCR()) >= UserSettings.get().getMaxCR())) {

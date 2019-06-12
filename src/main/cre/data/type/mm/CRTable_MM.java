@@ -158,8 +158,6 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 				CRType_MM crMain = this.crDataMap.get(cr);
 				if (crMain == null) {
 					this.crDataMap.put(cr, cr);
-					cr.setID(this.crDataMap.size());
-					cr.setCluster(new CRCluster(cr));
 				} else {
 					pub.removeCR(cr, false);	
 					pub.addCR(crMain, false);
@@ -259,33 +257,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 				int rpy = rpyGroup.getKey().intValue();
 				List<CRType_MM> crList = rpyGroup.getValue();
 				
-				computeForAllCRsOfTheSameRPY (rpy, rpy-range_RPY[0], range_PY, NCR_ALL[0], NCR_RPY, crList, 
-						
-						(int crIdx, int N_PYEARS, double PYEAR_PERC, double PERC_YR, double PERC_ALL, int[] N_PCT, int[] N_PCT_AboveAverage, String SEQUENCE, String TYPE) -> { 
-							
-							CRType<?> cr = crList.get(crIdx);
-							cr.setN_PYEARS   (N_PYEARS);
-							cr.setPYEAR_PERC (PYEAR_PERC);
-							cr.setPERC_YR 	 (PERC_YR);
-							cr.setPERC_ALL	 (PERC_ALL);
-							cr.setN_PCT		(N_PCT);
-							cr.setN_PCT_AboveAverage(N_PCT_AboveAverage);
-							
-//							cr.setN_PCT(PERCENTAGE.P50,  N_PCT[PERCENTAGE.P50.ordinal()]);
-//							cr.setN_PCT(PERCENTAGE.P75,  N_PCT[PERCENTAGE.P75.ordinal()]);
-//							cr.setN_PCT(PERCENTAGE.P90,  N_PCT[PERCENTAGE.P90.ordinal()]);
-//							cr.setN_PCT(PERCENTAGE.P99,  N_PCT[PERCENTAGE.P99.ordinal()]);
-//							cr.setN_PCT(PERCENTAGE.P999, N_PCT[PERCENTAGE.P999.ordinal()]);
-
-//							cr.setN_PCT_AboveAverage(PERCENTAGE.P50,  N_PCT_AboveAverage[PERCENTAGE.P50.ordinal()]);
-//							cr.setN_PCT_AboveAverage(PERCENTAGE.P75,  N_PCT_AboveAverage[PERCENTAGE.P75.ordinal()]);
-//							cr.setN_PCT_AboveAverage(PERCENTAGE.P90,  N_PCT_AboveAverage[PERCENTAGE.P90.ordinal()]);
-//							cr.setN_PCT_AboveAverage(PERCENTAGE.P99,  N_PCT_AboveAverage[PERCENTAGE.P99.ordinal()]);
-//							cr.setN_PCT_AboveAverage(PERCENTAGE.P999, N_PCT_AboveAverage[PERCENTAGE.P999.ordinal()]);
-							
-							cr.setSEQUENCE(SEQUENCE);
-							cr.setTYPE(TYPE);
-						});
+				computeForAllCRsOfTheSameRPY (rpy, rpy-range_RPY[0], range_PY, NCR_ALL[0], NCR_RPY, crList);
 			}
 		);		
 		
@@ -297,7 +269,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	}
 
 	
-	private void computeForAllCRsOfTheSameRPY (int rpy, int rpyIdx, int[] range_PY, int NCR_ALL, int[] NCR_RPY, List<CRType_MM> crList, CRIndicatorsUpdate updateCR) {
+	private void computeForAllCRsOfTheSameRPY (int rpy, int rpyIdx, int[] range_PY, int NCR_ALL, int[] NCR_RPY, List<CRType_MM> crList) {
 		
 		int crSize = crList.size();
 
@@ -345,7 +317,19 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 		
 		
 			
-		computeCRIndicators(rpyIdx, crSize, pySize, NCR_ALL, NCR_RPY, NCR_CR_PY, NCR_CR, NCR_CR_all, NPYEARS_CR, NCR_PY, NCR, updateCR);
+		computeCRIndicators(rpyIdx, crSize, pySize, NCR_ALL, NCR_RPY, NCR_CR_PY, NCR_CR, NCR_CR_all, NPYEARS_CR, NCR_PY, NCR, 
+			(int crIdx, int N_PYEARS, double PYEAR_PERC, double PERC_YR, double PERC_ALL, int[] N_PCT, int[] N_PCT_AboveAverage, String SEQUENCE, String TYPE) -> { 
+				CRType<?> cr = crList.get(crIdx);
+				cr.setN_PYEARS   (N_PYEARS);
+				cr.setPYEAR_PERC (PYEAR_PERC);
+				cr.setPERC_YR 	 (PERC_YR);
+				cr.setPERC_ALL	 (PERC_ALL);
+				cr.setN_PCT		(N_PCT);
+				cr.setN_PCT_AboveAverage(N_PCT_AboveAverage);
+				cr.setSEQUENCE(SEQUENCE);
+				cr.setTYPE(TYPE);
+			}				
+		);
 			
 	}
 	

@@ -46,7 +46,7 @@ abstract class CREDSL extends Script {
 			case "SCOPUS": return ImportExportFormat.SCOPUS;
 			case "CROSSREF": return ImportExportFormat.CROSSREF;
 		}
-		throw new Exception (String.format("%s: missing or unknown file format (must be WOS or SCOPUS)", operator));
+		throw new Exception (String.format("%s: missing or unknown file format (must be WOS, SCOPUS, or CROSSREF)", operator));
 
 	}
 
