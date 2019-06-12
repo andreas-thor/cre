@@ -68,6 +68,11 @@ public class Statistics_DB implements Statistics {
 		return new int[] { (int)res[0], (int)res[1] };
 	}
 
+	public int[] getSumNCR() {
+		long[] res = executeSelect("SELECT SUM(CR_N_CR) FROM CR");
+		return new int[] { (int)res[0] };
+	}
+	
 	@Override
 	public int[] getMaxRangeRPY() {
 		long[] res = executeSelect("SELECT MIN(CR_RPY), MAX(CR_RPY) FROM CR");

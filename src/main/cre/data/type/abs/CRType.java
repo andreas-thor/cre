@@ -56,8 +56,6 @@ public abstract class CRType<P extends PubType<?>> implements Comparable<CRType<
 	private EnumMap<PERCENTAGE, Integer> N_PCT;
 	private EnumMap<PERCENTAGE, Integer> N_PCT_AboveAverage;
 
-	private Integer N_PYEARS2;	
-	
 	private String SEQUENCE;
 	private String TYPE;	
 	
@@ -85,8 +83,6 @@ public abstract class CRType<P extends PubType<?>> implements Comparable<CRType<
 			N_PCT_AboveAverage.put(perc, new Integer(0));
 		}
 		
-		N_PYEARS2 = 0;
-
 		VI = new Boolean(true);
 		CO = new Integer(0);
 		SEARCH_SCORE = new Integer(0);
@@ -284,13 +280,6 @@ public abstract class CRType<P extends PubType<?>> implements Comparable<CRType<
 		PYEAR_PERC = pYEAR_PERC;
 	}
 	
-	
-	public int getN_PYEARS2() {
-		return N_PYEARS2;
-	}
-	public void setN_PYEARS2(int n_PYEARS2) {
-		N_PYEARS2 = n_PYEARS2;
-	}
 		
 	
 	public int getSEARCH_SCORE() {
@@ -305,7 +294,7 @@ public abstract class CRType<P extends PubType<?>> implements Comparable<CRType<
 		return SEQUENCE;
 	}
 	public void setSEQUENCE(String sEQUENCE) {
-		SEQUENCE = new String(sEQUENCE);
+		if (sEQUENCE!=null) SEQUENCE = new String(sEQUENCE);
 	}
 		
 	
@@ -313,7 +302,7 @@ public abstract class CRType<P extends PubType<?>> implements Comparable<CRType<
 		return TYPE;
 	}
 	public void setTYPE(String tYPE) {
-		TYPE = new String(tYPE);
+		if(tYPE!=null) TYPE = new String(tYPE);
 	}	
     
 	
@@ -339,6 +328,13 @@ public abstract class CRType<P extends PubType<?>> implements Comparable<CRType<
 	public void setN_PCT(PERCENTAGE perc, int n) {
 		N_PCT.put(perc, n);
 	}
+	public void setN_PCT(int[] n) {
+		N_PCT.put(PERCENTAGE.P50,  n[PERCENTAGE.P50.ordinal()]);
+		N_PCT.put(PERCENTAGE.P75,  n[PERCENTAGE.P75.ordinal()]);
+		N_PCT.put(PERCENTAGE.P90,  n[PERCENTAGE.P90.ordinal()]);
+		N_PCT.put(PERCENTAGE.P99,  n[PERCENTAGE.P99.ordinal()]);
+		N_PCT.put(PERCENTAGE.P999, n[PERCENTAGE.P999.ordinal()]);
+	}
 	
 	
 	public int getN_PCT_AboveAverage(PERCENTAGE perc) {
@@ -347,7 +343,13 @@ public abstract class CRType<P extends PubType<?>> implements Comparable<CRType<
 	public void setN_PCT_AboveAverage(PERCENTAGE perc, int n) {
 		N_PCT_AboveAverage.put(perc, n);
 	}	
-	
+	public void setN_PCT_AboveAverage(int[] n) {
+		N_PCT_AboveAverage.put(PERCENTAGE.P50,  n[PERCENTAGE.P50.ordinal()]);
+		N_PCT_AboveAverage.put(PERCENTAGE.P75,  n[PERCENTAGE.P75.ordinal()]);
+		N_PCT_AboveAverage.put(PERCENTAGE.P90,  n[PERCENTAGE.P90.ordinal()]);
+		N_PCT_AboveAverage.put(PERCENTAGE.P99,  n[PERCENTAGE.P99.ordinal()]);
+		N_PCT_AboveAverage.put(PERCENTAGE.P999, n[PERCENTAGE.P999.ordinal()]);
+	}
 
 	
 	

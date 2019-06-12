@@ -20,6 +20,24 @@ CREATE TABLE CR (
 	CR_ClusterId2 int,  
 	CR_ClusterSize int,  
 	CR_VI boolean, 
+	
+	CR_PERC_YR double, 
+	CR_PERC_ALL double, 
+	CR_N_PYEARS int,	
+	CR_PYEAR_PERC double,
+	CR_N_PCT_P50 int,
+	CR_N_PCT_P75 int,
+	CR_N_PCT_P90 int,
+	CR_N_PCT_P99 int,
+	CR_N_PCT_P999 int,
+	CR_N_PCT_AboveAverage_P50 int,
+	CR_N_PCT_AboveAverage_P75 int,
+	CR_N_PCT_AboveAverage_P90 int,
+	CR_N_PCT_AboveAverage_P99 int,
+	CR_N_PCT_AboveAverage_P999 int,
+	CR_SEQUENCE varchar,
+	CR_TYPE varchar,		
+	
 	PRIMARY KEY (CR_ID)  
 );
 

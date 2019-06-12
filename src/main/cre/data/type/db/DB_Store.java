@@ -11,11 +11,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import main.cre.data.type.abs.CRType;
+import main.cre.data.type.abs.CRType.PERCENTAGE;
 import main.cre.data.type.abs.PubType;
 import main.cre.data.type.extern.CRType_ColumnView;
 import main.cre.data.type.extern.PubType_ColumnView;
@@ -26,9 +28,13 @@ class DB_Store {
 	
 	private PreparedStatement insertCR_PrepStmt;
 	private int insertCR_Counter;
+	
 	private PreparedStatement insertPub_PrepStmt;
 	private int insertPub_Counter;
-	
+
+	private PreparedStatement updateCRIndicators_PrepStmt;
+	private int updateCRIndicators_Counter;
+
 	
 	private final int BATCH_SIZE_MAX = 100;
 	
@@ -63,6 +69,8 @@ class DB_Store {
 		insertCR_Counter = 0;
 		insertPub_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(SQL_FILE_PREFIX + "pst_insert_pub.sql").toURI())), StandardCharsets.UTF_8));
 		insertPub_Counter = 0;
+		updateCRIndicators_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(SQL_FILE_PREFIX + "pst_update_cr_indicators.sql").toURI())), StandardCharsets.UTF_8));
+		updateCRIndicators_Counter = 0;		
 		wrapup_insert_SQL = new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(SQL_FILE_PREFIX + "wrapup_insert.sql").toURI())), StandardCharsets.UTF_8);
 		
 		dbCon.commit();
@@ -111,6 +119,54 @@ class DB_Store {
 				
 	}	
 	
+	
+	
+	void updateCRIndicators (int crId, int N_PYEARS, double PYEAR_PERC, double PERC_YR, double PERC_ALL, int[] N_PCT, int[] N_PCT_AboveAverage, String SEQUENCE, String TYPE)  {
+		
+		try {
+			updateCRIndicators_PrepStmt.clearParameters();
+			updateCRIndicators_PrepStmt.setInt		( 1, N_PYEARS); 
+			updateCRIndicators_PrepStmt.setDouble 	( 2, PYEAR_PERC); 
+			updateCRIndicators_PrepStmt.setDouble 	( 3, PERC_YR); 
+			updateCRIndicators_PrepStmt.setDouble 	( 4, PERC_ALL); 
+			updateCRIndicators_PrepStmt.setInt		( 5, N_PCT[PERCENTAGE.P50.ordinal()]); 
+			updateCRIndicators_PrepStmt.setInt		( 6, N_PCT[PERCENTAGE.P75.ordinal()]); 
+			updateCRIndicators_PrepStmt.setInt		( 7, N_PCT[PERCENTAGE.P90.ordinal()]); 
+			updateCRIndicators_PrepStmt.setInt		( 8, N_PCT[PERCENTAGE.P99.ordinal()]); 
+			updateCRIndicators_PrepStmt.setInt		( 9, N_PCT[PERCENTAGE.P999.ordinal()]); 
+			updateCRIndicators_PrepStmt.setInt		(10, N_PCT_AboveAverage[PERCENTAGE.P50.ordinal()]); 
+			updateCRIndicators_PrepStmt.setInt		(11, N_PCT_AboveAverage[PERCENTAGE.P75.ordinal()]); 
+			updateCRIndicators_PrepStmt.setInt		(12, N_PCT_AboveAverage[PERCENTAGE.P90.ordinal()]); 
+			updateCRIndicators_PrepStmt.setInt		(13, N_PCT_AboveAverage[PERCENTAGE.P99.ordinal()]); 
+			updateCRIndicators_PrepStmt.setInt		(14, N_PCT_AboveAverage[PERCENTAGE.P999.ordinal()]); 
+			updateCRIndicators_PrepStmt.setString	(15, SEQUENCE); 
+			updateCRIndicators_PrepStmt.setString	(16, TYPE); 
+			updateCRIndicators_PrepStmt.setInt		(17, crId); 
+			updateCRIndicators_PrepStmt.addBatch();
+			
+			if (++updateCRIndicators_Counter>=BATCH_SIZE_MAX) {
+				updateCRIndicators_PrepStmt.executeBatch();
+				updateCRIndicators_Counter = 0;
+				dbCon.commit();
+			}	
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	void finishUpdateCRIndicators() {
+		try {
+			if (updateCRIndicators_Counter>0) {
+				updateCRIndicators_PrepStmt.executeBatch();
+				updateCRIndicators_Counter = 0;
+				dbCon.commit();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	Stream<CRType_DB> selectCR(String where ) {
 		

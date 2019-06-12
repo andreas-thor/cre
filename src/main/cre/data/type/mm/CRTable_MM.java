@@ -1,6 +1,5 @@
 package main.cre.data.type.mm;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -10,9 +9,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import main.cre.data.CRSearch;
+import main.cre.data.type.abs.CRIndicatorsUpdate;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
-import main.cre.data.type.abs.CRType.PERCENTAGE;
 import main.cre.data.type.abs.PubType;
 import main.cre.data.type.abs.Statistics;
 import main.cre.ui.statusbar.StatusBar;
@@ -24,6 +23,10 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	private HashMap<CRType_MM, CRType_MM> crDataMap;	// map: CR -> CR to get duplicates
 	
 	private HashMap<PubType_MM, PubType_MM> allPubs; 
+	
+
+
+	
 	
 	private Statistics_MM statistics;
 	
@@ -227,7 +230,25 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 		System.out.println("update Data");
 		System.out.println(System.currentTimeMillis());
 		
-		super.updateData();
+		System.out.println("Compute Ranges in CRTable_MM");
+		
+		int[] range_RPY = getStatistics().getMaxRangeRPY();
+		int[] range_PY  = getStatistics().getMaxRangePY();
+
+		
+		int[] NCR_ALL = new int[1];	// NCR overall (array length=1; array to make it effectively final)
+		int[] NCR_RPY = new int[range_RPY[1]-range_RPY[0]+1];	// (sum of) NCR by RPY
+		int[] CNT_RPY = new int[range_RPY[1]-range_RPY[0]+1];	// number of CRs by RPY
+		
+		// Group CRs by RPY, compute NCR_ALL and NCR_RPY
+		System.out.println("mapRPY_CRs");
+		CRTable.get().getCR().forEach(cr -> {
+			NCR_ALL[0] += cr.getN_CR();
+			if (cr.getRPY()!=null) {
+				NCR_RPY[cr.getRPY()-range_RPY[0]] += cr.getN_CR();
+				CNT_RPY[cr.getRPY()-range_RPY[0]] += 1;
+			}
+		});
 		
 		
 		getCR()
@@ -235,26 +256,60 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 			.collect(Collectors.groupingBy(CRType::getRPY, Collectors.mapping(Function.identity(), Collectors.toList())))
 			.entrySet().stream().parallel()
 			.forEach(rpyGroup -> {	
-				computeForAllCRsOfTheSameRPY (rpyGroup.getKey().intValue(), rpyGroup.getValue());
+				int rpy = rpyGroup.getKey().intValue();
+				List<CRType_MM> crList = rpyGroup.getValue();
+				
+				computeForAllCRsOfTheSameRPY (rpy, rpy-range_RPY[0], range_PY, NCR_ALL[0], NCR_RPY, crList, 
+						
+						(int crIdx, int N_PYEARS, double PYEAR_PERC, double PERC_YR, double PERC_ALL, int[] N_PCT, int[] N_PCT_AboveAverage, String SEQUENCE, String TYPE) -> { 
+							
+							CRType<?> cr = crList.get(crIdx);
+							cr.setN_PYEARS   (N_PYEARS);
+							cr.setPYEAR_PERC (PYEAR_PERC);
+							cr.setPERC_YR 	 (PERC_YR);
+							cr.setPERC_ALL	 (PERC_ALL);
+							cr.setN_PCT		(N_PCT);
+							cr.setN_PCT_AboveAverage(N_PCT_AboveAverage);
+							
+//							cr.setN_PCT(PERCENTAGE.P50,  N_PCT[PERCENTAGE.P50.ordinal()]);
+//							cr.setN_PCT(PERCENTAGE.P75,  N_PCT[PERCENTAGE.P75.ordinal()]);
+//							cr.setN_PCT(PERCENTAGE.P90,  N_PCT[PERCENTAGE.P90.ordinal()]);
+//							cr.setN_PCT(PERCENTAGE.P99,  N_PCT[PERCENTAGE.P99.ordinal()]);
+//							cr.setN_PCT(PERCENTAGE.P999, N_PCT[PERCENTAGE.P999.ordinal()]);
+
+//							cr.setN_PCT_AboveAverage(PERCENTAGE.P50,  N_PCT_AboveAverage[PERCENTAGE.P50.ordinal()]);
+//							cr.setN_PCT_AboveAverage(PERCENTAGE.P75,  N_PCT_AboveAverage[PERCENTAGE.P75.ordinal()]);
+//							cr.setN_PCT_AboveAverage(PERCENTAGE.P90,  N_PCT_AboveAverage[PERCENTAGE.P90.ordinal()]);
+//							cr.setN_PCT_AboveAverage(PERCENTAGE.P99,  N_PCT_AboveAverage[PERCENTAGE.P99.ordinal()]);
+//							cr.setN_PCT_AboveAverage(PERCENTAGE.P999, N_PCT_AboveAverage[PERCENTAGE.P999.ordinal()]);
+							
+							cr.setSEQUENCE(SEQUENCE);
+							cr.setTYPE(TYPE);
+						});
 			}
 		);		
+		
+		
+		getChartData().updateChartData(range_RPY[0], range_RPY[range_RPY.length-1], NCR_RPY, CNT_RPY);
 		
 		duringUpdate = false;
 		
 	}
 
 	
-	private void computeForAllCRsOfTheSameRPY (int rpy, List<CRType_MM> crList) {
+	private void computeForAllCRsOfTheSameRPY (int rpy, int rpyIdx, int[] range_PY, int NCR_ALL, int[] NCR_RPY, List<CRType_MM> crList, CRIndicatorsUpdate updateCR) {
 		
-		int firstPY = (rpy<=this.range_PY[0]) ? this.range_PY[0] : rpy;	// usually: rpy<=range_PY[0] 
-		int lastPY = this.range_PY[1];
-		if (lastPY < firstPY) return;
-		
-		int pySize = lastPY-firstPY+1;
 		int crSize = crList.size();
+
+		int firstPY = (rpy<=range_PY[0]) ? range_PY[0] : rpy;	// usually: rpy<=range_PY[0] 
+		int lastPY = range_PY[1];
+		if (lastPY < firstPY) return;
+		int pySize = lastPY-firstPY+1;
 		
 		int[][] NCR_CR_PY = new int[crSize][pySize];	
 		int[] NCR_CR = new int[crSize];	
+		int[] NCR_CR_all = new int[crSize];	
+		int[] NPYEARS_CR = new int[crSize];
 		int[] NCR_PY = new int[pySize];	
 		int[] NCR = new int[1];
 		
@@ -263,7 +318,10 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 
 			final int crIdx = x;
 			CRType<?> cr = crList.get(crIdx);
-			int[] NPYEARS = new int[1];
+			
+			NCR_CR_all[crIdx] = cr.getN_CR();
+			
+//			int[] NPYEARS = new int[1];
 			cr.getPub().filter(pub -> pub.getPY() != null).forEach(pub -> {
 				
 				if ((pub.getPY()>=firstPY) && (pub.getPY()<=lastPY)) {	// PY is out of range
@@ -271,7 +329,8 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 					int pyIdx = pub.getPY()-firstPY;
 					
 					if (NCR_CR_PY[crIdx][pyIdx]==0) {	// we found a citation from a new PY
-						NPYEARS[0]++;
+//						NPYEARS[0]++;
+						NPYEARS_CR[crIdx]++;
 					}
 					NCR_CR_PY[crIdx][pyIdx]++;
 					NCR_CR[crIdx]++;
@@ -280,202 +339,18 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 				}
 			});
 			
-			cr.setN_PYEARS   (NPYEARS[0]);
+//			cr.setN_PYEARS   (NPYEARS[0]);
 		}
 		
 		
 		
-		int noPYWithoutCR = 0;	// number of PY where we do not have any Publication citing a CR in RPY
-		for (int pyIdx=0; pyIdx<pySize; pyIdx++) {
-			if (NCR_PY[pyIdx]==0) noPYWithoutCR++;
-		}
-		
-//		if (noPYWithoutCR>0) {
-//			System.out.println(String.format("RPY=%d, PYSize=%d, w/o=%d", rpy, pySize, noPYWithoutCR));
-//		}
-		
-		
- 
-		int[][] borders = this.getPercentileBorders(NCR_CR_PY, crSize, pySize, NCR_PY);
-
-		
-		for (int crIdx=0; crIdx<crSize; crIdx++) {
 			
-//			System.out.println("CR x=" + x);
-//			final int crIdx = x;
+		computeCRIndicators(rpyIdx, crSize, pySize, NCR_ALL, NCR_RPY, NCR_CR_PY, NCR_CR, NCR_CR_all, NPYEARS_CR, NCR_PY, NCR, updateCR);
 			
-			int[] NPCT = new int[PERCENTAGE.values().length];
-			int[] NPCT_AboveAverage = new int[PERCENTAGE.values().length];
-			
-			int[] type = new int[11];
-			char[] sequence = new char[pySize];
-			
-			/* just for debugging */
-//			double[] expectedArray = new double[pySize];
-//			double[] zvalueArray  = new double[pySize];
-			
-			
-			for (int pyIdx=0; pyIdx<pySize; pyIdx++) {
-				
-				double expected = (1.0d*NCR_CR[crIdx]*NCR_PY[pyIdx]/NCR[0]);
-				double zvalue = (expected == 0) ? 0 : (NCR_CR_PY[crIdx][pyIdx] - expected) / Math.sqrt(expected);
-
-				
-				/* just for debugging */
-//				expectedArray[pyIdx] = expected;
-//				zvalueArray[pyIdx] = zvalue;
-//				System.out.println(String.format("CR=%d\tPY=%d\tExpected=%10.2f\tzValue=%10.2f", crIdx, pyIdx, expected, zvalue));
-				
-				sequence[pyIdx] = (zvalue>1) ? '+' : ((zvalue<-1) ? '-' : '0');
-				
-				type[0]  +=                      (zvalue<-1)?0:1;	// # at least average
-				type[1]  += ((pyIdx< 3) 		&& (zvalue<-1)) ? 1 : 0;	// # below average in the first 3 py
-				type[2]  += ((pyIdx>=3) 		&& (zvalue> 1)) ? 1 : 0;	// # above average in the 4th+ py 
-				type[3]  += ((pyIdx< 3) 		&& (zvalue> 1)) ? 1 : 0;	// # above average in the first 3 py 
-				type[4]  += ((pyIdx< 4) 		&& (zvalue<=1)) ? 1 : 0;	// # average or lower in the first 4 py
-				type[5]  += ((pyIdx>=4) 		&& (zvalue> 1)) ? 1 : 0;	// # above average in the 5th+ py 
-				type[6]  += ((pySize-pyIdx<=3) 	&& (zvalue<=1)) ? 1: 0;		// # average or lower in the last 3 py
-				type[7]  += (NCR_CR_PY[crIdx][pyIdx]>0) ? 1 : 0;			// # no of citing years with at least 1 citation
-				type[8]  += ((pyIdx==0) || (sequence[pyIdx-1]=='-') ||  (sequence[pyIdx]=='+') || ((sequence[pyIdx-1]=='0') && (sequence[pyIdx]=='0'))) ? 1:0;
-				type[9]  +=                      (zvalue>1)?1:0;			// above average
-				type[10] += 1;	// # citing years
-				
-				
-				for (int b=0; b<PERCENTAGE.values().length; b++) {
-					if (borders[pyIdx][b]<NCR_CR_PY[crIdx][pyIdx]) {
-						NPCT[b]++;
-						if (zvalue>1) {
-							NPCT_AboveAverage[b]++;
-						}
-					}
-				}
-
-			}
-			
-			// Sleeping Beauty = Publication which has been cited below average in the first three citing years ("-"; z<-1) at least twice and above average ("+"; z>1) in the following citing years at least once
-			boolean sbeauty   = (type[1]>=2) && (type[2]>=1);
-			
-			// Constant Performer = Publication which has been cited in more than 80% of the citing years at least once. In more than 80% of the citing years it has been cited at least on the average level 
-			boolean constant  = ((1.0d*type[0]/type[10])>0.8) && ((1.0d*type[7]/type[10])>0.8);
-			
-			// Hot Paper = Publication which has been cited above average ("+"; z>1) in the first three years after publication at least twice
-			boolean hotpaper  = (type[3]>=2);
-			
-			// Life cycle = Publication which has been cited in the first four years in at least two years on the average level ("0"; -1<=z<=1) or lower ("-"; z<-1), in at least two years of the following years above average ("+"; z>1), and in the last three years on the average level ("0"; -1<=z<=1) or lower ("-"; z<-1)
-			boolean lifecycle = (type[4]>=2) && (type[5]>=2) && (type[6]>1);
-			
-		
-			
-			
-			
-			
-			CRType<?> cr = crList.get(crIdx);
-			
-			cr.setPYEAR_PERC (((double)cr.getN_PYEARS()) / (pySize-noPYWithoutCR));
-			cr.setPERC_YR 	 (((double)cr.getN_CR())       / NCR_RPY[rpy-range_RPY[0]]);
-			cr.setPERC_ALL	 (((double)cr.getN_CR())       / NCR_ALL[0]);
-			
-			cr.setN_PCT(PERCENTAGE.P50,  NPCT[PERCENTAGE.P50.ordinal()]);
-			cr.setN_PCT(PERCENTAGE.P75,  NPCT[PERCENTAGE.P75.ordinal()]);
-			cr.setN_PCT(PERCENTAGE.P90,  NPCT[PERCENTAGE.P90.ordinal()]);
-			cr.setN_PCT(PERCENTAGE.P99,  NPCT[PERCENTAGE.P99.ordinal()]);
-			cr.setN_PCT(PERCENTAGE.P999, NPCT[PERCENTAGE.P999.ordinal()]);
-
-			cr.setN_PCT_AboveAverage(PERCENTAGE.P50,  NPCT_AboveAverage[PERCENTAGE.P50.ordinal()]);
-			cr.setN_PCT_AboveAverage(PERCENTAGE.P75,  NPCT_AboveAverage[PERCENTAGE.P75.ordinal()]);
-			cr.setN_PCT_AboveAverage(PERCENTAGE.P90,  NPCT_AboveAverage[PERCENTAGE.P90.ordinal()]);
-			cr.setN_PCT_AboveAverage(PERCENTAGE.P99,  NPCT_AboveAverage[PERCENTAGE.P99.ordinal()]);
-			cr.setN_PCT_AboveAverage(PERCENTAGE.P999, NPCT_AboveAverage[PERCENTAGE.P999.ordinal()]);
-			
-			cr.setSEQUENCE(new String (sequence));
-
-			StringBuffer typeLabel = new StringBuffer();
-			if (sbeauty) 	typeLabel.append (typeLabel.length()>0?" + ":"").append("Sleeping beauty");
-			if (constant) 	typeLabel.append (typeLabel.length()>0?" + ":"").append("Constant performer");
-			if (hotpaper) 	typeLabel.append (typeLabel.length()>0?" + ":"").append("Hot paper");
-			if (lifecycle) 	typeLabel.append (typeLabel.length()>0?" + ":"").append("Life cycle");
-			cr.setTYPE(typeLabel.toString());
-			
-			/*
-			if (lifecycle && sbeauty) 	cr.setTYPE("Sleeping beauty / Life cycle");	// Delayed performer
-			if (hotpaper && sbeauty) 	cr.setTYPE("Sleeping beauty / Hot paper");	// Delayed performer
-			if (hotpaper && lifecycle) 	cr.setTYPE("Hot Paper / Life Cycle");
-			if (evergreen) 				cr.setTYPE("Evergreen performer");
-			 */
-			/*
-			if ((cr.getID()==117407) || (cr.getID()==11988)) {
-				System.out.println("\n-----------------\n" + cr.getID());
-				System.out.println();
-//				System.out.println("expectedArray");
-//				System.out.println(Arrays.toString(expectedArray));
-				System.out.println("zvalueArray");
-				System.out.println(Arrays.toString(zvalueArray));
-//				System.out.println("sequence");
-//				System.out.println(Arrays.toString(sequence));
-				System.out.println("NCR_PY");
-				System.out.println(Arrays.toString(NCR_PY));
-				System.out.println("NCR_CR[crIdx]");
-				System.out.println(NCR_CR[crIdx]);
-				System.out.println("NCR_CR_PY[crIdx]");
-				System.out.println(Arrays.toString(NCR_CR_PY[crIdx]));
-				System.out.println("cr.getN_CR()");
-				System.out.println(cr.getN_CR());
-				System.out.println("NCR[0]");
-				System.out.println(NCR[0]);
-				System.out.println("borders");
-				System.out.println(Arrays.deepToString(borders));
-				System.out.println("firstPY");
-				System.out.println(firstPY);
-				System.out.println("lastPY");
-				System.out.println(lastPY);
-				System.out.println("NPCT");
-				System.out.println(Arrays.toString(NPCT));
-				System.out.println("NPCT_AboveAverage");
-				System.out.println(Arrays.toString(NPCT_AboveAverage));
-			}
-			*/
-			
-		}
-		
-		
-
-		
 	}
 	
 	
-	
-	private int[][] getPercentileBorders (int[][] NCR_CR_PY, int crSize, int pySize, int[] NCR_PY) {
 
-		int rangeSize_NPCT = CRTable.get().getNpctRange();
-		
-		
-		int[][] borders = new int[pySize][];	// borders (50%, 75%, 90%, 99%, 99.9%) for each PY
-		for (int pyIdx=0; pyIdx<pySize; pyIdx++) {
-			
-			int rangeStart = (pyIdx-rangeSize_NPCT>=0) ? pyIdx-rangeSize_NPCT : 0;
-			int rangeEnd = (pyIdx+rangeSize_NPCT<pySize) ? pyIdx+rangeSize_NPCT : pySize-1;
-			
-			int[] temp = new int[(rangeEnd-rangeStart+1)*crSize];
-			
-			for (int rIdx=0; rIdx<rangeEnd-rangeStart+1; rIdx++) {
-				for (int crIdx=0; crIdx<crSize; crIdx++) {
-					temp[rIdx*crSize + crIdx] = NCR_CR_PY[crIdx][rIdx+rangeStart];
-				}
-			}
-			
-			Arrays.sort(temp);
-			
-			borders[pyIdx] = new int[PERCENTAGE.values().length];
-			for (PERCENTAGE perc: PERCENTAGE.values()) {
-				borders[pyIdx][perc.ordinal()] = temp[Math.max(0, (int) Math.floor(perc.threshold * temp.length)-1)];
-			}
-		}
-		
-		return borders;
-		
-	}
-	
-	
 	
 
 	public void removeCR (Predicate<CRType_MM> cond) {

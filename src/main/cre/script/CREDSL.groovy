@@ -406,7 +406,6 @@ abstract class CREDSL extends Script {
 
 			try {
 				CRTable.get().getChartData().setMedianRange(Integer.valueOf(param.get("MEDIAN_RANGE").toString()).intValue());
-				Indicators.get().updateChartData();
 			} catch (Exception e) {
 				throw new Exception("Wrong value for set parameter MEDIAN_RANGE: " + param.get("MEDIAN_RANGE"));
 			}

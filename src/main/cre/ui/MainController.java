@@ -40,11 +40,9 @@ import main.cre.Exceptions.AbortedException;
 import main.cre.Exceptions.BadResponseCodeException;
 import main.cre.Exceptions.FileTooLargeException;
 import main.cre.Exceptions.UnsupportedFileFormatException;
-import main.cre.data.CRChartData;
 import main.cre.data.CRSearch;
 import main.cre.data.CRStatsInfo;
 import main.cre.data.DownloadCrossrefData;
-import main.cre.data.Indicators;
 import main.cre.data.source.Crossref;
 import main.cre.data.source.ImportExportFormat;
 import main.cre.data.type.abs.CRTable;
@@ -683,7 +681,6 @@ public class MainController {
 			} else {
 				if (old_MedianRange != UISettings.get().getMedianRange()) {
 					crTable.getChartData().setMedianRange(UISettings.get().getMedianRange());
-					Indicators.get().updateChartData();
 				}
 			}
 

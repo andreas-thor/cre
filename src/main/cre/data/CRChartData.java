@@ -20,8 +20,6 @@ public class CRChartData  {
 	private int[][] series;	// #years x 4; 4 elements = RPY, NCR, MedianDiff, number of CR
 	private int medianRange;
 	
-
-	
 	
 	public CRChartData() {
 		this.medianRange = 2;
@@ -29,8 +27,28 @@ public class CRChartData  {
 	}
 
 	
+	public void updateChartData (int fromRPY, int toRPY, int[] seriesNCR, int[] seriesCNT) {
+		
+		// compute difference to median
+		int[] seriesMEDIANDIFF = new int[seriesNCR.length];	// RPY_idx -> SumNCR - (median of sumPerYear[year-range] ... sumPerYear[year+range])   
+		for (int rpyIdx=0; rpyIdx<seriesNCR.length; rpyIdx++) {
+			int[] temp = new int[2*medianRange+1];
+			for (int m=-medianRange; m<=medianRange; m++) {
+				temp[m+medianRange] = (rpyIdx+m<0) || (rpyIdx+m>seriesNCR.length-1) ? 0 : seriesNCR[rpyIdx+m];
+			}
+			Arrays.sort(temp);
+			seriesMEDIANDIFF[rpyIdx] = seriesNCR[rpyIdx] - temp[medianRange];
+		}
+		
+		
+		init(fromRPY, toRPY);
+		addSeries(SERIESTYPE.NCR, seriesNCR);
+		addSeries(SERIESTYPE.MEDIANDIFF, seriesMEDIANDIFF);
+		addSeries(SERIESTYPE.CNT, seriesCNT);
+	}	
 	
-	public void init (int fromRPY, int toRPY) {
+	
+	private void init (int fromRPY, int toRPY) {
 		this.rangeRPY = IntStream.rangeClosed(fromRPY, toRPY).toArray();
 	
 		// all series initialized with 0
@@ -40,7 +58,7 @@ public class CRChartData  {
 		}
 	}
 	
-	public void addSeries (SERIESTYPE type, int[] data) {
+	private void addSeries (SERIESTYPE type, int[] data) {
 		// we add a copy of the series data and make sure it has the same length as the RPY range
 		this.series[type.ordinal()] = Arrays.copyOf(data, this.rangeRPY.length);
 	}
@@ -74,5 +92,6 @@ public class CRChartData  {
 
 	public void setMedianRange(int medianRange) {
 		this.medianRange = medianRange;
+		this.updateChartData(this.rangeRPY[0], this.rangeRPY[this.rangeRPY.length-1], getSeries(SERIESTYPE.NCR), getSeries(SERIESTYPE.CNT));
 	}
 }
