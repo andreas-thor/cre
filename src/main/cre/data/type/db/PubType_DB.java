@@ -16,8 +16,11 @@ import main.cre.data.type.abs.PubType;
 
 public class PubType_DB extends PubType<CRType_DB> {
 
-	private static Collector<? super String, ?, String> join = Collectors.joining(";");
-	private static Function<String, Stream<String>> split = s -> Arrays.stream(s.split(";"));
+	private static CharSequence arraySeparator1 = "\n"; 
+	private static CharSequence arraySeparator2 = "\t"; 
+	
+	private static Collector<? super String, ?, String> join = Collectors.joining(arraySeparator1);
+	private static Function<String, Stream<String>> split = s -> Arrays.stream(s.split(arraySeparator1.toString()));
 	
 	public static class PubType_ResultSet implements Iterator<PubType_DB> {
 		
@@ -52,7 +55,7 @@ public class PubType_DB extends PubType<CRType_DB> {
 				pub.setPT(rs.getString("PUB_PT"));
 				split.apply(rs.getString("PUB_AU")).forEach(it -> pub.addAU(it));
 				split.apply(rs.getString("PUB_AF")).forEach(it -> pub.addAF(it));
-				split.apply(rs.getString("PUB_C1")).forEach(it -> pub.addC1(it.split("|")));
+				split.apply(rs.getString("PUB_C1")).forEach(it -> pub.addC1(it.split(arraySeparator2.toString())));
 				split.apply(rs.getString("PUB_EM")).forEach(it -> pub.addEM(it));
 				split.apply(rs.getString("PUB_AA")).forEach(it -> pub.addAA(it));
 				pub.setTI(rs.getString("PUB_TI"));
@@ -93,7 +96,7 @@ public class PubType_DB extends PubType<CRType_DB> {
 		pst.setString 	( 2, pub.getPT()); 
 		pst.setString 	( 3, pub.getAU().collect(join)); 
 		pst.setString 	( 4, pub.getAF().collect(join)); 
-		pst.setString 	( 5, pub.getC1().map(it -> String.join("|", it)).collect(join)); 
+		pst.setString 	( 5, pub.getC1().map(it -> String.join(arraySeparator2, it)).collect(join)); 
 		pst.setString 	( 6, pub.getEM().collect(join)); 
 		pst.setString 	( 7, pub.getAA().collect(join)); 
 		pst.setString 	( 8, pub.getTI()); 

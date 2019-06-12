@@ -30,11 +30,7 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 	
 	private boolean showNull;
 
-	
 	private int numberOfPubs; 
-//	private int numberOfCRs;
-	
-	
 	
 	private Statistics_DB statistics;
 	private Clustering_DB clustering;
@@ -90,7 +86,6 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 		this.setNpctRange(1);
 		this.setAborted(false);
 		this.numberOfPubs = 0;
-//		this.numberOfCRs = 0;
 		this.showNull = true;
 
 		try {

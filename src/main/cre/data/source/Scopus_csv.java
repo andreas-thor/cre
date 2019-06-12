@@ -280,13 +280,14 @@ public class Scopus_csv extends ImportReader  {
 	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException {
 		
 		/* TODO: Filter not supported yet ... nun drin? */
-		
+		final Comparator<CRType<?>> compCR = (comp == null) ? CRType<?>::compareTo : comp; // default: sort by ID
+
 		StatusBar.get().initProgressbar(CRTable.get().getStatistics().getNumberOfPubs());
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		
 		csv.writeNext(new String[] {"Authors","Title","Year","Source title","Volume","Issue","Art. No.","Page start","Page end","Page count","Cited by","DOI","Link","Affiliations","Authors with affiliations","Abstract","Author Keywords","References","Document Type","Source","EID"});
 		
-		CRTable.get().getPub(includePubsWithoutCRs).forEach(pub -> {
+		CRTable.get().getPub(includePubsWithoutCRs).sorted().forEach(pub -> {
 			ArrayList<String> row = new ArrayList<String>();
 			
 			row.add ((pub.getAU().count() == 0) ? "" :
@@ -323,7 +324,7 @@ public class Scopus_csv extends ImportReader  {
 			row.add (pub.getAB() == null ? "" : pub.getAB());
 			row.add (pub.getDE() == null ? "" : pub.getDE());
 
-			row.add (pub.getCR()
+			row.add (pub.getCR().sorted(compCR)
 				.filter(cr -> filter.test(cr))	
 				.map ( cr -> (cr.getType()==CRType.FORMATTYPE.SCOPUS) ? cr.getCR() : generateCRString (cr))
 				.collect (Collectors.joining ("; ")));

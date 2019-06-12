@@ -372,7 +372,7 @@ public class MainController {
 
 	}
 
-	private void openFiles(ImportExportFormat source, List<File> files) {
+	public void openFiles(ImportExportFormat source, List<File> files) {
 
 		Wait wait = new Wait();
 		Service<Void> serv = new Service<Void>() {

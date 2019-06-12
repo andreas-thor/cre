@@ -251,6 +251,7 @@ class DB_Store {
 		
 		try {
 			ResultSet rs = dbCon.createStatement().executeQuery(sql);
+			rs.next();
 			return rs.getInt(1);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

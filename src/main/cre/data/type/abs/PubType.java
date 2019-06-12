@@ -2,8 +2,6 @@ package main.cre.data.type.abs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -163,7 +161,7 @@ public abstract class PubType<C extends CRType<?>> implements Comparable<PubType
 		return C1.stream();
 	}
 	public void addC1(String[] c1) {
-		C1.add(c1);
+		if (c1.length==2) C1.add(c1);
 	}
 	public Stream<String> getEM() {
 		return EM.stream();

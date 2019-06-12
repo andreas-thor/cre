@@ -249,6 +249,7 @@ public class WoS_txt extends ImportReader {
 	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException, RuntimeException {
 		
 		/* TODO: Filter is not supported yet */
+		final Comparator<CRType<?>> compCR = (comp == null) ? CRType<?>::compareTo : comp; // default: sort by ID
 		
 		StatusBar.get().initProgressbar(CRTable.get().getStatistics().getNumberOfPubs());
 						
@@ -258,12 +259,13 @@ public class WoS_txt extends ImportReader {
 		bw.write("VR 1.0");
 		bw.newLine();
 		
-		CRTable.get().getPub(includePubsWithoutCRs).forEach (pub -> {
+		CRTable.get().getPub(includePubsWithoutCRs).sorted().forEach (pub -> {
 			try {
 				writeTag(bw, "PT", pub.getPT() == null ? "J" : pub.getPT());	// TODO: Is "J" the correct default for publication type?
 				writeTag(bw, "AU", pub.getAU());
 				writeTag(bw, "AF", pub.getAF());
 				if (pub.getC1() != null) {
+					System.out.println(pub.getID());
 					writeTag(bw, "C1", pub.getC1().map(it -> { return "[" + it[0] + "] " + it[1]; }));
 				}
 				
@@ -302,7 +304,7 @@ public class WoS_txt extends ImportReader {
 				if (pub.getPG() != null) writeTag(bw, "PG", pub.getPG().toString());
 				if (pub.getTC() != null) writeTag(bw, "TC", pub.getTC().toString());
 				
-				writeTag(bw, "CR", pub.getCR().map(cr -> (cr.getType()==CRType.FORMATTYPE.WOS) ? cr.getCR() : generateCRString(cr)));
+				writeTag(bw, "CR", pub.getCR().sorted(compCR).map(cr -> (cr.getType()==CRType.FORMATTYPE.WOS) ? cr.getCR() : generateCRString(cr) ));
 				writeTag(bw, "NR", String.valueOf(pub.getSizeCR()));
 				writeTag(bw, "DI", pub.getDI());
 				writeTag(bw, "AB", pub.getAB());

@@ -20,6 +20,7 @@ CREATE TABLE CR (
 	CR_ClusterId2 int,  
 	CR_ClusterSize int,  
 	CR_VI boolean, 
+	CR_Format varchar, 
 	
 	CR_PERC_YR double, 
 	CR_PERC_ALL double, 
@@ -65,6 +66,7 @@ CREATE TABLE CR_Temp (
 	CR_ClusterId2 int,  
 	CR_ClusterSize int, 
 	CR_VI boolean,	
+	CR_Format varchar,
 	PUB_ID int, 
 	PRIMARY KEY (CR_ID)  
 );

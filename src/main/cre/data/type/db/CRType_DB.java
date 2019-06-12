@@ -70,6 +70,7 @@ public class CRType_DB extends CRType<PubType_DB> {
 				cr.c2 = rs.getInt("CR_ClusterId2");
 				cr.clusterSize = rs.getInt("CR_ClusterSize");
 				cr.setVI(rs.getBoolean("CR_VI"));
+				cr.setType(FORMATTYPE.valueOf(rs.getString("CR_Format")));
 				
 				cr.setPERC_YR(rs.getDouble("CR_PERC_YR"));
 				cr.setPERC_ALL(rs.getDouble("CR_PERC_ALL"));
@@ -137,7 +138,8 @@ public class CRType_DB extends CRType<PubType_DB> {
 		pst.setInt		(16, cr.getClusterC2());
 		pst.setInt		(17, cr.getClusterSize());
 		pst.setBoolean	(18, cr.getVI());
-		pst.setInt		(19, pubId);
+		pst.setString	(19, cr.getType().toString());
+		pst.setInt		(20, pubId);
 		pst.addBatch();
 	}
 	
