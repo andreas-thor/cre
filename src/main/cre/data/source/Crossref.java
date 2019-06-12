@@ -195,7 +195,7 @@ public class Crossref extends ImportReader {
 	
 	private String generateCRString (CRType<?> cr) {
 		/* Generate CR-String in WoS format */
-		cr.setType(FORMATTYPE.WOS);
+		cr.setFormatType(FORMATTYPE.WOS);
 		String res = "";
 		
 		if (cr.getAU_L() != null) {

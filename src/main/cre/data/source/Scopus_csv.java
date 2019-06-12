@@ -175,7 +175,7 @@ public class Scopus_csv extends ImportReader  {
 		if (line.length() == 0) return null;
 		
 		CRType_MM res = new CRType_MM();
-		res.setType (CRType.FORMATTYPE.SCOPUS);
+		res.setFormatType (CRType.FORMATTYPE.SCOPUS);
 		res.setCR(line);
 		
 		// parse all authors (but save first author only in AU_L, AU_F, AU; all authors go to AU_A)
@@ -326,7 +326,7 @@ public class Scopus_csv extends ImportReader  {
 
 			row.add (pub.getCR().sorted(compCR)
 				.filter(cr -> filter.test(cr))	
-				.map ( cr -> (cr.getType()==CRType.FORMATTYPE.SCOPUS) ? cr.getCR() : generateCRString (cr))
+				.map ( cr -> (cr.getFormatType()==CRType.FORMATTYPE.SCOPUS) ? cr.getCR() : generateCRString (cr))
 				.collect (Collectors.joining ("; ")));
 			row.add (pub.getDT() == null ? "" : pub.getDT());
 			row.add (pub.getFS() == null ? "" : pub.getFS());

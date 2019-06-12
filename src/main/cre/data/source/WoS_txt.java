@@ -156,7 +156,7 @@ public class WoS_txt extends ImportReader {
 
 		CRType_MM cr = new CRType_MM();
 		cr.setCR(line); // [3..-1] // .toUpperCase()
-		cr.setType (CRType.FORMATTYPE.WOS);
+		cr.setFormatType (CRType.FORMATTYPE.WOS);
 		cr.setRPY(null);
 		
 	
@@ -251,6 +251,7 @@ public class WoS_txt extends ImportReader {
 		/* TODO: Filter is not supported yet */
 		final Comparator<CRType<?>> compCR = (comp == null) ? CRType<?>::compareTo : comp; // default: sort by ID
 		
+		
 		StatusBar.get().initProgressbar(CRTable.get().getStatistics().getNumberOfPubs());
 						
 		BufferedWriter bw = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
@@ -304,7 +305,7 @@ public class WoS_txt extends ImportReader {
 				if (pub.getPG() != null) writeTag(bw, "PG", pub.getPG().toString());
 				if (pub.getTC() != null) writeTag(bw, "TC", pub.getTC().toString());
 				
-				writeTag(bw, "CR", pub.getCR().sorted(compCR).map(cr -> (cr.getType()==CRType.FORMATTYPE.WOS) ? cr.getCR() : generateCRString(cr) ));
+				writeTag(bw, "CR", pub.getCR().sorted(compCR).map(cr -> (cr.getFormatType()==CRType.FORMATTYPE.WOS) ? cr.getCR() : generateCRString(cr) ));
 				writeTag(bw, "NR", String.valueOf(pub.getSizeCR()));
 				writeTag(bw, "DI", pub.getDI());
 				writeTag(bw, "AB", pub.getAB());

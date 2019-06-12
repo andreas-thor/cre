@@ -139,7 +139,7 @@ public class CRE_json {
 				case "CID_S": 	/*cr.setCID_S(parser.getInt()); */ break;
 				case "VI": 		cr.setVI(parser.getInt()==1); break;
 				case "CO": 		cr.setCO(parser.getInt()); break;
-				case "type": 	cr.setType (FORMATTYPE.values()[parser.getInt()-1]); break;	// LEGACY: Type were enumerated 1,2,...
+				case "type": 	cr.setFormatType (FORMATTYPE.values()[parser.getInt()-1]); break;	// LEGACY: Type were enumerated 1,2,...
 				default: System.out.println("CRDATA.json >> Unknow Key with Number Value: " + key); 
 				}
 				break;
@@ -354,7 +354,7 @@ public class CRE_json {
 			 						jgenCR.write("CID_S", cr.getClusterSize());
 									jgenCR.write("VI", cr.getVI()?1:0);
 									jgenCR.write("CO", cr.getCO());
-									jgenCR.write("type", cr.getType().ordinal()+1);	// LEGACY: Types were encoded 1,2, ...			
+									jgenCR.write("type", cr.getFormatType().ordinal()+1);	// LEGACY: Types were encoded 1,2, ...			
 			jgenCR.writeEnd();
 			
 			StatusBar.get().incProgressbar();

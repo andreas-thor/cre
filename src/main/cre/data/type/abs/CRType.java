@@ -59,7 +59,7 @@ public abstract class CRType<P extends PubType<?>> implements Comparable<CRType<
 	private String SEQUENCE;
 	private String TYPE;	
 	
-	private FORMATTYPE type = null;	
+	private FORMATTYPE formatType = null;	
 	private boolean flag;
 	
 
@@ -314,11 +314,11 @@ public abstract class CRType<P extends PubType<?>> implements Comparable<CRType<
 	}
 
 	
-	public FORMATTYPE getType() {
-		return type;
+	public FORMATTYPE getFormatType() {
+		return formatType;
 	}
-	public void setType(FORMATTYPE type) {
-		this.type = type;
+	public void setFormatType(FORMATTYPE type) {
+		this.formatType = type;
 	}
 	
 	

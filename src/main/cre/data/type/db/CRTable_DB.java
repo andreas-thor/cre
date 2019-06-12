@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.Statistics;
-import main.cre.data.type.mm.CRCluster;
 import main.cre.data.type.mm.CRType_MM;
 import main.cre.data.type.mm.PubType_MM;
 
@@ -315,13 +314,20 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
 	@Override
 	public void removeCRByPERC_YR(String comp, double threshold) {
-		// TODO NOT YET SUPPORTED
+		dbStore.removeCR(String.format("CR_PERC_YR %s %f", comp, threshold));
 	}
 
+	
+	/**
+	 * Remove all citing publications, that do *not* reference any of the given CRs 
+	 * @param selCR list of CRs
+	 */
 	@Override
 	public void removePubByCR(List<CRType_DB> selCR) {
-		// TODO Auto-generated method stub
+		String crIds = selCR.stream().map(it -> String.valueOf(it.getID())).collect(Collectors.joining(","));
+		dbStore.removePub(String.format("PUB_ID NOT IN (SELECT PUB_ID FROM PUB_CR WHERE CR_ID IN (%s))", crIds));
 	}
+	
 
 	@Override
 	public void retainPubByCitingYear(int[] range) {

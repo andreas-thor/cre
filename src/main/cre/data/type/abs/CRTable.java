@@ -1,12 +1,10 @@
 package main.cre.data.type.abs;
 
 import java.util.Arrays;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.stream.Stream;
 
 import main.cre.data.CRChartData;
-import main.cre.data.CRChartData.SERIESTYPE;
 import main.cre.data.type.abs.CRType.PERCENTAGE;
 import main.cre.data.type.db.CRTable_DB;
 import main.cre.data.type.mm.CRTable_MM;

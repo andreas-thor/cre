@@ -102,8 +102,7 @@ public class Statistics_DB implements Statistics {
 
 	@Override
 	public long getNumberOfCRsByPercentYear(String comp, double threshold) {
-		// TODO Auto-generated method stub
-		return -1;
+		return executeSelect(String.format("SELECT COUNT(*) FROM CR WHERE CR_PERC_YR %s %f", comp, threshold))[0];
 	}
 
 	@Override
