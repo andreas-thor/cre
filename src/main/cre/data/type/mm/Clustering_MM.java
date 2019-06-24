@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import main.cre.data.type.abs.CRTable;
@@ -81,8 +82,8 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 		
 		// standard blocking: year + first letter of last name
 		StatusBar.get().setValue(String.format("Blocking of %d objects...", CRTable.get().getStatistics().getNumberOfCRs()));
-		Map<String, List<CRType<PubType_MM>>> blocks = crTab.getCR().collect(Collectors.groupingBy(
-			BLOCKING_FUNCTION, 
+		Map<String, List<CRType<?>>> blocks = crTab.getCR().collect(Collectors.groupingBy(
+			cr -> ((cr.getRPY() != null) && (cr.getAU_L() != null) && (cr.getAU_L().length() > 0)) ? cr.getRPY() + cr.getAU_L().substring(0,1).toLowerCase() : "", 
 			Collectors.toList()
 		));
 
@@ -105,43 +106,12 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 			List<CRPair> result = new ArrayList<CRPair>();
 			if (entry.getKey().equals("")) return result;	// non-matchable block 
 
-			List<CRType<PubType_MM>> crlist = entry.getValue();
+			List<CRType<?>> crlist = entry.getValue();
 			
-			
-			crossCompareCR(crlist, l, (CRType<PubType_MM>[] pair, Double sim) -> {
+			crossCompareCR(crlist, l, (CRType<?>[] pair, Double sim) -> {
 				result.add(new CRPair ((CRType_MM)pair[0], (CRType_MM)pair[1], sim));
 				testCount.incrementAndGet();
-				return;
 			});
-			
-			// allX = List of all AU_L values; compareY = List of compare string 
-			List<String> allX = crlist.stream().map ( cr -> cr.getAU_L().toLowerCase()).collect (Collectors.toList());
-			ArrayList<String> compareY = new ArrayList<String>(allX);
-			
-			// ySize is used to re-adjust the index (correctIndex = ySize-yIdx-1)
-			int xIndx = 0;
-			for (String x: allX) {
-				
-				// TODO: compareY als array und dann copyof statt remove + transform
-				compareY.remove(0);	// remove first element
-				int yIndx = 0;
-				
-				for (double s1: l.batchCompareSet(compareY.toArray(new String[compareY.size()]), x)) {
-					if (s1>=threshold) {
-
-						// the two CRs to be compared
-						CRType_MM[] comp_CR = new CRType_MM[] { crlist.get(xIndx), crlist.get(xIndx+yIndx+1/*ySize-yIndx-1*/) };
-						double s = simCR (comp_CR, s1, l);
-						if (s >= threshold) {
-							// cannot invoke setMapping in a parallel stream -> collect result ... 
-							result.add(new CRPair (comp_CR[0], comp_CR[1], s));
-							testCount.incrementAndGet();
-						}
-					}
-					yIndx++;
-				}
-				xIndx++;
-			}
 		
 			return result;
 		})

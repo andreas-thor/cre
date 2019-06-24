@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -12,7 +11,6 @@ import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
 public abstract class Clustering<C extends CRType<P>, P extends PubType<C>> {
 
-	public static Function<CRType<?>, String> BLOCKING_FUNCTION = cr -> ((cr.getRPY() != null) && (cr.getAU_L() != null) && (cr.getAU_L().length() > 0)) ? cr.getRPY() + cr.getAU_L().substring(0,1).toLowerCase() : "";
 	
 	public static enum ManualMatchType { 
 		SAME ("Same"), 
@@ -39,7 +37,7 @@ public abstract class Clustering<C extends CRType<P>, P extends PubType<C>> {
 	
 	
 	
-	public void  crossCompareCR(List<CRType<P>> crlist, Levenshtein l, BiConsumer<CRType<P>[], Double> onNewPair) {
+	public void  crossCompareCR(List<CRType<?>> crlist, Levenshtein l, BiConsumer<CRType<?>[], Double> onNewPair) {
 		
 		// parameters
 		final double threshold = 0.5;
@@ -60,7 +58,7 @@ public abstract class Clustering<C extends CRType<P>, P extends PubType<C>> {
 				if (s1>=threshold) {
 
 					// the two CRs to be compared
-					CRType<P>[] comp_CR = (CRType<P>[]) new CRType<?>[] { crlist.get(xIndx), crlist.get(xIndx+yIndx+1/*ySize-yIndx-1*/) };
+					CRType<?>[] comp_CR = new CRType<?>[] { crlist.get(xIndx), crlist.get(xIndx+yIndx+1/*ySize-yIndx-1*/) };
 					double s = simCR (comp_CR, s1, l);
 					if (s >= threshold) {
 						onNewPair.accept(comp_CR, s);

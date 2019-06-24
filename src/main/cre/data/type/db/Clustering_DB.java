@@ -1,12 +1,21 @@
 package main.cre.data.type.db;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -44,17 +53,32 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 		
 		// standard blocking: year + first letter of last name
 		StatusBar.get().setValue(String.format("Blocking of %d objects...", CRTable.get().getStatistics().getNumberOfCRs()));
-		Map<String, Long> blocks = CRTable.get().getCR().collect(Collectors.groupingBy(
-			BLOCKING_FUNCTION, 
-			Collectors.counting()
-		));
-
-		StatusBar.get().initProgressbar(blocks.entrySet().stream().mapToInt(entry -> (int) (entry.getValue()*(entry.getValue()-1))/2).sum(), String.format("Matching %d objects in %d blocks", CRTable.get().getStatistics().getNumberOfCRs(), blocks.size()));
 		
-		this.dbCon.createStatement().execute("TRUNCATE TABLE CR_MATCH_AUTO");
+		
+		Map<String, Long> blocks = null;
+		
+		try {
+
+			dbCon.createStatement().execute(
+				"UPDATE CR SET CR_BLOCKINGKEY = " + 
+				"CASE WHEN (cr_RPY is not null) AND  (cr_AU_L is not null) AND (length(cr_AU_L)>0) " + 
+				"THEN concat (cr_rpy, lower (substring(cr_AU_L,  1, 1))) ELSE '' END ");
+
+			ResultSet rs = dbCon.createStatement().executeQuery ("SELECT CR_BLOCKINGKEY, COUNT(*) FROM CR WHERE CR_BLOCKINGKEY != '' GROUP BY CR_BLOCKINGKEY");
+			blocks = new HashMap<String, Long>();
+			while (rs.next()) {
+				blocks.put(rs.getString(1), rs.getLong(2));
+			}
+			rs.close();
+			
+			StatusBar.get().initProgressbar(blocks.entrySet().stream().mapToInt(entry -> (int) (entry.getValue()*(entry.getValue()-1))/2).sum(), String.format("Matching %d objects in %d blocks", CRTable.get().getStatistics().getNumberOfCRs(), blocks.size()));
+
+			this.dbCon.createStatement().execute("TRUNCATE TABLE CR_MATCH_AUTO");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		Levenshtein l = new Levenshtein();
 		
-		AtomicLong testCount = new AtomicLong(0);
 		Long stop1 = System.currentTimeMillis(); 
 		
 		// TODO: handle missing values
@@ -62,29 +86,48 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 		
 		
 		// Matching: author lastname & journal name
-		blocks.entrySet().stream().forEach ( entry -> {
+		blocks.entrySet().parallelStream().forEach ( entry -> {
 
 			StatusBar.get().incProgressbar(entry.getValue()*(entry.getValue()-1)/2);
 			
-			if (entry.getKey().equals("")) return;	// non-matchable block 
-
-			List<CRType<PubType_DB>> crlist = CRTable_DB.get().getCR().filter(cr -> BLOCKING_FUNCTION.apply(cr).equals(entry.getKey())).collect(Collectors.toList());
-
-			
-			crossCompareCR(crlist, l, (CRType<PubType_DB>[] pair, Double sim) -> {
+			try {
+				PreparedStatement insertMatch_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(DB_Store.SQL_FILE_PREFIX + "pst_insert_automatch.sql").toURI())), StandardCharsets.UTF_8));
+				AtomicInteger insertMatch_Counter = new AtomicInteger(0);
 				
-				return;
-			});
-			
+				if (entry.getKey().equals("")) return;	// non-matchable block 
+	
+				List<CRType<?>> crlist = CRTable_DB.get().getDBStore().selectCR(String.format("WHERE CR_BLOCKINGKEY = '%s'", entry.getKey())).collect(Collectors.toList());
+				crossCompareCR(crlist, l, (CRType<?>[] pair, Double sim) -> {
+					
+					try {
+						insertMatch_PrepStmt.setInt(1, Math.min(pair[0].getID(), pair[1].getID()));
+						insertMatch_PrepStmt.setInt(2, Math.max(pair[0].getID(), pair[1].getID()));
+						insertMatch_PrepStmt.setDouble(3, sim);
+						insertMatch_PrepStmt.addBatch();
+						
+						if (insertMatch_Counter.incrementAndGet()>=1000) {
+							insertMatch_PrepStmt.executeBatch();
+							insertMatch_Counter.set(0);
+						}
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+					return;
+				});
+				
+				if (insertMatch_Counter.get()>0) {
+					insertMatch_PrepStmt.executeBatch();
+				}
+			} catch (URISyntaxException | IOException | SQLException e) {
+				e.printStackTrace();
+			}
 
-		// ... and invoke sequentially
-		matchResult.forEach(it -> { addPair(it, false, true, null); });
+		});
+
 		
 		
 		Long stop2 = System.currentTimeMillis();
 		System.out.println("Match time is " + ((stop2-stop1)/100) + " deci-seconds");
-		
-		assert testCount.get() == getNumberOfMatches(false);
 		
 		StatusBar.get().setValue("Matching done");
 		updateClustering(Clustering.ClusteringType.INIT, null, threshold, false, false, false);

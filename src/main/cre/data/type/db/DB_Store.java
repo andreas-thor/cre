@@ -24,7 +24,7 @@ import main.cre.data.type.extern.PubType_ColumnView;
 
 class DB_Store { 
 
-	private final static String SQL_FILE_PREFIX = "main/cre/data/type/db/sql/"; 
+	public final static String SQL_FILE_PREFIX = "main/cre/data/type/db/sql/"; 
 	
 	private PreparedStatement insertCR_PrepStmt;
 	private int insertCR_Counter;

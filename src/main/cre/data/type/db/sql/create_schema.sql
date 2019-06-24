@@ -37,7 +37,8 @@ CREATE TABLE CR (
 	CR_N_PCT_AboveAverage_P99 int,
 	CR_N_PCT_AboveAverage_P999 int,
 	CR_SEQUENCE varchar,
-	CR_TYPE varchar,		
+	CR_TYPE varchar,
+	CR_BLOCKINGKEY varchar,
 	
 	PRIMARY KEY (CR_ID)  
 );
