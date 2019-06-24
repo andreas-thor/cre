@@ -500,7 +500,7 @@ public class MainController {
 					@Override
 					protected List<File> call() throws Exception {
 						CRTable.get().setAborted(false);
-						return Crossref.download(dialogResult.get().getDOI(), dialogResult.get().getISSN(), dialogResult.get().getRange());
+						return Crossref.download(dialogResult.get().getTitle(), dialogResult.get().getDOI(), dialogResult.get().getISSN(), dialogResult.get().getRange());
 					}
 				};
 			}

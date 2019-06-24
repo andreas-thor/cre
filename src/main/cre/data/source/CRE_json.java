@@ -28,6 +28,7 @@ import main.cre.data.type.abs.CRType.FORMATTYPE;
 import main.cre.data.type.abs.PubType;
 import main.cre.data.type.mm.CRType_MM;
 import main.cre.data.type.mm.Clustering_MM;
+import main.cre.data.type.mm.PubType_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 
@@ -158,17 +159,17 @@ public class CRE_json {
 		CRTable crTab = CRTable.get(); 
 
 		JsonParser parser = Json.createParser(in);
-		PubType pub = null;
+		PubType_MM pub = null;
 		List<String> C1List = null;
-		List<CRType> CRList = null; 
+		List<CRType_MM> CRList = null; 
 		int arrayLevel = 0;
 		String key = "";
 		while (!crTab.isAborted() && parser.hasNext()) {
 			
 			switch (parser.next()) {
 			case START_OBJECT:
-				pub = PubType.create(); 
-				CRList = new ArrayList<CRType>();
+				pub = new PubType_MM();
+				CRList = new ArrayList<CRType_MM>();
 				break; 
 			case END_OBJECT: 	
 				pub = crTab.addPub(pub, false, checkForDuplicates);

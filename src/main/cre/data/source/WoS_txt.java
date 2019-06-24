@@ -250,7 +250,7 @@ public class WoS_txt extends ImportReader {
 		
 		/* TODO: Filter is not supported yet */
 		final Comparator<CRType<?>> compCR = (comp == null) ? CRType<?>::compareTo : comp; // default: sort by ID
-		
+ 
 		
 		StatusBar.get().initProgressbar(CRTable.get().getStatistics().getNumberOfPubs());
 						

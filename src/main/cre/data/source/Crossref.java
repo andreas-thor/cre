@@ -224,7 +224,7 @@ public class Crossref extends ImportReader {
 	
 	
 	
-	private static List<File> downloadByFilter (List<String> filter) throws IOException, BadResponseCodeException  {
+	private static List<File> downloadByFilter (List<String> query, List<String> filter) throws IOException, BadResponseCodeException  {
 		
 		List<File> result = new ArrayList<File>();
 		
@@ -249,7 +249,8 @@ public class Crossref extends ImportReader {
 		
 			if (CRTable.get().isAborted()) {
 				StatusBar.get().setValue("Download aborted by user");
-				return new ArrayList<File>();		// return empty result
+				break; 
+//				return new ArrayList<File>();		// return empty result
 			}
 			
 			if (offset>0) {
@@ -257,16 +258,19 @@ public class Crossref extends ImportReader {
 				StatusBar.get().incProgressbar(offset);
 			}
 			
-			String url = "https://api.crossref.org/works";
-			url += "?filter=" + filter.stream().collect(Collectors.joining( "," ));
-			url += "&rows=" + rows_per_Request;
-			url += "&offset=" + offset;
-			url += "&mailto=thor@hft-leipzig.de";
-			System.out.println(url);
+			StringBuffer url = new StringBuffer ("https://api.crossref.org/works");
+			url.append("?rows=" + rows_per_Request);
+			url.append("&offset=" + offset);
+			url.append("&mailto=thor@hft-leipzig.de");
+			if (filter.size()>0) {
+				url.append("&filter=" + filter.stream().collect(Collectors.joining( "," )));
+			}
+			query.forEach(it -> url.append ("&" + it));
+			System.out.println(url.toString());
 			
 			String filename = String.format("%s.crossref", DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss_SSS").format(LocalDateTime.now()));  
 			File file = cachePath.resolve(filename).toFile();
-			org.apache.commons.io.FileUtils.copyURLToFile(new URL(url), file);
+			org.apache.commons.io.FileUtils.copyURLToFile(new URL(url.toString()), file);
 			result.add(file);
 			
 			
@@ -297,7 +301,13 @@ public class Crossref extends ImportReader {
 
 
 
-	public static List<File> download(String[] DOI, String issn, int[] range) throws IOException, BadResponseCodeException {
+	public static List<File> download(String title, String[] DOI, String issn, int[] range) throws IOException, BadResponseCodeException {
+		
+		List<String> query = new ArrayList<String>();
+		if (title.trim().length()>0) {
+			query.add("query.title=" + title.trim().replaceAll("\\s+", "+"));
+		}
+		
 		
 		List<String> filter = new ArrayList<String>();
 		Arrays.stream(DOI).forEach(s -> {
@@ -309,7 +319,7 @@ public class Crossref extends ImportReader {
 		if (range[0]!=-1) 		filter.add("from-print-pub-date:" + range[0]);
 		if (range[1]!=-1) 		filter.add("until-print-pub-date:" + range[1]);
 		
-		return downloadByFilter(filter);
+		return downloadByFilter(query, filter);
 
 	}
 	

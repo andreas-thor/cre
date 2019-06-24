@@ -3,10 +3,20 @@ package main.cre.data.type.db;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
+import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.Clustering;
+import main.cre.data.type.mm.CRType_MM;
+import main.cre.ui.statusbar.StatusBar;
+import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
 public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 
@@ -14,6 +24,8 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 	
 	public Clustering_DB(Connection dbCon) {
 		this.dbCon = dbCon;
+		
+		
 	}
 	
 	
@@ -26,9 +38,62 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 
 	@Override
 	public void generateAutoMatching() {
-		// TODO Auto-generated method stub
+
+		// parameters
+		final double threshold = 0.5;
+		
+		// standard blocking: year + first letter of last name
+		StatusBar.get().setValue(String.format("Blocking of %d objects...", CRTable.get().getStatistics().getNumberOfCRs()));
+		Map<String, Long> blocks = CRTable.get().getCR().collect(Collectors.groupingBy(
+			BLOCKING_FUNCTION, 
+			Collectors.counting()
+		));
+
+		StatusBar.get().initProgressbar(blocks.entrySet().stream().mapToInt(entry -> (int) (entry.getValue()*(entry.getValue()-1))/2).sum(), String.format("Matching %d objects in %d blocks", CRTable.get().getStatistics().getNumberOfCRs(), blocks.size()));
+		
+		this.dbCon.createStatement().execute("TRUNCATE TABLE CR_MATCH_AUTO");
+		Levenshtein l = new Levenshtein();
+		
+		AtomicLong testCount = new AtomicLong(0);
+		Long stop1 = System.currentTimeMillis(); 
+		
+		// TODO: handle missing values
+		// TODO: incorporate title (from scopus)
+		
+		
+		// Matching: author lastname & journal name
+		blocks.entrySet().stream().forEach ( entry -> {
+
+			StatusBar.get().incProgressbar(entry.getValue()*(entry.getValue()-1)/2);
+			
+			if (entry.getKey().equals("")) return;	// non-matchable block 
+
+			List<CRType<PubType_DB>> crlist = CRTable_DB.get().getCR().filter(cr -> BLOCKING_FUNCTION.apply(cr).equals(entry.getKey())).collect(Collectors.toList());
+
+			
+			crossCompareCR(crlist, l, (CRType<PubType_DB>[] pair, Double sim) -> {
+				
+				return;
+			});
+			
+
+		// ... and invoke sequentially
+		matchResult.forEach(it -> { addPair(it, false, true, null); });
+		
+		
+		Long stop2 = System.currentTimeMillis();
+		System.out.println("Match time is " + ((stop2-stop1)/100) + " deci-seconds");
+		
+		assert testCount.get() == getNumberOfMatches(false);
+		
+		StatusBar.get().setValue("Matching done");
+		updateClustering(Clustering.ClusteringType.INIT, null, threshold, false, false, false);
+		
 		
 	}
+
+
+
 
 	@Override
 	public void undoManuMatching(double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {

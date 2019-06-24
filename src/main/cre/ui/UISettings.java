@@ -122,6 +122,7 @@ public class UISettings {
 		
 		
 		downloadCrossrefData = new DownloadCrossrefData(
+			userPrefs.get("DownloadCrossrefDataTitle", ""),
 			userPrefs.get("DownloadCrossrefDataISSN", ""),
 			new String[] {
 				userPrefs.get("DownloadCrossrefDataPY0", "-1"),
@@ -171,6 +172,7 @@ public class UISettings {
 		userPrefs.putDouble("WindowX", windowX); 
 		userPrefs.putDouble("WindowY", windowY);
 		
+		userPrefs.put("DownloadCrossrefDataTitle", downloadCrossrefData.getTitle());
 		userPrefs.put("DownloadCrossrefDataISSN", downloadCrossrefData.getISSN());
 		userPrefs.put("DownloadCrossrefDataPY0", String.valueOf(downloadCrossrefData.getRange()[0]));
 		userPrefs.put("DownloadCrossrefDataPY1", String.valueOf(downloadCrossrefData.getRange()[1]));

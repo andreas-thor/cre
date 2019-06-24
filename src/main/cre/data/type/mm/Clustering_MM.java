@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.Clustering;
 import main.cre.ui.statusbar.StatusBar;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
@@ -77,14 +78,11 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 	
 		// parameters
 		final double threshold = 0.5;
-		final double weight_author = 2.0;
-		final double weight_journal = 1.0;
-		final double weight_title = 5.0;
 		
 		// standard blocking: year + first letter of last name
 		StatusBar.get().setValue(String.format("Blocking of %d objects...", CRTable.get().getStatistics().getNumberOfCRs()));
-		Map<String, List<CRType_MM>> blocks = crTab.getCR().collect(Collectors.groupingBy(
-			cr -> ((cr.getRPY() != null) && (cr.getAU_L() != null) && (cr.getAU_L().length() > 0)) ? cr.getRPY() + cr.getAU_L().substring(0,1).toLowerCase() : "",
+		Map<String, List<CRType<PubType_MM>>> blocks = crTab.getCR().collect(Collectors.groupingBy(
+			BLOCKING_FUNCTION, 
 			Collectors.toList()
 		));
 
@@ -107,7 +105,14 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 			List<CRPair> result = new ArrayList<CRPair>();
 			if (entry.getKey().equals("")) return result;	// non-matchable block 
 
-			List<CRType_MM> crlist = entry.getValue();
+			List<CRType<PubType_MM>> crlist = entry.getValue();
+			
+			
+			crossCompareCR(crlist, l, (CRType<PubType_MM>[] pair, Double sim) -> {
+				result.add(new CRPair ((CRType_MM)pair[0], (CRType_MM)pair[1], sim));
+				testCount.incrementAndGet();
+				return;
+			});
 			
 			// allX = List of all AU_L values; compareY = List of compare string 
 			List<String> allX = crlist.stream().map ( cr -> cr.getAU_L().toLowerCase()).collect (Collectors.toList());
@@ -126,28 +131,8 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 
 						// the two CRs to be compared
 						CRType_MM[] comp_CR = new CRType_MM[] { crlist.get(xIndx), crlist.get(xIndx+yIndx+1/*ySize-yIndx-1*/) };
-						
-						// increasing sim + weight if data is available; weight for author is 2
-						double sim = weight_author*s1;
-						double weight = weight_author;
-						
-						// compare Journal name (weight=1)
-						String[] comp_J = new String[] { comp_CR[0].getJ_N() == null ? "" : comp_CR[0].getJ_N(), comp_CR[1].getJ_N() == null ? "" : comp_CR[1].getJ_N() };
-						if ((comp_J[0].length()>0) && (comp_J[1].length()>0)) {
-							sim += weight_journal* l.getSimilarity(comp_J[0].toLowerCase(), comp_J[1].toLowerCase());
-							weight += weight_journal;
-						}
-						
-						// compare title (weight=5)
-						// ignore if both titles are empty; set sim=0 if just one is emtpy; compute similarity otherwise
-						String[] comp_T = new String[] { comp_CR[0].getTI() == null ? "" : comp_CR[0].getTI(), comp_CR[1].getTI() == null ? "" : comp_CR[1].getTI() };
-						if ((comp_T[0].length()>0) || (comp_T[1].length()>0)) {
-							sim += weight_title * (((comp_T[0].length()>0) && (comp_T[1].length()>0)) ? l.getSimilarity(comp_T[0].toLowerCase(), comp_T[1].toLowerCase()) : 0.0);
-							weight += weight_title;
-						}
-						
-						double s = sim/weight;		// weighted average of AU_L, J_N, and TI
-						if (s>=threshold) {
+						double s = simCR (comp_CR, s1, l);
+						if (s >= threshold) {
 							// cannot invoke setMapping in a parallel stream -> collect result ... 
 							result.add(new CRPair (comp_CR[0], comp_CR[1], s));
 							testCount.incrementAndGet();
@@ -176,6 +161,9 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 		updateClustering(Clustering.ClusteringType.INIT, null, threshold, false, false, false);
 		
 	}
+	
+	
+
 	
 	@Override
 	public void addManuMatching (List<CRType_MM> selCR, Clustering.ManualMatchType matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {

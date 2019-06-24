@@ -4,13 +4,15 @@ import java.util.Arrays;
 
 public class DownloadCrossrefData {
 
+	private String title = null;
 	private String ISSN = null;
 	private int[] range = { -1, -1 };
 	private String[] DOI = null;
 
-	public DownloadCrossrefData(String ISSN, String[] range, String DOI) {
+	public DownloadCrossrefData(String title, String ISSN, String[] range, String DOI) {
 		super();
 
+		this.title = title.trim();
 		this.ISSN = ISSN.trim();
 		this.range = Arrays.stream(range).mapToInt(s -> {
 			try {
@@ -24,6 +26,10 @@ public class DownloadCrossrefData {
 
 	}
 
+	public String getTitle() {
+		return title;
+	}
+	
 	public String getISSN() {
 		return ISSN;
 	}
