@@ -123,3 +123,14 @@ CREATE TABLE CR_MATCH_AUTO (
 	sim double, 
 	PRIMARY KEY (CR_ID1, CR_ID2)  
 );
+
+
+DROP TABLE IF EXISTS CR_MATCH_MANU;
+
+CREATE TABLE CR_MATCH_MANU ( 
+	CR_ID1 	int, 
+	CR_ID2 	int, 
+	sim 	double, 
+	tstamp 	bigint, 
+	PRIMARY KEY (CR_ID1, CR_ID2)  
+);

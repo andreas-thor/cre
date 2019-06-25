@@ -10,20 +10,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.Clustering;
-import main.cre.data.type.mm.CRType_MM;
 import main.cre.ui.statusbar.StatusBar;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
@@ -34,14 +30,66 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 	public Clustering_DB(Connection dbCon) {
 		this.dbCon = dbCon;
 		
-		
+
 	}
 	
 	
 	@Override
-	public void addManuMatching(List<CRType_DB> selCR, ManualMatchType matchType, double matchThreshold, boolean useVol,
-			boolean usePag, boolean useDOI) {
-		// TODO Auto-generated method stub
+	public void addManuMatching(List<CRType_DB> selCR, ManualMatchType matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
+
+		assert selCR != null;
+		assert selCR.stream().filter(cr -> cr==null).count() == 0;
+		
+		Long timestamp = System.currentTimeMillis();		// used to group together all individual mapping pairs of match operation
+		String crIds = selCR.stream().map(cr -> String.valueOf(cr.getID())).collect(Collectors.joining(","));
+
+		try {
+			// manual-same is indicated by similarity = 2; different = -2
+			if ((matchType==Clustering.ManualMatchType.SAME) || (matchType==Clustering.ManualMatchType.DIFFERENT)) {
+				double sim = (matchType==Clustering.ManualMatchType.SAME) ? 2d : -2d;
+			
+			
+			
+				PreparedStatement insertMatchManu_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(DB_Store.SQL_FILE_PREFIX + "pst_insert_match_manu.sql").toURI())), StandardCharsets.UTF_8));
+
+				for (CRType_DB cr1: selCR) {
+					for (CRType_DB cr2: selCR) {
+						if (cr1.getID()<cr2.getID()) {
+							insertMatchManu_PrepStmt.setInt(1,  cr1.getID());
+							insertMatchManu_PrepStmt.setInt(2,  cr2.getID());
+							insertMatchManu_PrepStmt.setDouble(3,  sim);
+							insertMatchManu_PrepStmt.setLong(4,  timestamp);
+							insertMatchManu_PrepStmt.addBatch();
+						}
+					}
+				}
+				insertMatchManu_PrepStmt.executeBatch();
+			}
+	
+	
+			
+			if (matchType==Clustering.ManualMatchType.EXTRACT) {
+				dbCon.createStatement().execute(
+					String.format(
+						"MERGE INTO CR_MATCH_MANU  (CR_ID1, CR_ID2, sim , tstamp) " + 
+						"SELECT (CASE WHEN CR1.CR_ID < CR2.CR_ID THEN CR1.CR_ID ELSE CR2.CR_ID END), " + 
+						"       (CASE WHEN CR1.CR_ID > CR2.CR_ID THEN CR1.CR_ID ELSE CR2.CR_ID END), " + 
+						"       -2, %d " +
+						"FROM  CR  AS CR1 JOIN CR AS CR2 " + 
+						"ON (CR1.CR_ID != CR2.CR_ID AND CR1.CR_ClusterId1 = CR2.CR_ClusterId1 AND CR1.CR_ClusterId2 = CR2.CR_ClusterId2) " +
+						"WHERE CR1.CR_ID IN (%s)" ,
+						timestamp, crIds)
+				);
+			}
+		} catch (SQLException | IOException | URISyntaxException e) {
+			e.printStackTrace();
+		}
+
+		
+		// changeCR = all CRs that are in the same cluster as selCR
+		Set<CRType_DB> changeCR = CRTable_DB.get().getDBStore().selectCR(String.format("WHERE (CR_ClusterId1, CR_ClusterId2) IN (SELECT CR_ClusterId1, CR_ClusterId2 FROM CR WHERE CR.CR_ID IN (%s))", crIds)).collect(Collectors.toSet());
+		updateClustering(Clustering.ClusteringType.REFRESH, changeCR, matchThreshold, useVol, usePag, useDOI);
+		
 		
 	}
 
@@ -91,8 +139,8 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 			StatusBar.get().incProgressbar(entry.getValue()*(entry.getValue()-1)/2);
 			
 			try {
-				PreparedStatement insertMatch_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(DB_Store.SQL_FILE_PREFIX + "pst_insert_automatch.sql").toURI())), StandardCharsets.UTF_8));
-				AtomicInteger insertMatch_Counter = new AtomicInteger(0);
+				PreparedStatement insertMatchAuto_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(DB_Store.SQL_FILE_PREFIX + "pst_insert_match_auto.sql").toURI())), StandardCharsets.UTF_8));
+				AtomicInteger insertMatchAuto_Counter = new AtomicInteger(0);
 				
 				if (entry.getKey().equals("")) return;	// non-matchable block 
 	
@@ -100,14 +148,14 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 				crossCompareCR(crlist, l, (CRType<?>[] pair, Double sim) -> {
 					
 					try {
-						insertMatch_PrepStmt.setInt(1, Math.min(pair[0].getID(), pair[1].getID()));
-						insertMatch_PrepStmt.setInt(2, Math.max(pair[0].getID(), pair[1].getID()));
-						insertMatch_PrepStmt.setDouble(3, sim);
-						insertMatch_PrepStmt.addBatch();
+						insertMatchAuto_PrepStmt.setInt(1, Math.min(pair[0].getID(), pair[1].getID()));
+						insertMatchAuto_PrepStmt.setInt(2, Math.max(pair[0].getID(), pair[1].getID()));
+						insertMatchAuto_PrepStmt.setDouble(3, sim);
+						insertMatchAuto_PrepStmt.addBatch();
 						
-						if (insertMatch_Counter.incrementAndGet()>=1000) {
-							insertMatch_PrepStmt.executeBatch();
-							insertMatch_Counter.set(0);
+						if (insertMatchAuto_Counter.incrementAndGet()>=1000) {
+							insertMatchAuto_PrepStmt.executeBatch();
+							insertMatchAuto_Counter.set(0);
 						}
 					} catch (SQLException e) {
 						e.printStackTrace();
@@ -115,8 +163,8 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 					return;
 				});
 				
-				if (insertMatch_Counter.get()>0) {
-					insertMatch_PrepStmt.executeBatch();
+				if (insertMatchAuto_Counter.get()>0) {
+					insertMatchAuto_PrepStmt.executeBatch();
 				}
 			} catch (URISyntaxException | IOException | SQLException e) {
 				e.printStackTrace();
