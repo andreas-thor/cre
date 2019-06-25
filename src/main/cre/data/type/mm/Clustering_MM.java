@@ -2,6 +2,7 @@ package main.cre.data.type.mm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,12 +78,9 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 	@Override
 	public void generateAutoMatching () {
 	
-		// parameters
-		final double threshold = 0.5;
-		
 		// standard blocking: year + first letter of last name
 		StatusBar.get().setValue(String.format("Blocking of %d objects...", CRTable.get().getStatistics().getNumberOfCRs()));
-		Map<String, List<CRType<?>>> blocks = crTab.getCR().collect(Collectors.groupingBy(
+		Map<String, List<CRType_MM>> blocks = crTab.getCR().collect(Collectors.groupingBy(
 			cr -> ((cr.getRPY() != null) && (cr.getAU_L() != null) && (cr.getAU_L().length() > 0)) ? cr.getRPY() + cr.getAU_L().substring(0,1).toLowerCase() : "", 
 			Collectors.toList()
 		));
@@ -106,10 +104,10 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 			List<CRPair> result = new ArrayList<CRPair>();
 			if (entry.getKey().equals("")) return result;	// non-matchable block 
 
-			List<CRType<?>> crlist = entry.getValue();
+			List<CRType_MM> crlist = entry.getValue();
 			
-			crossCompareCR(crlist, l, (CRType<?>[] pair, Double sim) -> {
-				result.add(new CRPair ((CRType_MM)pair[0], (CRType_MM)pair[1], sim));
+			crossCompareCR(crlist, l, (CRType_MM cr1, CRType_MM cr2, double sim) -> {
+				result.add(new CRPair (cr1, cr2, sim));
 				testCount.incrementAndGet();
 			});
 		
@@ -128,16 +126,13 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 		assert testCount.get() == getNumberOfMatches(false);
 		
 		StatusBar.get().setValue("Matching done");
-		updateClustering(Clustering.ClusteringType.INIT, null, threshold, false, false, false);
-		
 	}
 	
 	
 
 	
 	@Override
-	public void addManuMatching (List<CRType_MM> selCR, Clustering.ManualMatchType matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
-		
+	public Set<CRType_MM> addManuMatching (List<CRType_MM> selCR, Clustering.ManualMatchType matchType) {
 		
 		assert selCR != null;
 		assert selCR.stream().filter(cr -> cr==null).count() == 0;
@@ -160,18 +155,15 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 			}
 		}
 		
-		
-		Set<CRType_MM> changeCR = selCR.stream().flatMap(cr -> cr.getCluster().getCR()).distinct().collect(Collectors.toSet());
-		
-		updateClustering(Clustering.ClusteringType.REFRESH, changeCR, matchThreshold, useVol, usePag, useDOI);
+		return selCR.stream().flatMap(cr -> cr.getCluster().getCR()).distinct().collect(Collectors.toSet());
 	}	
 	
 
 	@Override
-	public void undoManuMatching (double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
+	public Set<CRType_MM> undoManuMatching () {
 		
 		// check if undo-able operations are available
-		if (timestampedPairs.keySet().size()==0) return;
+		if (timestampedPairs.keySet().size()==0) return new HashSet<CRType_MM>();
 
 		// copy old values and remove last undo/able operation 
 		Long lastTimestamp = timestampedPairs.lastKey();
@@ -181,7 +173,7 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 		// get changed CRs and update clustering
 		Set<CRType_MM> changeCR = undoPairs.stream().map(pair -> pair.cr1).distinct().collect(Collectors.toSet());
 		changeCR.addAll(undoPairs.stream().map(pair -> pair.cr2).distinct().collect(Collectors.toSet()));
-		updateClustering(Clustering.ClusteringType.REFRESH, changeCR, matchThreshold, useVol, usePag, useDOI);
+		return changeCR;
 	}
 	
 	
@@ -200,7 +192,7 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 			((changeCR == null) ? crTab.getCR() : changeCR.stream()).forEach(cr -> cr.setCluster (new CRCluster(cr, cr.getCluster().getC1())));
 		}
 
-		StatusBar.get().initProgressbar(pbSize, String.format("Clustering %d objects (%s) with threshold %.2f", CRTable.get().getStatistics().getNumberOfCRs(), type.label, threshold));
+		StatusBar.get().initProgressbar(pbSize, String.format("Clustering %d objects (%s) with threshold %.2f", CRTable.get().getStatistics().getNumberOfCRs(), type.toString(), threshold));
 		
 		// automatic matches
 		matchResult.get(false).forEach((cr1, pairs) -> {

@@ -58,7 +58,7 @@ public abstract class MatchPanel extends TitledPane {
 		// Match Buttons
 		for (int i=0; i<Clustering.ManualMatchType.values().length; i++) {
 			Clustering.ManualMatchType type = Clustering.ManualMatchType.values()[i];
-			matchManual[i] = new Button (type.label);
+			matchManual[i] = new Button (type.toString().substring(0, 1) + type.toString().substring(1).toLowerCase());	// "SAME" --> "Same"
 			matchManual[i].setPrefSize(100, 25);
 			matchManual[i].setOnAction(e -> { onMatchManual(type, 0.01d*threshold.getValue(), volPagDOI[0].isSelected(), volPagDOI[1].isSelected(), volPagDOI[2].isSelected()); });
 			grid.add (matchManual[i], i+2, 0);

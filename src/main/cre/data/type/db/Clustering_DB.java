@@ -18,8 +18,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import main.cre.data.type.abs.CRTable;
-import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.Clustering;
+import main.cre.data.type.mm.CRCluster;
 import main.cre.ui.statusbar.StatusBar;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
@@ -35,7 +35,7 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 	
 	
 	@Override
-	public void addManuMatching(List<CRType_DB> selCR, ManualMatchType matchType, double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
+	public Set<CRType_DB> addManuMatching(List<CRType_DB> selCR, ManualMatchType matchType) {
 
 		assert selCR != null;
 		assert selCR.stream().filter(cr -> cr==null).count() == 0;
@@ -47,8 +47,6 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 			// manual-same is indicated by similarity = 2; different = -2
 			if ((matchType==Clustering.ManualMatchType.SAME) || (matchType==Clustering.ManualMatchType.DIFFERENT)) {
 				double sim = (matchType==Clustering.ManualMatchType.SAME) ? 2d : -2d;
-			
-			
 			
 				PreparedStatement insertMatchManu_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(DB_Store.SQL_FILE_PREFIX + "pst_insert_match_manu.sql").toURI())), StandardCharsets.UTF_8));
 
@@ -87,18 +85,13 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 
 		
 		// changeCR = all CRs that are in the same cluster as selCR
-		Set<CRType_DB> changeCR = CRTable_DB.get().getDBStore().selectCR(String.format("WHERE (CR_ClusterId1, CR_ClusterId2) IN (SELECT CR_ClusterId1, CR_ClusterId2 FROM CR WHERE CR.CR_ID IN (%s))", crIds)).collect(Collectors.toSet());
-		updateClustering(Clustering.ClusteringType.REFRESH, changeCR, matchThreshold, useVol, usePag, useDOI);
-		
-		
+		return CRTable_DB.get().getDBStore().selectCR(String.format("WHERE (CR_ClusterId1, CR_ClusterId2) IN (SELECT CR_ClusterId1, CR_ClusterId2 FROM CR WHERE CR.CR_ID IN (%s))", crIds)).collect(Collectors.toSet());
 	}
+	
 
 	@Override
 	public void generateAutoMatching() {
 
-		// parameters
-		final double threshold = 0.5;
-		
 		// standard blocking: year + first letter of last name
 		StatusBar.get().setValue(String.format("Blocking of %d objects...", CRTable.get().getStatistics().getNumberOfCRs()));
 		
@@ -144,12 +137,12 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 				
 				if (entry.getKey().equals("")) return;	// non-matchable block 
 	
-				List<CRType<?>> crlist = CRTable_DB.get().getDBStore().selectCR(String.format("WHERE CR_BLOCKINGKEY = '%s'", entry.getKey())).collect(Collectors.toList());
-				crossCompareCR(crlist, l, (CRType<?>[] pair, Double sim) -> {
+				List<CRType_DB> crlist = CRTable_DB.get().getDBStore().selectCR(String.format("WHERE CR_BLOCKINGKEY = '%s'", entry.getKey())).collect(Collectors.toList());
+				crossCompareCR(crlist, l, (CRType_DB cr1, CRType_DB cr2, double sim) -> {
 					
 					try {
-						insertMatchAuto_PrepStmt.setInt(1, Math.min(pair[0].getID(), pair[1].getID()));
-						insertMatchAuto_PrepStmt.setInt(2, Math.max(pair[0].getID(), pair[1].getID()));
+						insertMatchAuto_PrepStmt.setInt(1, Math.min(cr1.getID(), cr2.getID()));
+						insertMatchAuto_PrepStmt.setInt(2, Math.max(cr1.getID(), cr2.getID()));
 						insertMatchAuto_PrepStmt.setDouble(3, sim);
 						insertMatchAuto_PrepStmt.addBatch();
 						
@@ -178,31 +171,84 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 		System.out.println("Match time is " + ((stop2-stop1)/100) + " deci-seconds");
 		
 		StatusBar.get().setValue("Matching done");
-		updateClustering(Clustering.ClusteringType.INIT, null, threshold, false, false, false);
-		
-		
 	}
 
 
 
 
 	@Override
-	public void undoManuMatching(double matchThreshold, boolean useVol, boolean usePag, boolean useDOI) {
+	public Set<CRType_DB> undoManuMatching() {
 		// TODO Auto-generated method stub
+		return null;
 		
 	}
 
 	@Override
-	public void updateClustering(ClusteringType type, Set<CRType_DB> changeCR, double threshold, boolean useVol,
-			boolean usePag, boolean useDOI) {
-		// TODO Auto-generated method stub
+	public void updateClustering(ClusteringType type, Set<CRType_DB> changeCR, double threshold, boolean useVol, boolean usePag, boolean useDOI) {
+		
+		try {
+
+			String changeCRIds = (changeCR != null) ? changeCR.stream().map(cr -> String.valueOf(cr.getID())).collect(Collectors.joining(",")) : null; 
+
+			if (type == Clustering.ClusteringType.INIT) {	// consider manual (automatic?) matches only
+				// reset all clusters (each CR forms an individual clustering)
+				dbCon.createStatement().execute("UPDATE CR SET CR_ClusterId1 = CR_ID, CR_ClusterId2 = CR_ID");
+			}
+			
+			if (type == Clustering.ClusteringType.REFRESH) {
+				// reset clusterId2 only 
+				dbCon.createStatement().execute(String.format("UPDATE CR SET CR_ClusterId2 = CR_ID %s", changeCRIds==null ? "" : String.format("WHERE CR_ID IN (%s)", changeCRIds)));
+			}
+		
+			StatusBar.get().initProgressbar(1, String.format("Clustering %d objects (%s) with threshold %.2f", CRTable.get().getStatistics().getNumberOfCRs(), type.toString(), threshold));
+
+			
+			String and = "";
+			and += useVol ? "AND COALESCE(CR1.CR_VOL, 'A') = COALESCE(CR2.CR_VOL, 'B') " : "";
+			and += usePag ? "AND COALESCE(CR1.CR_PAG, 'A') = COALESCE(CR2.CR_PAG, 'B') " : "";
+			and += useDOI ? "AND COALESCE(CR1.CR_DOI, 'A') = COALESCE(CR2.CR_DOI, 'B') " : "";
+			and += (changeCRIds != null) ? String.format ("AND CR1.CR_ID IN (%s) ", changeCRIds) : "";
+			and += (changeCRIds != null) ? String.format ("AND CR2.CR_ID IN (%s) ", changeCRIds) : "";
+			
+			String sql = new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(DB_Store.SQL_FILE_PREFIX + "updateclustering.sql").toURI())), StandardCharsets.UTF_8);
+			PreparedStatement updateclustering_PrepStmt = dbCon.prepareStatement(String.format(sql, threshold, and));
+			
+			int noOfUpdates = -1;
+			while ((noOfUpdates = updateclustering_PrepStmt.executeUpdate()) > 0) { 
+				System.out.println("NoOfUpdates = " + noOfUpdates);
+				
+			}
+			updateclustering_PrepStmt.close();
+			
+			dbCon.createStatement().execute("update cr set cr_clustersize = (select count(*) from cr as cr2 where cr.cr_clusterid1=cr2.cr_clusterid1 AND cr.cr_clusterid2 = cr2.cr_clusterid2)");
+
+			
+
+			
+			
+			
+		} catch (SQLException | IOException | URISyntaxException e) {
+			e.printStackTrace(); 	// TODO Auto-generated catch block
+		}
+
+		
+		
 		
 	}
 
 	@Override
 	public long getNumberOfMatches(boolean manual) {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			dbCon.setAutoCommit(true);
+			Statement stmt = dbCon.createStatement();
+			ResultSet rs = stmt.executeQuery(String.format("SELECT COUNT(*) FROM CR_MATCH_%s", manual ? "MANU" : "AUTO"));
+			rs.next();
+			long res = rs.getLong(1);
+			stmt.close();
+			return res;
+		} catch (Exception e) {
+			return -1l;
+		}
 	}
 
 	@Override

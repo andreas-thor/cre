@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -953,10 +954,12 @@ public class MainController {
 	public void OnMenuStdCluster() {
 
 		new Thread(() -> {
-			crTable.getClustering().generateAutoMatching();
+			crTable.getClustering().generateInitialClustering();
 			matchView.setVisible(true);
 			tablePane.requestLayout();
 			matchView.updateClustering();
+			updateTableCRList();
+
 		}).start();
 	}
 
