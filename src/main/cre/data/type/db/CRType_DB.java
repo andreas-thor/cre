@@ -12,11 +12,14 @@ import main.cre.data.type.abs.CRType;
 public class CRType_DB extends CRType<PubType_DB> {
 
 	
+
+
 	private int N_CR;
 	private int c1;
 	private int c2;
 	private int clusterSize;
 	
+	private String blockingkey;
 	
 	/**
 	 * Iterator to generate a stream of CRType_DB from SQL result set
@@ -84,6 +87,8 @@ public class CRType_DB extends CRType<PubType_DB> {
 				
 				cr.setSEQUENCE(rs.getString("CR_SEQUENCE"));
 				cr.setTYPE(rs.getString("CR_TYPE"));
+				
+				cr.setBlockingkey(rs.getString("CR_BLOCKINGKEY"));
 				
 				return cr;
 			} catch (Exception e) {
@@ -163,6 +168,15 @@ public class CRType_DB extends CRType<PubType_DB> {
 	@Override
 	public int getClusterSize() {
 		return clusterSize;
+	}
+	
+	public String getBlockingkey() {
+		return blockingkey;
+	}
+
+
+	public void setBlockingkey(String blockingkey) {
+		this.blockingkey = blockingkey;
 	}
 	
 	@Override

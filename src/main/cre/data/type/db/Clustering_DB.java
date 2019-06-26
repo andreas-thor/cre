@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -97,23 +98,20 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 		StatusBar.get().setValue(String.format("Blocking of %d objects...", CRTable.get().getStatistics().getNumberOfCRs()));
 		
 		
-		Map<String, Long> blocks = null;
 		
 		try {
 
 			dbCon.createStatement().execute(
 				"UPDATE CR SET CR_BLOCKINGKEY = " + 
 				"CASE WHEN (cr_RPY is not null) AND  (cr_AU_L is not null) AND (length(cr_AU_L)>0) " + 
-				"THEN concat (cr_rpy, lower (substring(cr_AU_L,  1, 1))) ELSE '' END ");
+				"THEN concat (cr_rpy, lower (substring(cr_AU_L,  1, 1))) ELSE NULL END ");
 
-			ResultSet rs = dbCon.createStatement().executeQuery ("SELECT CR_BLOCKINGKEY, COUNT(*) FROM CR WHERE CR_BLOCKINGKEY != '' GROUP BY CR_BLOCKINGKEY");
-			blocks = new HashMap<String, Long>();
-			while (rs.next()) {
-				blocks.put(rs.getString(1), rs.getLong(2));
-			}
+			ResultSet rs = dbCon.createStatement().executeQuery ("SELECT COUNT (DISTINCT CR_BLOCKINGKEY) FROM CR WHERE NOT (CR_BLOCKINGKEY IS NULL)");
+			rs.next();
+			int noOfBlocks = rs.getInt(1);
 			rs.close();
 			
-			StatusBar.get().initProgressbar(blocks.entrySet().stream().mapToInt(entry -> (int) (entry.getValue()*(entry.getValue()-1))/2).sum(), String.format("Matching %d objects in %d blocks", CRTable.get().getStatistics().getNumberOfCRs(), blocks.size()));
+			StatusBar.get().initProgressbar(noOfBlocks, String.format("Matching %d objects in %d blocks", CRTable.get().getStatistics().getNumberOfCRs(), noOfBlocks));
 
 			this.dbCon.createStatement().execute("TRUNCATE TABLE CR_MATCH_AUTO");
 		} catch (SQLException e) {
@@ -128,50 +126,60 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 		
 		
 		// Matching: author lastname & journal name
-		blocks.entrySet().parallelStream().forEach ( entry -> {
 
-			StatusBar.get().incProgressbar(entry.getValue()*(entry.getValue()-1)/2);
+		try {
+			PreparedStatement insertMatchAuto_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(DB_Store.SQL_FILE_PREFIX + "pst_insert_match_auto.sql").toURI())), StandardCharsets.UTF_8));
+			AtomicInteger insertMatchAuto_Counter = new AtomicInteger(0);
 			
-			try {
-				PreparedStatement insertMatchAuto_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(DB_Store.SQL_FILE_PREFIX + "pst_insert_match_auto.sql").toURI())), StandardCharsets.UTF_8));
-				AtomicInteger insertMatchAuto_Counter = new AtomicInteger(0);
-				
-				if (entry.getKey().equals("")) return;	// non-matchable block 
-	
-				List<CRType_DB> crlist = CRTable_DB.get().getDBStore().selectCR(String.format("WHERE CR_BLOCKINGKEY = '%s'", entry.getKey())).collect(Collectors.toList());
-				crossCompareCR(crlist, l, (CRType_DB cr1, CRType_DB cr2, double sim) -> {
+			NewMatchingPair<CRType_DB> newMatchPair = (CRType_DB cr1, CRType_DB cr2, double sim) -> {
+				try {
+					insertMatchAuto_PrepStmt.setInt(1, Math.min(cr1.getID(), cr2.getID()));
+					insertMatchAuto_PrepStmt.setInt(2, Math.max(cr1.getID(), cr2.getID()));
+					insertMatchAuto_PrepStmt.setDouble(3, sim);
+					insertMatchAuto_PrepStmt.addBatch();
 					
-					try {
-						insertMatchAuto_PrepStmt.setInt(1, Math.min(cr1.getID(), cr2.getID()));
-						insertMatchAuto_PrepStmt.setInt(2, Math.max(cr1.getID(), cr2.getID()));
-						insertMatchAuto_PrepStmt.setDouble(3, sim);
-						insertMatchAuto_PrepStmt.addBatch();
-						
-						if (insertMatchAuto_Counter.incrementAndGet()>=1000) {
-							insertMatchAuto_PrepStmt.executeBatch();
-							insertMatchAuto_Counter.set(0);
-						}
-					} catch (SQLException e) {
-						e.printStackTrace();
+					if (insertMatchAuto_Counter.incrementAndGet()>=1000) {
+						insertMatchAuto_PrepStmt.executeBatch();
+						insertMatchAuto_Counter.set(0);
 					}
-					return;
-				});
-				
-				if (insertMatchAuto_Counter.get()>0) {
-					insertMatchAuto_PrepStmt.executeBatch();
+				} catch (SQLException e) {
+					e.printStackTrace();
 				}
-			} catch (URISyntaxException | IOException | SQLException e) {
-				e.printStackTrace();
+				return;
+			};
+			
+			List<CRType_DB> crlist = new ArrayList<CRType_DB>();
+			StringBuffer lastBlockingKey = new StringBuffer();
+			
+			CRTable_DB.get().getDBStore().selectCR("WHERE NOT (CR_BLOCKINGKEY IS NULL) ORDER BY CR_BLOCKINGKEY").forEach( cr -> {
+			
+				if (!lastBlockingKey.toString().equals(cr.getBlockingkey())) {
+					StatusBar.get().incProgressbar();
+					crossCompareCR(crlist, l, newMatchPair);
+					crlist.clear();
+					lastBlockingKey.delete(0, lastBlockingKey.length());
+					lastBlockingKey.append(cr.getBlockingkey());
+				}
+				
+				crlist.add(cr);
+			});
+			
+			crossCompareCR(crlist, l, newMatchPair);
+			
+			if (insertMatchAuto_Counter.get()>0) {
+				insertMatchAuto_PrepStmt.executeBatch();
 			}
+		} catch (URISyntaxException | IOException | SQLException e) {
+			e.printStackTrace();
+		}
 
-		});
 
 		
 		
 		Long stop2 = System.currentTimeMillis();
 		System.out.println("Match time is " + ((stop2-stop1)/100) + " deci-seconds");
 		
-		StatusBar.get().setValue("Matching done");
+StatusBar.get().setValue("Matching done");
 	}
 
 
