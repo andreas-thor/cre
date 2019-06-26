@@ -7,7 +7,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
 import main.cre.data.type.abs.Clustering;
-import main.cre.data.type.abs.Clustering.ManualMatchType;
 
 public abstract class MatchPanel extends TitledPane {
 

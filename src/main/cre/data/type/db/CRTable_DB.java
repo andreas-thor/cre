@@ -166,7 +166,10 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 			
 			int[] NCR_RPY = new int[range_RPY[1]-range_RPY[0]+1];
 			int[] CNT_RPY = new int[range_RPY[1]-range_RPY[0]+1];
+			
+			System.out.println("A1");
 			ResultSet rs = stmt.executeQuery("SELECT CR_RPY, SUM(CR_N_CR), COUNT(CR_ID) FROM CR WHERE NOT (CR_RPY IS NULL) GROUP BY CR_RPY ORDER BY CR_RPY");
+			System.out.println("A2");
 			while (rs.next()) {
 				int rpyIdx = rs.getInt(1)-range_RPY[0];
 				NCR_RPY[rpyIdx] = rs.getInt(2);
@@ -175,25 +178,32 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 			rs.close();
 
 			
-			List<Integer> rpyList = new ArrayList<Integer>();
-			rs = stmt.executeQuery("SELECT CR_RPY, COUNT(*) FROM CR WHERE NOT (CR_RPY IS NULL)  GROUP BY CR_RPY ORDER BY CR_RPY");
-			while (rs.next()) {
-				int rpy = rs.getInt(1);
-				int crSize = rs.getInt(2);
-				computeForAllCRsOfTheSameRPY(rpy, rpy-range_RPY[0], crSize, range_PY, NCR_ALL, NCR_RPY);
-			}
-			rs.close();
-			stmt.close();
+			computeForAllCRs (range_RPY, range_PY, NCR_ALL, NCR_RPY, CNT_RPY);
 			
-			rpyList.forEach(rpy -> {
-				
-			});
+//			List<Integer> rpyList = new ArrayList<Integer>();
+//			System.out.println("B1");
+//			rs = stmt.executeQuery("SELECT CR_RPY, COUNT(*) FROM CR WHERE NOT (CR_RPY IS NULL)  GROUP BY CR_RPY ORDER BY CR_RPY");
+//			System.out.println("B2");
+//			while (rs.next()) {
+//				int rpy = rs.getInt(1);
+//				int crSize = rs.getInt(2);
+//				System.out.println("B3");
+//				computeForAllCRsOfTheSameRPY(rpy, rpy-range_RPY[0], crSize, range_PY, NCR_ALL, NCR_RPY);
+//			}
+//			rs.close();
+//			stmt.close();
+			
+//			rpyList.forEach(rpy -> {
+//				
+//			});
 			
 			
-			
+			System.out.println("C1");
+
 			
 			getChartData().updateChartData(range_RPY[0], range_RPY[range_RPY.length-1], NCR_RPY, CNT_RPY);
 
+			System.out.println("C2");
 
 			
 			
@@ -208,50 +218,102 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 		
 		
 	}
+
+	private void computeForAllCRs (int[] range_RPY, int[] range_PY, int NCR_ALL, int[] NCR_RPY, int[] CNT_RPY) {
+		
 	
-	
-	private void computeForAllCRsOfTheSameRPY (int rpy, int rpyIdx, int crSize, int[] range_PY, int NCR_ALL, int[] NCR_RPY) {
+		int crSize = -1;
+		int firstPY = -1; 
+		int lastPY = -1;
+		int pySize = -1;
 		
-		int firstPY = (rpy<=range_PY[0]) ? range_PY[0] : rpy;	// usually: rpy<=range_PY[0] 
-		int lastPY = range_PY[1];
-		if (lastPY < firstPY) return;
-		int pySize = lastPY-firstPY+1;
+		int lastCrId = -1;
+		int idx = -1;
 		
-		int[][] NCR_CR_PY = new int[crSize][pySize];	
-		int[] NCR_CR = new int[crSize];	
-		int[] NCR_CR_all = new int[crSize];	
-		int[] NPYEARS_CR = new int[crSize];
-		int[] NCR_PY = new int[pySize];	
-		int[] NCR = new int[1];
-		int[] mapCrIdxToCrId = new int[crSize];
-		
+		int[][] NCR_CR_PY = null;	
+		int[] NCR_CR = null;	
+		int[] NCR_CR_all = null;	
+		int[] NPYEARS_CR = null;
+		int[] NCR_PY = null; 	
+		int[] NCR = null; 
+		int[] mapCrIdxToCrId = null;	
 		
 		try {
+		
 			Statement stmt = dbCon.createStatement();
-			ResultSet rs = stmt.executeQuery(String.format(
-					"SELECT CR.CR_ID, CR.CR_N_CR, PUB.PUB_PY, COUNT(*) " + 
-					"FROM CR " + 
-					"JOIN PUB_CR ON (CR.CR_ID = PUB_CR.CR_ID) " + 
-					"JOIN PUB ON (PUB_CR.PUB_ID = PUB.PUB_ID) " + 
-					"WHERE CR_RPY = %d " + 
-					"GROUP BY CR.CR_ID, CR.CR_N_CR, PUB.PUB_PY " +
-					"ORDER BY CR.CR_ID ", rpy));
+			ResultSet rs = stmt.executeQuery(
+				" SELECT CR.CR_RPY, CR.CR_ID, CR.CR_N_CR, PUB.PUB_PY, COUNT(*) " + 
+				" FROM CR " + 
+				" JOIN PUB_CR ON (CR.CR_ID = PUB_CR.CR_ID) " + 
+				" JOIN PUB ON (PUB_CR.PUB_ID = PUB.PUB_ID) " + 
+				" WHERE NOT (CR.CR_RPY IS NULL) " + 
+				" GROUP BY CR.CR_RPY,  CR.CR_ID, CR.CR_N_CR, PUB.PUB_PY " + 
+				" ORDER BY CR.CR_RPY, CR.CR_ID  ");
+		
 			
-			
-			int lastCrId = -1;
-			int idx = -1;
+			int lastRPY = -1;
+			int rpyIdx = -1;
+			boolean invalidRPY_PY_Range = false; 
+					
 			while (rs.next()) {
 				
-				int crId = rs.getInt(1);
+				int rpy = rs.getInt(1);
+				
+				if ((rpy == lastRPY) && (invalidRPY_PY_Range)) continue;
+				
+				if (rpy != lastRPY) {
+					
+					if ((lastRPY != -1) && (!invalidRPY_PY_Range)) {
+						
+						int[] mapCrIdxToCrId_final = mapCrIdxToCrId;
+						computeCRIndicators(rpyIdx, crSize, pySize, NCR_ALL, NCR_RPY, NCR_CR_PY, NCR_CR, NCR_CR_all, NPYEARS_CR, NCR_PY, NCR, 
+								(int crIdx, int N_PYEARS, double PYEAR_PERC, double PERC_YR, double PERC_ALL, int[] N_PCT, int[] N_PCT_AboveAverage, String SEQUENCE, String TYPE) -> { 
+									dbStore.updateCRIndicators(mapCrIdxToCrId_final[crIdx], N_PYEARS, PYEAR_PERC, PERC_YR, PERC_ALL, N_PCT, N_PCT_AboveAverage, SEQUENCE, TYPE);
+								}
+						);						
+						
+					}
+					
+					// new RPY
+					lastRPY = rpy;
+					rpyIdx = rpy-range_RPY[0];
+					invalidRPY_PY_Range = false; 
+					
+					crSize = CNT_RPY[rpyIdx];
+					firstPY = (rpy<=range_PY[0]) ? range_PY[0] : rpy;	// usually: rpy<=range_PY[0] 
+					lastPY = range_PY[1];
+					pySize = lastPY-firstPY+1;
+					
+					
+					if (lastPY < firstPY) {
+						invalidRPY_PY_Range = true;
+						continue;
+					};
+					
+					
+					
+					NCR_CR_PY = new int[crSize][pySize];	
+					NCR_CR = new int[crSize];	
+					NCR_CR_all = new int[crSize];	
+					NPYEARS_CR = new int[crSize];
+					NCR_PY = new int[pySize];	
+					NCR = new int[1];
+					mapCrIdxToCrId = new int[crSize];
+					
+					lastCrId = -1;
+					idx = -1;
+				}
+				
+				int crId = rs.getInt(2);
 				if (crId != lastCrId) {
 					lastCrId = crId;
 					idx++;
-					NCR_CR_all[idx] = rs.getInt(2);
+					NCR_CR_all[idx] = rs.getInt(3);
 					mapCrIdxToCrId[idx] = crId; 
 				}
 				
-				int py = rs.getInt(3);
-				int count = rs.getInt(4);
+				int py = rs.getInt(4);
+				int count = rs.getInt(5);
 				if ((py>=firstPY) && (py<=lastPY)) {	// PY is out of range
 					int pyIdx = py-firstPY;
 					NPYEARS_CR[idx]++;
@@ -264,23 +326,24 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 			rs.close();
 			stmt.close();
 			
-			computeCRIndicators(rpyIdx, crSize, pySize, NCR_ALL, NCR_RPY, NCR_CR_PY, NCR_CR, NCR_CR_all, NPYEARS_CR, NCR_PY, NCR, 
-					(int crIdx, int N_PYEARS, double PYEAR_PERC, double PERC_YR, double PERC_ALL, int[] N_PCT, int[] N_PCT_AboveAverage, String SEQUENCE, String TYPE) -> { 
-						dbStore.updateCRIndicators(mapCrIdxToCrId[crIdx], N_PYEARS, PYEAR_PERC, PERC_YR, PERC_ALL, N_PCT, N_PCT_AboveAverage, SEQUENCE, TYPE);
-					}
-			);
-					
+			if ((lastRPY != -1) && (!invalidRPY_PY_Range)) {
+				int[] mapCrIdxToCrId_final = mapCrIdxToCrId;
+				computeCRIndicators(rpyIdx, crSize, pySize, NCR_ALL, NCR_RPY, NCR_CR_PY, NCR_CR, NCR_CR_all, NPYEARS_CR, NCR_PY, NCR, 
+						(int crIdx, int N_PYEARS, double PYEAR_PERC, double PERC_YR, double PERC_ALL, int[] N_PCT, int[] N_PCT_AboveAverage, String SEQUENCE, String TYPE) -> { 
+							dbStore.updateCRIndicators(mapCrIdxToCrId_final[crIdx], N_PYEARS, PYEAR_PERC, PERC_YR, PERC_ALL, N_PCT, N_PCT_AboveAverage, SEQUENCE, TYPE);
+						}
+				);						
+			}
+			
 			dbStore.finishUpdateCRIndicators();
 
-
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
 	}
-
+	
 
 
 	

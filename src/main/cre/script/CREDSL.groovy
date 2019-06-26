@@ -366,14 +366,14 @@ abstract class CREDSL extends Script {
 
 		Map<String, Object> param = makeParamsCaseInsensitive(map)
 
-		CRTable.get().generateAutoMatching();
+		CRTable.get().getClustering().generateInitialClustering();
 
 		double threshold = param.getOrDefault ("THRESHOLD", 0.8)
 		boolean useVol = param.getOrDefault ("VOLUME", false)
 		boolean usePag = param.getOrDefault ("PAGE", false)
 		boolean useDOI = param.getOrDefault ("DOI", false)
 
-		CRTable.get().updateClustering(ClusteringType.REFRESH, null, threshold, useVol, usePag, useDOI);
+		CRTable.get().getClustering().updateClustering(ClusteringType.REFRESH, null, threshold, useVol, usePag, useDOI);
 	}
 
 

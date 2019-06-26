@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -211,7 +212,8 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 			and += (changeCRIds != null) ? String.format ("AND CR2.CR_ID IN (%s) ", changeCRIds) : "";
 			
 			String sql = new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(DB_Store.SQL_FILE_PREFIX + "updateclustering.sql").toURI())), StandardCharsets.UTF_8);
-			PreparedStatement updateclustering_PrepStmt = dbCon.prepareStatement(String.format(sql, threshold, and));
+			// Locale.US makes sure that the threshold value has a point and no comma (-> would lead to SQL syntax error)
+			PreparedStatement updateclustering_PrepStmt = dbCon.prepareStatement(String.format(Locale.US, sql, threshold, and));
 			
 			int noOfUpdates = -1;
 			while ((noOfUpdates = updateclustering_PrepStmt.executeUpdate()) > 0) { 
@@ -220,7 +222,8 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 			}
 			updateclustering_PrepStmt.close();
 			
-			dbCon.createStatement().execute("update cr set cr_clustersize = (select count(*) from cr as cr2 where cr.cr_clusterid1=cr2.cr_clusterid1 AND cr.cr_clusterid2 = cr2.cr_clusterid2)");
+			sql = new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(DB_Store.SQL_FILE_PREFIX + "updateclustersize.sql").toURI())), StandardCharsets.UTF_8);
+			dbCon.createStatement().execute(sql);
 
 			
 

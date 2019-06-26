@@ -116,6 +116,9 @@ class DB_Store {
 		stmt.execute(wrapup_insert_SQL);
 		stmt.close();
 		dbCon.commit();
+		
+		System.out.println("...done!");
+
 				
 	}	
 	

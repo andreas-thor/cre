@@ -10,4 +10,10 @@ importFile (
 
 info()
 
+cluster (
+	threshold: 0.8
+)
+
+info()
+
 input()
