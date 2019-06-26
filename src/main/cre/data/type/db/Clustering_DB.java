@@ -11,17 +11,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.Clustering;
-import main.cre.data.type.mm.CRCluster;
 import main.cre.ui.statusbar.StatusBar;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
@@ -94,10 +92,11 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 	@Override
 	public void generateAutoMatching() {
 
+		
+		Long stop1 = System.currentTimeMillis(); 
+		
 		// standard blocking: year + first letter of last name
 		StatusBar.get().setValue(String.format("Blocking of %d objects...", CRTable.get().getStatistics().getNumberOfCRs()));
-		
-		
 		
 		try {
 
@@ -113,21 +112,17 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 			
 			StatusBar.get().initProgressbar(noOfBlocks, String.format("Matching %d objects in %d blocks", CRTable.get().getStatistics().getNumberOfCRs(), noOfBlocks));
 
-			this.dbCon.createStatement().execute("TRUNCATE TABLE CR_MATCH_AUTO");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		Levenshtein l = new Levenshtein();
-		
-		Long stop1 = System.currentTimeMillis(); 
-		
-		// TODO: handle missing values
-		// TODO: incorporate title (from scopus)
-		
-		
-		// Matching: author lastname & journal name
 
-		try {
+			Levenshtein l = new Levenshtein();
+			
+			
+			// TODO: handle missing values
+			// TODO: incorporate title (from scopus)
+			
+			
+			// Matching: author lastname & journal name
+
+			this.dbCon.createStatement().execute("TRUNCATE TABLE CR_MATCH_AUTO");
 			PreparedStatement insertMatchAuto_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(DB_Store.SQL_FILE_PREFIX + "pst_insert_match_auto.sql").toURI())), StandardCharsets.UTF_8));
 			AtomicInteger insertMatchAuto_Counter = new AtomicInteger(0);
 			
@@ -173,13 +168,9 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 			e.printStackTrace();
 		}
 
-
-		
-		
 		Long stop2 = System.currentTimeMillis();
 		System.out.println("Match time is " + ((stop2-stop1)/100) + " deci-seconds");
-		
-StatusBar.get().setValue("Matching done");
+		StatusBar.get().setValue("Matching done");
 	}
 
 
@@ -187,9 +178,22 @@ StatusBar.get().setValue("Matching done");
 
 	@Override
 	public Set<CRType_DB> undoManuMatching() {
-		// TODO Auto-generated method stub
-		return null;
-		
+
+		try {
+			// get latest timestamp
+			ResultSet rs = dbCon.createStatement().executeQuery("SELECT MAX(tstamp) FROM CR_MATCH_MANU");
+			if (!rs.next()) return new HashSet<CRType_DB>();
+			long tstamp = rs.getLong(1);
+			rs.close();
+
+			// remove all manual matches of lates timestamp
+			dbCon.createStatement().execute(String.format("DELETE FROM CR_MATCH_MANU WHERE tstamp = %d", tstamp));
+			return null;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return new HashSet<CRType_DB>();
+		}
 	}
 
 	@Override

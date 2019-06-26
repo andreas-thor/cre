@@ -170,10 +170,7 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 		List<CRPair> undoPairs = timestampedPairs.get(lastTimestamp);
 		undoPairs.forEach(pair -> addPair(pair, true, false, null));
 		
-		// get changed CRs and update clustering
-		Set<CRType_MM> changeCR = undoPairs.stream().map(pair -> pair.cr1).distinct().collect(Collectors.toSet());
-		changeCR.addAll(undoPairs.stream().map(pair -> pair.cr2).distinct().collect(Collectors.toSet()));
-		return changeCR;
+		return null; 
 	}
 	
 	
