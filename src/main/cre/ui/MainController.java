@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -50,6 +49,7 @@ import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.Clustering;
 import main.cre.data.type.abs.PubType;
+import main.cre.format.exporter.ExportFormat;
 import main.cre.ui.UISettings.RangeType;
 import main.cre.ui.chart.CRChart;
 import main.cre.ui.chart.CRChart_HighCharts;
@@ -547,9 +547,42 @@ public class MainController {
 
 	}
 
-	private boolean saveFile(ImportExportFormat source) throws IOException {
-		return saveFile(source, true);
+	
+	private boolean exportFile(ExportFormat source) throws IOException {
+
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(String.format("Export %s", source.getLabel()));
+		fileChooser.setInitialDirectory(UISettings.get().getLastFileDir());
+		fileChooser.getExtensionFilters().add(new ExtensionFilter(source.getLabel(), Arrays.asList(new String[] { "*." + source.getFileExtension()})));
+		fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
+		File selFile = fileChooser.showSaveDialog(CitedReferencesExplorer.stage);
+
+		if (selFile == null) return false;
+
+		UISettings.get().setLastFileDir(selFile.getParentFile());	// save last directory to be used as initial directory
+
+		Service<Void> serv = new Service<Void>() {
+			@Override
+			protected Task<Void> createTask() {
+				return new Task<Void>() {
+					@Override
+					protected Void call() throws Exception {
+						source.save(selFile, UISettings.get().getIncludePubsWithoutCRs());
+						return null;
+					}
+				};
+			}
+		};
+
+		serv.setOnFailed((WorkerStateEvent t) -> {
+			new ExceptionStacktrace("Error during file export!", t.getSource().getException()).showAndWait();
+		});
+
+		serv.start();
+		return true;
 	}
+
+	
 
 	private boolean saveFile(ImportExportFormat source, boolean saveAs) throws IOException {
 
@@ -641,32 +674,32 @@ public class MainController {
 
 	@FXML
 	public void OnMenuFileExportWoS() throws IOException {
-		saveFile(ImportExportFormat.WOS);
+		exportFile(ExportFormat.WOS);
 	}
 
 	@FXML
 	public void OnMenuFileExportScopus() throws IOException {
-		saveFile(ImportExportFormat.SCOPUS);
+		exportFile(ExportFormat.SCOPUS);
 	}
 
 	@FXML
 	public void OnMenuFileExportCSVGraph() throws IOException {
-		saveFile(ImportExportFormat.GRAPH);
+		exportFile(ExportFormat.CSV_GRAPH);
 	}
 
 	@FXML
 	public void OnMenuFileExportCSVCR() throws IOException {
-		saveFile(ImportExportFormat.CRE_CR);
+		exportFile(ExportFormat.CSV_CR);
 	}
 
 	@FXML
 	public void OnMenuFileExportCSVPub() throws IOException {
-		saveFile(ImportExportFormat.CRE_PUB);
+		exportFile(ExportFormat.CSV_PUB);
 	}
 
 	@FXML
 	public void OnMenuFileExportCSVAll() throws IOException {
-		saveFile(ImportExportFormat.CRE_CR_PUB);
+		exportFile(ExportFormat.CSV_CR_PUB);
 	}
 
 	@FXML

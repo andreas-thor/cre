@@ -12,6 +12,7 @@ import main.cre.data.type.abs.CRTable
 import main.cre.data.type.abs.Clustering.ClusteringType
 import main.cre.data.type.extern.CitedReference
 import main.cre.data.type.mm.CRType_MM
+import main.cre.format.exporter.ExportFormat
 import main.cre.ui.statusbar.StatusBar;
 import main.cre.ui.statusbar.StatusBarText
 
@@ -281,20 +282,25 @@ abstract class CREDSL extends Script {
 		
 		
 
-		// set file format
-		ImportExportFormat fileFormat = null;
-		switch (param.getOrDefault("TYPE", "").toUpperCase()) {
-			case "WOS": fileFormat = ImportExportFormat.WOS; break;
-			case "SCOPUS": fileFormat = ImportExportFormat.SCOPUS; break;
-			case "CSV_CR": fileFormat = ImportExportFormat.CRE_CR; break;
-			case "CSV_PUB": fileFormat = ImportExportFormat.CRE_PUB; break;
-			case "CSV_CR_PUB": fileFormat = ImportExportFormat.CRE_CR_PUB; break;
-			case "CSV_GRAPH": fileFormat = ImportExportFormat.GRAPH; break;
-			default: throw new Exception ("importFile: missing or unknown file format (must be WOS, SCOPUS, CSV_CR, CSV_PUB, CSV_CR_PUB, or CSV_GRAPH)");
+//		// set file format
+//		ExportFormat fileFormat = null;
+//		switch (param.getOrDefault("TYPE", "").toUpperCase()) {
+//			case "WOS": fileFormat = ExportFormat.WOS; break;
+//			case "SCOPUS": fileFormat = ExportFormat.SCOPUS; break;
+//			case "CSV_CR": fileFormat = ExportFormat.CSV_CR; break;
+//			case "CSV_PUB": fileFormat = ExportFormat.CSV_PUB; break;
+//			case "CSV_CR_PUB": fileFormat = ExportFormat.CSV_CR_PUB; break;
+//			case "CSV_GRAPH": fileFormat = ExportFormat.CSV_GRAPH; break;
+//			default: throw new Exception ("importFile: missing or unknown file format (must be WOS, SCOPUS, CSV_CR, CSV_PUB, CSV_CR_PUB, or CSV_GRAPH)");
+//		}
+
+
+		try {
+			ExportFormat.valueOf(param.getOrDefault("TYPE", "").toUpperCase()).save(file, includePubsWithoutCRs, filter, compCRType);
+		} catch (IllegalArgumentException e) {
+			throw new Exception ("importFile: missing or unknown file format (must be WOS, SCOPUS, CSV_CR, CSV_PUB, CSV_CR_PUB, or CSV_GRAPH)");
 		}
-
-
-		fileFormat.save(file, includePubsWithoutCRs, filter, compCRType);
+		
 	}
 
 

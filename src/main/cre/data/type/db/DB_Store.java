@@ -215,8 +215,11 @@ class DB_Store {
 		try {
 			Statement stmt = dbCon.createStatement();
 			stmt.executeUpdate(String.format ("DELETE PUB_CR WHERE CR_ID IN (SELECT CR_ID FROM CR WHERE %s)",  predicate)); 
+			stmt.executeUpdate(String.format ("DELETE CR_MATCH_AUTO WHERE CR_ID1 IN (SELECT CR_ID FROM CR WHERE %1$s) OR CR_ID2 IN (SELECT CR_ID FROM CR WHERE %1$s)",  predicate)); 
+			stmt.executeUpdate(String.format ("DELETE CR_MATCH_MANU WHERE CR_ID1 IN (SELECT CR_ID FROM CR WHERE %1$s) OR CR_ID2 IN (SELECT CR_ID FROM CR WHERE %1$s)",  predicate)); 
 			stmt.executeUpdate(String.format ("DELETE CR WHERE %s",  predicate)); 
 			dbCon.commit();
+			CRTable_DB.get().updateData();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
