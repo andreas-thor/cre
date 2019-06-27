@@ -3,32 +3,15 @@ package main.cre.format.cre;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
+import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;
-import javax.json.stream.JsonParser;
 
-import main.cre.Exceptions.AbortedException;
-import main.cre.Exceptions.FileTooLargeException;
-import main.cre.Exceptions.UnsupportedFileFormatException;
 import main.cre.data.type.abs.CRTable;
-import main.cre.data.type.abs.CRType;
-import main.cre.data.type.abs.CRType.FORMATTYPE;
-import main.cre.data.type.abs.PubType;
-import main.cre.data.type.mm.CRType_MM;
-import main.cre.data.type.mm.Clustering_MM;
-import main.cre.data.type.mm.PubType_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 
@@ -36,19 +19,18 @@ public class Writer {
 
 	/**
 	 * 
-	 * @param file_name
+	 * @param file
 	 * @param includePubsWithoutCRs
 	 * @param filter
 	 * @param comp IS IGNORED
 	 * @throws IOException
 	 */
-	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException {
+	public static void save (File file, boolean includePubsWithoutCRs) throws IOException {
 		 
 		/* TODO: filter is not supported yet */
 		
 		StatusBar.get().initProgressbar(CRTable.get().getStatistics().getNumberOfCRs() + CRTable.get().getStatistics().getNumberOfPubs() + CRTable.get().getClustering().getNumberOfMatches(true) + CRTable.get().getClustering().getNumberOfMatches(false));
-		
-		ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(file_name), Charset.forName("UTF-8"));
+		ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(file), Charset.forName("UTF-8"));
 		
 		zip.putNextEntry(new ZipEntry("crdata.json"));
 		saveCRData(Json.createGenerator(zip));
@@ -161,14 +143,14 @@ public class Writer {
 		
 		jgenMatch.writeStartObject();
 		for (boolean loop: new boolean[] { false, true }) {
+
 			jgenMatch.writeStartObject(loop?"MATCH_MANU":"MATCH_AUTO");
-//			for (Entry<Integer, Map<Integer, Double>> it: crTab.crMatch.match.get(loop).entrySet()) {
-			Clustering_MM.get().matchResult.get(loop).forEach((cr1, pairs) -> {
-				if (pairs.size()>0) {
-					jgenMatch.writeStartObject(String.valueOf(cr1.getID()));
-					pairs.forEach((cr2, sim) -> {
-						jgenMatch.write(String.valueOf(cr2.getID()), sim);
-					});
+			CRTable.get().getClustering().getMatchPairGroups(loop).forEach(group -> {
+				if (group.getMatches().size()>0) {
+					jgenMatch.writeStartObject(String.valueOf(group.getCrId1()));
+					for (Entry<Integer, Double> p: group.getMatches().entrySet()) {
+						jgenMatch.write(String.valueOf(p.getKey()), p.getValue());
+					}
 					jgenMatch.writeEnd();
 				}
 				

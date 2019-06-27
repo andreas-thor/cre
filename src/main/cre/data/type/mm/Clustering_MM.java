@@ -5,15 +5,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.Clustering;
+import main.cre.data.type.abs.MatchPairGroup;
 import main.cre.ui.statusbar.StatusBar;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
@@ -272,6 +275,20 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 	@Override
 	public long getNumberOfClusters() {
 		return crTab.getCR().map(cr -> cr.getCluster()).distinct().count();
+	}
+
+
+
+	@Override
+	public Stream<MatchPairGroup> getMatchPairGroups(boolean manual) {
+		return this.matchResult.get(manual).entrySet().stream()
+			.map(e -> {
+				MatchPairGroup res = new MatchPairGroup(e.getKey().getID());
+				for (Entry<CRType_MM, Double> p: e.getValue().entrySet()) {
+					res.addMatch(p.getKey().getID(), p.getValue());
+				}
+				return res;
+			});
 	}
 
 

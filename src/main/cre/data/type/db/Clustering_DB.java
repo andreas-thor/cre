@@ -12,14 +12,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.Clustering;
+import main.cre.data.type.abs.MatchPairGroup;
+import main.cre.data.type.abs.CRType.FORMATTYPE;
 import main.cre.ui.statusbar.StatusBar;
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
@@ -32,6 +37,9 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 		
 
 	}
+	
+	
+	
 	
 	
 	@Override
@@ -278,6 +286,23 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 			return res;
 		} catch (Exception e) {
 			return -1l;
+		}
+	}
+
+
+
+
+
+	@Override
+	public Stream<MatchPairGroup> getMatchPairGroups(boolean manual) {
+
+		try {
+			ResultSet rs = dbCon.createStatement().executeQuery(String.format("SELETC CR_ID1, CR_ID2, sim FROM CR_MATCH_%s ORDER BY CR_ID1, CR_ID2", manual?"MANU":"AUTO")); 
+			return StreamSupport.stream(new MatchPairGroup_Resultset(rs).getIterable().spliterator(), false);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Stream<MatchPairGroup> emptyStr = Stream.of();
+			return emptyStr;
 		}
 	}
 

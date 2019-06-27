@@ -8,6 +8,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import uk.ac.shef.wit.simmetrics.similaritymetrics.Levenshtein;
 
@@ -124,4 +125,8 @@ public abstract class Clustering<C extends CRType<P>, P extends PubType<C>> {
 	public abstract long getNumberOfMatches (boolean manual);
 	
 	public abstract long getNumberOfClusters();
+	
+	public abstract Stream<MatchPairGroup> getMatchPairGroups(boolean manual);
+	
+	
 }

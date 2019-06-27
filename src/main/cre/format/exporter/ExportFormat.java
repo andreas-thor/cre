@@ -3,22 +3,10 @@ package main.cre.format.exporter;
 import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.StreamSupport;
 
-import main.cre.Exceptions.AbortedException;
-import main.cre.Exceptions.FileTooLargeException;
-import main.cre.Exceptions.UnsupportedFileFormatException;
-import main.cre.data.CRStatsInfo;
-import main.cre.data.Sampling;
-import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
-import main.cre.data.type.mm.CRCluster;
-import main.cre.data.type.mm.CRType_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 public enum ExportFormat {
@@ -55,11 +43,11 @@ public enum ExportFormat {
 	}
 
 	public void save (File file, boolean includePubsWithoutCRs) throws IOException {
-		this.save (file, includePubsWithoutCRs, (it -> true));
+		this.save (file, includePubsWithoutCRs, null);
 	}
 	
 	public void save (File file, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter) throws IOException {
-		this.save (file, includePubsWithoutCRs, (it -> true), null);
+		this.save (file, includePubsWithoutCRs, filter, null);
 	}
 	
 	public void save (File file, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException {
@@ -71,7 +59,7 @@ public enum ExportFormat {
 		if (!file_name.endsWith("." + this.getFileExtension())) file_name += "." + this.getFileExtension();
 		
 		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s ...", file.getName(), this.getLabel()));
-		this.exportSave.save(file_name, includePubsWithoutCRs, filter, comp);
+		this.exportSave.save(file_name, includePubsWithoutCRs, Optional.ofNullable(filter).orElse(it -> true), Optional.ofNullable(comp).orElse(CRType<?>::compareTo));
 		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s done", file.getName(), this.getLabel()));
 
 	}

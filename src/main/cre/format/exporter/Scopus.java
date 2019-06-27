@@ -28,8 +28,6 @@ public class Scopus   {
 	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException {
 		
 		/* TODO: Filter not supported yet ... nun drin? */
-		final Comparator<CRType<?>> compCR = (comp == null) ? CRType<?>::compareTo : comp; // default: sort by ID
-
 		StatusBar.get().initProgressbar(CRTable.get().getStatistics().getNumberOfPubs());
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		
@@ -72,7 +70,7 @@ public class Scopus   {
 			row.add (pub.getAB() == null ? "" : pub.getAB());
 			row.add (pub.getDE() == null ? "" : pub.getDE());
 
-			row.add (pub.getCR().sorted(compCR)
+			row.add (pub.getCR().sorted(comp)
 				.filter(cr -> filter.test(cr))	
 				.map ( cr -> (cr.getFormatType()==CRType.FORMATTYPE.SCOPUS) ? cr.getCR() : generateCRString (cr))
 				.collect (Collectors.joining ("; ")));

@@ -35,8 +35,6 @@ public class CSV {
 		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
 		csv.writeNext(Arrays.stream(CRType_ColumnView.CRColumn.values()).map(col -> col.id).toArray(String[]::new)); 
 
-		if (comp == null) comp = CRType<?>::compareTo;		// default: sort by ID
-		
 		CRTable.get().getCR().filter(filter).sorted(comp).forEach(cr -> {
 			StatusBar.get().incProgressbar();
 			csv.writeNext(Arrays.stream(CRType_ColumnView.CRColumn.values()).map(col -> col.prop.apply(cr)).map(val -> val == null ? "" : String.valueOf(val.getValue())).toArray(String[]::new)); 
@@ -81,12 +79,10 @@ public class CSV {
 				Arrays.stream(CRType_ColumnView.CRColumn.values()).map(col -> col.id))
 		.toArray(String[]::new)); 
 		
-		final Comparator<CRType<?>> crComp = (comp == null) ? CRType::compareTo : comp;
-		
 		CRTable.get().getPub().sorted().forEach(pub -> {
 			StatusBar.get().incProgressbar();
 			
-			pub.getCR().filter(filter).sorted(crComp).forEach(cr -> {
+			pub.getCR().filter(filter).sorted(comp).forEach(cr -> {
 				csv.writeNext (Stream.concat (
 					Arrays.stream(PubType_ColumnView.PubColumn.values()).map(col -> col.prop.apply(pub)).map(val -> val==null ? "" : String.valueOf(val.getValue())), 
 					Arrays.stream(CRType_ColumnView.CRColumn.values()).map(col -> col.prop.apply(cr)).map(val -> val==null ? "" : String.valueOf(val.getValue())) 

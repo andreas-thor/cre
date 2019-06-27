@@ -44,11 +44,11 @@ import main.cre.data.CRSearch;
 import main.cre.data.CRStatsInfo;
 import main.cre.data.DownloadCrossrefData;
 import main.cre.data.source.Crossref;
-import main.cre.data.source.ImportExportFormat;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.Clustering;
 import main.cre.data.type.abs.PubType;
+import main.cre.format.cre.Writer;
 import main.cre.format.exporter.ExportFormat;
 import main.cre.format.importer.ImportFormat;
 import main.cre.ui.UISettings.RangeType;
@@ -603,7 +603,7 @@ public class MainController {
 				return new Task<Void>() {
 					@Override
 					protected Void call() throws Exception {
-						source.save(selFile, UISettings.get().getIncludePubsWithoutCRs());
+						Writer.save(selFile, UISettings.get().getIncludePubsWithoutCRs());
 						creFile = selFile;
 						return null;
 					}
@@ -853,7 +853,7 @@ public class MainController {
 
 		StringBuffer buf = new StringBuffer();
 
-		tableView.getSelectionModel().getSelectedItems().stream().forEach((CRType cr) -> {
+		tableView.getSelectionModel().getSelectedItems().stream().forEach((CRType<?> cr) -> {
 			tableView.getColumns().filtered(c -> c.isVisible()).forEach(c -> {
 				buf.append("\"");
 				buf.append(c.getCellData(cr));

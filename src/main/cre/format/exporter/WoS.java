@@ -34,9 +34,6 @@ public class WoS {
 	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException, RuntimeException {
 		
 		/* TODO: Filter is not supported yet */
-		final Comparator<CRType<?>> compCR = (comp == null) ? CRType<?>::compareTo : comp; // default: sort by ID
- 
-		
 		StatusBar.get().initProgressbar(CRTable.get().getStatistics().getNumberOfPubs());
 						
 		BufferedWriter bw = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
@@ -90,7 +87,7 @@ public class WoS {
 				if (pub.getPG() != null) writeTag(bw, "PG", pub.getPG().toString());
 				if (pub.getTC() != null) writeTag(bw, "TC", pub.getTC().toString());
 				
-				writeTag(bw, "CR", pub.getCR().sorted(compCR).map(cr -> (cr.getFormatType()==CRType.FORMATTYPE.WOS) ? cr.getCR() : generateCRString(cr) ));
+				writeTag(bw, "CR", pub.getCR().sorted(comp).map(cr -> (cr.getFormatType()==CRType.FORMATTYPE.WOS) ? cr.getCR() : generateCRString(cr) ));
 				writeTag(bw, "NR", String.valueOf(pub.getSizeCR()));
 				writeTag(bw, "DI", pub.getDI());
 				writeTag(bw, "AB", pub.getAB());
