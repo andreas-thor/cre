@@ -50,6 +50,7 @@ import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.Clustering;
 import main.cre.data.type.abs.PubType;
 import main.cre.format.exporter.ExportFormat;
+import main.cre.format.importer.ImportFormat;
 import main.cre.ui.UISettings.RangeType;
 import main.cre.ui.chart.CRChart;
 import main.cre.ui.chart.CRChart_HighCharts;
@@ -227,7 +228,7 @@ public class MainController {
 
 				if (button == ButtonType.YES) {
 					try {
-						if (!saveFile(ImportExportFormat.CRE, false))
+						if (!saveFile(false))
 							return;
 					} catch (Exception e) {
 						Platform.runLater(() -> {
@@ -243,7 +244,7 @@ public class MainController {
 		});
 
 		if (CitedReferencesExplorer.loadOnOpen != null) {
-			openFile(ImportExportFormat.CRE, CitedReferencesExplorer.loadOnOpen);
+			openFile(new File (CitedReferencesExplorer.loadOnOpen));
 		}
 
 	}
@@ -319,11 +320,8 @@ public class MainController {
 		return tableView.getSelectionModel().getSelectedItems().stream().filter(cr -> cr != null).collect(Collectors.toList());
 	}
 
-	private void openFile(ImportExportFormat source) throws IOException {
-		openFile(source, null);
-	}
 
-	private boolean analyzeFiles(ImportExportFormat source, List<File> files) {
+	private boolean analyzeFiles(ImportFormat source, List<File> files) {
 
 		final AtomicBoolean result = new AtomicBoolean();
 
@@ -373,7 +371,7 @@ public class MainController {
 
 	}
 
-	public void openFiles(ImportExportFormat source, List<File> files) {
+	public void importFiles(ImportFormat source, List<File> files) {
 
 		Wait wait = new Wait();
 		Service<Void> serv = new Service<Void>() {
@@ -386,7 +384,7 @@ public class MainController {
 					protected Void call() throws Exception {
 
 						tableView.getItems().clear(); // free space (references to CR instances)
-
+						creFile = null;
 						source.load(
 							files, 
 							UISettings.get().getRange(RangeType.ImportRPYRange),
@@ -397,10 +395,6 @@ public class MainController {
 							UISettings.get().getSampling()
 						);
 						
-						if ((source == ImportExportFormat.CRE) && (files.size() == 1)) {
-							creFile = files.get(0);
-						}
-
 						// show match panel if applicable
 						matchView.setVisible((crTable.getClustering().getNumberOfMatches(true) + crTable.getClustering().getNumberOfMatches(false)) > 0);
 						matchView.updateClustering();
@@ -414,7 +408,6 @@ public class MainController {
 		serv.setOnSucceeded((WorkerStateEvent t) -> {
 			OnMenuViewInfo();
 			updateTableCRList();
-			CitedReferencesExplorer.stage.setTitle(CitedReferencesExplorer.title + ((creFile == null) ? "" : " - " + creFile.getAbsolutePath()));
 			wait.close();
 		});
 
@@ -445,46 +438,47 @@ public class MainController {
 		});
 	}
 
-	private void openFile(ImportExportFormat source, String fileName) throws IOException {
+	private void openFile() throws IOException {
 
-		final List<File> files = new ArrayList<File>();
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open CRE file");
+		fileChooser.setInitialDirectory(UISettings.get().getLastFileDir());
+		fileChooser.getExtensionFilters().add(new ExtensionFilter("CRE", Arrays.asList(new String[] { "*.cre"})));
+		fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
+		openFile (fileChooser.showOpenDialog(CitedReferencesExplorer.stage));
+	}
+	
+	private void openFile(File file) throws IOException {
 
-		if (fileName != null) { // load specific file (e.g., during application start)
-			files.add(new File(fileName));
-		} else {
-			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle(String.format("%1$s %2$s", (source == ImportExportFormat.CRE) ? "Open" : "Import", source.getLabel()));
-			fileChooser.setInitialDirectory(UISettings.get().getLastFileDir());
-			fileChooser.getExtensionFilters().add(new ExtensionFilter(source.getLabel(), Arrays.asList(new String[] { "*." + source.getFileExtension()})));
-			fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
-
-			if (source.isImportMultiple()) {
-				List<File> selFiles = fileChooser.showOpenMultipleDialog(CitedReferencesExplorer.stage);
-				if (selFiles != null)
-					files.addAll(selFiles);
-			} else {
-				File selFile = fileChooser.showOpenDialog(CitedReferencesExplorer.stage);
-				if (selFile != null)
-					files.add(selFile);
-			}
-		}
-
-		if (files.size() > 0) {
-			this.creFile = null;
-			UISettings.get().setLastFileDir(files.get(0).getParentFile()); // save last directory to be uses as initial directory
-
-			if (source != ImportExportFormat.CRE) {
-				if (analyzeFiles(source, files)) {
-					openFiles(source, files);
-				} else {
-					StatusBar.get().setValue("Import aborted by user");
-				}
-			} else {
-				openFiles(source, files);
-			}
+		if (file != null) {
+			UISettings.get().setLastFileDir(file.getParentFile()); // save last directory to be uses as initial directory
+			importFiles(source, files);
+			this.creFile = file;
 		}
 	}
 
+	
+	private void importFiles(ImportFormat source) throws IOException {
+
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(String.format("Import %s", source.getLabel()));
+		fileChooser.setInitialDirectory(UISettings.get().getLastFileDir());
+		fileChooser.getExtensionFilters().add(new ExtensionFilter(source.getLabel(), Arrays.asList(new String[] { "*." + source.getFileExtension()})));
+		fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
+
+		List<File> files = fileChooser.showOpenMultipleDialog(CitedReferencesExplorer.stage);
+		if ((files == null) || (files.size()==0)) return;
+
+		this.creFile = null;
+		UISettings.get().setLastFileDir(files.get(0).getParentFile()); // save last directory to be uses as initial directory
+
+		if (analyzeFiles(source, files)) {
+			importFiles(source, files);
+		} else {
+			StatusBar.get().setValue("Import aborted by user");
+		}
+	}	
+	
 	private void downloadCrossref() {
 
 		Optional<DownloadCrossrefData> dialogResult = new DownloadCrossref().showAndWait();
@@ -512,8 +506,8 @@ public class MainController {
 			
 			if ((serv.getValue() != null) && (serv.getValue().size() > 0)) {
 				this.creFile = null;
-				if (analyzeFiles(ImportExportFormat.CROSSREF, serv.getValue())) {
-					openFiles(ImportExportFormat.CROSSREF, serv.getValue());
+				if (analyzeFiles(ImportFormat.CROSSREF, serv.getValue())) {
+					importFiles(ImportFormat.CROSSREF, serv.getValue());
 				} else {
 					StatusBar.get().setValue("Import aborted by user");
 				}
@@ -584,22 +578,21 @@ public class MainController {
 
 	
 
-	private boolean saveFile(ImportExportFormat source, boolean saveAs) throws IOException {
+	private boolean saveFile(boolean saveAs) throws IOException {
 
 		File selFile;
-		if ((source == ImportExportFormat.CRE) && (creFile != null) && (!saveAs)) {
+		if ((creFile != null) && (!saveAs)) {
 			selFile = creFile;
 		} else {
 			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle(String.format("%1$s %2$s", (source == ImportExportFormat.CRE) ? "Save" : "Export", source.getLabel()));
+			fileChooser.setTitle("Save CRE file");
 			fileChooser.setInitialDirectory(UISettings.get().getLastFileDir());
-			fileChooser.getExtensionFilters().add(new ExtensionFilter(source.getLabel(), Arrays.asList(new String[] { "*." + source.getFileExtension()})));
+			fileChooser.getExtensionFilters().add(new ExtensionFilter("CRE", Arrays.asList(new String[] { "*.cre"})));
 			fileChooser.getExtensionFilters().add(new ExtensionFilter("All Files", Arrays.asList(new String[] { "*.*" })));
 			selFile = fileChooser.showSaveDialog(CitedReferencesExplorer.stage);
 		}
 
-		if (selFile == null)
-			return false;
+		if (selFile == null) return false;
 
 		// save last directory to be uses as initial directory
 		UISettings.get().setLastFileDir(selFile.getParentFile());
@@ -611,8 +604,7 @@ public class MainController {
 					@Override
 					protected Void call() throws Exception {
 						source.save(selFile, UISettings.get().getIncludePubsWithoutCRs());
-						if (source == ImportExportFormat.CRE)
-							creFile = selFile;
+						creFile = selFile;
 						return null;
 					}
 				};
@@ -629,7 +621,6 @@ public class MainController {
 		});
 
 		serv.start();
-
 		return true;
 	}
 
@@ -639,22 +630,22 @@ public class MainController {
 
 	@FXML
 	public void OnMenuFileOpen() throws IOException {
-		openFile(ImportExportFormat.CRE);
+		openFile();
 	}
 
 	@FXML
 	public void OnMenuFileImportWoS(ActionEvent event) throws IOException {
-		openFile(ImportExportFormat.WOS);
+		importFiles(ImportFormat.WOS);
 	}
 
 	@FXML
 	public void OnMenuFileImportScopus(ActionEvent event) throws IOException {
-		openFile(ImportExportFormat.SCOPUS);
+		importFiles(ImportFormat.SCOPUS);
 	}
 
 	@FXML
 	public void OnMenuFileImportCrossrefFile(ActionEvent event) throws IOException {
-		openFile(ImportExportFormat.CROSSREF);
+		importFiles(ImportFormat.CROSSREF);
 	}
 
 	@FXML
@@ -664,12 +655,12 @@ public class MainController {
 
 	@FXML
 	public void OnMenuFileSave() throws IOException {
-		saveFile(ImportExportFormat.CRE, false);
+		saveFile(false);
 	}
 
 	@FXML
 	public void OnMenuFileSaveAs() throws IOException {
-		saveFile(ImportExportFormat.CRE, true);
+		saveFile(true);
 	}
 
 	@FXML

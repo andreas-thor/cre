@@ -13,6 +13,7 @@ import main.cre.data.type.abs.Clustering.ClusteringType
 import main.cre.data.type.extern.CitedReference
 import main.cre.data.type.mm.CRType_MM
 import main.cre.format.exporter.ExportFormat
+import main.cre.format.importer.ImportFormat
 import main.cre.ui.statusbar.StatusBar;
 import main.cre.ui.statusbar.StatusBarText
 
@@ -40,16 +41,6 @@ abstract class CREDSL extends Script {
 		return files;
 	}
 
-	private static ImportExportFormat getFileFormat  (String operator, Map<String, Object> param) {
-
-		switch (param.getOrDefault("TYPE", "").toUpperCase()) {
-			case "WOS": return ImportExportFormat.WOS;
-			case "SCOPUS": return ImportExportFormat.SCOPUS;
-			case "CROSSREF": return ImportExportFormat.CROSSREF;
-		}
-		throw new Exception (String.format("%s: missing or unknown file format (must be WOS, SCOPUS, or CROSSREF)", operator));
-
-	}
 
 	private static int[] getRangeRPY (Map<String, Object> param, int[] defaultRangeRPY = null) {
 
@@ -141,9 +132,14 @@ abstract class CREDSL extends Script {
 	public static void analyzeFile (Map<String, Object> map)  {
 		Map<String, Object> param = makeParamsCaseInsensitive(map);
 		List<File> files = getFiles ("analyzeFile", param);
-		ImportExportFormat fileFormat = getFileFormat("analyzeFile", param);
-		fileFormat.analyze(files);
+		try {
+			ImportFormat fileFormat = ImportFormat.valueOf (param.getOrDefault("TYPE", "").toUpperCase()).
+			fileFormat.analyze(files);
+		} catch (IllegalArgumentException e) {
+			throw new Exception ("analyzeFile: missing or unknown file format (must be WOS, SCOPUS, or CROSSREF)");
+		}
 		println CRStatsInfo.get().toString()
+		
 	}
 
 	/**
@@ -161,25 +157,24 @@ abstract class CREDSL extends Script {
 		Map<String, Object> param = makeParamsCaseInsensitive(map);
 
 		List<File> files = getFiles ("importFile", param);
-		ImportExportFormat fileFormat = getFileFormat("importFile", param);
-		fileFormat.analyze(files);
-
-		fileFormat.load(files, getRangeRPY(param), getWithoutRPY(param), getRangePY(param), getWithoutPY(param), param.getOrDefault("MAXCR", 0), getSampling(param));
+		
+		try {
+			ImportFormat fileFormat = ImportFormat.valueOf (param.getOrDefault("TYPE", "").toUpperCase()).
+			fileFormat.analyze(files);
+			fileFormat.load(files, getRangeRPY(param), getWithoutRPY(param), getRangePY(param), getWithoutPY(param), param.getOrDefault("MAXCR", 0), getSampling(param));
+		} catch (IllegalArgumentException e) {
+			throw new Exception ("importFile: missing or unknown file format (must be WOS, SCOPUS, or CROSSREF)");
+		}
+			
 	}
 
 	
 	public static void importSearch (Map<String, Object> map)  {
 		
 		Map<String, Object> param = makeParamsCaseInsensitive(map);
-		ImportExportFormat fileFormat = getFileFormat("importSearch", param);
-		
-		if (fileFormat != ImportExportFormat.CROSSREF) {
-			throw new Exception ("importSearch: unsupported file format (must be CROSSREF)");
-		}
-		
 		List<File> files = Crossref.download(getDOI (param), param.getOrDefault("ISSN", ""), getRangePY(param, [-1,-1] as int[]));
-		fileFormat.analyze(files);
-		fileFormat.load(files, getRangeRPY(param), getWithoutRPY(param), getRangePY(param), getWithoutPY(param), param.getOrDefault("MAXCR", 0), getSampling(param));
+		ImportFormat.CROSSREF.analyze(files);
+		ImportFormat.CROSSREF.load(files, getRangeRPY(param), getWithoutRPY(param), getRangePY(param), getWithoutPY(param), param.getOrDefault("MAXCR", 0), getSampling(param));
 	}
 
 
