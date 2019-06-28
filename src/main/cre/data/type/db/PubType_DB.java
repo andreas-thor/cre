@@ -16,11 +16,11 @@ import main.cre.data.type.abs.PubType;
 
 public class PubType_DB extends PubType<CRType_DB> {
 
-	private static CharSequence arraySeparator1 = "\n"; 
-	private static CharSequence arraySeparator2 = "\t"; 
+	public final static CharSequence arraySeparator1 = "\n"; 
+	public final static CharSequence arraySeparator2 = "\t"; 
 	
-	private static Collector<? super String, ?, String> join = Collectors.joining(arraySeparator1);
-	private static Function<String, Stream<String>> split = s -> Arrays.stream(s.split(arraySeparator1.toString()));
+	public final static Collector<? super String, ?, String> join = Collectors.joining(arraySeparator1);
+	public final static Function<String, Stream<String>> split = s -> Arrays.stream(s.split(arraySeparator1.toString()));
 	
 	public static class PubType_ResultSet implements Iterator<PubType_DB> {
 		

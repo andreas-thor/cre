@@ -56,7 +56,7 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 			if ((matchType==Clustering.ManualMatchType.SAME) || (matchType==Clustering.ManualMatchType.DIFFERENT)) {
 				double sim = (matchType==Clustering.ManualMatchType.SAME) ? 2d : -2d;
 			
-				PreparedStatement insertMatchManu_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(DB_Store.SQL_FILE_PREFIX + "pst_insert_match_manu.sql").toURI())), StandardCharsets.UTF_8));
+				PreparedStatement insertMatchManu_PrepStmt = dbCon.prepareStatement(DB_Store.Queries.getQuery("pst_insert_match_manu.sql"));
 
 				for (CRType_DB cr1: selCR) {
 					for (CRType_DB cr2: selCR) {
@@ -87,7 +87,7 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 						timestamp, crIds)
 				);
 			}
-		} catch (SQLException | IOException | URISyntaxException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
@@ -131,7 +131,7 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 			// Matching: author lastname & journal name
 
 			this.dbCon.createStatement().execute("TRUNCATE TABLE CR_MATCH_AUTO");
-			PreparedStatement insertMatchAuto_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(DB_Store.SQL_FILE_PREFIX + "pst_insert_match_auto.sql").toURI())), StandardCharsets.UTF_8));
+			PreparedStatement insertMatchAuto_PrepStmt = dbCon.prepareStatement(DB_Store.Queries.getQuery("pst_insert_match_auto.sql"));
 			AtomicInteger insertMatchAuto_Counter = new AtomicInteger(0);
 			
 			NewMatchingPair<CRType_DB> newMatchPair = (CRType_DB cr1, CRType_DB cr2, double sim) -> {
@@ -172,7 +172,7 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 			if (insertMatchAuto_Counter.get()>0) {
 				insertMatchAuto_PrepStmt.executeBatch();
 			}
-		} catch (URISyntaxException | IOException | SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
@@ -231,9 +231,8 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 			and += (changeCRIds != null) ? String.format ("AND CR1.CR_ID IN (%s) ", changeCRIds) : "";
 			and += (changeCRIds != null) ? String.format ("AND CR2.CR_ID IN (%s) ", changeCRIds) : "";
 			
-			String sql = new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(DB_Store.SQL_FILE_PREFIX + "updateclustering.sql").toURI())), StandardCharsets.UTF_8);
 			// Locale.US makes sure that the threshold value has a point and no comma (-> would lead to SQL syntax error)
-			PreparedStatement updateclustering_PrepStmt = dbCon.prepareStatement(String.format(Locale.US, sql, threshold, and));
+			PreparedStatement updateclustering_PrepStmt = dbCon.prepareStatement(String.format(Locale.US, DB_Store.Queries.getQuery("updateclustering.sql"), threshold, and));
 			
 			int noOfUpdates = -1;
 			while ((noOfUpdates = updateclustering_PrepStmt.executeUpdate()) > 0) { 
@@ -242,15 +241,10 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 			}
 			updateclustering_PrepStmt.close();
 			
-			sql = new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(DB_Store.SQL_FILE_PREFIX + "updateclustersize.sql").toURI())), StandardCharsets.UTF_8);
-			dbCon.createStatement().execute(sql);
+			dbCon.createStatement().execute(DB_Store.Queries.getQuery("updateclustersize.sql"));
 
 			
-
-			
-			
-			
-		} catch (SQLException | IOException | URISyntaxException e) {
+		} catch (SQLException e) {
 			e.printStackTrace(); 	// TODO Auto-generated catch block
 		}
 

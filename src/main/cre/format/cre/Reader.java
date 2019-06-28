@@ -24,12 +24,15 @@ import main.cre.ui.statusbar.StatusBar;
 
 public abstract class Reader {
 
+	public abstract void onAfterLoad();
+
 	public abstract void onNewCR(CRType_MM cr);
 	
 	public abstract void onNewPub(PubType_MM pub, List<Integer> crIds);
 
 	public abstract void onNewMatchPair(int crId1, int crId2, double sim, boolean isManual);
 	
+	public abstract void onBeforeLoad();
 	/**
 	 * if loadMutlipleFiles == TRUE: 
 	 * 	load is executed multiple times (i.e., multiple CRE files are loaded and unified)
@@ -40,6 +43,8 @@ public abstract class Reader {
 	 * @throws Exception 
 	 */
 	public void load (File file) throws OutOfMemoryError, Exception {
+		
+		onBeforeLoad();
 		
 		CRTable.get().init();
 		
@@ -80,8 +85,9 @@ public abstract class Reader {
 		CRTable.get().updateData();
 		CRTable.get().getClustering().updateClustering(Clustering.ClusteringType.INIT, null, Clustering.min_threshold, false, false, false);
 
-
+		onAfterLoad();
 	}
+
 
 
 	/**

@@ -44,7 +44,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	
 	
 	@Override
-	public Reader createReader() {
+	public Reader getReader() {
 		return new Reader_MM();
 	}
 	
@@ -142,12 +142,9 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 //	}
 	
 	@Override
-	public PubType_MM addPub (PubType_MM pub, boolean setAutoId) {
+	public PubType_MM addPub (PubType_MM pub) {
 		
-		if (setAutoId) {
-			pub.setID(this.allPubs.size()+1);
-		}
-		
+		pub.setID(this.allPubs.size()+1);
 		this.allPubs.put(pub, pub);
 		
 		

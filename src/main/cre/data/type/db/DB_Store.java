@@ -2,29 +2,36 @@ package main.cre.data.type.db;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.CRType.PERCENTAGE;
 import main.cre.data.type.abs.PubType;
-import main.cre.data.type.extern.CRType_ColumnView;
-import main.cre.data.type.extern.PubType_ColumnView;
 
 class DB_Store { 
 
-	public final static String SQL_FILE_PREFIX = "main/cre/data/type/db/sql/"; 
+	
+	public static class Queries {
+
+		private final static String SQL_FILE_PREFIX = "main/cre/data/type/db/sql/"; 
+
+		static public String getQuery(String name) {
+	    	try {
+				return new String(Files.readAllBytes(Paths.get(Queries.class.getClassLoader().getResource(SQL_FILE_PREFIX + name).toURI())));
+			} catch (IOException | URISyntaxException e) {
+				return null;
+			}
+	    }
+	}	
+	
 	
 	private PreparedStatement insertCR_PrepStmt;
 	private int insertCR_Counter;
@@ -61,17 +68,17 @@ class DB_Store {
 		
 		/* create tables */
 		Statement stmt = dbCon.createStatement();
-		stmt.execute(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(SQL_FILE_PREFIX + "create_schema.sql").toURI())), StandardCharsets.UTF_8));
+		stmt.execute(Queries.getQuery("create_schema.sql"));
 		stmt.close();
 		
 		/* create prepared statements & sql scripts */
-		insertCR_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(SQL_FILE_PREFIX + "pst_insert_cr.sql").toURI())), StandardCharsets.UTF_8));
+		insertCR_PrepStmt = dbCon.prepareStatement(Queries.getQuery("pst_insert_cr.sql")); 
 		insertCR_Counter = 0;
-		insertPub_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(SQL_FILE_PREFIX + "pst_insert_pub.sql").toURI())), StandardCharsets.UTF_8));
+		insertPub_PrepStmt = dbCon.prepareStatement(Queries.getQuery("pst_insert_pub.sql"));
 		insertPub_Counter = 0;
-		updateCRIndicators_PrepStmt = dbCon.prepareStatement(new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(SQL_FILE_PREFIX + "pst_update_cr_indicators.sql").toURI())), StandardCharsets.UTF_8));
+		updateCRIndicators_PrepStmt = dbCon.prepareStatement(Queries.getQuery("pst_update_cr_indicators.sql"));
 		updateCRIndicators_Counter = 0;		
-		wrapup_insert_SQL = new String(Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource(SQL_FILE_PREFIX + "wrapup_insert.sql").toURI())), StandardCharsets.UTF_8);
+		wrapup_insert_SQL = Queries.getQuery("wrapup_insert.sql");
 		
 		dbCon.commit();
 	}

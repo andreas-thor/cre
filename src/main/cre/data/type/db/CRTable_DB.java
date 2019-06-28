@@ -33,6 +33,7 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 	
 	private Statistics_DB statistics;
 	private Clustering_DB clustering;
+	private Reader_DB reader;
 	
 
 	public static CRTable_DB get() {
@@ -44,8 +45,8 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 	
 	
 	@Override
-	public Reader createReader() {
-		return new Reader_DB();
+	public Reader getReader() {
+		return this.reader;
 	}
 	
 	@Override
@@ -74,6 +75,7 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 			dbStore = new DB_Store(dbCon);
 			statistics = new Statistics_DB(dbCon);
 			clustering = new Clustering_DB(dbCon);
+			reader = new Reader_DB(dbCon);
 			
 		} catch (ClassNotFoundException | SQLException | IOException | URISyntaxException e) {
 			// TODO Auto-generated catch block
@@ -120,7 +122,7 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
 
 	@Override
-	public PubType_DB addPub(PubType_MM pub, boolean setAutoId) {
+	public PubType_DB addPub(PubType_MM pub) {
 
 		this.numberOfPubs++;
 		pub.setID(this.numberOfPubs);

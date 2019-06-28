@@ -35,7 +35,7 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	}
 	
 	
-	public abstract Reader createReader();
+	public abstract Reader getReader();
 	
 	public abstract Statistics getStatistics();
 	
@@ -79,7 +79,7 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	
 //	public abstract PubType addPub (PubType pub, boolean addCRs);
 	
-	public abstract P addPub (PubType_MM pub, boolean setAutoId);
+	public abstract P addPub (PubType_MM pub);
 	
 
 	

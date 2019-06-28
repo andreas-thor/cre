@@ -127,7 +127,7 @@ abstract class CREDSL extends Script {
 		if (files.size()>1) {
 			throw new Exception (String.format("openFile: too many files specified (%d; only one file allowed)", files.size()));
 		}
-		CRTable.get().createReader().load(files[0]);
+		CRTable.get().getReader().load(files[0]);
 	}
 
 

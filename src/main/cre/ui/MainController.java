@@ -465,7 +465,7 @@ public class MainController {
 
 						tableView.getItems().clear(); // free space (references to CR instances)
 						creFile = file;
-						CRTable.get().createReader().load(file);
+						CRTable.get().getReader().load(file);
 						
 						// show match panel if applicable
 						matchView.setVisible((crTable.getClustering().getNumberOfMatches(true) + crTable.getClustering().getNumberOfMatches(false)) > 0);

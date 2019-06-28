@@ -25,7 +25,7 @@ public class Reader_MM extends Reader {
 		for (int crId: crIds) {
 			pub.addCR(mapId2CR.get(crId), true);
 		}
-		CRTable_MM.get().addPub(pub, false);
+		CRTable_MM.get().addPub(pub);
 	}
 
 	@Override
@@ -37,6 +37,16 @@ public class Reader_MM extends Reader {
 		if ((cr1==null) || (cr2==null)) return;
 		
 		CRTable_MM.get().getClustering().addPair(cr1, cr2, sim, isManual);
+	}
+
+	@Override
+	public void onAfterLoad() {
+		// nothing to do ...
+	}
+
+	@Override
+	public void onBeforeLoad() {
+		// nothing to do ...
 	}
 
 	
