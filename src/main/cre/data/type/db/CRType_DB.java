@@ -154,6 +154,13 @@ public class CRType_DB extends CRType<PubType_DB> {
 		return this.N_CR;
 	}
 
+//	@Override
+//	public void setClusterId(String clusterId) {
+//		String[] split = clusterId.split("/");
+//		this.c1 = Integer.valueOf(split[0]).intValue();
+//		this.c2 = Integer.valueOf(split[1]).intValue();
+//	}
+
 
 	@Override
 	public int getClusterC1() {

@@ -28,6 +28,11 @@ public class CRCluster implements Serializable, Comparable<CRCluster> {
 	}
 	
 	
+//	public CRCluster (CRType_MM cr, int c1, int c2) {
+//		this (cr);
+//		this.c1 = c1;
+//		this.c2 = c2;
+//	}
 
 	public void merge (CRCluster clus) {
 		this.crSet.addAll(clus.crSet);

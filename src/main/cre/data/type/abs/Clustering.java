@@ -23,7 +23,7 @@ public abstract class Clustering<C extends CRType<P>, P extends PubType<C>> {
 	private final double weight_author = 2.0;
 	private final double weight_journal = 1.0;
 	private final double weight_title = 5.0;
-	private final double min_threshold = 0.5;
+	public static final double min_threshold = 0.5;
 	
 	public static enum ManualMatchType { SAME, DIFFERENT, EXTRACT }
 

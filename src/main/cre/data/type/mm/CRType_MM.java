@@ -122,6 +122,12 @@ public class CRType_MM extends CRType<PubType_MM>  {
 	public void setCluster (CRCluster cluster) {
 		this.cluster = cluster;
 	}
+	
+//	@Override
+//	public void setClusterId(String clusterId) {
+//		String[] split = clusterId.split("/");
+//		this.cluster = new CRCluster(this, Integer.valueOf(split[0]).intValue(), Integer.valueOf(split[1]).intValue());
+//	}
 
 
 

@@ -1,39 +1,35 @@
 package main.cre.format.cre;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
 
 import javax.json.Json;
-import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonParser;
 
 import main.cre.Exceptions.AbortedException;
 import main.cre.Exceptions.FileTooLargeException;
 import main.cre.Exceptions.UnsupportedFileFormatException;
 import main.cre.data.type.abs.CRTable;
-import main.cre.data.type.abs.CRType;
+import main.cre.data.type.abs.Clustering;
 import main.cre.data.type.abs.CRType.FORMATTYPE;
-import main.cre.data.type.abs.PubType;
 import main.cre.data.type.mm.CRType_MM;
-import main.cre.data.type.mm.Clustering_MM;
 import main.cre.data.type.mm.PubType_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 
-public class Reader {
+public abstract class Reader {
 
+	public abstract void onNewCR(CRType_MM cr);
+	
+	public abstract void onNewPub(PubType_MM pub, List<Integer> crIds);
+
+	public abstract void onNewMatchPair(int crId1, int crId2, double sim, boolean isManual);
+	
 	/**
 	 * if loadMutlipleFiles == TRUE: 
 	 * 	load is executed multiple times (i.e., multiple CRE files are loaded and unified)
@@ -43,17 +39,17 @@ public class Reader {
 	 * @throws OutOfMemoryError
 	 * @throws Exception 
 	 */
-	public static void load (File file, boolean loadMutlipleFiles) throws OutOfMemoryError, Exception {
+	public void load (File file) throws OutOfMemoryError, Exception {
+		
+		CRTable.get().init();
 		
 		ZipEntry entry = null;
 		ZipFile zipFile = new ZipFile(file);
 		
-		Map<Integer, CRType_MM> mapId2CR;
-	
 		entry = zipFile.getEntry("crdata.json");
 		if (entry != null) {
 			StatusBar.get().initProgressbar(entry.getSize(), "Loading CRE file crdata ...");
-			mapId2CR = loadCRData(zipFile.getInputStream(entry), loadMutlipleFiles);
+			loadCRData(zipFile.getInputStream(entry));
 			StatusBar.get().setValue("Loading CRE file crdata done");
 		} else {
 			zipFile.close();
@@ -64,7 +60,7 @@ public class Reader {
 		entry = zipFile.getEntry("pubdata.json");
 		if (entry != null) {
 			StatusBar.get().initProgressbar(entry.getSize(), "Loading CRE file pubdata ...");
-			loadPubData(zipFile.getInputStream(entry), loadMutlipleFiles, mapId2CR);
+			loadPubData(zipFile.getInputStream(entry));
 			StatusBar.get().setValue("Loading CRE file pubdata done");
 		} else {
 			zipFile.close();
@@ -75,11 +71,16 @@ public class Reader {
 		entry = zipFile.getEntry("crmatch.json");
 		if (entry != null) {
 			StatusBar.get().initProgressbar(entry.getSize(), "Loading CRE file crmatch ...");
-			loadCRMatchData(zipFile.getInputStream(entry), mapId2CR);
+			loadCRMatchData(zipFile.getInputStream(entry));
 			StatusBar.get().setValue("Loading CRE file crmatch done");
 		}
 			
 		zipFile.close();
+		
+		CRTable.get().updateData();
+		CRTable.get().getClustering().updateClustering(Clustering.ClusteringType.INIT, null, Clustering.min_threshold, false, false, false);
+
+
 	}
 
 
@@ -94,24 +95,23 @@ public class Reader {
 	 * @throws OutOfMemoryError
 	 * @throws IOException
 	 */
-	private static Map<Integer, CRType_MM> loadCRData (InputStream in, boolean checkForDuplicates) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
+	private void loadCRData (InputStream in) throws UnsupportedFileFormatException, FileTooLargeException, AbortedException, OutOfMemoryError, IOException {
 		
-		Map<Integer, CRType_MM> result = new HashMap<Integer, CRType_MM>();
-		
-		CRTable crTab = CRTable.get(); 
 		JsonParser parser = Json.createParser(in);
+		System.out.println(parser.hasNext());
 		CRType_MM cr = null;
 		String key = "";
-		while (!crTab.isAborted() && parser.hasNext()) {
+		while (!CRTable.get().isAborted() && parser.hasNext()) {
 			
 			
 			switch (parser.next()) {
 			case START_OBJECT: 	cr = new CRType_MM(); break; 
 			case END_OBJECT: 	
-				int internalId = cr.getID();
-				cr = (CRType_MM) crTab.addCR(cr, checkForDuplicates);
-				cr.setCID2(cr);
-				result.put(internalId, cr);  
+//x				int internalId = cr.getID();
+//x				cr = (CRType_MM) crTab.addCR(cr, checkForDuplicates);
+//x				cr.setCID2(cr);
+//x				result.put(internalId, cr);  
+				onNewCR(cr);
 				break;
 			case KEY_NAME:		key = parser.getString(); break;
 			case VALUE_STRING: 
@@ -128,7 +128,7 @@ public class Reader {
 				case "PAG": 	cr.setPAG(parser.getString()); break;
 				case "VOL": 	cr.setVOL(parser.getString()); break;
 				case "DOI": 	cr.setDOI(parser.getString()); break;
-				case "CID2": 	cr.setCID2(parser.getString()); break;
+				case "CID2": 	/* cr.setCID2(parser.getString()); */ break; 
 				default: System.out.println("CRDATA.json >> Unknow Key with String Value: " + key); 
 				}
 				break;
@@ -149,33 +149,30 @@ public class Reader {
 		
 			StatusBar.get().updateProgressbar(parser.getLocation().getStreamOffset());
 		}		
-		
-		return result;
 	}
 
 	
-	private static void loadPubData (InputStream in, boolean checkForDuplicates, Map<Integer, CRType_MM> mapId2CR) {
-		
-		CRTable crTab = CRTable.get(); 
+	
 
+	private void loadPubData (InputStream in) {
+		
 		JsonParser parser = Json.createParser(in);
 		PubType_MM pub = null;
 		List<String> C1List = null;
-		List<CRType_MM> CRList = null; 
+		
+		List<Integer> crIds = null; 
+		
 		int arrayLevel = 0;
 		String key = "";
-		while (!crTab.isAborted() && parser.hasNext()) {
+		while (!CRTable.get().isAborted() && parser.hasNext()) {
 			
 			switch (parser.next()) {
 			case START_OBJECT:
 				pub = new PubType_MM();
-				CRList = new ArrayList<CRType_MM>();
+				crIds = new ArrayList<Integer>();
 				break; 
 			case END_OBJECT: 	
-				pub = crTab.addPub(pub, false, checkForDuplicates);
-				for (CRType cr: CRList) {
-					pub.addCR(cr, true);
-				}
+				onNewPub (pub, crIds);
 				break;
 			case KEY_NAME:		
 				key = parser.getString(); 
@@ -190,7 +187,6 @@ public class Reader {
 					case "C1":	break;	
 					case "EM":	break;
 					case "AA":	break;
-//						case "CRLISTID":	pub.crList = new ArrayList<CRType>(); break;
 					}
 					break;
 				case 3:			C1List = new ArrayList<String>(); break;
@@ -242,7 +238,7 @@ public class Reader {
 				case "PG": 	pub.setPG(parser.getInt()); break;
 				case "TC": 	pub.setTC(parser.getInt()); break;
 				case "CRLISTID":	
-					CRList.add(mapId2CR.get(parser.getInt()));	//  --> das wird erst nach AddPub gemacht: pub.addCR(mapId2CR.get(parser.getInt()), true); 
+					crIds.add(parser.getInt());	//  --> das wird erst nach AddPub gemacht: pub.addCR(mapId2CR.get(parser.getInt()), true); 
 					break;
 				// local mapping: case "CRLISTID":	crTab.crData.get(crTab.crMatch.crId2Index.get(parser.getInt()))); break;
 				default: System.out.println("PUBDATA.json >> Unknow Key with Number Value: " + key); 
@@ -259,16 +255,18 @@ public class Reader {
 	
 	
 	
-	private static void loadCRMatchData (InputStream in, Map<Integer, CRType_MM> mapId2CR) {
 
-		CRTable crTab = CRTable.get(); 
+
+
+	private void loadCRMatchData (InputStream in) {
+
 		JsonParser parser = Json.createParser(in);
 		
 		boolean isManual = false;
 		int id1 = 0, id2 = 0;
 		int level = 0;
 		
-		while (!crTab.isAborted() && parser.hasNext()) {
+		while (!CRTable.get().isAborted() && parser.hasNext()) {
 			switch (parser.next()) {
 			case START_OBJECT: 	level++; break; 
 			case END_OBJECT: 	level--; break;
@@ -284,11 +282,14 @@ public class Reader {
 				}
 				break;
 			case VALUE_NUMBER:
-				CRType cr1 = mapId2CR.get(id1);
-				CRType cr2 = mapId2CR.get(id2);
-				if (!(cr1==null) && !(cr2==null)) {
-					Clustering_MM.get().addPair(cr1, cr2, parser.getBigDecimal().doubleValue(), isManual, false, null);
-				}
+//				CRType cr1 = mapId2CR.get(id1);
+//				CRType cr2 = mapId2CR.get(id2);
+//				if (!(cr1==null) && !(cr2==null)) {
+//					Clustering_MM.get().addPair(cr1, cr2, parser.getBigDecimal().doubleValue(), isManual, false, null);
+//				}
+				
+				onNewMatchPair (id1, id2, parser.getBigDecimal().doubleValue(), isManual);
+				
 				break;
 			default:break;  
 			}
@@ -296,6 +297,8 @@ public class Reader {
 		}
 		
 	}
+
+
 	
 		
 	

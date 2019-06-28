@@ -241,7 +241,7 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 	
 	
 	
-	public void addPair (CRType_MM cr1, CRType_MM cr2, double s, boolean isManual, boolean add, Long timestamp) {
+	public void addPair (CRType_MM cr1, CRType_MM cr2, double s, boolean isManual) {
 		addPair(new CRPair (cr1, cr2, s), isManual, false, null);
 	}
 

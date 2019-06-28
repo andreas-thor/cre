@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import main.cre.data.CRSearch;
-import main.cre.data.type.abs.CRIndicatorsUpdate;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.PubType;
 import main.cre.data.type.abs.Statistics;
+import main.cre.format.cre.Reader;
 import main.cre.ui.statusbar.StatusBar;
 
 public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
@@ -40,6 +40,12 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 			crTab = new CRTable_MM();
 		}
 		return crTab;
+	}
+	
+	
+	@Override
+	public Reader createReader() {
+		return new Reader_MM();
 	}
 	
 	@Override
@@ -136,33 +142,24 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 //	}
 	
 	@Override
-	public PubType_MM addPub (PubType_MM pub, boolean addCRs, boolean checkForDuplicates) {
+	public PubType_MM addPub (PubType_MM pub, boolean setAutoId) {
 		
-		if (checkForDuplicates) {
-			PubType_MM pubMain = this.allPubs.get(pub);
-			if (pubMain == null) {
-				this.allPubs.put(pub, pub);
-				pub.setID(this.allPubs.size());
-			} else {
-				pub = pubMain;
-			}
-		} else {
+		if (setAutoId) {
 			pub.setID(this.allPubs.size()+1);
-			this.allPubs.put(pub, pub);
 		}
 		
-		if (addCRs) {
+		this.allPubs.put(pub, pub);
 		
-			for(CRType_MM cr: pub.getCR().collect(Collectors.toSet())) {
-				
-				CRType_MM crMain = this.crDataMap.get(cr);
-				if (crMain == null) {
-					this.crDataMap.put(cr, cr);
-				} else {
-					pub.removeCR(cr, false);	
-					pub.addCR(crMain, false);
-					crMain.addPub(pub, false);	
-				}
+		
+		for(CRType_MM cr: pub.getCR().collect(Collectors.toSet())) {
+			
+			CRType_MM crMain = this.crDataMap.get(cr);
+			if (crMain == null) {
+				this.crDataMap.put(cr, cr);
+			} else {
+				pub.removeCR(cr, false);	
+				pub.addCR(crMain, false);
+				crMain.addPub(pub, false);	
 			}
 		}
 		

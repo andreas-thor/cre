@@ -9,6 +9,7 @@ import main.cre.data.type.abs.CRType.PERCENTAGE;
 import main.cre.data.type.db.CRTable_DB;
 import main.cre.data.type.mm.CRTable_MM;
 import main.cre.data.type.mm.PubType_MM;
+import main.cre.format.cre.Reader;
 
 public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
  
@@ -33,6 +34,8 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 		}
 	}
 	
+	
+	public abstract Reader createReader();
 	
 	public abstract Statistics getStatistics();
 	
@@ -76,7 +79,7 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	
 //	public abstract PubType addPub (PubType pub, boolean addCRs);
 	
-	public abstract P addPub (PubType_MM pub, boolean addCRs, boolean checkForDuplicates);
+	public abstract P addPub (PubType_MM pub, boolean setAutoId);
 	
 
 	

@@ -33,7 +33,7 @@ public class Scopus   {
 		
 		csv.writeNext(new String[] {"Authors","Title","Year","Source title","Volume","Issue","Art. No.","Page start","Page end","Page count","Cited by","DOI","Link","Affiliations","Authors with affiliations","Abstract","Author Keywords","References","Document Type","Source","EID"});
 		
-		CRTable.get().getPub(includePubsWithoutCRs).sorted().forEach(pub -> {
+		CRTable.get().getPub(includePubsWithoutCRs).forEach(pub -> {
 			ArrayList<String> row = new ArrayList<String>();
 			
 			row.add ((pub.getAU().count() == 0) ? "" :

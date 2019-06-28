@@ -52,8 +52,6 @@ public enum ExportFormat {
 	
 	public void save (File file, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException {
 		
-		ExportFormat.valueOf("s");
-		
 		// add extension if necessary
 		String file_name = file.toString();
 		if (!file_name.endsWith("." + this.getFileExtension())) file_name += "." + this.getFileExtension();

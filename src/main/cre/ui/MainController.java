@@ -102,7 +102,7 @@ public class MainController {
 	CheckMenuItem showWOYear;
 
 	@FXML
-	public void initialize() throws IOException {
+	public void initialize() throws OutOfMemoryError, Exception {
 
 		CitedReferencesExplorer.stage.setWidth(UISettings.get().getWindowWidth());
 		CitedReferencesExplorer.stage.setHeight(UISettings.get().getWindowHeight());
@@ -438,7 +438,7 @@ public class MainController {
 		});
 	}
 
-	private void openFile() throws IOException {
+	private void openFile() throws OutOfMemoryError, Exception {
 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open CRE file");
@@ -448,13 +448,57 @@ public class MainController {
 		openFile (fileChooser.showOpenDialog(CitedReferencesExplorer.stage));
 	}
 	
-	private void openFile(File file) throws IOException {
+	private void openFile(File file) throws OutOfMemoryError, Exception {
 
-		if (file != null) {
-			UISettings.get().setLastFileDir(file.getParentFile()); // save last directory to be uses as initial directory
-			importFiles(source, files);
-			this.creFile = file;
-		}
+		if (file == null) return;
+		UISettings.get().setLastFileDir(file.getParentFile()); // save last directory to be uses as initial directory
+		
+		Wait wait = new Wait();
+		Service<Void> serv = new Service<Void>() {
+
+			@Override
+			protected Task<Void> createTask() {
+				return new Task<Void>() {
+
+					@Override
+					protected Void call() throws Exception {
+
+						tableView.getItems().clear(); // free space (references to CR instances)
+						creFile = file;
+						CRTable.get().createReader().load(file);
+						
+						// show match panel if applicable
+						matchView.setVisible((crTable.getClustering().getNumberOfMatches(true) + crTable.getClustering().getNumberOfMatches(false)) > 0);
+						matchView.updateClustering();
+
+						return null;
+					}
+				};
+			}
+		};
+
+		serv.setOnSucceeded((WorkerStateEvent t) -> {
+			OnMenuViewInfo();
+			updateTableCRList();
+			wait.close();
+		});
+
+		serv.setOnFailed((WorkerStateEvent t) -> {
+			Throwable e = t.getSource().getException();
+			if (e instanceof OutOfMemoryError) {
+				crTable.init();
+				new ConfirmAlert("Error during file import!", true, new String[] { "Out of Memory Error." }).showAndWait();
+			} else {
+				new ExceptionStacktrace("Error during file import!", e).showAndWait();
+			}
+			wait.close();
+		});
+
+		serv.start();
+
+		wait.showAndWait().ifPresent(cancel -> {
+			crTable.setAborted(cancel);
+		});		
 	}
 
 	
@@ -629,7 +673,7 @@ public class MainController {
 	 */
 
 	@FXML
-	public void OnMenuFileOpen() throws IOException {
+	public void OnMenuFileOpen() throws OutOfMemoryError, Exception {
 		openFile();
 	}
 

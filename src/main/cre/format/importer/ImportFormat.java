@@ -159,7 +159,7 @@ public enum ImportFormat {
 								cr.setCluster(new CRCluster(cr));
 							});
 							
-							crTab.addPub(pub, true, false);
+							crTab.addPub(pub, true);
 							
 //								if ((UserSettings.get().getMaxCR()>0) && (numberOfCRs.addAndGet(pub.getSizeCR()) >= UserSettings.get().getMaxCR())) {
 //									this.importReader.stop(); 

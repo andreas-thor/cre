@@ -15,6 +15,7 @@ import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.Statistics;
 import main.cre.data.type.mm.CRType_MM;
 import main.cre.data.type.mm.PubType_MM;
+import main.cre.format.cre.Reader;
 
 public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
@@ -39,6 +40,12 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 			crTab = new CRTable_DB();
 		}
 		return crTab;
+	}
+	
+	
+	@Override
+	public Reader createReader() {
+		return new Reader_DB();
 	}
 	
 	@Override
@@ -113,9 +120,8 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
 
 	@Override
-	public PubType_DB addPub(PubType_MM pub, boolean addCRs, boolean checkForDuplicates) {
+	public PubType_DB addPub(PubType_MM pub, boolean setAutoId) {
 
-		/* TODO: Check for Duplicates */
 		this.numberOfPubs++;
 		pub.setID(this.numberOfPubs);
 		

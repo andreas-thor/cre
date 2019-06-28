@@ -12,6 +12,7 @@ import main.cre.data.type.abs.CRTable
 import main.cre.data.type.abs.Clustering.ClusteringType
 import main.cre.data.type.extern.CitedReference
 import main.cre.data.type.mm.CRType_MM
+import main.cre.format.cre.Writer
 import main.cre.format.exporter.ExportFormat
 import main.cre.format.importer.ImportFormat
 import main.cre.ui.statusbar.StatusBar;
@@ -123,7 +124,10 @@ abstract class CREDSL extends Script {
 	public static void openFile (Map<String, Object> map) throws Exception {
 		Map<String, Object> param = makeParamsCaseInsensitive(map);
 		List<File> files = getFiles ("openFile", param);
-		ImportExportFormat.CRE.load(files, [Integer.MIN_VALUE, Integer.MAX_VALUE] as int[], true, [Integer.MIN_VALUE, Integer.MAX_VALUE] as int[], true, Long.MAX_VALUE, Sampling.NONE);
+		if (files.size()>1) {
+			throw new Exception (String.format("openFile: too many files specified (%d; only one file allowed)", files.size()));
+		}
+		CRTable.get().createReader().load(files[0]);
 	}
 
 
@@ -201,7 +205,7 @@ abstract class CREDSL extends Script {
 			filter = { CRType_MM cr -> (cr.getRPY() != null) && (cr.getRPY()>=range[0]) && (cr.getRPY()<=range[1]) };
 		}
 
-		ImportExportFormat.CRE.save(file, true, filter);
+		Writer.save(file, true);
 	}
 
 

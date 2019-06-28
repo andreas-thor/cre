@@ -7,17 +7,17 @@ import java.util.List;
 import org.junit.Test;
 
 import main.cre.data.Sampling;
-import main.cre.data.source.ImportExportFormat;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRTable.TABLE_IMPL_TYPES;
+import main.cre.format.cre.Writer;
+import main.cre.format.exporter.ExportFormat;
+import main.cre.format.importer.ImportFormat;
 import main.cre.ui.UISettings;
 
 public class Im {
 
 	@Test
 	public void test() throws OutOfMemoryError, Exception {
-		
-		ImportExportFormat[] outFormats = { ImportExportFormat.WOS, ImportExportFormat.SCOPUS, ImportExportFormat.CRE_CR, ImportExportFormat.CRE_PUB, ImportExportFormat.CRE_CR_PUB, ImportExportFormat.GRAPH };
 		
 		List<File> inputFiles = new ArrayList<File>();
 		inputFiles.add(new File("data/savedrecs_JOI1.txt"));
@@ -26,7 +26,7 @@ public class Im {
 		for (TABLE_IMPL_TYPES type: CRTable.TABLE_IMPL_TYPES.values()) {
 			CRTable.type = type;
 			
-			ImportExportFormat.WOS.load(
+			ImportFormat.WOS.load(
 					inputFiles, 
 					new int[] {0, 0},
 					true,
@@ -36,17 +36,14 @@ public class Im {
 					Sampling.NONE
 				);
 			
-			for (ImportExportFormat outFormat: outFormats) {
+			for (ExportFormat outFormat: ExportFormat.values()) {
 				File outputFile = new File(String.format("data/test/out_%s_%s.%s", type.toString(), outFormat.toString(), outFormat.getFileExtension()));
 				outFormat.save(outputFile, UISettings.get().getIncludePubsWithoutCRs());
 			}
 			
+			File creFile = new File(String.format("data/test/out_%s.cre", type.toString()));
+			Writer.save(creFile, UISettings.get().getIncludePubsWithoutCRs());
 		}
-		
-		
-		
-		
-		
 
 	}
 	

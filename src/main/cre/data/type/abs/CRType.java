@@ -373,7 +373,7 @@ public abstract class CRType<P extends PubType<?>> implements Comparable<CRType<
 
 	@Override
 	public boolean equals(Object obj) {
-		return this.getCR().equals(((CRType)obj).getCR());
+		return this.getCR().equals(((CRType<?>)obj).getCR());
 	}
 	
 
