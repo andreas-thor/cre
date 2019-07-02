@@ -22,7 +22,6 @@ import org.apache.lucene.store.RAMDirectory;
 
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.extern.CRType_ColumnView;
-import main.cre.data.type.extern.CRType_ColumnView.CRColumn;
 
 public class CRSearch {
 

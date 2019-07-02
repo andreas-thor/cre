@@ -1,4 +1,4 @@
-package main.cre.data;
+package main.cre.ui.dialog;
 
 import java.util.Arrays;
 

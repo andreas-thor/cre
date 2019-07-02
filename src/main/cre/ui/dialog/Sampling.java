@@ -1,4 +1,4 @@
-package main.cre.data;
+package main.cre.ui.dialog;
 
 public enum Sampling {
 	NONE("Import all (no sampling)"),

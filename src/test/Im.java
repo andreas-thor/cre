@@ -1,18 +1,19 @@
 package test;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import main.cre.data.Sampling;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRTable.TABLE_IMPL_TYPES;
 import main.cre.format.cre.Writer;
 import main.cre.format.exporter.ExportFormat;
 import main.cre.format.importer.ImportFormat;
 import main.cre.ui.UISettings;
+import main.cre.ui.dialog.Sampling;
 
 public class Im {
 
@@ -35,6 +36,8 @@ public class Im {
 					0, 
 					Sampling.NONE
 				);
+			
+			CRTable.get().removeCRByYear(new int[] { 2000, 2001 });
 			
 			for (ExportFormat outFormat: ExportFormat.values()) {
 				File outputFile = new File(String.format("data/test/out_%s_%s.%s", type.toString(), outFormat.toString(), outFormat.getFileExtension()));

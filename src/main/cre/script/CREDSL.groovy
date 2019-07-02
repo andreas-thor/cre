@@ -5,16 +5,15 @@ import java.util.function.Predicate
 
 import groovy.io.FileType
 import main.cre.data.CRStatsInfo
-import main.cre.data.Sampling
-import main.cre.data.source.Crossref
-import main.cre.data.source.ImportExportFormat;
 import main.cre.data.type.abs.CRTable
 import main.cre.data.type.abs.Clustering.ClusteringType
 import main.cre.data.type.extern.CitedReference
 import main.cre.data.type.mm.CRType_MM
 import main.cre.format.cre.Writer
 import main.cre.format.exporter.ExportFormat
+import main.cre.format.importer.Crossref
 import main.cre.format.importer.ImportFormat
+import main.cre.ui.dialog.Sampling
 import main.cre.ui.statusbar.StatusBar;
 import main.cre.ui.statusbar.StatusBarText
 
@@ -88,18 +87,25 @@ abstract class CREDSL extends Script {
 		return withoutPY;
 	}
 	
+	
+	private static ImportFormat getImportFormat (Map<String, Object> param) {
+		try {
+			return ImportFormat.valueOf (param.getOrDefault("TYPE", "").toUpperCase())
+		} catch (IllegalArgumentException e) {
+			throw new Exception ("missing or unknown file format (must be WOS, SCOPUS, or CROSSREF)");
+		}
+	}
+	
+	
 	private static Sampling getSampling (Map<String, Object> param) {
 		
-		Sampling sampling = null;
-		switch (param.getOrDefault("SAMPLING", "NONE").toUpperCase()) {
-			case "NONE": sampling = Sampling.NONE; break;
-			case "RANDOM": sampling = Sampling.RANDOM; break;
-			case "SYSTEMATIC": sampling = Sampling.SYSTEMATIC; break;
-			case "CLUSTER": sampling = Sampling.CLUSTER; break;
-			default: throw new Exception ("importFile: unknown sampling (must be NONE, RANDOM, SYSTEMATIC, or CLUSTER)");
+		try {
+			Sampling sampling = Sampling.valueOf(param.getOrDefault("SAMPLING", "NONE").toUpperCase())
+			sampling.offset = param.getOrDefault("OFFSET", 0);
+			return sampling;
+		} catch (IllegalArgumentException e) {
+			throw new Exception ("unknown sampling (must be NONE, RANDOM, SYSTEMATIC, or CLUSTER)");
 		}
-		sampling.offset = param.getOrDefault("OFFSET", 0);
-		return sampling;
 	}
 	
 	
@@ -134,16 +140,11 @@ abstract class CREDSL extends Script {
 
 
 	public static void analyzeFile (Map<String, Object> map)  {
-		Map<String, Object> param = makeParamsCaseInsensitive(map);
-		List<File> files = getFiles ("analyzeFile", param);
-		try {
-			ImportFormat fileFormat = ImportFormat.valueOf (param.getOrDefault("TYPE", "").toUpperCase()).
-			fileFormat.analyze(files);
-		} catch (IllegalArgumentException e) {
-			throw new Exception ("analyzeFile: missing or unknown file format (must be WOS, SCOPUS, or CROSSREF)");
-		}
-		println CRStatsInfo.get().toString()
 		
+		Map<String, Object> param = makeParamsCaseInsensitive(map);
+		ImportFormat format = getImportFormat(param)
+		format.analyze(getFiles ("analyzeFile", param));
+		println CRStatsInfo.get().toString()
 	}
 
 	/**
@@ -159,16 +160,10 @@ abstract class CREDSL extends Script {
 	public static void importFile (Map<String, Object> map)  {
 
 		Map<String, Object> param = makeParamsCaseInsensitive(map);
-
 		List<File> files = getFiles ("importFile", param);
-		
-		try {
-			ImportFormat fileFormat = ImportFormat.valueOf (param.getOrDefault("TYPE", "").toUpperCase()).
-			fileFormat.analyze(files);
-			fileFormat.load(files, getRangeRPY(param), getWithoutRPY(param), getRangePY(param), getWithoutPY(param), param.getOrDefault("MAXCR", 0), getSampling(param));
-		} catch (IllegalArgumentException e) {
-			throw new Exception ("importFile: missing or unknown file format (must be WOS, SCOPUS, or CROSSREF)");
-		}
+		ImportFormat fileFormat = getImportFormat(param);
+		fileFormat.analyze(files);
+		fileFormat.load(files, getRangeRPY(param), getWithoutRPY(param), getRangePY(param), getWithoutPY(param), param.getOrDefault("MAXCR", 0), getSampling(param));
 			
 	}
 

@@ -1,7 +1,7 @@
 package main.cre.format.exporter;
  
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,11 +25,11 @@ public class Scopus   {
 	 * @param comp IS IGNORED
 	 * @throws IOException
 	 */
-	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException {
+	public static void save (OutputStream out, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException {
 		
 		/* TODO: Filter not supported yet ... nun drin? */
 		StatusBar.get().initProgressbar(CRTable.get().getStatistics().getNumberOfPubs());
-		CSVWriter csv = new CSVWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
+		CSVWriter csv = new CSVWriter (new OutputStreamWriter(out, "UTF-8"));
 		
 		csv.writeNext(new String[] {"Authors","Title","Year","Source title","Volume","Issue","Art. No.","Page start","Page end","Page count","Cited by","DOI","Link","Affiliations","Authors with affiliations","Abstract","Author Keywords","References","Document Type","Source","EID"});
 		

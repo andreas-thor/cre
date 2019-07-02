@@ -7,9 +7,9 @@ import java.util.prefs.Preferences;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import main.cre.CitedReferencesExplorer;
-import main.cre.data.DownloadCrossrefData;
-import main.cre.data.Sampling;
 import main.cre.data.type.extern.CRType_ColumnView;
+import main.cre.ui.dialog.DownloadCrossrefData;
+import main.cre.ui.dialog.Sampling;
 
 public class UISettings {
 

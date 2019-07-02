@@ -23,7 +23,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import main.cre.data.CRStatsInfo;
-import main.cre.data.Sampling;
 import main.cre.ui.UISettings;
 
 public class ImportStats extends Dialog<Integer> {

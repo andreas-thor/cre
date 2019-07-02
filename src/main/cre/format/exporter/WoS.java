@@ -1,8 +1,8 @@
 package main.cre.format.exporter;
 
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,12 +31,12 @@ public class WoS {
 	 * @throws RuntimeException
 	 */
 	
-	public static void save (String file_name, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException, RuntimeException {
+	public static void save (OutputStream out, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException, RuntimeException {
 		
 		/* TODO: Filter is not supported yet */
 		StatusBar.get().initProgressbar(CRTable.get().getStatistics().getNumberOfPubs());
 						
-		BufferedWriter bw = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(file_name), "UTF-8"));
+		BufferedWriter bw = new BufferedWriter (new OutputStreamWriter(out, "UTF-8"));
 		bw.write("FN Thomson Reuters Web of Science\u0153 modified by CRExplorer");
 		bw.newLine();
 		bw.write("VR 1.0");

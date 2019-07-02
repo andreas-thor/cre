@@ -1,7 +1,9 @@
 package main.cre.format.exporter;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -28,7 +30,7 @@ public enum ExportFormat {
 	
 
 	public interface Export {
-	   void save(String file_name, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException, RuntimeException;
+	   void save(OutputStream out, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException, RuntimeException;
 	}
 	
 	private final String label;
@@ -43,21 +45,14 @@ public enum ExportFormat {
 	}
 
 	public void save (File file, boolean includePubsWithoutCRs) throws IOException {
-		this.save (file, includePubsWithoutCRs, null);
+		this.save (file, includePubsWithoutCRs, null, null);
 	}
 	
-	public void save (File file, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter) throws IOException {
-		this.save (file, includePubsWithoutCRs, filter, null);
-	}
 	
 	public void save (File file, boolean includePubsWithoutCRs, Predicate<CRType<?>> filter, Comparator<CRType<?>> comp) throws IOException {
 		
-		// add extension if necessary
-		String file_name = file.toString();
-		if (!file_name.endsWith("." + this.getFileExtension())) file_name += "." + this.getFileExtension();
-		
 		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s ...", file.getName(), this.getLabel()));
-		this.exportSave.save(file_name, includePubsWithoutCRs, Optional.ofNullable(filter).orElse(it -> true), Optional.ofNullable(comp).orElse(CRType<?>::compareTo));
+		this.exportSave.save(new FileOutputStream(file), includePubsWithoutCRs, Optional.ofNullable(filter).orElse(it -> true), Optional.ofNullable(comp).orElse(CRType<?>::compareTo));
 		StatusBar.get().setValue(String.format ("Saving %2$s file %1$s done", file.getName(), this.getLabel()));
 
 	}

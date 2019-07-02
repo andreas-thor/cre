@@ -230,7 +230,7 @@ class DB_Store {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 	
 	

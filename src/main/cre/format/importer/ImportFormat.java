@@ -12,9 +12,9 @@ import main.cre.Exceptions.AbortedException;
 import main.cre.Exceptions.FileTooLargeException;
 import main.cre.Exceptions.UnsupportedFileFormatException;
 import main.cre.data.CRStatsInfo;
-import main.cre.data.Sampling;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.mm.CRCluster;
+import main.cre.ui.dialog.Sampling;
 import main.cre.ui.statusbar.StatusBar;
 
 public enum ImportFormat {

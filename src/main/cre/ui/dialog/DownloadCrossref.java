@@ -8,7 +8,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import main.cre.data.DownloadCrossrefData;
 import main.cre.ui.UISettings;
 
 public class DownloadCrossref extends Dialog<DownloadCrossrefData> {

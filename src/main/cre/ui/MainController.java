@@ -1,6 +1,7 @@
 package main.cre.ui;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,14 +43,13 @@ import main.cre.Exceptions.FileTooLargeException;
 import main.cre.Exceptions.UnsupportedFileFormatException;
 import main.cre.data.CRSearch;
 import main.cre.data.CRStatsInfo;
-import main.cre.data.DownloadCrossrefData;
-import main.cre.data.source.Crossref;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.Clustering;
 import main.cre.data.type.abs.PubType;
 import main.cre.format.cre.Writer;
 import main.cre.format.exporter.ExportFormat;
+import main.cre.format.importer.Crossref;
 import main.cre.format.importer.ImportFormat;
 import main.cre.ui.UISettings.RangeType;
 import main.cre.ui.chart.CRChart;
@@ -60,6 +60,7 @@ import main.cre.ui.dialog.CRInfo;
 import main.cre.ui.dialog.CRPubInfo;
 import main.cre.ui.dialog.ConfirmAlert;
 import main.cre.ui.dialog.DownloadCrossref;
+import main.cre.ui.dialog.DownloadCrossrefData;
 import main.cre.ui.dialog.ExceptionStacktrace;
 import main.cre.ui.dialog.ImportStats;
 import main.cre.ui.dialog.Info;
@@ -638,6 +639,9 @@ public class MainController {
 
 		if (selFile == null) return false;
 
+		
+
+		
 		// save last directory to be uses as initial directory
 		UISettings.get().setLastFileDir(selFile.getParentFile());
 
