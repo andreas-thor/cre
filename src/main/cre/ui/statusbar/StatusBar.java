@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.function.Consumer;
 
 import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.Statistics.IntRange;
 
 public class StatusBar {
 
@@ -51,21 +52,22 @@ public class StatusBar {
 	
 	
 	public void updateInfo () {
-		int[] yearsRPY = CRTable.get().getStatistics().getMaxRangeRPY();
-		int[] yearsRPYVisible = CRTable.get().getStatistics().getMaxRangeRPY(true);
-		int[] yearsPY  = CRTable.get().getStatistics().getMaxRangePY();
+		IntRange yearsRPY = CRTable.get().getStatistics().getMaxRangeRPY();
+		IntRange yearsRPYVisible = CRTable.get().getStatistics().getMaxRangeRPY(true);
+		IntRange yearsPY  = CRTable.get().getStatistics().getMaxRangePY();
 
+		
 		if (this.statUI != null) {
 			statUI.printInfo(String.format("#CRs: %d (%d shown), #Clusters: %d, RPY: %d-%d (%d-%d shown), PY: %d-%d",
 				CRTable.get().getStatistics().getNumberOfCRs(),
 				CRTable.get().getStatistics().getNumberOfCRsByVisibility(true),
 				CRTable.get().getClustering().getNumberOfClusters(), 
-				yearsRPY[0], 
-				yearsRPY[1],
-				yearsRPYVisible[0], 
-				yearsRPYVisible[1],
-				yearsPY[0], 
-				yearsPY[1]
+				yearsRPY.getMin(), 
+				yearsRPY.getMax(),
+				yearsRPYVisible.getMin(), 
+				yearsRPYVisible.getMax(),
+				yearsPY.getMin(), 
+				yearsPY.getMax()
 			));
 		}
 		

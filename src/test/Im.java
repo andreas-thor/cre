@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRTable.TABLE_IMPL_TYPES;
+import main.cre.data.type.abs.Statistics.IntRange;
 import main.cre.format.cre.Writer;
 import main.cre.format.exporter.ExportFormat;
 import main.cre.format.importer.ImportFormat;
@@ -37,7 +38,8 @@ public class Im {
 					Sampling.NONE
 				);
 			
-			CRTable.get().removeCRByYear(new int[] { 2000, 2001 });
+//			CRTable.get().removeCRByYear(new IntRange (10, 2013));
+			CRTable.get().removeCRByN_CR(new IntRange(0, 10));
 			
 			for (ExportFormat outFormat: ExportFormat.values()) {
 				File outputFile = new File(String.format("data/test/out_%s_%s.%s", type.toString(), outFormat.toString(), outFormat.getFileExtension()));

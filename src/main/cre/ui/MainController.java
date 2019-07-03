@@ -47,6 +47,7 @@ import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.Clustering;
 import main.cre.data.type.abs.PubType;
+import main.cre.data.type.abs.Statistics.IntRange;
 import main.cre.format.cre.Writer;
 import main.cre.format.exporter.ExportFormat;
 import main.cre.format.importer.Crossref;
@@ -186,7 +187,7 @@ public class MainController {
 
 			@Override
 			protected void onYearRangeFilter(double min, double max) {
-				filterByRPY(new int[] { (int) Math.ceil(min), (int) Math.floor(max) }, true);
+				filterByRPY(new IntRange ((int) Math.ceil(min), (int) Math.floor(max)), true);
 			}
 		}, new CRChart_HighCharts() {
 			@Override
@@ -196,7 +197,7 @@ public class MainController {
 
 			@Override
 			protected void onYearRangeFilter(double min, double max) {
-				filterByRPY(new int[] { (int) Math.ceil(min), (int) Math.floor(max) }, true);
+				filterByRPY (new IntRange ((int) Math.ceil(min), (int) Math.floor(max)), true);
 			}
 		} };
 		for (int i = 0; i < crChart.length; i++) {
@@ -250,7 +251,7 @@ public class MainController {
 
 	}
 
-	private void filterByRPY(int[] range, boolean fromChart) {
+	private void filterByRPY(IntRange range, boolean fromChart) {
 		UISettings.get().setRange(RangeType.FilterByRPYRange, range);
 		crTable.filterByYear(range);
 		updateTableCRList(fromChart);
@@ -599,7 +600,7 @@ public class MainController {
 		if (selFile == null) return false;
 
 		UISettings.get().setLastFileDir(selFile.getParentFile());	// save last directory to be used as initial directory
-
+		
 		Service<Void> serv = new Service<Void>() {
 			@Override
 			protected Task<Void> createTask() {
@@ -933,8 +934,8 @@ public class MainController {
 		final String header = "Remove Cited References";
 		new Range(header, "Select Range of Cited References Years", UISettings.RangeType.RemoveByRPYRange, CRTable.get().getStatistics().getMaxRangeRPY()).showAndWait().ifPresent(range -> {
 			long n = CRTable.get().getStatistics().getNumberOfCRsByRPY(range);
-			new ConfirmAlert(header, n == 0, new String[] { String.format("No Cited References with Cited Reference Year between %d and %d.", range[0], range[1]),
-					String.format("Would you like to remove all %d Cited References with Cited Reference Year between %d and %d?", n, range[0], range[1]) }).showAndWait().ifPresent(btn -> {
+			new ConfirmAlert(header, n == 0, new String[] { String.format("No Cited References with Cited Reference Year between %d and %d.", range.getMin(), range.getMax()),
+					String.format("Would you like to remove all %d Cited References with Cited Reference Year between %d and %d?", n, range.getMin(), range.getMax()) }).showAndWait().ifPresent(btn -> {
 						if (btn == ButtonType.YES) {
 							crTable.removeCRByYear(range);
 							updateTableCRList();
@@ -949,8 +950,8 @@ public class MainController {
 		final String header = "Remove Cited References";
 		new Range(header, "Select Number of Cited References", UISettings.RangeType.RemoveByNCRRange, CRTable.get().getStatistics().getMaxRangeNCR()).showAndWait().ifPresent(range -> {
 			long n = CRTable.get().getStatistics().getNumberOfCRsByNCR(range);
-			new ConfirmAlert(header, n == 0, new String[] { String.format("No Cited References with Number of Cited References between %d and %d.", range[0], range[1]),
-					String.format("Would you like to remove all %d Cited References with Number of Cited References between %d and %d?", n, range[0], range[1]) }).showAndWait().ifPresent(btn -> {
+			new ConfirmAlert(header, n == 0, new String[] { String.format("No Cited References with Number of Cited References between %d and %d.", range.getMin(), range.getMax()),
+					String.format("Would you like to remove all %d Cited References with Number of Cited References between %d and %d?", n, range.getMin(), range.getMax()) }).showAndWait().ifPresent(btn -> {
 						if (btn == ButtonType.YES) {
 							crTable.removeCRByN_CR(range);
 							updateTableCRList();
@@ -1006,10 +1007,10 @@ public class MainController {
 	@FXML
 	public void OnMenuDataRetainByRPY() {
 
-		new Range("Retain Publications", "Select Range of Citing Publication Years", UISettings.RangeType.RetainByRPYRange, CRTable.get().getStatistics().getMaxRangePY()).showAndWait().ifPresent(range -> {
+		new Range("Retain Publications", "Select Range of Citing Publication Years", UISettings.RangeType.RetainByPYRange, CRTable.get().getStatistics().getMaxRangePY()).showAndWait().ifPresent(range -> {
 			long n = CRTable.get().getStatistics().getNumberOfPubs() - CRTable.get().getStatistics().getNumberOfPubsByCitingYear(range);
-			new ConfirmAlert("Remove Publications", n == 0, new String[] { String.format("All Citing Publication Years are between between %d and %d.", range[0], range[1]),
-					String.format("Would you like to remove all %d citing publications with publication year lower than %d or higher than %d?", n, range[0], range[1]) }).showAndWait().ifPresent(btn -> {
+			new ConfirmAlert("Remove Publications", n == 0, new String[] { String.format("All Citing Publication Years are between between %d and %d.", range.getMin(), range.getMax()),
+					String.format("Would you like to remove all %d citing publications with publication year lower than %d or higher than %d?", n, range.getMin(), range.getMax()) }).showAndWait().ifPresent(btn -> {
 						if (btn == ButtonType.YES) {
 							crTable.retainPubByCitingYear(range);
 							updateTableCRList();

@@ -52,9 +52,9 @@ public class Statistics_DB implements Statistics {
 	}
 
 	@Override
-	public int[] getMaxRangePY() {
+	public IntRange getMaxRangePY() {
 		long[] res = executeSelect("SELECT MIN(PUB_PY), MAX(PUB_PY) FROM PUB WHERE PUB_ID IN (SELECT PUB_ID FROM PUB_CR)");
-		return new int[] { (int)res[0], (int)res[1] };
+		return new IntRange (res[0], res[1]);
 	}
 
 	@Override
@@ -63,9 +63,9 @@ public class Statistics_DB implements Statistics {
 	}
 
 	@Override
-	public int[] getMaxRangeNCR() {
+	public IntRange getMaxRangeNCR() {
 		long[] res = executeSelect("SELECT MIN(CR_N_CR), MAX(CR_N_CR) FROM CR");
-		return new int[] { (int)res[0], (int)res[1] };
+		return new IntRange (res[0], res[1]);
 	}
 
 	public int[] getSumNCR() {
@@ -74,15 +74,15 @@ public class Statistics_DB implements Statistics {
 	}
 	
 	@Override
-	public int[] getMaxRangeRPY() {
+	public IntRange getMaxRangeRPY() {
 		long[] res = executeSelect("SELECT MIN(CR_RPY), MAX(CR_RPY) FROM CR");
-		return new int[] { (int)res[0], (int)res[1] };
+		return new IntRange (res[0], res[1]);
 	}
 
 	@Override
-	public int[] getMaxRangeRPY(boolean visibleOnly) {
+	public IntRange getMaxRangeRPY(boolean visibleOnly) {
 		long[] res = executeSelect("SELECT MIN(CR_RPY), MAX(CR_RPY) FROM CR WHERE CR_VI = 1");
-		return new int[] { (int)res[0], (int)res[1] };
+		return new IntRange (res[0], res[1]);
 	}
 
 	@Override
@@ -96,8 +96,8 @@ public class Statistics_DB implements Statistics {
 	}
 
 	@Override
-	public long getNumberOfCRsByNCR(int[] range) {
-		return executeSelect(String.format("SELECT COUNT(*) FROM CR WHERE %d <= CR_N_CR AND CR_N_CR <= %d", range[0], range[1]))[0];
+	public long getNumberOfCRsByNCR(IntRange range) {
+		return executeSelect(String.format("SELECT COUNT(*) FROM CR WHERE %d <= CR_N_CR AND CR_N_CR <= %d", range.getMin(), range.getMax()))[0];
 	}
 
 	@Override
@@ -106,13 +106,13 @@ public class Statistics_DB implements Statistics {
 	}
 
 	@Override
-	public long getNumberOfCRsByRPY(int[] range) {
-		return executeSelect(String.format("SELECT COUNT(*) FROM CR WHERE NOT(CR_RPY IS NULL) AND %d <= CR_RPY AND CR_RPY <= %d", range[0], range[1]))[0];
+	public long getNumberOfCRsByRPY(IntRange range) {
+		return executeSelect(String.format("SELECT COUNT(*) FROM CR WHERE NOT(CR_RPY IS NULL) AND %d <= CR_RPY AND CR_RPY <= %d", range.getMin(), range.getMax()))[0];
 	}
 
 	@Override
-	public long getNumberOfPubsByCitingYear(int[] range) {
-		return executeSelect(String.format("SELECT COUNT(*) FROM PUB WHERE NOT(PUB_PY IS NULL) AND %d <= PUB_PY AND PUB_PY <= %d AND PUB_ID IN (SELECT PUB_ID FROM PUB_CR)", range[0], range[1]))[0];
+	public long getNumberOfPubsByCitingYear(IntRange range) {
+		return executeSelect(String.format("SELECT COUNT(*) FROM PUB WHERE NOT(PUB_PY IS NULL) AND %d <= PUB_PY AND PUB_PY <= %d AND PUB_ID IN (SELECT PUB_ID FROM PUB_CR)", range.getMin(), range.getMax()))[0];
 	}
 
 	@Override

@@ -1,11 +1,9 @@
-package main.cre.data;
+package main.cre.data.type.abs;
 
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-/*
- * Singleton
- */
+
 public class CRChartData  {
 	
 	
@@ -54,13 +52,13 @@ public class CRChartData  {
 		// all series initialized with 0
 		this.series = new int[SERIESTYPE.values().length][];
 		for (SERIESTYPE type: SERIESTYPE.values()) {
-			this.series[type.ordinal()] = new int[this.rangeRPY.length];
+			this.series[type.ordinal()] = new int[getRPYLength()];
 		}
 	}
 	
 	private void addSeries (SERIESTYPE type, int[] data) {
 		// we add a copy of the series data and make sure it has the same length as the RPY range
-		this.series[type.ordinal()] = Arrays.copyOf(data, this.rangeRPY.length);
+		this.series[type.ordinal()] = Arrays.copyOf(data, getRPYLength());
 	}
 	
 	

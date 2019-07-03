@@ -13,6 +13,7 @@ import main.cre.Exceptions.FileTooLargeException;
 import main.cre.Exceptions.UnsupportedFileFormatException;
 import main.cre.data.CRStatsInfo;
 import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.Statistics.IntRange;
 import main.cre.data.type.mm.CRCluster;
 import main.cre.ui.dialog.Sampling;
 import main.cre.ui.statusbar.StatusBar;
@@ -71,7 +72,7 @@ public enum ImportFormat {
 		return crStatsInfo;
 	}
 
-	public void load(List<File> files, int[] rpyRange, boolean importCRsWithoutYear, int[] pyRange, boolean importPubsWithoutYear, long noMaxCRs, Sampling sampling) throws OutOfMemoryError, Exception {
+	public void load(List<File> files, IntRange rpyRange, boolean importCRsWithoutYear, IntRange pyRange, boolean importPubsWithoutYear, long noMaxCRs, Sampling sampling) throws OutOfMemoryError, Exception {
 
 		
 		long ts1 = System.currentTimeMillis();
@@ -90,18 +91,15 @@ public enum ImportFormat {
 //		final int[] pyRange = UserSettings.get().getRange(RangeType.ImportPYRange);
 //		boolean importPubsWithoutYear = (sampling==Sampling.CLUSTER) ? false : UserSettings.get().getImportPubsWithoutYear();
 		
+		/* CLUSTER sampling --> pick a single PY at random; no pubs w/o year */
 		final boolean importPubsWOYear = (sampling==Sampling.CLUSTER) ? false : importPubsWithoutYear;
-
-		/* pick a PY at random */
-		if (sampling==Sampling.CLUSTER) {
-			int py = rand.nextInt(pyRange[1]-pyRange[0]+1);
-			pyRange[0] = pyRange[0]+py;
-			pyRange[1] = pyRange[0];
-		}
+		final IntRange pyRangeSampled  = (sampling==Sampling.CLUSTER) ? new IntRange(pyRange.getMin() + rand.nextInt(pyRange.getSize())) : pyRange;
+		
+			
+			
 		
 		
-		
-		AtomicLong noAvailableCRs = new AtomicLong (CRStatsInfo.get().getNumberOfCRs (rpyRange, importCRsWithoutYear, pyRange, importPubsWithoutYear));
+		AtomicLong noAvailableCRs = new AtomicLong (CRStatsInfo.get().getNumberOfCRs (rpyRange, importCRsWithoutYear, pyRangeSampled, importPubsWithoutYear));
 		AtomicLong noToImportCRs = new AtomicLong(Math.min(noMaxCRs, noAvailableCRs.get()));
 		AtomicInteger currentOffset = new AtomicInteger(0);	
 		AtomicInteger crId = new AtomicInteger(0);
@@ -133,8 +131,8 @@ public enum ImportFormat {
 						addPub = importPubsWOYear; 
 					} else {
 						int py = pub.getPY().intValue();
-						if ((pyRange[0] != CRStatsInfo.NONE) && (pyRange[0]>py)) addPub = false;
-						if ((pyRange[1] != CRStatsInfo.NONE) && (pyRange[1]<py)) addPub = false;
+						if ((pyRangeSampled.getMin() != CRStatsInfo.NONE) && (pyRangeSampled.getMin()>py)) addPub = false;
+						if ((pyRangeSampled.getMax() != CRStatsInfo.NONE) && (pyRangeSampled.getMax()<py)) addPub = false;
 					}
 					
 					if (addPub) {

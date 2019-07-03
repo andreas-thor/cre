@@ -7,6 +7,7 @@ import java.util.prefs.Preferences;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import main.cre.CitedReferencesExplorer;
+import main.cre.data.type.abs.Statistics.IntRange;
 import main.cre.data.type.extern.CRType_ColumnView;
 import main.cre.ui.dialog.DownloadCrossrefData;
 import main.cre.ui.dialog.Sampling;
@@ -20,7 +21,7 @@ public class UISettings {
 	private Preferences userPrefs;
 
 	// ranges
-	public static enum RangeType { FilterByRPYRange, RemoveByRPYRange, RemoveByNCRRange, RetainByRPYRange, ImportRPYRange, CurrentYearRange, ImportPYRange }
+	public static enum RangeType { FilterByRPYRange, RemoveByRPYRange, RemoveByNCRRange, RetainByPYRange, ImportRPYRange, CurrentYearRange, ImportPYRange }
 	private int[][] range = new int[][] { { -1, -1 }, { -1, -1 }, { -1, -1 }, { -1, -1 }, {0, 0}, {-1, -1}, {0, 0} };
 
 	// directory for loading/saving files
@@ -81,7 +82,7 @@ public class UISettings {
 
 		for (RangeType r : RangeType.values()) {
 			if (r != RangeType.CurrentYearRange) {
-				setRange(r, new int[] { userPrefs.getInt(r.toString() + "0", -1), userPrefs.getInt(r.toString() + "1", -1) });
+				setRange(r, new IntRange (userPrefs.getInt(r.toString() + "0", -1), userPrefs.getInt(r.toString() + "1", -1)));
 			}
 		}
 
@@ -136,10 +137,11 @@ public class UISettings {
 
 	public void saveUserPrefs(double windowWidth, double windowHeight, double windowX, double windowY) {
 
+		
 		for (RangeType r : RangeType.values()) {
 			if (r != RangeType.CurrentYearRange) {
-				userPrefs.putInt(r.toString() + "0", getRange(r)[0]);
-				userPrefs.putInt(r.toString() + "1", getRange(r)[1]);
+				userPrefs.putInt(r.toString() + "0", getRange(r).getMin());
+				userPrefs.putInt(r.toString() + "1", getRange(r).getMax());
 			}
 		}
 
@@ -217,22 +219,22 @@ public class UISettings {
 		return this.format;
 	}
 
-	public int[] getRange(RangeType r) {
-		return Arrays.copyOf(this.range[r.ordinal()], this.range[r.ordinal()].length);
+	public IntRange getRange(RangeType r) {
+		return new IntRange (this.range[r.ordinal()][0], this.range[r.ordinal()][1]);
+//		return Arrays.copyOf(this.range[r.ordinal()], this.range[r.ordinal()].length);
 	}
 
-	public int setRange(RangeType r, int[] range) {
-		if (range[0] > range[1])
-			return 1;
-		this.range[r.ordinal()][0] = range[0];
-		this.range[r.ordinal()][1] = range[1];
+	public int setRange(RangeType r, IntRange range) {
+		if (range.getMin() > range.getMax()) return 1;
+		this.range[r.ordinal()][0] = range.getMin();
+		this.range[r.ordinal()][1] = range.getMax();
 		return 0;
 	}
 
-	public int setRange(RangeType r, String[] range) {
+	public int setRange(RangeType r, String min, String max) {
 
 		try {
-			return setRange(r, new int[] { Integer.parseInt(range[0]), Integer.parseInt(range[1]) });
+			return setRange(r, new IntRange (Integer.parseInt(min), Integer.parseInt(max)));
 		} catch (NumberFormatException e) {
 			return 1;
 		}

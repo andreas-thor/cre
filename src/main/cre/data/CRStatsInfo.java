@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 
 import main.cre.data.type.abs.PubType;
+import main.cre.data.type.abs.Statistics.IntRange;
 
 public class CRStatsInfo {
 
@@ -100,20 +101,20 @@ public class CRStatsInfo {
 	}
 	
 	public long getNumberOfCRsWithoutRPY () {
-		return getNumberOfCRs(new int[] {2, 1}, true, new int[] {NONE, NONE}, true);	// 2>1 => no CRs with RPY are counted 
+		return getNumberOfCRs(new IntRange (2, 1), true, new IntRange (NONE, NONE), true);	// 2>1 => no CRs with RPY are counted 
 	}
 
 	public long getNumberOfCRsWithoutPY () {
-		return getNumberOfCRs(new int[] {NONE, NONE}, true, new int[] {2, 1}, true);	// 2>1 => no CRs with PY are counted 
+		return getNumberOfCRs(new IntRange (NONE, NONE), true, new IntRange (2, 1), true);	// 2>1 => no CRs with PY are counted 
 	}
 	
 	public long getNumberOfCRs () {
-		return getNumberOfCRs(new int[] {NONE, NONE}, true, new int[] {NONE, NONE}, true);
+		return getNumberOfCRs(new IntRange (NONE, NONE), true, new IntRange (NONE, NONE), true);
 	}
 	
 	
 	
-	public long getNumberOfCRs (int rpyRange[], boolean includeWithoutRPY, int pyRange[], boolean includeWithoutPY) {
+	public long getNumberOfCRs (IntRange rpyRange, boolean includeWithoutRPY, IntRange pyRange, boolean includeWithoutPY) {
 		
 		long result = 0;
 		if (mapPY2RPY2NCR == null) return result;
@@ -121,14 +122,14 @@ public class CRStatsInfo {
 		for (Entry<Integer, HashMap<Integer, Integer>> py: mapPY2RPY2NCR.entrySet()) {
 			
 			if ((py.getKey().intValue()==MISSING) && (!includeWithoutPY)) continue;
-			if ((pyRange[0]!=NONE) && (py.getKey().intValue()!=MISSING) && (py.getKey().intValue()<pyRange[0])) continue;
-			if ((pyRange[1]!=NONE) && (py.getKey().intValue()!=MISSING) && (py.getKey().intValue()>pyRange[1])) continue;
+			if ((pyRange.getMin()!=NONE) && (py.getKey().intValue()!=MISSING) && (py.getKey().intValue()<pyRange.getMin())) continue;
+			if ((pyRange.getMax()!=NONE) && (py.getKey().intValue()!=MISSING) && (py.getKey().intValue()>pyRange.getMax())) continue;
 			
 			for (Entry<Integer, Integer> rpy: py.getValue().entrySet()) {
 				
 				if ((rpy.getKey().intValue()==MISSING) && (!includeWithoutRPY)) continue;
-				if ((rpyRange[0]!=NONE) && (rpy.getKey().intValue()!=MISSING) && (rpy.getKey().intValue()<rpyRange[0])) continue;
-				if ((rpyRange[1]!=NONE) && (rpy.getKey().intValue()!=MISSING) && (rpy.getKey().intValue()>rpyRange[1])) continue;
+				if ((rpyRange.getMin()!=NONE) && (rpy.getKey().intValue()!=MISSING) && (rpy.getKey().intValue()<rpyRange.getMin())) continue;
+				if ((rpyRange.getMax()!=NONE) && (rpy.getKey().intValue()!=MISSING) && (rpy.getKey().intValue()>rpyRange.getMax())) continue;
 				
 				result += rpy.getValue().intValue();
 			}
@@ -163,7 +164,7 @@ public class CRStatsInfo {
 			}
 		}
 		
-		result += "\n " + getNumberOfCRs(new int[]{2014, 2016}, false, new int[] {2017, 2017}, false);
+		result += "\n " + getNumberOfCRs(new IntRange (2014, 2016), false, new IntRange (2017, 2017), false);
 		
 		return result;
 		

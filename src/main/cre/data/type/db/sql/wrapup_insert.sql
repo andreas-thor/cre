@@ -16,3 +16,6 @@ JOIN (
 	GROUP BY CR_ID
 ) AS T
 ON (CR_Temp.CR_ID = T.CR_ID);
+
+
+TRUNCATE TABLE CR_Temp;

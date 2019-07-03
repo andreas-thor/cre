@@ -23,6 +23,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import main.cre.data.CRStatsInfo;
+import main.cre.data.type.abs.Statistics.IntRange;
 import main.cre.ui.UISettings;
 
 public class ImportStats extends Dialog<Integer> {
@@ -66,8 +67,8 @@ public class ImportStats extends Dialog<Integer> {
 		    	int noOfErrors = 0;
 		    	noOfErrors += UISettings.get().setMaxCR(tfNumber[0].getText());
 		    	noOfErrors += UISettings.get().setSampling(comboSampling.getValue());
-		    	noOfErrors += UISettings.get().setRange(UISettings.RangeType.ImportRPYRange, new String[] { tfYear[0].getText(), tfYear[1].getText()} );
-		    	noOfErrors += UISettings.get().setRange(UISettings.RangeType.ImportPYRange, new String[] { tfYear[2].getText(), tfYear[3].getText()} );
+		    	noOfErrors += UISettings.get().setRange(UISettings.RangeType.ImportRPYRange, tfYear[0].getText(), tfYear[1].getText());
+		    	noOfErrors += UISettings.get().setRange(UISettings.RangeType.ImportPYRange, tfYear[2].getText(), tfYear[3].getText());
 		    	noOfErrors += UISettings.get().setImportCRsWithoutYear(cbWithout[0].isSelected());
 		    	noOfErrors += UISettings.get().setImportPubsWithoutYear(cbWithout[1].isSelected());
 		    	
@@ -219,9 +220,9 @@ public class ImportStats extends Dialog<Integer> {
 			 tfNumber[1].setText("???");
 			 
 			 long n = crStatsInfo.getNumberOfCRs(
-					 new int[] { Integer.valueOf (tfYear[0].getText()).intValue(), Integer.valueOf (tfYear[1].getText()).intValue() },
+					 new IntRange (Integer.valueOf (tfYear[0].getText()).intValue(), Integer.valueOf (tfYear[1].getText()).intValue()),
 					 cbWithout[0].isSelected(),
-					 new int[] { Integer.valueOf (tfYear[2].getText()).intValue(), Integer.valueOf (tfYear[3].getText()).intValue() },
+					 new IntRange (Integer.valueOf (tfYear[2].getText()).intValue(), Integer.valueOf (tfYear[3].getText()).intValue()),
 					 cbWithout[1].isSelected());
 			 tfNumber[1].setText(String.valueOf(n));
 			 

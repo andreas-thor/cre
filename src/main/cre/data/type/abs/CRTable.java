@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import main.cre.data.CRChartData;
 import main.cre.data.type.abs.CRType.PERCENTAGE;
+import main.cre.data.type.abs.Statistics.IntRange;
 import main.cre.data.type.db.CRTable_DB;
 import main.cre.data.type.mm.CRTable_MM;
 import main.cre.data.type.mm.PubType_MM;
@@ -131,14 +131,14 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	 * Remove all CRS within a given RPY range
 	 * @param range
 	 */
-	public abstract void removeCRByYear (int[] range);
+	public abstract void removeCRByYear (IntRange range);
 
 	
 	/**
 	 * Remove all CRs within a given N_CR range
 	 * @param range
 	 */
-	public abstract void removeCRByN_CR(int[] range);
+	public abstract void removeCRByN_CR(IntRange range);
 	
 	
 	/**
@@ -164,7 +164,7 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	 * i.e., remove all citing publications OUTSIDE the given citing year (PY) range
 	 * @param range
 	 */
-	public abstract void retainPubByCitingYear (int[] range);
+	public abstract void retainPubByCitingYear (IntRange range);
 	
 
 	
@@ -175,7 +175,7 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	 * @param from
 	 * @param to
 	 */
-	public abstract void filterByYear (int[] range);
+	public abstract void filterByYear (IntRange range);
 	
 
 	

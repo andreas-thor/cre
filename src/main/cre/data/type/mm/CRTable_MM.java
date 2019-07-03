@@ -13,6 +13,7 @@ import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.PubType;
 import main.cre.data.type.abs.Statistics;
+import main.cre.data.type.abs.Statistics.IntRange;
 import main.cre.format.cre.Reader;
 import main.cre.ui.statusbar.StatusBar;
 
@@ -72,6 +73,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	 * Initialize empty CRTable
 	 */
 	
+	@Override
 	public void init() {
 		
 		
@@ -105,6 +107,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	 * @param includePubsWithoutCRs default=false
 	 * @return
 	 */
+	@Override
 	public Stream<PubType_MM> getPub (boolean includePubsWithoutCRs) {
 		return includePubsWithoutCRs ? allPubs.keySet().stream() : getCR().flatMap(cr -> cr.getPub()).distinct();
 	}
@@ -169,6 +172,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	 * Merge CRs based on clustering
 	 */
 
+	@Override
 	public void merge () {
 		
 		// get all clusters with size > 1
@@ -213,7 +217,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	 * Called after loading, deleting or merging of CRs
 	 * @param removed Data has been removed --> adjust clustering data structures; adjust CR lists per publication
 	 */
-	
+	@Override
 	public void updateData () throws OutOfMemoryError {
 
 		
@@ -224,21 +228,21 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 		
 		System.out.println("Compute Ranges in CRTable_MM");
 		
-		int[] range_RPY = getStatistics().getMaxRangeRPY();
-		int[] range_PY  = getStatistics().getMaxRangePY();
+		IntRange range_RPY = getStatistics().getMaxRangeRPY();
+		IntRange range_PY  = getStatistics().getMaxRangePY();
 
 		
 		int[] NCR_ALL = new int[1];	// NCR overall (array length=1; array to make it effectively final)
-		int[] NCR_RPY = new int[range_RPY[1]-range_RPY[0]+1];	// (sum of) NCR by RPY
-		int[] CNT_RPY = new int[range_RPY[1]-range_RPY[0]+1];	// number of CRs by RPY
+		int[] NCR_RPY = new int[range_RPY.getSize()];	// (sum of) NCR by RPY
+		int[] CNT_RPY = new int[range_RPY.getSize()];	// number of CRs by RPY
 		
 		// Group CRs by RPY, compute NCR_ALL and NCR_RPY
 		System.out.println("mapRPY_CRs");
 		CRTable.get().getCR().forEach(cr -> {
 			NCR_ALL[0] += cr.getN_CR();
 			if (cr.getRPY()!=null) {
-				NCR_RPY[cr.getRPY()-range_RPY[0]] += cr.getN_CR();
-				CNT_RPY[cr.getRPY()-range_RPY[0]] += 1;
+				NCR_RPY[cr.getRPY()-range_RPY.getMin()] += cr.getN_CR();
+				CNT_RPY[cr.getRPY()-range_RPY.getMin()] += 1;
 			}
 		});
 		
@@ -251,24 +255,24 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 				int rpy = rpyGroup.getKey().intValue();
 				List<CRType_MM> crList = rpyGroup.getValue();
 				
-				computeForAllCRsOfTheSameRPY (rpy, rpy-range_RPY[0], range_PY, NCR_ALL[0], NCR_RPY, crList);
+				computeForAllCRsOfTheSameRPY (rpy, rpy-range_RPY.getMin(), range_PY, NCR_ALL[0], NCR_RPY, crList);
 			}
 		);		
 		
 		
-		getChartData().updateChartData(range_RPY[0], range_RPY[range_RPY.length-1], NCR_RPY, CNT_RPY);
+		getChartData().updateChartData(range_RPY.getMin(), range_RPY.getMax(), NCR_RPY, CNT_RPY);
 		
 		duringUpdate = false;
 		
 	}
 
 	
-	private void computeForAllCRsOfTheSameRPY (int rpy, int rpyIdx, int[] range_PY, int NCR_ALL, int[] NCR_RPY, List<CRType_MM> crList) {
+	private void computeForAllCRsOfTheSameRPY (int rpy, int rpyIdx, IntRange range_PY, int NCR_ALL, int[] NCR_RPY, List<CRType_MM> crList) {
 		
 		int crSize = crList.size();
 
-		int firstPY = (rpy<=range_PY[0]) ? range_PY[0] : rpy;	// usually: rpy<=range_PY[0] 
-		int lastPY = range_PY[1];
+		int firstPY = (rpy<=range_PY.getMin()) ? range_PY.getMin() : rpy;	// usually: rpy<=range_PY[0] 
+		int lastPY = range_PY.getMax();
 		if (lastPY < firstPY) return;
 		int pySize = lastPY-firstPY+1;
 		
@@ -314,6 +318,11 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 		computeCRIndicators(rpyIdx, crSize, pySize, NCR_ALL, NCR_RPY, NCR_CR_PY, NCR_CR, NCR_CR_all, NPYEARS_CR, NCR_PY, NCR, 
 			(int crIdx, int N_PYEARS, double PYEAR_PERC, double PERC_YR, double PERC_ALL, int[] N_PCT, int[] N_PCT_AboveAverage, String SEQUENCE, String TYPE) -> { 
 				CRType<?> cr = crList.get(crIdx);
+				
+				if (crIdx == 0) {
+					System.out.println(cr.getID());
+				}
+				
 				cr.setN_PYEARS   (N_PYEARS);
 				cr.setPYEAR_PERC (PYEAR_PERC);
 				cr.setPERC_YR 	 (PERC_YR);
@@ -330,8 +339,8 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	
 
 	
-
-	public void removeCR (Predicate<CRType_MM> cond) {
+	
+	private void removeCR (Predicate<CRType_MM> cond) {
 		
 		crDataMap.keySet().removeIf( cr ->  { 
 			if (cond.test(cr)) {
@@ -363,6 +372,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	 * Remove all but the given list of CRs
 	 * @param toRetain list of CRs to be retained
 	 */
+	@Override
 	public void retainCR (List<CRType_MM> toRetain) {
 		getCR().forEach(cr -> cr.setFlag(true));
 		toRetain.forEach(cr -> cr.setFlag(false));
@@ -373,6 +383,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	/**
 	 * Remove all CRs without year (RPY)
 	 */
+	@Override
 	public void removeCRWithoutYear () {
 		removeCR (cr -> cr.getRPY() == null);
 	}
@@ -382,8 +393,9 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	 * Remove all CRS within a given RPY range
 	 * @param range
 	 */
-	public void removeCRByYear (int[] range) {
-		removeCR (cr -> ((cr.getRPY()!=null) && (range[0] <= cr.getRPY()) && (cr.getRPY() <= range[1])));
+	@Override
+	public void removeCRByYear (IntRange range) {
+		removeCR (cr -> ((cr.getRPY()!=null) && (range.getMin() <= cr.getRPY()) && (cr.getRPY() <= range.getMax())));
 	}
 
 	
@@ -391,8 +403,9 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	 * Remove all CRs within a given N_CR range
 	 * @param range
 	 */
-	public void removeCRByN_CR(int[] range) {
-		removeCR (cr -> (range[0] <= cr.getN_CR()) && (cr.getN_CR() <= range[1]));
+	@Override
+	public void removeCRByN_CR(IntRange range) {
+		removeCR (cr -> (range.getMin() <= cr.getN_CR()) && (cr.getN_CR() <= range.getMax()));
 	}
 	
 	
@@ -401,7 +414,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	 * @param comp comparator (as string); TODO: ENUMERATION
 	 * @param threshold
 	 */
-	
+	@Override
 	public void removeCRByPERC_YR (String comp, double threshold) {
 		switch (comp) {
 			case "<" : removeCR (cr -> cr.getPERC_YR() <  threshold); break;
@@ -417,6 +430,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	 * Remove all citing publications, that do *not* reference any of the given CRs 
 	 * @param selCR list of CRs
 	 */
+	@Override
 	public void removePubByCR (List<CRType_MM> selCR) {
 		selCR.stream().flatMap (cr -> cr.getPub()).forEach(pub -> pub.setFlag(true));
 		removePub (pub -> !pub.isFlag());
@@ -427,7 +441,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	
 	
 	
-	private void removePub (Predicate<PubType> cond) {
+	private void removePub (Predicate<PubType_MM> cond) {
 		getPub().filter(cond).collect(Collectors.toList()).forEach(pub -> pub.removeAllCRs(true));
 		removeCR(cr -> cr.getN_CR()==0);
 	}
@@ -438,8 +452,8 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	 * @param range
 	 */
 	@Override
-	public void retainPubByCitingYear (int[] range) {
-		removePub (pub -> (pub.getPY()==null) || (range[0] > pub.getPY()) || (pub.getPY() > range[1]));
+	public void retainPubByCitingYear (IntRange range) {
+		removePub (pub -> (pub.getPY()==null) || (range.getMin() > pub.getPY()) || (pub.getPY() > range.getMax()));
 	}
 	
 	
@@ -452,14 +466,15 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	 * @param from
 	 * @param to
 	 */
-	public void filterByYear (int[] range) {
+	@Override
+	public void filterByYear (IntRange range) {
 		if (!duringUpdate) {
-			getCR().forEach ( it -> { it.setVI(((it.getRPY()!=null) && (range[0]<=it.getRPY()) && (range[1]>=it.getRPY())) || ((it.getRPY()==null) && (this.showNull))); });
+			getCR().forEach ( it -> { it.setVI(((it.getRPY()!=null) && (range.getMin()<=it.getRPY()) && (range.getMax()>=it.getRPY())) || ((it.getRPY()==null) && (this.showNull))); });
 		}
 	}
 	
 
-	
+	@Override
 	public void filterByCluster (List<CRType_MM> sel) {
 		if (!duringUpdate) {
 			getCR().forEach(cr -> cr.setVI(false));
@@ -470,12 +485,13 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	
 
 	
-	
+	@Override
 	public void setShowNull (boolean showNull) {
 		this.showNull = showNull;
 		getCR().forEach ( cr -> { if (cr.getRPY() == null) cr.setVI(showNull);  });
 	}
 	
+	@Override
 	public void showAll() {
 		this.showNull = true;
 		getCR().forEach ( cr -> cr.setVI(true) );

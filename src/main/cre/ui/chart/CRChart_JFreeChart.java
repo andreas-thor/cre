@@ -25,8 +25,8 @@ import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
 
 import javafx.scene.Node;
-import main.cre.data.CRChartData;
-import main.cre.data.CRChartData.SERIESTYPE;
+import main.cre.data.type.abs.CRChartData;
+import main.cre.data.type.abs.CRChartData.SERIESTYPE;
 import main.cre.ui.UISettings;
 
 public abstract class CRChart_JFreeChart extends CRChart {

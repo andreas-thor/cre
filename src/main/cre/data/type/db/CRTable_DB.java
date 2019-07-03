@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.Statistics;
+import main.cre.data.type.abs.Statistics.IntRange;
 import main.cre.data.type.mm.CRType_MM;
 import main.cre.data.type.mm.PubType_MM;
 import main.cre.format.cre.Reader;
@@ -160,22 +161,23 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 	@Override
 	public void updateData() throws OutOfMemoryError {
 		
-		// we may have some insert statements in the batch to be executed
+		
 		try {
+			// we may have some insert statements in the batch to be executed after loading
 			dbStore.finishInsert();
 
 			Statement stmt = dbCon.createStatement();
 
-			int[] range_RPY  = statistics.getMaxRangeRPY();
-			int[] range_PY  = statistics.getMaxRangePY();
+			IntRange range_RPY  = statistics.getMaxRangeRPY();
+			IntRange range_PY  = statistics.getMaxRangePY();
 			int NCR_ALL = statistics.getSumNCR()[0];
 			
-			int[] NCR_RPY = new int[range_RPY[1]-range_RPY[0]+1];
-			int[] CNT_RPY = new int[range_RPY[1]-range_RPY[0]+1];
+			int[] NCR_RPY = new int[range_RPY.getSize()];
+			int[] CNT_RPY = new int[range_RPY.getSize()];
 			
 			ResultSet rs = stmt.executeQuery("SELECT CR_RPY, SUM(CR_N_CR), COUNT(CR_ID) FROM CR WHERE NOT (CR_RPY IS NULL) GROUP BY CR_RPY ORDER BY CR_RPY");
 			while (rs.next()) {
-				int rpyIdx = rs.getInt(1)-range_RPY[0];
+				int rpyIdx = rs.getInt(1)-range_RPY.getMin();
 				NCR_RPY[rpyIdx] = rs.getInt(2);
 				CNT_RPY[rpyIdx] = rs.getInt(3);
 			}
@@ -183,7 +185,7 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
 			computeForAllCRs (range_RPY, range_PY, NCR_ALL, NCR_RPY, CNT_RPY);
 			
-			getChartData().updateChartData(range_RPY[0], range_RPY[range_RPY.length-1], NCR_RPY, CNT_RPY);
+			getChartData().updateChartData(range_RPY.getMin(), range_RPY.getMax(), NCR_RPY, CNT_RPY);
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -193,7 +195,7 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 		
 	}
 
-	private void computeForAllCRs (int[] range_RPY, int[] range_PY, int NCR_ALL, int[] NCR_RPY, int[] CNT_RPY) {
+	private void computeForAllCRs (IntRange range_RPY, IntRange range_PY, int NCR_ALL, int[] NCR_RPY, int[] CNT_RPY) {
 		
 	
 		int crSize = -1;
@@ -251,12 +253,12 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 					
 					// new RPY
 					lastRPY = rpy;
-					rpyIdx = rpy-range_RPY[0];
+					rpyIdx = rpy-range_RPY.getMin();
 
 					// check if meaningful range of PYs
 					invalidRPY_PY_Range = false; 
-					firstPY = (rpy<=range_PY[0]) ? range_PY[0] : rpy;	// usually: rpy<=range_PY[0] 
-					lastPY = range_PY[1];
+					firstPY = (rpy<=range_PY.getMin()) ? range_PY.getMin() : rpy;	// usually: rpy<=range_PY[0] 
+					lastPY = range_PY.getMax();
 					if (lastPY < firstPY) {
 						invalidRPY_PY_Range = true;
 						continue;
@@ -342,13 +344,13 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 	}
 
 	@Override
-	public void removeCRByYear(int[] range) {
-		dbStore.removeCR(String.format("NOT(CR_RPY IS NULL) AND (%d<=CR_RPY) AND (%d>=CR_RPY)", range[0], range[1]));  
+	public void removeCRByYear(IntRange range) {
+		dbStore.removeCR(String.format("NOT(CR_RPY IS NULL) AND (%d<=CR_RPY) AND (%d>=CR_RPY)", range.getMin(), range.getMax()));  
 	}
 
 	@Override
-	public void removeCRByN_CR(int[] range) {
-		dbStore.removeCR(String.format("(%d<=CR_N_CR) AND (%d>=CR_N_CR)", range[0], range[1]));
+	public void removeCRByN_CR(IntRange range) {
+		dbStore.removeCR(String.format("(%d<=CR_N_CR) AND (%d>=CR_N_CR)", range.getMin(), range.getMax()));
 	}
 
 	@Override
@@ -369,13 +371,13 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 	
 
 	@Override
-	public void retainPubByCitingYear(int[] range) {
-		dbStore.removePub(String.format("(PUB_PY IS NULL) OR (%d > PUB_PY) OR (PUB_PY > %d)", range[0], range[1]));
+	public void retainPubByCitingYear(IntRange range) {
+		dbStore.removePub(String.format("(PUB_PY IS NULL) OR (%d > PUB_PY) OR (PUB_PY > %d)", range.getMin(), range.getMax()));
 	}
 
 	@Override
-	public void filterByYear(int[] range) {
-		String newValue = String.format("(NOT(CR_RPY IS NULL) AND (%d<=CR_RPY) AND (%d>=CR_RPY)) %s", range[0], range[1], this.showNull?" OR (CR_RPY IS NULL)":"");  
+	public void filterByYear(IntRange range) {
+		String newValue = String.format("(NOT(CR_RPY IS NULL) AND (%d<=CR_RPY) AND (%d>=CR_RPY)) %s", range.getMin(), range.getMax(), this.showNull?" OR (CR_RPY IS NULL)":"");  
 		dbStore.updateCR_VI(newValue, null);
 	}
 

@@ -2,21 +2,63 @@ package main.cre.data.type.abs;
 
 public interface Statistics {
 
+	public class IntRange {
+		
+		final private int min;
+		final private int max;
+		
+		public IntRange() {
+			this (MISSING, MISSING);
+		}
+
+		public IntRange(int value) {
+			this (value, value);
+		}
+
+		public IntRange(long min, long max) {
+			this ((int)min, (int)max);
+		}
+		
+		public IntRange(int min, int max) {
+			this.min = min;
+			this.max = max;
+		}
+		
+		
+		public int getMin() {
+			return min;
+		}
+
+		public int getMax() {
+			return max;
+		}
+		
+		public int getSize() {
+			return max-min+1;
+		}
+	}
+	
+	public static final int MISSING = -1;
+	public static final int NONE = 0;
+	
+	
+	
+	
 	public long getNumberOfCRs ();
 	
 	public long getNumberOfPubs ();
 
 	public long getNumberOfPubs (boolean includePubsWithoutCRs);
 	
-	public int[] getMaxRangePY ();
+	public IntRange getMaxRangePY ();
 
 	public int getNumberOfDistinctPY ();
 
-	public int[] getMaxRangeNCR ();
+	public IntRange getMaxRangeNCR ();
 
-	public int[] getMaxRangeRPY ();
+	public IntRange getMaxRangeRPY ();
 
-	public int[] getMaxRangeRPY (boolean visibleOnly);
+	public IntRange getMaxRangeRPY (boolean visibleOnly);
 
 	public int getNumberOfDistinctRPY ();
 	
@@ -29,7 +71,7 @@ public interface Statistics {
 	 * @param to
 	 */
 	
-	public long getNumberOfCRsByNCR (int[] range);
+	public long getNumberOfCRsByNCR (IntRange range);
 
 	/**
 	 * Count / Remove publiations based on PERC_YR
@@ -47,11 +89,11 @@ public interface Statistics {
 	 * @param to
 	 */
 	
-	public long getNumberOfCRsByRPY (int[] range);
+	public long getNumberOfCRsByRPY (IntRange range);
 
 	
 
-	public long getNumberOfPubsByCitingYear (int[] range);
+	public long getNumberOfPubsByCitingYear (IntRange range);
 
 	public int getNumberOfCRsWithoutRPY ();
 

@@ -1,7 +1,7 @@
 package main.cre.ui.chart;
 
 import javafx.scene.Node;
-import main.cre.data.CRChartData;
+import main.cre.data.type.abs.CRChartData;
 import main.cre.ui.UISettings;
 
 public abstract class CRChart {

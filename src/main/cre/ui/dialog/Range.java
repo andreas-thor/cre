@@ -10,19 +10,21 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import main.cre.data.type.abs.Statistics;
+import main.cre.data.type.abs.Statistics.IntRange;
 import main.cre.ui.UISettings;
 import main.cre.ui.UISettings.RangeType;
 
-public class Range extends Dialog<int[]> {
+public class Range extends Dialog<IntRange> {
 
 	
-	public Range(String title, String header, RangeType r, int[] maxRange) {
+	public Range(String title, String header, RangeType r, IntRange maxRange) {
 		super();
 
-		int[] range = UISettings.get().getRange(r);
+		IntRange range = UISettings.get().getRange(r);
 		
 		// initialize property if not set
-		if ((range[0]==-1) && (range[1]==-1)) {
+		if ((range.getMin()==Statistics.MISSING) && (range.getMax()==Statistics.MISSING)) {
 			UISettings.get().setRange(r, maxRange);
 		}
 		
@@ -32,16 +34,16 @@ public class Range extends Dialog<int[]> {
 		
 		
 		
-		TextField[] tf = new TextField[] { new TextField(String.valueOf(range[0])), new TextField(String.valueOf(range[1])) }; 
+		TextField[] tf = new TextField[] { new TextField(String.valueOf(range.getMin())), new TextField(String.valueOf(range.getMax())) }; 
 		CheckBox[] cb = new CheckBox[] { new CheckBox("Minimum"), new CheckBox("Maximum") }; 
 
 		cb[0].setOnAction((event) -> {
 		    tf[0].setDisable(cb[0].isSelected());
-		    tf[0].setText(cb[0].isSelected() ? String.valueOf(maxRange[0]) : tf[0].getText());
+		    tf[0].setText(cb[0].isSelected() ? String.valueOf(maxRange.getMin()) : tf[0].getText());
 		});
 		cb[1].setOnAction((event) -> {
 		    tf[1].setDisable(cb[1].isSelected());
-		    tf[1].setText(cb[1].isSelected() ? String.valueOf(maxRange[1]) : tf[1].getText());
+		    tf[1].setText(cb[1].isSelected() ? String.valueOf(maxRange.getMax()) : tf[1].getText());
 		});
 		
 		GridPane grid = new GridPane();
@@ -59,7 +61,7 @@ public class Range extends Dialog<int[]> {
 		setResultConverter(dialogButton -> {
 		    if (dialogButton == ButtonType.OK) {
 		    	
-		    	if (UISettings.get().setRange(r, new String[] { tf[0].getText(), tf[1].getText()}) == 0) {
+		    	if (UISettings.get().setRange(r, tf[0].getText(), tf[1].getText()) == 0) {
 		    		return UISettings.get().getRange(r);
 		    	}
 		        // INVALID range

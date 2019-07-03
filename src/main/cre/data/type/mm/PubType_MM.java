@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import main.cre.data.CRStatsInfo;
 import main.cre.data.type.abs.PubType;
+import main.cre.data.type.abs.Statistics.IntRange;
 
 public class PubType_MM extends PubType<CRType_MM> {
 
@@ -73,7 +74,7 @@ public class PubType_MM extends PubType<CRType_MM> {
 		return this.crList.remove(cr);
 	}
 
-	public void removeCRByYear (int[] range, boolean keepCRsWithoutYear, boolean inverse) {
+	public void removeCRByYear (IntRange range, boolean keepCRsWithoutYear, boolean inverse) {
 		
 		
 		this.crList.removeIf(cr -> {
@@ -83,8 +84,8 @@ public class PubType_MM extends PubType<CRType_MM> {
 				toBeRemoved = !keepCRsWithoutYear;
 			} else {
 				int rpy = cr.getRPY().intValue();
-				if ((range[0]!=CRStatsInfo.NONE) && (range[0]>rpy)) toBeRemoved = true;
-				if ((range[1]!=CRStatsInfo.NONE) && (range[1]<rpy)) toBeRemoved = true;
+				if ((range.getMin()!=CRStatsInfo.NONE) && (range.getMin()>rpy)) toBeRemoved = true;
+				if ((range.getMax()!=CRStatsInfo.NONE) && (range.getMax()<rpy)) toBeRemoved = true;
 			}
 			
 			if (toBeRemoved && inverse) {

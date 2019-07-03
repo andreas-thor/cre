@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.Statistics.IntRange;
 
 public class Info extends Dialog<Void> {
 
@@ -36,12 +37,12 @@ public class Info extends Dialog<Void> {
 			new Label("Number of Cited References Clusters"), 
 			createTF (CRTable.get().getClustering().getNumberOfClusters()));
 		
-		int[] r = CRTable.get().getStatistics().getMaxRangeRPY();
+		IntRange rangeRPY = CRTable.get().getStatistics().getMaxRangeRPY();
 		grid.addRow(3, 
 			new Label("Range of Cited References Years"), 
-			createTF (r[0], 1),
+			createTF (rangeRPY.getMin(), 1),
 			new Label("-"),
-			createTF (r[1], 1));
+			createTF (rangeRPY.getMax(), 1));
 		
 		grid.addRow(4, 
 			new Label("Number of different Cited References Years"), 
@@ -55,12 +56,12 @@ public class Info extends Dialog<Void> {
 				new Label("Number of Citing Publications"), 
 				createTF (CRTable.get().getStatistics().getNumberOfPubs()));
 		
-		r = CRTable.get().getStatistics().getMaxRangePY();
+		IntRange rangePY = CRTable.get().getStatistics().getMaxRangePY();
 		grid.addRow(7, 
 			new Label("Range of Citing Publications Years"),
-			createTF (r[0], 1),
+			createTF (rangePY.getMin(), 1),
 			new Label("-"),
-			createTF (r[1], 1));
+			createTF (rangePY.getMax(), 1));
 		
 		grid.addRow(8,
 			new Label("Number of different Citing Publications Years"),

@@ -8,26 +8,29 @@ public class Statistics_MM implements Statistics {
 
 	/** TODO: Namen der Methoden vereinheitlichen */
 	
-	
+	@Override
 	public long getNumberOfCRs () {
 		return CRTable_MM.get().getCR().count();
 	}
 	
+	@Override
 	public long getNumberOfPubs () {
 		return CRTable_MM.get().getPub().count();
 	}
 
+	@Override
 	public long getNumberOfPubs (boolean includePubsWithoutCRs) {
 		return CRTable_MM.get().getPub(includePubsWithoutCRs).count();
 	}
 	
 
-
-	public int[] getMaxRangePY () {
+	@Override
+	public IntRange getMaxRangePY () {
 		IntSummaryStatistics stats = CRTable_MM.get().getPub().filter (pub -> pub.getPY() != null).mapToInt(it -> it.getPY()).summaryStatistics();
-		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
+		return (stats.getCount()==0) ? new IntRange() : new IntRange(stats.getMin(), stats.getMax());
 	}
 
+	@Override
 	public int getNumberOfDistinctPY () {
 		return (int)CRTable_MM.get().getPub().filter (pub -> pub.getPY() != null).mapToInt(pub -> pub.getPY()).distinct().count();
 	}
@@ -38,31 +41,35 @@ public class Statistics_MM implements Statistics {
 	 * 
 	 * @return [min, max]
 	 */
-	public int[] getMaxRangeNCR () {
+	@Override
+	public IntRange getMaxRangeNCR () {
 		IntSummaryStatistics stats = CRTable_MM.get().getCR().map(it -> it.getN_CR()).mapToInt(Integer::intValue).summaryStatistics();
-		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
+		return (stats.getCount()==0) ? new IntRange() : new IntRange(stats.getMin(), stats.getMax());
 	}
 
 	/**
 	 * 
 	 * @return [min, max]
 	 */
-	public int[] getMaxRangeRPY () {
+	@Override
+	public IntRange getMaxRangeRPY () {
 		return getMaxRangeRPY(false);
 	}
 
-	public int[] getMaxRangeRPY (boolean visibleOnly) {
+	@Override
+	public IntRange getMaxRangeRPY (boolean visibleOnly) {
 		IntSummaryStatistics stats = CRTable_MM.get().getCR().filter (cr -> (cr.getRPY()!= null) && (!visibleOnly || cr.getVI())).mapToInt(it -> it.getRPY()).summaryStatistics();
-		return (stats.getCount()==0) ? new int[] {-1, -1} : new int[] { stats.getMin(), stats.getMax() };
+		return (stats.getCount()==0) ? new IntRange() : new IntRange(stats.getMin(), stats.getMax());
 	}
 
+	@Override
 	public int getNumberOfDistinctRPY () {
 		return (int)CRTable_MM.get().getCR().filter (it -> it.getRPY() != null).mapToInt(it -> it.getRPY()).distinct().count();
 	}
 	
 
 	
-	
+	@Override
 	public int getNumberOfCRsByVisibility (boolean visible) {
 		return (int) CRTable_MM.get().getCR().filter(cr -> (cr.getVI() == visible)).count(); 
 	}
@@ -73,9 +80,9 @@ public class Statistics_MM implements Statistics {
 	 * @param from
 	 * @param to
 	 */
-	
-	public long getNumberOfCRsByNCR (int[] range) {
-		return CRTable_MM.get().getCR().filter(cr -> ((range[0] <= cr.getN_CR()) && (cr.getN_CR() <= range[1]))).count();
+	@Override
+	public long getNumberOfCRsByNCR (IntRange range) {
+		return CRTable_MM.get().getCR().filter(cr -> ((range.getMin() <= cr.getN_CR()) && (cr.getN_CR() <= range.getMax()))).count();
 	}
 
 	/**
@@ -85,6 +92,7 @@ public class Statistics_MM implements Statistics {
 	 * @return
 	 */
 	
+	@Override
 	public long getNumberOfCRsByPercentYear (String comp, double threshold) {
 		switch (comp) {
 			case "<" : return CRTable_MM.get().getCR().filter( cr -> cr.getPERC_YR() <  threshold ).count(); 
@@ -102,17 +110,18 @@ public class Statistics_MM implements Statistics {
 	 * @param from
 	 * @param to
 	 */
-	
-	public long getNumberOfCRsByRPY (int[] range) {
-		return CRTable_MM.get().getCR().filter( cr -> ((cr.getRPY()!=null) && (range[0] <= cr.getRPY()) && (cr.getRPY() <= range[1]))).count();
+	@Override
+	public long getNumberOfCRsByRPY (IntRange range) {
+		return CRTable_MM.get().getCR().filter( cr -> ((cr.getRPY()!=null) && (range.getMin() <= cr.getRPY()) && (cr.getRPY() <= range.getMax()))).count();
 	}
 
 	
-
-	public long getNumberOfPubsByCitingYear (int[] range) {
-		return CRTable_MM.get().getPub().filter( pub -> ((pub.getPY()!=null) && (range[0] <= pub.getPY()) && (pub.getPY() <= range[1]))).count();
+	@Override
+	public long getNumberOfPubsByCitingYear (IntRange range) {
+		return CRTable_MM.get().getPub().filter( pub -> ((pub.getPY()!=null) && (range.getMin() <= pub.getPY()) && (pub.getPY() <= range.getMax()))).count();
 	}
 
+	@Override
 	public int getNumberOfCRsWithoutRPY () {
 		return (int) CRTable_MM.get().getCR().filter(it -> it.getRPY() == null).count();  
 	}
