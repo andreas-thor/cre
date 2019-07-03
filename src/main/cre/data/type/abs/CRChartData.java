@@ -3,6 +3,8 @@ package main.cre.data.type.abs;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
+import main.cre.data.type.abs.Statistics.IntRange;
+
 
 public class CRChartData  {
 	
@@ -14,18 +16,20 @@ public class CRChartData  {
 	};
 
 	
-	private int[] rangeRPY;
+	private IntRange rangeRPY;
 	private int[][] series;	// #years x 4; 4 elements = RPY, NCR, MedianDiff, number of CR
 	private int medianRange;
 	
 	
 	public CRChartData() {
 		this.medianRange = 2;
-		this.init(0, 0);
+		this.updateChartData(new IntRange(0), new int[] {0}, new int[] {0});
 	}
 
 	
-	public void updateChartData (int fromRPY, int toRPY, int[] seriesNCR, int[] seriesCNT) {
+	public void updateChartData (IntRange rangeRPY, int[] seriesNCR, int[] seriesCNT) {
+		
+		this.rangeRPY = rangeRPY;
 		
 		// compute difference to median
 		int[] seriesMEDIANDIFF = new int[seriesNCR.length];	// RPY_idx -> SumNCR - (median of sumPerYear[year-range] ... sumPerYear[year+range])   
@@ -38,41 +42,25 @@ public class CRChartData  {
 			seriesMEDIANDIFF[rpyIdx] = seriesNCR[rpyIdx] - temp[medianRange];
 		}
 		
-		
-		init(fromRPY, toRPY);
-		addSeries(SERIESTYPE.NCR, seriesNCR);
-		addSeries(SERIESTYPE.MEDIANDIFF, seriesMEDIANDIFF);
-		addSeries(SERIESTYPE.CNT, seriesCNT);
+		// we add a copy of the series data and make sure it has the same length as the RPY range
+		this.series = new int[SERIESTYPE.values().length][];
+		this.series[SERIESTYPE.NCR.ordinal()] = Arrays.copyOf(seriesNCR, getRPYLength());
+		this.series[SERIESTYPE.MEDIANDIFF.ordinal()] = Arrays.copyOf(seriesMEDIANDIFF, getRPYLength());
+		this.series[SERIESTYPE.CNT.ordinal()] = Arrays.copyOf(seriesCNT, getRPYLength());
 	}	
 	
 	
-	private void init (int fromRPY, int toRPY) {
-		this.rangeRPY = IntStream.rangeClosed(fromRPY, toRPY).toArray();
-	
-		// all series initialized with 0
-		this.series = new int[SERIESTYPE.values().length][];
-		for (SERIESTYPE type: SERIESTYPE.values()) {
-			this.series[type.ordinal()] = new int[getRPYLength()];
-		}
-	}
-	
-	private void addSeries (SERIESTYPE type, int[] data) {
-		// we add a copy of the series data and make sure it has the same length as the RPY range
-		this.series[type.ordinal()] = Arrays.copyOf(data, getRPYLength());
-	}
-	
 	
 	public int getRPYLength () {
-		return this.rangeRPY.length;
+		return this.rangeRPY.getSize();
 	}
 	
-	
 	public int[] getRPY () {
-		return this.rangeRPY;
+		return IntStream.rangeClosed(this.rangeRPY.getMin(), this.rangeRPY.getMax()).toArray();
 	}
 
 	public int getRPYValue (int index) {
-		return this.rangeRPY[index];
+		return this.rangeRPY.getMin() + index;
 	}
 	
 	public int[] getSeries (SERIESTYPE type) {
@@ -83,13 +71,12 @@ public class CRChartData  {
 		return this.series[type.ordinal()][index];
 	}
 
-	
 	public int getMedianRange() {
 		return medianRange;
 	}
 
 	public void setMedianRange(int medianRange) {
 		this.medianRange = medianRange;
-		this.updateChartData(this.rangeRPY[0], this.rangeRPY[this.rangeRPY.length-1], getSeries(SERIESTYPE.NCR), getSeries(SERIESTYPE.CNT));
+		this.updateChartData(this.rangeRPY, getSeries(SERIESTYPE.NCR), getSeries(SERIESTYPE.CNT));
 	}
 }

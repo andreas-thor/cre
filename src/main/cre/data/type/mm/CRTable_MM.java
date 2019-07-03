@@ -260,7 +260,7 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 		);		
 		
 		
-		getChartData().updateChartData(range_RPY.getMin(), range_RPY.getMax(), NCR_RPY, CNT_RPY);
+		getChartData().updateChartData(range_RPY, NCR_RPY, CNT_RPY);
 		
 		duringUpdate = false;
 		

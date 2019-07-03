@@ -131,8 +131,8 @@ public enum ImportFormat {
 						addPub = importPubsWOYear; 
 					} else {
 						int py = pub.getPY().intValue();
-						if ((pyRangeSampled.getMin() != CRStatsInfo.NONE) && (pyRangeSampled.getMin()>py)) addPub = false;
-						if ((pyRangeSampled.getMax() != CRStatsInfo.NONE) && (pyRangeSampled.getMax()<py)) addPub = false;
+						if ((pyRangeSampled.getMin() != IntRange.NONE) && (pyRangeSampled.getMin()>py)) addPub = false;
+						if ((pyRangeSampled.getMax() != IntRange.NONE) && (pyRangeSampled.getMax()<py)) addPub = false;
 					}
 					
 					if (addPub) {

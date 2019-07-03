@@ -15,6 +15,7 @@ import javafx.scene.web.WebView;
 import main.cre.data.type.abs.CRChartData;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRChartData.SERIESTYPE;
+import main.cre.data.type.abs.Statistics.IntRange;
 import main.cre.ui.UISettings;
 import netscape.javascript.JSException;
 import netscape.javascript.JSObject;
@@ -107,7 +108,7 @@ public abstract class CRChart_HighCharts extends CRChart {
 
 	
 	@Override
-	public void setChartDomainRange(int[] range) {
+	public void setChartDomainRange(IntRange range) {
 		
 		
 		WebEngine webEngine = browser.getEngine();
@@ -118,7 +119,7 @@ public abstract class CRChart_HighCharts extends CRChart {
 		}
 
 		if (loaded) {
-			webEngine.executeScript(String.format("c.xAxis[0].setExtremes(%d, %d, true);", range[0], range[1]));
+			webEngine.executeScript(String.format("c.xAxis[0].setExtremes(%d, %d, true);", range.getMin(), range.getMax()));
 		}
 	}
 

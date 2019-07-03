@@ -68,9 +68,9 @@ public class Statistics_DB implements Statistics {
 		return new IntRange (res[0], res[1]);
 	}
 
-	public int[] getSumNCR() {
+	public int getSumNCR() {
 		long[] res = executeSelect("SELECT SUM(CR_N_CR) FROM CR");
-		return new int[] { (int)res[0] };
+		return (int)res[0];
 	}
 	
 	@Override

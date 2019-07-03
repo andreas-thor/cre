@@ -24,7 +24,7 @@ public class Range extends Dialog<IntRange> {
 		IntRange range = UISettings.get().getRange(r);
 		
 		// initialize property if not set
-		if ((range.getMin()==Statistics.MISSING) && (range.getMax()==Statistics.MISSING)) {
+		if ((range.getMin()==Statistics.IntRange.MISSING) && (range.getMax()==Statistics.IntRange.MISSING)) {
 			UISettings.get().setRange(r, maxRange);
 		}
 		

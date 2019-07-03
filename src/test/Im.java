@@ -30,9 +30,9 @@ public class Im {
 			
 			ImportFormat.WOS.load(
 					inputFiles, 
-					new int[] {0, 0},
+					new IntRange(2012, 2013), 
 					true,
-					new int[] {0, 0}, 
+					new IntRange(0, 0),
 					true, 
 					0, 
 					Sampling.NONE

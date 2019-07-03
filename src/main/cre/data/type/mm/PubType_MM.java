@@ -6,7 +6,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
-import main.cre.data.CRStatsInfo;
 import main.cre.data.type.abs.PubType;
 import main.cre.data.type.abs.Statistics.IntRange;
 
@@ -84,8 +83,8 @@ public class PubType_MM extends PubType<CRType_MM> {
 				toBeRemoved = !keepCRsWithoutYear;
 			} else {
 				int rpy = cr.getRPY().intValue();
-				if ((range.getMin()!=CRStatsInfo.NONE) && (range.getMin()>rpy)) toBeRemoved = true;
-				if ((range.getMax()!=CRStatsInfo.NONE) && (range.getMax()<rpy)) toBeRemoved = true;
+				if ((range.getMin()!=IntRange.NONE) && (range.getMin()>rpy)) toBeRemoved = true;
+				if ((range.getMax()!=IntRange.NONE) && (range.getMax()<rpy)) toBeRemoved = true;
 			}
 			
 			if (toBeRemoved && inverse) {

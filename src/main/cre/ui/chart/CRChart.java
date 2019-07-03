@@ -2,6 +2,7 @@ package main.cre.ui.chart;
 
 import javafx.scene.Node;
 import main.cre.data.type.abs.CRChartData;
+import main.cre.data.type.abs.Statistics.IntRange;
 import main.cre.ui.UISettings;
 
 public abstract class CRChart {
@@ -21,12 +22,12 @@ public abstract class CRChart {
 
 	public abstract boolean isVisible ();
 	
-	public void setDomainRange (int[] range) {
+	public void setDomainRange (IntRange range) {
 		if ((range==null) || !isVisible()) return;
 		setChartDomainRange(range);
 	};
 	
-	protected abstract void setChartDomainRange (int[] range);
+	protected abstract void setChartDomainRange (IntRange range);
 	
 	public abstract void updateData (CRChartData data);
 	

@@ -4,6 +4,9 @@ public interface Statistics {
 
 	public class IntRange {
 		
+		public static final int MISSING = -1;
+		public static final int NONE = 0;
+		
 		final private int min;
 		final private int max;
 		
@@ -38,8 +41,7 @@ public interface Statistics {
 		}
 	}
 	
-	public static final int MISSING = -1;
-	public static final int NONE = 0;
+
 	
 	
 	

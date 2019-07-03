@@ -11,9 +11,6 @@ public class CRStatsInfo {
 
 	private static CRStatsInfo crStatsInfo = null;
 	
-	public static final int MISSING = -1;
-	public static final int NONE = 0;
-	
 	private long noOfPubs;
 	private long noOfCitingPubs;
 	private long noOfPubsWithoutPY;
@@ -57,7 +54,7 @@ public class CRStatsInfo {
 		noOfCitingPubs += (pub.getSizeCR()>0) ? 1 : 0;
 		noOfPubsWithoutPY += (pub.getPY() == null) ? 1 : 0;
 		
-		int py = MISSING;
+		int py = IntRange.MISSING;
 		if (pub.getPY() != null) {
 			py = pub.getPY().intValue(); 
 			rangePY[0] = ((rangePY[0]==-1) || (rangePY[0]>py)) ? py : rangePY[0];  
@@ -68,7 +65,7 @@ public class CRStatsInfo {
 		final int pyKey = py;
 		noOfCRs += pub.getSizeCR();
 		pub.getCR().forEach(cr -> {
-			int rpy = MISSING;
+			int rpy = IntRange.MISSING;
 			if (cr.getRPY() != null) {
 				rpy = cr.getRPY().intValue(); 
 				rangeRPY[0] = ((rangeRPY[0]==-1) || (rangeRPY[0]>rpy)) ? rpy : rangeRPY[0];  
@@ -101,15 +98,15 @@ public class CRStatsInfo {
 	}
 	
 	public long getNumberOfCRsWithoutRPY () {
-		return getNumberOfCRs(new IntRange (2, 1), true, new IntRange (NONE, NONE), true);	// 2>1 => no CRs with RPY are counted 
+		return getNumberOfCRs(new IntRange (2, 1), true, new IntRange (IntRange.NONE, IntRange.NONE), true);	// 2>1 => no CRs with RPY are counted 
 	}
 
 	public long getNumberOfCRsWithoutPY () {
-		return getNumberOfCRs(new IntRange (NONE, NONE), true, new IntRange (2, 1), true);	// 2>1 => no CRs with PY are counted 
+		return getNumberOfCRs(new IntRange (IntRange.NONE, IntRange.NONE), true, new IntRange (2, 1), true);	// 2>1 => no CRs with PY are counted 
 	}
 	
 	public long getNumberOfCRs () {
-		return getNumberOfCRs(new IntRange (NONE, NONE), true, new IntRange (NONE, NONE), true);
+		return getNumberOfCRs(new IntRange (IntRange.NONE, IntRange.NONE), true, new IntRange (IntRange.NONE, IntRange.NONE), true);
 	}
 	
 	
@@ -121,15 +118,15 @@ public class CRStatsInfo {
 		
 		for (Entry<Integer, HashMap<Integer, Integer>> py: mapPY2RPY2NCR.entrySet()) {
 			
-			if ((py.getKey().intValue()==MISSING) && (!includeWithoutPY)) continue;
-			if ((pyRange.getMin()!=NONE) && (py.getKey().intValue()!=MISSING) && (py.getKey().intValue()<pyRange.getMin())) continue;
-			if ((pyRange.getMax()!=NONE) && (py.getKey().intValue()!=MISSING) && (py.getKey().intValue()>pyRange.getMax())) continue;
+			if ((py.getKey().intValue()==IntRange.MISSING) && (!includeWithoutPY)) continue;
+			if ((pyRange.getMin()!=IntRange.NONE) && (py.getKey().intValue()!=IntRange.MISSING) && (py.getKey().intValue()<pyRange.getMin())) continue;
+			if ((pyRange.getMax()!=IntRange.NONE) && (py.getKey().intValue()!=IntRange.MISSING) && (py.getKey().intValue()>pyRange.getMax())) continue;
 			
 			for (Entry<Integer, Integer> rpy: py.getValue().entrySet()) {
 				
-				if ((rpy.getKey().intValue()==MISSING) && (!includeWithoutRPY)) continue;
-				if ((rpyRange.getMin()!=NONE) && (rpy.getKey().intValue()!=MISSING) && (rpy.getKey().intValue()<rpyRange.getMin())) continue;
-				if ((rpyRange.getMax()!=NONE) && (rpy.getKey().intValue()!=MISSING) && (rpy.getKey().intValue()>rpyRange.getMax())) continue;
+				if ((rpy.getKey().intValue()==IntRange.MISSING) && (!includeWithoutRPY)) continue;
+				if ((rpyRange.getMin()!=IntRange.NONE) && (rpy.getKey().intValue()!=IntRange.MISSING) && (rpy.getKey().intValue()<rpyRange.getMin())) continue;
+				if ((rpyRange.getMax()!=IntRange.NONE) && (rpy.getKey().intValue()!=IntRange.MISSING) && (rpy.getKey().intValue()>rpyRange.getMax())) continue;
 				
 				result += rpy.getValue().intValue();
 			}

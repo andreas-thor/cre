@@ -170,7 +170,7 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
 			IntRange range_RPY  = statistics.getMaxRangeRPY();
 			IntRange range_PY  = statistics.getMaxRangePY();
-			int NCR_ALL = statistics.getSumNCR()[0];
+			int NCR_ALL = statistics.getSumNCR();
 			
 			int[] NCR_RPY = new int[range_RPY.getSize()];
 			int[] CNT_RPY = new int[range_RPY.getSize()];
@@ -185,7 +185,7 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
 			computeForAllCRs (range_RPY, range_PY, NCR_ALL, NCR_RPY, CNT_RPY);
 			
-			getChartData().updateChartData(range_RPY.getMin(), range_RPY.getMax(), NCR_RPY, CNT_RPY);
+			getChartData().updateChartData(range_RPY, NCR_RPY, CNT_RPY);
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
