@@ -54,18 +54,26 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	
 	public abstract void init();
 	
-	public abstract Stream<C> getCR();
+	public Stream<C> getCR() {
+		return getCR(false);
+	}
+
+	public abstract Stream<C> getCR(boolean sortById);
 
 	/**
 	 * 
 	 * @param includePubsWithoutCRs default=false
 	 * @return
 	 */
-	public abstract Stream<P> getPub (boolean includePubsWithoutCRs);
+	public abstract Stream<P> getPub (boolean includePubsWithoutCRs, boolean sortById);
 	
 	public Stream<P> getPub() {
-		return this.getPub(false);
+		return this.getPub(false, false);
 	}	
+
+	public Stream<P> getPub (boolean includePubsWithoutCRs) {
+		return this.getPub(includePubsWithoutCRs, false);
+	};
 
 
 	

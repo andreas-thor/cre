@@ -342,6 +342,8 @@ public class MainController {
 			}
 		};
 
+		
+		
 		serv.setOnSucceeded((WorkerStateEvent t) -> {
 			updateTableCRList();
 			result.set(new ImportStats(serv.getValue()).showAndWait().isPresent());

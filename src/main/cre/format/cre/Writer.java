@@ -53,7 +53,7 @@ public class Writer {
 		
 		jgenCR.writeStartArray();
 
-		CRTable.get().getCR().forEach(cr -> {	
+		CRTable.get().getCR(true).forEach(cr -> {	
 			jgenCR.writeStartObject();
 									jgenCR.write("ID", cr.getID());
 			if (cr.getCR()!=null) 	jgenCR.write("CR", cr.getCR());
@@ -86,7 +86,7 @@ public class Writer {
 	private static void savePubData (JsonGenerator jgenPub, boolean includePubsWithoutCRs) throws IOException {
 
 		jgenPub.writeStartArray();
-		CRTable.get().getPub(includePubsWithoutCRs).forEach(pub -> {
+		CRTable.get().getPub(includePubsWithoutCRs, true).forEach(pub -> {
 			jgenPub.writeStartObject();
 			
 			if (pub.getPT()!=null) 	jgenPub.write("PT", pub.getPT());
@@ -115,7 +115,7 @@ public class Writer {
 			if (pub.getTC()!=null) 	jgenPub.write("TC", pub.getTC());
 			
 			jgenPub.writeStartArray("CRLISTID"); 
-			pub.getCR().forEach(cr -> { jgenPub.write(cr.getID()); }); 
+			pub.getCR(true).forEach(cr -> { jgenPub.write(cr.getID()); }); 
 			jgenPub.writeEnd(); 
 			
 			if (pub.getDI()!=null) 	jgenPub.write("DI", pub.getDI());

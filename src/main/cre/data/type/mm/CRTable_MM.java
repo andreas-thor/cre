@@ -98,8 +98,8 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	}	
 	
 	@Override
-	public Stream<CRType_MM> getCR() {
-		return crDataMap.keySet().stream();
+	public Stream<CRType_MM> getCR(boolean sortById) {
+		return sortById ? crDataMap.keySet().stream().sorted() : crDataMap.keySet().stream();
 	}
 
 	/**
@@ -108,8 +108,9 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 	 * @return
 	 */
 	@Override
-	public Stream<PubType_MM> getPub (boolean includePubsWithoutCRs) {
-		return includePubsWithoutCRs ? allPubs.keySet().stream() : getCR().flatMap(cr -> cr.getPub()).distinct();
+	public Stream<PubType_MM> getPub (boolean includePubsWithoutCRs, boolean sortById) {
+		Stream<PubType_MM> res = includePubsWithoutCRs ? allPubs.keySet().stream() : getCR().flatMap(cr -> cr.getPub()).distinct();
+		return sortById ? res.sorted() : res;
 	}
 	
 

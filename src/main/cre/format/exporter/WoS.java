@@ -42,7 +42,7 @@ public class WoS {
 		bw.write("VR 1.0");
 		bw.newLine();
 		
-		CRTable.get().getPub(includePubsWithoutCRs).forEach (pub -> {
+		CRTable.get().getPub(includePubsWithoutCRs, true).forEach (pub -> {
 			try {
 				writeTag(bw, "PT", pub.getPT() == null ? "J" : pub.getPT());	// TODO: Is "J" the correct default for publication type?
 				writeTag(bw, "AU", pub.getAU());

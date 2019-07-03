@@ -109,14 +109,16 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
 	
 	@Override
-	public Stream<CRType_DB> getCR() {
-		return this.dbStore.selectCR("");
+	public Stream<CRType_DB> getCR(boolean sortById) {
+		return this.dbStore.selectCR(sortById ? "ORDER BY CR_ID" : "");
 	}
 
 	
 	@Override
-	public Stream<PubType_DB> getPub(boolean includePubsWithoutCRs) {
-		return this.dbStore.selectPub(includePubsWithoutCRs ? "" : "WHERE PUB_ID IN (SELECT PUB_ID FROM PUB_CR)");
+	public Stream<PubType_DB> getPub(boolean includePubsWithoutCRs, boolean sortById) {
+		String where = includePubsWithoutCRs ? "" : "WHERE PUB_ID IN (SELECT PUB_ID FROM PUB_CR) ";
+		String order = sortById ? "ORDER BY PUB_ID " : "";
+		return this.dbStore.selectPub(where + order);
 	}
 
 

@@ -20,7 +20,7 @@ public class PubType_DB extends PubType<CRType_DB> {
 	public final static CharSequence arraySeparator2 = "\t"; 
 	
 	public final static Collector<? super String, ?, String> join = Collectors.joining(arraySeparator1);
-	public final static Function<String, Stream<String>> split = s -> Arrays.stream(s.split(arraySeparator1.toString()));
+	public final static Function<String, Stream<String>> split = s -> (s==null) ? Stream.empty() : Arrays.stream(s.split(arraySeparator1.toString()));
 	
 	public static class PubType_ResultSet implements Iterator<PubType_DB> {
 		
@@ -94,11 +94,19 @@ public class PubType_DB extends PubType<CRType_DB> {
 		
 		pst.setInt 		( 1, pub.getID()); 
 		pst.setString 	( 2, pub.getPT()); 
-		pst.setString 	( 3, pub.getAU().collect(join)); 
-		pst.setString 	( 4, pub.getAF().collect(join)); 
-		pst.setString 	( 5, pub.getC1().map(it -> String.join(arraySeparator2, it)).collect(join)); 
-		pst.setString 	( 6, pub.getEM().collect(join)); 
-		pst.setString 	( 7, pub.getAA().collect(join)); 
+		
+		if (pub.getAU().count()==0) { pst.setNull( 3, Types.VARCHAR); } else { pst.setString ( 3, pub.getAU().collect(join)); } 
+		if (pub.getAF().count()==0) { pst.setNull( 4, Types.VARCHAR); } else { pst.setString ( 4, pub.getAF().collect(join)); } 
+		if (pub.getC1().count()==0) { pst.setNull( 5, Types.VARCHAR); } else { pst.setString ( 5, pub.getC1().map(it -> String.join(arraySeparator2, it)).collect(join)); } 
+		if (pub.getEM().count()==0) { pst.setNull( 6, Types.VARCHAR); } else { pst.setString ( 6, pub.getEM().collect(join)); } 
+		if (pub.getAA().count()==0) { pst.setNull( 7, Types.VARCHAR); } else { pst.setString ( 7, pub.getAA().collect(join)); } 
+		
+		if ((pub.getID()==161) || (pub.getID()==447) || (pub.getID()==488)) {
+			System.out.println("============== " + pub.getID());
+			System.out.println("EM count = " + pub.getEM().count());
+			System.out.println("AA count = " + pub.getAA().count());
+		}
+		
 		pst.setString 	( 8, pub.getTI()); 
 		if (pub.getPY()==null) { pst.setNull( 9, Types.INTEGER); } else { pst.setInt ( 9, pub.getPY()); } 
 		pst.setString 	(10, pub.getSO()); 
@@ -120,8 +128,9 @@ public class PubType_DB extends PubType<CRType_DB> {
 	}
 	
 	@Override
-	public Stream<CRType_DB> getCR() {
-		return CRTable_DB.get().getDBStore().selectCR(String.format("WHERE CR_ID IN (SELECT CR_ID FROM PUB_CR WHERE PUB_ID = %d)", this.getID()));
+	public Stream<CRType_DB> getCR(boolean sortById) {
+		String order = sortById ? "ORDER BY CR_ID" : "";
+		return CRTable_DB.get().getDBStore().selectCR(String.format("WHERE CR_ID IN (SELECT CR_ID FROM PUB_CR WHERE PUB_ID = %d) %s", this.getID(), order));
 	}
 
 	@Override

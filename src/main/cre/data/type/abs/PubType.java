@@ -73,7 +73,12 @@ public abstract class PubType<C extends CRType<?>> implements Comparable<PubType
 		AA = new ArrayList<String>();
 	}
 	
-	public abstract Stream<C> getCR();
+	public Stream<C> getCR() {
+		return getCR (false);
+	}
+
+	public abstract Stream<C> getCR(boolean sortById);
+	
 	public abstract int getSizeCR();
 	
 

@@ -26,8 +26,8 @@ public class PubType_MM extends PubType<CRType_MM> {
 
 
 	@Override
-	public Stream<CRType_MM> getCR() {
-		return crList.stream();
+	public Stream<CRType_MM> getCR(boolean sortById) {
+		return sortById ? crList.stream().sorted() : crList.stream();
 	}
 
 	@Override
