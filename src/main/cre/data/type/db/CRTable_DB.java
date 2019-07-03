@@ -70,10 +70,12 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 		try {
 			Class.forName("org.h2.Driver" );
 			
-			dbCon = DriverManager.getConnection("jdbc:h2:~/test", "sa", "");	// embedded (file)
+			dbCon = DriverManager.getConnection("jdbc:h2:~/" + name, "sa", "");	// embedded (file)
 //			dbCon = DriverManager.getConnection("jdbc:h2:mem:test", "sa", "");	// in-memory
 
 			dbStore = new DB_Store(dbCon);
+			dbStore.init();
+			
 			statistics = new Statistics_DB(dbCon);
 			clustering = new Clustering_DB(dbCon);
 			reader = new Reader_DB(dbCon);

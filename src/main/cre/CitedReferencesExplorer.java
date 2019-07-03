@@ -28,12 +28,15 @@ public class CitedReferencesExplorer extends Application {
 			loadOnOpen = args[1];
 		}
 
-		title += " " + String.join(" ", args);
+//		title += " " + String.join(" ", args);
 		
 		
 		for (String arg: args) {
-			if (arg.equalsIgnoreCase("-db")) {
+			if (arg.toLowerCase().startsWith("-db")) {
 				CRTable.type = TABLE_IMPL_TYPES.DB;
+				String[] split = arg.split("=");
+				CRTable.name = (split.length==2) ? split[1] : "test";
+				title += String.format(" (DB=%s)", CRTable.name); 
 			}
 		}
 
