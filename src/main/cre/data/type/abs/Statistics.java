@@ -11,7 +11,7 @@ public interface Statistics {
 		final private int max;
 		
 		public IntRange() {
-			this (MISSING, MISSING);
+			this (NONE, NONE);
 		}
 
 		public IntRange(int value) {

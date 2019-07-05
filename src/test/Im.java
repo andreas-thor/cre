@@ -4,12 +4,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
@@ -18,6 +17,7 @@ import org.junit.Test;
 
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRTable.TABLE_IMPL_TYPES;
+import main.cre.data.type.abs.Clustering;
 import main.cre.data.type.abs.Statistics.IntRange;
 import main.cre.format.cre.Writer;
 import main.cre.format.exporter.ExportFormat;
@@ -27,33 +27,85 @@ import main.cre.ui.dialog.Sampling;
 
 public class Im {
 
-	private final static String TESTFOLDER = "data/test/";
-	private final Function<TABLE_IMPL_TYPES, File> creFile = (type) -> new File (String.format("%sout_%s.cre", TESTFOLDER, type.toString())); 
-	private final BiFunction<TABLE_IMPL_TYPES, ExportFormat, File> exportFile = (type, outFormat) -> new File (String.format("%sout_%s_%s.%s", TESTFOLDER, type.toString(), outFormat.toString(), outFormat.getFileExtension())); 
+	private final static String DATAFOLDER = "data/";
 
+	
+	
+	private Consumer<Void> getImportGenerator(ImportFormat format, String[] files, IntRange removeCRByYear, IntRange removeCRByN_CR, Double threshold) {
+		
+		return (x) -> {
+			try {
+				format.load(
+						Arrays.stream(files).map(s -> new File(DATAFOLDER + s)).collect(Collectors.toList()), 
+						new IntRange(0, 0), 
+						true,
+						new IntRange(0, 0),
+						true, 
+						0, 
+						Sampling.NONE
+					);
+				
+				if (removeCRByYear != null) {
+					CRTable.get().removeCRByYear(removeCRByYear);
+				}
+				
+				if (removeCRByN_CR != null) {
+					CRTable.get().removeCRByN_CR(removeCRByN_CR);
+				}
+				
+				if (threshold != null) {
+					CRTable.get().getClustering().generateInitialClustering();
+					CRTable.get().getClustering().updateClustering(Clustering.ClusteringType.REFRESH, null, threshold, false, false, false);
+
+				}
+				
+			} catch (OutOfMemoryError | Exception e) {
+				 throw new RuntimeException(e);
+			}
+		};
+	}
+	
 	@Test
-	public void test() throws OutOfMemoryError, Exception {
+	public void test_DB_vs_MM () throws OutOfMemoryError, Exception {
 
 		
-		List<File> inputFiles = new ArrayList<File>();
-		inputFiles.add(new File("data/savedrecs_JOI1.txt"));
-		inputFiles.add(new File("data/savedrecs_JOI2.txt"));
+//		checkForEqualOutputFiles_DB_vs_MM(
+//			getImportGenerator(ImportFormat.WOS, new String[] { "savedrecs_JOI1.txt", "savedrecs_JOI2.txt"} , new IntRange (10, 2013), new IntRange(0, 10), null)
+//		);
+		
+		
+		for (IntRange removeCRByYear: new IntRange[] { null, new IntRange (10, 2013) }) {
+			for (IntRange removeCRByN_CR: new IntRange[] { null, new IntRange(0, 10) }) {
+				for (Double threshold: new Double[] { null, 0.5, 0.75, 0.9 }) {
+					checkForEqualOutputFiles_DB_vs_MM(
+						getImportGenerator(ImportFormat.WOS, new String[] { "savedrecs_JOI1.txt", "savedrecs_JOI2.txt"} , removeCRByYear, removeCRByN_CR, threshold)
+					);
+					
+					checkForEqualOutputFiles_DB_vs_MM(
+						getImportGenerator(ImportFormat.SCOPUS, new String[] { "scopus/scopus_export_csv_incl_citations_abstract_references.csv"} , removeCRByYear, removeCRByN_CR, threshold)
+					);					
+										
+					checkForEqualOutputFiles_DB_vs_MM(
+						getImportGenerator(ImportFormat.WOS, new String[] { "climate gross/data_climate_500t.txt"} , removeCRByYear, removeCRByN_CR, threshold)
+					);					
+					
+				}
+			}
+		}
+	}
+	
+	
+	private void checkForEqualOutputFiles_DB_vs_MM(Consumer<Void> generateTable) throws OutOfMemoryError, Exception {
+
+
+		final String TESTFOLDER = DATAFOLDER + "test/";
+		final Function<TABLE_IMPL_TYPES, File> creFile = (type) -> new File (String.format("%sout_%s.cre", TESTFOLDER, type.toString())); 
+		final BiFunction<TABLE_IMPL_TYPES, ExportFormat, File> exportFile = (type, outFormat) -> new File (String.format("%sout_%s_%s.%s", TESTFOLDER, type.toString(), outFormat.toString(), outFormat.getFileExtension())); 
+
 		
 		for (TABLE_IMPL_TYPES type: CRTable.TABLE_IMPL_TYPES.values()) {
 			CRTable.type = type;
-			
-			ImportFormat.WOS.load(
-					inputFiles, 
-					new IntRange(0, 0), 
-					true,
-					new IntRange(0, 0),
-					true, 
-					0, 
-					Sampling.NONE
-				);
-			
-//			CRTable.get().removeCRByYear(new IntRange (10, 2013));
-//			CRTable.get().removeCRByN_CR(new IntRange(0, 10));
+			generateTable.accept(null);
 			
 			for (ExportFormat outFormat: ExportFormat.values()) {
 				outFormat.save(exportFile.apply(type, outFormat), UISettings.get().getIncludePubsWithoutCRs());
@@ -80,11 +132,6 @@ public class Im {
 			System.out.println("CRE/" + name);
 			assertTrue (IOUtils.contentEquals(toCompare[0], toCompare[1]));
 		}
-		
-		
-		
-		
-		
 
 	}
 	

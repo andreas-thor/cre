@@ -289,7 +289,7 @@ public class Clustering_DB extends Clustering<CRType_DB, PubType_DB> {
 
 	@Override
 	public Stream<MatchPairGroup> getMatchPairGroups(boolean manual) {
-
+		// sortById is ignored since we need to have ORDER BY in the SQL query anyway to get the groups
 		try {
 			ResultSet rs = dbCon.createStatement().executeQuery(String.format("SELECT CR_ID1, CR_ID2, sim FROM CR_MATCH_%s ORDER BY CR_ID1, CR_ID2", manual?"MANU":"AUTO")); 
 			return StreamSupport.stream(new MatchPairGroup_Resultset(rs).getIterable().spliterator(), false);

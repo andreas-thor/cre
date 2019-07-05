@@ -2,6 +2,8 @@ package main.cre.data.type.abs;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 public class MatchPairGroup {
 
@@ -21,7 +23,7 @@ public class MatchPairGroup {
 		return this.crId1;
 	}
 	
-	public Map<Integer, Double> getMatches () {
-		return this.matches;
+	public Stream<Entry<Integer, Double>> getMatches () {
+		return this.matches.entrySet().stream().sorted((e1, e2) -> e1.getKey()-e2.getKey());
 	}
 }

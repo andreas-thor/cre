@@ -146,11 +146,9 @@ public class Writer {
 
 			jgenMatch.writeStartObject(loop?"MATCH_MANU":"MATCH_AUTO");
 			CRTable.get().getClustering().getMatchPairGroups(loop).forEach(group -> {
-				if (group.getMatches().size()>0) {
+				if (group.getMatches().count()>0) {
 					jgenMatch.writeStartObject(String.valueOf(group.getCrId1()));
-					for (Entry<Integer, Double> p: group.getMatches().entrySet()) {
-						jgenMatch.write(String.valueOf(p.getKey()), p.getValue());
-					}
+					group.getMatches().forEach(p -> jgenMatch.write(String.valueOf(p.getKey()), p.getValue()));
 					jgenMatch.writeEnd();
 				}
 				

@@ -281,14 +281,17 @@ public class Clustering_MM extends Clustering<CRType_MM, PubType_MM> {
 
 	@Override
 	public Stream<MatchPairGroup> getMatchPairGroups(boolean manual) {
-		return this.matchResult.get(manual).entrySet().stream()
-			.map(e -> {
-				MatchPairGroup res = new MatchPairGroup(e.getKey().getID());
-				for (Entry<CRType_MM, Double> p: e.getValue().entrySet()) {
-					res.addMatch(p.getKey().getID(), p.getValue());
-				}
-				return res;
-			});
+		
+		return 
+			this.matchResult.get(manual).entrySet().stream()
+				.sorted((e1, e2) -> e1.getKey().getID()-e2.getKey().getID())
+				.map(e -> {
+					MatchPairGroup res = new MatchPairGroup(e.getKey().getID());
+					for (Entry<CRType_MM, Double> p: e.getValue().entrySet()) {
+						res.addMatch(p.getKey().getID(), p.getValue());
+					}
+					return res;
+				});
 	}
 
 
