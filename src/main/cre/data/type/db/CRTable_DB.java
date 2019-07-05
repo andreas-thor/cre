@@ -14,9 +14,11 @@ import java.util.stream.Stream;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.Statistics;
 import main.cre.data.type.abs.Statistics.IntRange;
+import main.cre.data.type.db.DB_Store.Queries;
 import main.cre.data.type.mm.CRType_MM;
 import main.cre.data.type.mm.PubType_MM;
 import main.cre.format.cre.Reader;
+import main.cre.ui.statusbar.StatusBar;
 
 public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 
@@ -159,6 +161,17 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 	@Override
 	public void merge() {
 		// TODO Auto-generated method stub
+		
+		try {
+			StatusBar.get().setValue("Merging ");
+			dbCon.createStatement().execute(Queries.getQuery("merge.sql"));
+			updateData();
+			StatusBar.get().setValue("Merging done");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 
 	}
 

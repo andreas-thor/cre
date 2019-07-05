@@ -39,6 +39,7 @@ CREATE TABLE CR (
 	CR_SEQUENCE varchar,
 	CR_TYPE varchar,
 	CR_BLOCKINGKEY varchar,
+	CR_MERGED_INTO int, 
 	
 	PRIMARY KEY (CR_ID)  
 );

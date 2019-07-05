@@ -43,20 +43,11 @@ public class CRCluster implements Serializable, Comparable<CRCluster> {
 	
 	
 	/**
-	 * Retrieves the CR with the highest number of citations (picks one at random if there are several highest cited CRs)
+	 * Retrieves the CR with the highest number of citations (picks the one with the smaller id if there are several highest cited CRs)
 	 * @return
 	 */
 	public CRType_MM getMainCR () {
-		
-		int maxN_CR = -1;
-		CRType_MM result = null;
-		for (CRType_MM cr: this.crSet) {
-			if (cr.getN_CR()>maxN_CR) {
-				maxN_CR = cr.getN_CR();
-				result = cr;
-			}
-		};
-		return result;
+		return getCR().max((c1, c2) -> (c1.getN_CR()>c2.getN_CR()) || ((c1.getN_CR()==c2.getN_CR()) && (c1.getID()<c2.getID())) ? +1 : -1).orElse(null);
 	}
 	
 
