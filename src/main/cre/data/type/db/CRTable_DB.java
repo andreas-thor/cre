@@ -95,7 +95,6 @@ public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {
 	public void init() {
 		// TODO Auto-generated method stub
 
-		this.setNpctRange(1);
 		this.setAborted(false);
 		this.numberOfPubs = 0;
 		this.showNull = true;

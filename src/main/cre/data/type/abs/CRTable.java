@@ -15,12 +15,28 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
  
 	public static enum COMPARATOR { LT, LTE, EQ, GTE, GT };
 	
+	
+	public enum CRTypes { SB("Sleeping beauty"), CP("Constant performer"), HP ("Hot paper"), LC("Life cycle");
+	    public final String label;
+	    private CRTypes(String label) {
+	        this.label = label;
+	    }
+	}
+	
+	public enum ZValueSymbol { PLUS('+'), ZERO('0'), MINUS ('-');
+	    public final char label;
+	    private ZValueSymbol(char label) {
+	        this.label = label;
+	    }
+	}
+	
+	
 	public static enum TABLE_IMPL_TYPES { MM, DB }
 	public static TABLE_IMPL_TYPES type = TABLE_IMPL_TYPES.MM;
 	public static String name;
 
 	private boolean aborted;
-	private int npctRange;
+	private int npctRange = 1;
 	
 	private CRChartData chartData;
 
@@ -264,7 +280,7 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	//			zvalueArray[pyIdx] = zvalue;
 	//			System.out.println(String.format("CR=%d\tPY=%d\tExpected=%10.2f\tzValue=%10.2f", crIdx, pyIdx, expected, zvalue));
 				
-				sequence[pyIdx] = (zvalue>1) ? '+' : ((zvalue<-1) ? '-' : '0');
+				sequence[pyIdx] = (zvalue>1) ? ZValueSymbol.PLUS.label : ((zvalue<-1) ? ZValueSymbol.MINUS.label : ZValueSymbol.ZERO.label);
 				
 				type[0]  +=                      (zvalue<-1)?0:1;	// # at least average
 				type[1]  += ((pyIdx< 3) 		&& (zvalue<-1)) ? 1 : 0;	// # below average in the first 3 py
@@ -274,7 +290,7 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 				type[5]  += ((pyIdx>=4) 		&& (zvalue> 1)) ? 1 : 0;	// # above average in the 5th+ py 
 				type[6]  += ((pySize-pyIdx<=3) 	&& (zvalue<=1)) ? 1: 0;		// # average or lower in the last 3 py
 				type[7]  += (NCR_CR_PY[crIdx][pyIdx]>0) ? 1 : 0;			// # no of citing years with at least 1 citation
-				type[8]  += ((pyIdx==0) || (sequence[pyIdx-1]=='-') ||  (sequence[pyIdx]=='+') || ((sequence[pyIdx-1]=='0') && (sequence[pyIdx]=='0'))) ? 1:0;
+				type[8]  += ((pyIdx==0) || (sequence[pyIdx-1]==ZValueSymbol.MINUS.label) ||  (sequence[pyIdx]==ZValueSymbol.PLUS.label) || ((sequence[pyIdx-1]==ZValueSymbol.ZERO.label) && (sequence[pyIdx]==ZValueSymbol.ZERO.label))) ? 1:0;
 				type[9]  +=                      (zvalue>1)?1:0;			// above average
 				type[10] += 1;	// # citing years
 				
@@ -302,10 +318,10 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 			boolean lifecycle = (type[4]>=2) && (type[5]>=2) && (type[6]>1);
 			
 			StringBuffer typeLabel = new StringBuffer();
-			if (sbeauty) 	typeLabel.append (typeLabel.length()>0?" + ":"").append("Sleeping beauty");
-			if (constant) 	typeLabel.append (typeLabel.length()>0?" + ":"").append("Constant performer");
-			if (hotpaper) 	typeLabel.append (typeLabel.length()>0?" + ":"").append("Hot paper");
-			if (lifecycle) 	typeLabel.append (typeLabel.length()>0?" + ":"").append("Life cycle");
+			if (sbeauty) 	typeLabel.append (typeLabel.length()>0?" + ":"").append(CRTypes.SB.label);
+			if (constant) 	typeLabel.append (typeLabel.length()>0?" + ":"").append(CRTypes.CP.label);
+			if (hotpaper) 	typeLabel.append (typeLabel.length()>0?" + ":"").append(CRTypes.HP.label);
+			if (lifecycle) 	typeLabel.append (typeLabel.length()>0?" + ":"").append(CRTypes.LC.label);
 			
 			
 			

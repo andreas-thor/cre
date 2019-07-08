@@ -25,13 +25,48 @@ import main.cre.format.importer.ImportFormat;
 import main.cre.ui.UISettings;
 import main.cre.ui.dialog.Sampling;
 
-public class Im {
+public class StorageEngine {
 
+	/**
+	 * This test checks if the storage engines "MM" (main memory) and "DB" (database) are equivalent.
+	 * To this end, several files are imported, some data manipulation is done (remove CRs, clustering, merging)
+	 * and the resulting export files are checked if they are byte-wise equivalent.
+	 */
+	
 	private final static String DATAFOLDER = "data/";
 
 	
+	@Test
+	public void test_DB_vs_MM () throws OutOfMemoryError, Exception {
+
+		
+		for (IntRange removeCRByYear: new IntRange[] { null, new IntRange (10, 2013) }) {
+			for (IntRange removeCRByN_CR: new IntRange[] { null, new IntRange(0, 10) }) {
+				for (Double threshold: new Double[] { null, 0.5, 0.75, 0.9 }) {
+					for (boolean merge: new boolean[] { false, true } ) {
+						
+						if ((threshold==null) && merge) continue;	// merge is only possible after clustering
+						
+						checkForEqualOutputFiles_DB_vs_MM(
+							getImportGenerator(ImportFormat.WOS, new String[] { "savedrecs_JOI1.txt", "savedrecs_JOI2.txt"} , removeCRByYear, removeCRByN_CR, threshold, merge)
+						);
+						
+						checkForEqualOutputFiles_DB_vs_MM(
+							getImportGenerator(ImportFormat.SCOPUS, new String[] { "scopus/scopus_export_csv_incl_citations_abstract_references.csv"} , removeCRByYear, removeCRByN_CR, threshold, merge)
+						);					
+											
+						checkForEqualOutputFiles_DB_vs_MM(
+							getImportGenerator(ImportFormat.WOS, new String[] { "climate gross/data_climate_100t.txt"} , removeCRByYear, removeCRByN_CR, threshold, merge)
+						);
+					}
+					
+				}
+			}
+		}
+	}
 	
-	private Consumer<Void> getImportGenerator(ImportFormat format, String[] files, IntRange removeCRByYear, IntRange removeCRByN_CR, Double threshold) {
+	
+	private Consumer<Void> getImportGenerator(ImportFormat format, String[] files, IntRange removeCRByYear, IntRange removeCRByN_CR, Double threshold, boolean merge) {
 		
 		return (x) -> {
 			try {
@@ -56,8 +91,12 @@ public class Im {
 				if (threshold != null) {
 					CRTable.get().getClustering().generateInitialClustering();
 					CRTable.get().getClustering().updateClustering(Clustering.ClusteringType.REFRESH, null, threshold, false, false, false);
-
 				}
+				
+				if (merge) {
+					CRTable.get().merge();
+				}
+				
 				
 			} catch (OutOfMemoryError | Exception e) {
 				 throw new RuntimeException(e);
@@ -65,34 +104,7 @@ public class Im {
 		};
 	}
 	
-	@Test
-	public void test_DB_vs_MM () throws OutOfMemoryError, Exception {
 
-		
-//		checkForEqualOutputFiles_DB_vs_MM(
-//			getImportGenerator(ImportFormat.WOS, new String[] { "savedrecs_JOI1.txt", "savedrecs_JOI2.txt"} , new IntRange (10, 2013), new IntRange(0, 10), null)
-//		);
-		
-		
-		for (IntRange removeCRByYear: new IntRange[] { null, new IntRange (10, 2013) }) {
-			for (IntRange removeCRByN_CR: new IntRange[] { null, new IntRange(0, 10) }) {
-				for (Double threshold: new Double[] { null, 0.5, 0.75, 0.9 }) {
-					checkForEqualOutputFiles_DB_vs_MM(
-						getImportGenerator(ImportFormat.WOS, new String[] { "savedrecs_JOI1.txt", "savedrecs_JOI2.txt"} , removeCRByYear, removeCRByN_CR, threshold)
-					);
-					
-					checkForEqualOutputFiles_DB_vs_MM(
-						getImportGenerator(ImportFormat.SCOPUS, new String[] { "scopus/scopus_export_csv_incl_citations_abstract_references.csv"} , removeCRByYear, removeCRByN_CR, threshold)
-					);					
-										
-					checkForEqualOutputFiles_DB_vs_MM(
-						getImportGenerator(ImportFormat.WOS, new String[] { "climate gross/data_climate_500t.txt"} , removeCRByYear, removeCRByN_CR, threshold)
-					);					
-					
-				}
-			}
-		}
-	}
 	
 	
 	private void checkForEqualOutputFiles_DB_vs_MM(Consumer<Void> generateTable) throws OutOfMemoryError, Exception {

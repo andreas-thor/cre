@@ -83,7 +83,6 @@ public class CRTable_MM extends CRTable<CRType_MM, PubType_MM> {
 			}
 		}
 		
-		this.setNpctRange(1);
 		crDataMap = new HashMap<CRType_MM, CRType_MM>();
 		allPubs = new HashMap<PubType_MM, PubType_MM>();
 		

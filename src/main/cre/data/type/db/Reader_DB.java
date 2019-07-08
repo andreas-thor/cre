@@ -1,11 +1,5 @@
 package main.cre.data.type.db;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -132,6 +126,7 @@ public class Reader_DB extends Reader {
 				pst_OnNewPub_CR.clearParameters();
 				pst_OnNewPub_CR.setInt(1, pub.getID());
 				pst_OnNewPub_CR.setInt(2, crId);
+				pst_OnNewPub_CR.addBatch();
 				pst_OnNewPub_CR_Counter++;
 			}
 			
@@ -155,7 +150,28 @@ public class Reader_DB extends Reader {
 
 	@Override
 	public void onAfterLoad() {
-		// TODO Auto-generated method stub
+		try {
+			
+			if (pst_OnNewCR_Counter>0) {
+				pst_OnNewCR.executeBatch();
+				pst_OnNewCR_Counter = 0;
+			}
+			
+			if (pst_OnNewPub_Counter>0) {
+				pst_OnNewPub.executeBatch();
+				pst_OnNewPub_Counter = 0;
+			}
+			
+			if (pst_OnNewPub_CR_Counter>0) {
+				pst_OnNewPub_CR.executeBatch();
+				pst_OnNewPub_CR_Counter = 0;
+			}
+			
+			this.dbCon.createStatement().execute(Queries.getQuery("reader/on_after_load.sql"));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 

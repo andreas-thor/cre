@@ -45,10 +45,10 @@ public abstract class Reader {
 	 */
 	public void load (File file) throws OutOfMemoryError, Exception {
 		
-		onBeforeLoad();
-		
 		CRTable.get().init();
-		
+
+		onBeforeLoad();
+
 		ZipEntry entry = null;
 		ZipFile zipFile = new ZipFile(file);
 		
@@ -82,11 +82,12 @@ public abstract class Reader {
 		}
 			
 		zipFile.close();
-		
+
+		onAfterLoad();
+
 		CRTable.get().updateData();
 		CRTable.get().getClustering().updateClustering(Clustering.ClusteringType.INIT, null, Clustering.min_threshold, false, false, false);
 
-		onAfterLoad();
 	}
 
 
