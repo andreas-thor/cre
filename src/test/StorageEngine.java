@@ -33,17 +33,17 @@ public class StorageEngine {
 	 * and the resulting export files are checked if they are byte-wise equivalent.
 	 */
 	
-	private final static String DATAFOLDER = "data/";
+	private final static String DATAFOLDER = "testdata/";
 
 	
 	@Test
 	public void test_DB_vs_MM () throws OutOfMemoryError, Exception {
 
 		
-		for (IntRange removeCRByYear: new IntRange[] { null, new IntRange (10, 2013) }) {
-			for (IntRange removeCRByN_CR: new IntRange[] { null, new IntRange(0, 10) }) {
-				for (Double threshold: new Double[] { null, 0.5, 0.75, 0.9 }) {
-					for (boolean merge: new boolean[] { false, true } ) {
+		for (IntRange removeCRByYear: new IntRange[] { null /*, new IntRange (10, 2013) */ }) {
+			for (IntRange removeCRByN_CR: new IntRange[] { null /*, new IntRange(0, 10) */ }) {
+				for (Double threshold: new Double[] { /* null, 0.5,*/  0.75 /*, 0.9 */}) {
+					for (boolean merge: new boolean[] { /* false, */ true } ) {
 						
 						if ((threshold==null) && merge) continue;	// merge is only possible after clustering
 						
@@ -52,11 +52,11 @@ public class StorageEngine {
 						);
 						
 						checkForEqualOutputFiles_DB_vs_MM(
-							getImportGenerator(ImportFormat.SCOPUS, new String[] { "scopus/scopus_export_csv_incl_citations_abstract_references.csv"} , removeCRByYear, removeCRByN_CR, threshold, merge)
+							getImportGenerator(ImportFormat.SCOPUS, new String[] { "scopus_export_csv_incl_citations_abstract_references.csv"} , removeCRByYear, removeCRByN_CR, threshold, merge)
 						);					
 											
 						checkForEqualOutputFiles_DB_vs_MM(
-							getImportGenerator(ImportFormat.WOS, new String[] { "climate gross/data_climate_100t.txt"} , removeCRByYear, removeCRByN_CR, threshold, merge)
+							getImportGenerator(ImportFormat.WOS, new String[] { "data_climate_100t.txt"} , removeCRByYear, removeCRByN_CR, threshold, merge)
 						);
 					}
 					
@@ -110,7 +110,9 @@ public class StorageEngine {
 	private void checkForEqualOutputFiles_DB_vs_MM(Consumer<Void> generateTable) throws OutOfMemoryError, Exception {
 
 
-		final String TESTFOLDER = DATAFOLDER + "test/";
+		final String TESTFOLDER = DATAFOLDER + "tmp/";
+		new File(TESTFOLDER).mkdirs();
+		
 		final Function<TABLE_IMPL_TYPES, File> creFile = (type) -> new File (String.format("%sout_%s.cre", TESTFOLDER, type.toString())); 
 		final BiFunction<TABLE_IMPL_TYPES, ExportFormat, File> exportFile = (type, outFormat) -> new File (String.format("%sout_%s_%s.%s", TESTFOLDER, type.toString(), outFormat.toString(), outFormat.getFileExtension())); 
 

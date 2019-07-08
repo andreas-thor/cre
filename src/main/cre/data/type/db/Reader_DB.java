@@ -23,6 +23,12 @@ public class Reader_DB extends Reader {
 	private int pst_OnNewPub_Counter;
 	private PreparedStatement pst_OnNewPub_CR;
 	private int pst_OnNewPub_CR_Counter;
+
+	
+	private PreparedStatement pst_OnNew_MatchPair_Manu;
+	private int pst_OnNew_MatchPair_Manu_Counter;
+	private PreparedStatement pst_OnNew_MatchPair_Auto;
+	private int pst_OnNew_MatchPair_Auto_Counter;
 	
 	private int numberOfPubs;
 	
@@ -31,10 +37,19 @@ public class Reader_DB extends Reader {
 		
 		pst_OnNewCR = dbCon.prepareStatement(Queries.getQuery("reader/on_new_cr.sql"));
 		pst_OnNewCR_Counter = 0;
+		
 		pst_OnNewPub = dbCon.prepareStatement(Queries.getQuery("reader/on_new_pub.sql"));
 		pst_OnNewPub_Counter = 0;
+		
 		pst_OnNewPub_CR = dbCon.prepareStatement(Queries.getQuery("reader/on_new_pub_cr.sql"));
 		pst_OnNewPub_CR_Counter = 0;
+		
+		pst_OnNew_MatchPair_Manu = dbCon.prepareStatement(Queries.getQuery("reader/on_new_matchpair_manu.sql"));
+		pst_OnNew_MatchPair_Manu_Counter = 0;
+		
+		pst_OnNew_MatchPair_Auto = dbCon.prepareStatement(Queries.getQuery("reader/on_new_matchpair_auto.sql"));
+		pst_OnNew_MatchPair_Auto_Counter = 0;
+
 		
 	}
 
@@ -145,6 +160,40 @@ public class Reader_DB extends Reader {
 	@Override
 	public void onNewMatchPair(int crId1, int crId2, double sim, boolean isManual) {
 		// TODO Auto-generated method stub
+		try {
+			if (isManual) {
+				pst_OnNew_MatchPair_Manu.clearParameters();
+				pst_OnNew_MatchPair_Manu.setInt		(1, crId1);		
+				pst_OnNew_MatchPair_Manu.setInt		(2, crId2);		
+				pst_OnNew_MatchPair_Manu.setDouble	(3, sim);
+				pst_OnNew_MatchPair_Manu.addBatch();
+				pst_OnNew_MatchPair_Manu_Counter++;
+
+				if (pst_OnNew_MatchPair_Manu_Counter>100) {
+					pst_OnNew_MatchPair_Manu.executeBatch();
+					pst_OnNew_MatchPair_Manu_Counter = 0;
+				}
+				
+			} else {
+				pst_OnNew_MatchPair_Auto.clearParameters();
+				pst_OnNew_MatchPair_Auto.setInt		(1, crId1);		
+				pst_OnNew_MatchPair_Auto.setInt		(2, crId2);		
+				pst_OnNew_MatchPair_Auto.setDouble	(3, sim);
+				pst_OnNew_MatchPair_Auto.addBatch();
+				pst_OnNew_MatchPair_Auto_Counter++;
+				
+				if (pst_OnNew_MatchPair_Auto_Counter>100) {
+					pst_OnNew_MatchPair_Auto.executeBatch();
+					pst_OnNew_MatchPair_Auto_Counter = 0;
+				}
+				
+			}
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 
 	}
 
@@ -166,6 +215,16 @@ public class Reader_DB extends Reader {
 				pst_OnNewPub_CR.executeBatch();
 				pst_OnNewPub_CR_Counter = 0;
 			}
+			
+			if (pst_OnNew_MatchPair_Manu_Counter>0) {
+				pst_OnNew_MatchPair_Manu.executeBatch();
+				pst_OnNew_MatchPair_Manu_Counter = 0;
+			}
+			
+			if (pst_OnNew_MatchPair_Auto_Counter>0) {
+				pst_OnNew_MatchPair_Auto.executeBatch();
+				pst_OnNew_MatchPair_Auto_Counter = 0;
+			}		
 			
 			this.dbCon.createStatement().execute(Queries.getQuery("reader/on_after_load.sql"));
 		} catch (SQLException e) {
