@@ -18,8 +18,8 @@ import main.cre.Exceptions.UnsupportedFileFormatException;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.Clustering;
 import main.cre.data.type.abs.CRType.FORMATTYPE;
-import main.cre.data.type.mm.CRType_MM;
-import main.cre.data.type.mm.PubType_MM;
+import main.cre.store.mm.CRType_MM;
+import main.cre.store.mm.PubType_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 

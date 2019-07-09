@@ -6,10 +6,10 @@ import java.util.stream.Stream;
 
 import main.cre.data.type.abs.CRType.PERCENTAGE;
 import main.cre.data.type.abs.Statistics.IntRange;
-import main.cre.data.type.db.CRTable_DB;
-import main.cre.data.type.mm.CRTable_MM;
-import main.cre.data.type.mm.PubType_MM;
 import main.cre.format.cre.Reader;
+import main.cre.store.db.CRTable_DB;
+import main.cre.store.mm.CRTable_MM;
+import main.cre.store.mm.PubType_MM;
 
 public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
  

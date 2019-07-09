@@ -1,4 +1,4 @@
-package main.cre.data.type.db;
+package main.cre.store.db;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -14,10 +14,10 @@ import java.util.stream.Stream;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.Statistics;
 import main.cre.data.type.abs.Statistics.IntRange;
-import main.cre.data.type.db.DB_Store.Queries;
-import main.cre.data.type.mm.CRType_MM;
-import main.cre.data.type.mm.PubType_MM;
 import main.cre.format.cre.Reader;
+import main.cre.store.db.DB_Store.Queries;
+import main.cre.store.mm.CRType_MM;
+import main.cre.store.mm.PubType_MM;
 import main.cre.ui.statusbar.StatusBar;
 
 public class CRTable_DB extends CRTable<CRType_DB, PubType_DB> {

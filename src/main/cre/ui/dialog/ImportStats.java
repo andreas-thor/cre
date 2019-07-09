@@ -138,20 +138,20 @@ public class ImportStats extends Dialog<Integer> {
 		grid.setVgap(10);
 		grid.setPadding(new Insets(20, 20, 20, 20));
 		
-		int[] rangeRPY = crStatsInfo.getRangeRPY();
-		tfYear[0] = createTF (rangeRPY[0], true);
+		IntRange rangeRPY = crStatsInfo.getRangeRPY();
+		tfYear[0] = createTF (rangeRPY.getMin(), true);
 		grid.addRow(0, 
 			new Label("Minimum Reference Publication Year"), 
 			tfYear[0],
 			new Label(""),
-			createTF (rangeRPY[0], false));
+			createTF (rangeRPY.getMin(), false));
 
-		tfYear[1] = createTF (rangeRPY[1], true);
+		tfYear[1] = createTF (rangeRPY.getMax(), true);
 		grid.addRow(1, 
 				new Label("Maximum Reference Publication Year"), 
 				tfYear[1],
 				new Label(""),
-				createTF (rangeRPY[1], false));
+				createTF (rangeRPY.getMax(), false));
 
 		cbWithout[0] = new CheckBox("Include");
 		cbWithout[0].setSelected(UISettings.get().getImportCRsWithoutYear());
@@ -167,21 +167,21 @@ public class ImportStats extends Dialog<Integer> {
 				new Label(""),
 				createTF (crStatsInfo.getNumberOfPubs(), false));
 		
-		int[] rangePY = crStatsInfo.getRangePY();
+		IntRange rangePY = crStatsInfo.getRangePY();
 
-		tfYear[2] = createTF (rangePY[0], true);
+		tfYear[2] = createTF (rangePY.getMin(), true);
 		grid.addRow(4, 
 			new Label("Minimum Publication Year"), 
 			tfYear[2],
 			new Label(""),
-			createTF (rangePY[0], false));
+			createTF (rangePY.getMin(), false));
 
-		tfYear[3] = createTF (rangePY[1], true);
+		tfYear[3] = createTF (rangePY.getMax(), true);
 		grid.addRow(5, 
 				new Label("Maximum Publication Year"), 
 				tfYear[3],
 				new Label(""),
-				createTF (rangePY[1], false));
+				createTF (rangePY.getMax(), false));
 
 		cbWithout[1] = new CheckBox("Include");
 		cbWithout[1].setSelected(UISettings.get().getImportPubsWithoutYear());

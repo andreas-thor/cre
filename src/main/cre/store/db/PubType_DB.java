@@ -1,4 +1,4 @@
-package main.cre.data.type.db;
+package main.cre.store.db;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;

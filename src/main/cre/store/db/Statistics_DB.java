@@ -1,4 +1,4 @@
-package main.cre.data.type.db;
+package main.cre.store.db;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

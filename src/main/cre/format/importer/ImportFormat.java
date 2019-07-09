@@ -14,7 +14,7 @@ import main.cre.Exceptions.UnsupportedFileFormatException;
 import main.cre.data.CRStatsInfo;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.Statistics.IntRange;
-import main.cre.data.type.mm.CRCluster;
+import main.cre.store.mm.CRCluster;
 import main.cre.ui.dialog.Sampling;
 import main.cre.ui.statusbar.StatusBar;
 

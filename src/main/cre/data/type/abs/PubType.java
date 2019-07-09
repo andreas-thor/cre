@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import main.cre.data.type.db.PubType_DB;
-import main.cre.data.type.mm.PubType_MM;
+import main.cre.store.db.PubType_DB;
+import main.cre.store.mm.PubType_MM;
 
 public abstract class PubType<C extends CRType<?>> implements Comparable<PubType<C>> {
 

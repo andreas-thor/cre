@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 
-import main.cre.data.type.mm.PubType_MM;
+import main.cre.store.mm.PubType_MM;
 
 public abstract class ImportReader implements Iterator<PubType_MM> {
 

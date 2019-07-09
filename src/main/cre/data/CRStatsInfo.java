@@ -81,12 +81,12 @@ public class CRStatsInfo {
 		});
 	}
 	
-	public int[] getRangeRPY() {
-		return rangeRPY;
+	public IntRange getRangeRPY() {
+		return new IntRange(rangeRPY[0], rangeRPY[1]);
 	}
 
-	public int[] getRangePY() {
-		return rangePY;
+	public IntRange getRangePY() {
+		return new IntRange(rangePY[0], rangePY[1]);
 	}
 	
 	public long getNumberOfPubs () {

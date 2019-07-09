@@ -1,4 +1,4 @@
-package main.cre.data.type.mm;
+package main.cre.store.mm;
 
 import java.io.Serializable;
 import java.util.HashSet;

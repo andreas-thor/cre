@@ -1,4 +1,4 @@
-package main.cre.data.type.db;
+package main.cre.store.db;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -6,10 +6,10 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-import main.cre.data.type.db.DB_Store.Queries;
-import main.cre.data.type.mm.CRType_MM;
-import main.cre.data.type.mm.PubType_MM;
 import main.cre.format.cre.Reader;
+import main.cre.store.db.DB_Store.Queries;
+import main.cre.store.mm.CRType_MM;
+import main.cre.store.mm.PubType_MM;
 
 public class Reader_DB extends Reader {
 

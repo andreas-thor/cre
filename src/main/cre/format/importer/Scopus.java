@@ -14,8 +14,8 @@ import java.util.stream.IntStream;
 import com.opencsv.CSVReader;
 
 import main.cre.data.type.abs.CRType;
-import main.cre.data.type.mm.CRType_MM;
-import main.cre.data.type.mm.PubType_MM;
+import main.cre.store.mm.CRType_MM;
+import main.cre.store.mm.PubType_MM;
 
 public class Scopus extends ImportReader  {
 

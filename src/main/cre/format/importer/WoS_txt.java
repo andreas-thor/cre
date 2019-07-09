@@ -8,8 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import main.cre.data.type.abs.CRType;
-import main.cre.data.type.mm.CRType_MM;
-import main.cre.data.type.mm.PubType_MM;
+import main.cre.store.mm.CRType_MM;
+import main.cre.store.mm.PubType_MM;
 
 /** 
  * Provides iterator over all PubType elements in a list of Scopus files

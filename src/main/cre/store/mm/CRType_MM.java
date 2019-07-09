@@ -1,4 +1,4 @@
-package main.cre.data.type.mm;
+package main.cre.store.mm;
 
 import java.util.HashSet;
 import java.util.Set;
