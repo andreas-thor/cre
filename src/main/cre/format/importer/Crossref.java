@@ -37,7 +37,7 @@ import main.cre.ui.statusbar.StatusBar;
 /**
  * Extra Methode, die alle Properties einer CR ausliest
  * Dann zuerst parse("unstructured")
- * Dann �berschreiben der CR-Properties mit Werten von JSON
+ * Dann Überschreiben der CR-Properties mit Werten von JSON
  * @author Andreas
  *
  */

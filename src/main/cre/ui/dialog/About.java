@@ -35,7 +35,7 @@ public class About extends Alert {
 		grid.add(new Label("Content Development:"), 0, 1);
 		grid.add(new Label("Lutz Bornmann and Werner Marx"), 1, 1);
 		grid.add(new Label("with further support of:"), 0, 2);
-		grid.add(new Label("Robin Haunschild, Loet Leydesdorff, and Rüdiger Mutz"), 1, 2);
+		grid.add(new Label("Robin Haunschild, Loet Leydesdorff, and Rüdiger Mutz "), 1, 2);
 		Hyperlink hp = new Hyperlink("Project website: crexplorer.net");
 		hp.setOnAction(e -> {
 			HostServicesFactory.getInstance(CitedReferencesExplorer.app).showDocument(CitedReferencesExplorer.url);
