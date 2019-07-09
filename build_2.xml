@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="CRE">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="C:/Program Files (other)/eclipse-jee-oxygene-R-win32/"/>
+    <property name="junit.output.dir" value="junit"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="Groovy Libraries.libraryclasspath">
+        <pathelement location="${ECLIPSE_HOME}plugins/org.codehaus.groovy_2.4.16.xx-201903281935-e47-RELEASE/lib/groovy-all-2.4.16.jar"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.codehaus.groovy_2.4.16.xx-201903281935-e47-RELEASE/lib/ivy-2.4.0.jar"/>
+    </path>
+    <path id="Groovy DSL Support.libraryclasspath">
+        <pathelement location="C:/Users/Andreas/.groovy/greclipse/global_dsld_support"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.codehaus.groovy_2.4.16.xx-201903281935-e47-RELEASE/plugin_dsld_support/"/>
+    </path>
+    <path id="CRE.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="lib/jchart/hamcrest-core-1.3.jar"/>
+        <pathelement location="lib/jchart/jcommon-1.0.23.jar"/>
+        <pathelement location="lib/jchart/jfreechart-1.0.19-experimental.jar"/>
+        <pathelement location="lib/jchart/jfreechart-1.0.19-swt.jar"/>
+        <pathelement location="lib/jchart/jfreechart-1.0.19.jar"/>
+        <pathelement location="lib/jchart/jfreesvg-2.0.jar"/>
+        <pathelement location="lib/jchart/junit-4.11.jar"/>
+        <pathelement location="lib/jchart/orsoncharts-1.4-eval-nofx.jar"/>
+        <pathelement location="lib/jchart/orsonpdf-1.6-eval.jar"/>
+        <pathelement location="lib/jchart/servlet.jar"/>
+        <pathelement location="lib/jchart/swtgraphics2d.jar"/>
+        <pathelement location="lib/simmetrics_jar_v1_6_2_d07_02_07.jar"/>
+        <pathelement location="lib/javax.json-1.0.jar"/>
+        <pathelement location="lib/jchart/jfreechart-1.0.19-fx.jar"/>
+        <pathelement location="lib/opencsv-3.9.jar"/>
+        <pathelement location="lib/lucene-core-6.4.2.jar"/>
+        <pathelement location="lib/lucene-queryparser-6.4.2.jar"/>
+        <pathelement location="lib/commons-io-2.6.jar"/>
+        <pathelement location="lib/h2-1.4.199.jar"/>
+        <path refid="Groovy Libraries.libraryclasspath"/>
+        <path refid="Groovy DSL Support.libraryclasspath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+                <exclude name="groovy/"/>
+                <exclude name="main/cre/script/"/>
+                <exclude name="obsolete/"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <exclude name="groovy/"/>
+            <exclude name="main/cre/script/"/>
+            <exclude name="obsolete/"/>
+            <classpath refid="CRE.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target name="CitedReferencesExplorer DB">
+        <java classname="main.cre.CitedReferencesExplorer" failonerror="true" fork="yes">
+            <jvmarg line="-Xmx1000m"/>
+            <arg line="-db=meintest4"/>
+            <classpath refid="CRE.classpath"/>
+        </java>
+    </target>
+    <target name="CitedReferencesExplorer">
+        <java classname="main.cre.CitedReferencesExplorer" failonerror="true" fork="yes">
+            <jvmarg line="-Xmx1000m"/>
+            <classpath refid="CRE.classpath"/>
+        </java>
+    </target>
+    <target name="CREFileFormat">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="test.CREFileFormat" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="CRE.classpath"/>
+        </junit>
+    </target>
+    <target name="CREScript DB">
+        <java classname="main.cre.script.CREScript" failonerror="true" fork="yes">
+            <jvmarg line="-Xmx1g"/>
+            <arg line="&quot;E:\Dev\CRE\crs\dbtest.crs&quot; -db"/>
+            <classpath refid="CRE.classpath"/>
+        </java>
+    </target>
+    <target name="CREScript">
+        <java classname="main.cre.script.CREScript" failonerror="true" fork="yes">
+            <jvmarg line="-Xmx1g"/>
+            <arg line="&quot;E:\Dev\CRE\crs\dbtest.crs&quot;"/>
+            <classpath refid="CRE.classpath"/>
+        </java>
+    </target>
+    <target name="IndicatorsExample">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="test.IndicatorsExample" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="CRE.classpath"/>
+        </junit>
+    </target>
+    <target name="StorageEngine">
+        <mkdir dir="${junit.output.dir}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="test.StorageEngine" todir="${junit.output.dir}"/>
+            <jvmarg line="-ea -Xmx1000m"/>
+            <classpath refid="CRE.classpath"/>
+        </junit>
+    </target>
+    <target name="junitreport">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
+</project>
