@@ -40,24 +40,39 @@ public class StorageEngine {
 	public void test_DB_vs_MM () throws OutOfMemoryError, Exception {
 
 		
-		for (IntRange removeCRByYear: new IntRange[] { null /*, new IntRange (10, 2013) */ }) {
-			for (IntRange removeCRByN_CR: new IntRange[] { null /*, new IntRange(0, 10) */ }) {
-				for (Double threshold: new Double[] { /* null, 0.5,*/  0.75 /*, 0.9 */}) {
-					for (boolean merge: new boolean[] { /* false, */ true } ) {
+		for (IntRange removeCRByYear: new IntRange[] { null, new IntRange (10, 2013) }) {
+			for (IntRange removeCRByN_CR: new IntRange[] { null, new IntRange(0, 10) }) {
+				for (Double threshold: new Double[] { null, 0.5, 0.75, 0.9 }) {
+					for (boolean merge: new boolean[] { false, true } ) {
 						
 						if ((threshold==null) && merge) continue;	// merge is only possible after clustering
 						
 						checkForEqualOutputFiles_DB_vs_MM(
-							getImportGenerator(ImportFormat.WOS, new String[] { "savedrecs_JOI1.txt", "savedrecs_JOI2.txt"} , removeCRByYear, removeCRByN_CR, threshold, merge)
+							getLoadData(ImportFormat.WOS, new String[] { "savedrecs_JOI1.txt", "savedrecs_JOI2.txt"}),
+							getModifyData(removeCRByYear, removeCRByN_CR, threshold, merge)
 						);
 						
 						checkForEqualOutputFiles_DB_vs_MM(
-							getImportGenerator(ImportFormat.SCOPUS, new String[] { "scopus_export_csv_incl_citations_abstract_references.csv"} , removeCRByYear, removeCRByN_CR, threshold, merge)
+							getLoadData(ImportFormat.SCOPUS, new String[] { "scopus_export_csv_incl_citations_abstract_references.csv"}), 
+							getModifyData(removeCRByYear, removeCRByN_CR, threshold, merge)
 						);					
 											
-						checkForEqualOutputFiles_DB_vs_MM(
-							getImportGenerator(ImportFormat.WOS, new String[] { "data_climate_100t.txt"} , removeCRByYear, removeCRByN_CR, threshold, merge)
+//						checkForEqualOutputFiles_DB_vs_MM(
+//							getLoadData(ImportFormat.WOS, new String[] { "data_climate_100t.txt"}), 
+//							getModifyData(removeCRByYear, removeCRByN_CR, threshold, merge)
+//						);
+						
+						checkForEqualOutputFiles_DB_vs_MM (
+							x -> { 
+								try {
+									CRTable.get().getReader().load(new File (DATAFOLDER + "sciento_bearb.cre"));
+								} catch (OutOfMemoryError | Exception e) {
+									 throw new RuntimeException(e);
+								}
+							},
+							getModifyData(removeCRByYear, removeCRByN_CR, threshold, merge)
 						);
+						
 					}
 					
 				}
@@ -66,7 +81,7 @@ public class StorageEngine {
 	}
 	
 	
-	private Consumer<Void> getImportGenerator(ImportFormat format, String[] files, IntRange removeCRByYear, IntRange removeCRByN_CR, Double threshold, boolean merge) {
+	private Consumer<Void> getLoadData(ImportFormat format, String[] files) {
 		
 		return (x) -> {
 			try {
@@ -80,6 +95,17 @@ public class StorageEngine {
 						Sampling.NONE
 					);
 				
+			} catch (OutOfMemoryError | Exception e) {
+				 throw new RuntimeException(e);
+			}
+		};
+	}
+	
+	
+	private Consumer<Void> getModifyData(IntRange removeCRByYear, IntRange removeCRByN_CR, Double threshold, boolean merge) {
+		
+		return (x) -> {
+			try {
 				if (removeCRByYear != null) {
 					CRTable.get().removeCRByYear(removeCRByYear);
 				}
@@ -102,12 +128,11 @@ public class StorageEngine {
 				 throw new RuntimeException(e);
 			}
 		};
-	}
-	
+	}	
 
 	
 	
-	private void checkForEqualOutputFiles_DB_vs_MM(Consumer<Void> generateTable) throws OutOfMemoryError, Exception {
+	private void checkForEqualOutputFiles_DB_vs_MM(Consumer<Void> loadData, Consumer<Void> modifyData) throws OutOfMemoryError, Exception {
 
 
 		final String TESTFOLDER = DATAFOLDER + "tmp/";
@@ -119,7 +144,8 @@ public class StorageEngine {
 		
 		for (TABLE_IMPL_TYPES type: CRTable.TABLE_IMPL_TYPES.values()) {
 			CRTable.type = type;
-			generateTable.accept(null);
+			loadData.accept(null);
+			modifyData.accept(null);
 			
 			for (ExportFormat outFormat: ExportFormat.values()) {
 				outFormat.save(exportFile.apply(type, outFormat), UISettings.get().getIncludePubsWithoutCRs());

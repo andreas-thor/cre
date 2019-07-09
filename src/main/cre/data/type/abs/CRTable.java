@@ -33,7 +33,7 @@ public abstract class CRTable <C extends CRType<P>, P extends PubType<C>>{
 	
 	public static enum TABLE_IMPL_TYPES { MM, DB }
 	public static TABLE_IMPL_TYPES type = TABLE_IMPL_TYPES.MM;
-	public static String name;
+	public static String name = "test";
 
 	private boolean aborted;
 	private int npctRange = 1;

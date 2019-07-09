@@ -106,11 +106,11 @@ public class Reader_DB extends Reader {
 			pst_OnNewPub.clearParameters();
 			pst_OnNewPub.setInt 	( 1, pub.getID()); 
 			pst_OnNewPub.setString 	( 2, pub.getPT()); 
-			pst_OnNewPub.setString 	( 3, pub.getAU().collect(PubType_DB.join)); 
-			pst_OnNewPub.setString 	( 4, pub.getAF().collect(PubType_DB.join)); 
-			pst_OnNewPub.setString 	( 5, pub.getC1().map(it -> String.join(PubType_DB.arraySeparator2, it)).collect(PubType_DB.join)); 
-			pst_OnNewPub.setString 	( 6, pub.getEM().collect(PubType_DB.join)); 
-			pst_OnNewPub.setString 	( 7, pub.getAA().collect(PubType_DB.join)); 
+			pst_OnNewPub.setString 	( 3, pub.getAU().count() == 0 ? null : pub.getAU().collect(PubType_DB.join)); 
+			pst_OnNewPub.setString 	( 4, pub.getAF().count() == 0 ? null : pub.getAF().collect(PubType_DB.join)); 
+			pst_OnNewPub.setString 	( 5, pub.getC1().count() == 0 ? null : pub.getC1().map(it -> String.join(PubType_DB.arraySeparator2, it)).collect(PubType_DB.join)); 
+			pst_OnNewPub.setString 	( 6, pub.getEM().count() == 0 ? null : pub.getEM().collect(PubType_DB.join)); 
+			pst_OnNewPub.setString 	( 7, pub.getAA().count() == 0 ? null : pub.getAA().collect(PubType_DB.join)); 
 			pst_OnNewPub.setString 	( 8, pub.getTI()); 
 			if (pub.getPY()==null) { pst_OnNewPub.setNull( 9, Types.INTEGER); } else { pst_OnNewPub.setInt ( 9, pub.getPY()); } 
 			pst_OnNewPub.setString 	(10, pub.getSO()); 
