@@ -1,5 +1,7 @@
 package main.cre.data.type.extern;
 
+import java.util.Comparator;
+
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.CRType.PERCENTAGE;
 
@@ -102,6 +104,82 @@ public class CitedReference {
 		result.CID_S = cr.getClusterSize();
 		
 		return result;
+	}
+	
+	
+	public static Comparator<CitedReference> getComparatorByProperty (String prop) {
+		
+		switch (prop) {
+
+		case "ID":
+			return Comparator.comparing((CitedReference cr) -> cr.ID);
+		case "CR":
+			return Comparator.comparing((CitedReference cr) -> cr.CR);
+		case "RPY":
+			return Comparator.comparing((CitedReference cr) -> cr.RPY);
+		case "N_CR":
+			return Comparator.comparing((CitedReference cr) -> cr.N_CR);
+		case "AU":
+			return Comparator.comparing((CitedReference cr) -> cr.AU);
+		case "AU_L":
+			return Comparator.comparing((CitedReference cr) -> cr.AU_L);
+		case "AU_F":
+			return Comparator.comparing((CitedReference cr) -> cr.AU_F);
+		case "AU_A":
+			return Comparator.comparing((CitedReference cr) -> cr.AU_A);
+		case "TI":
+			return Comparator.comparing((CitedReference cr) -> cr.TI);
+		case "J":
+			return Comparator.comparing((CitedReference cr) -> cr.J);
+		case "J_N":
+			return Comparator.comparing((CitedReference cr) -> cr.J_N);
+		case "J_S":
+			return Comparator.comparing((CitedReference cr) -> cr.J_S);
+		case "VOL":
+			return Comparator.comparing((CitedReference cr) -> cr.VOL);
+		case "PAG":
+			return Comparator.comparing((CitedReference cr) -> cr.PAG);
+		case "DOI":
+			return Comparator.comparing((CitedReference cr) -> cr.DOI);
+		case "PERC_YR":
+			return Comparator.comparing((CitedReference cr) -> cr.PERC_YR);
+		case "PERC_ALL":
+			return Comparator.comparing((CitedReference cr) -> cr.PERC_ALL);
+		case "N_PYEARS":
+			return Comparator.comparing((CitedReference cr) -> cr.N_PYEARS);
+		case "PERC_PYEARS":
+			return Comparator.comparing((CitedReference cr) -> cr.PERC_PYEARS);
+		case "N_TOP50":
+			return Comparator.comparing((CitedReference cr) -> cr.N_TOP50);
+		case "N_TOP25":
+			return Comparator.comparing((CitedReference cr) -> cr.N_TOP25);
+		case "N_TOP10":
+			return Comparator.comparing((CitedReference cr) -> cr.N_TOP10);
+		case "N_TOP1":
+			return Comparator.comparing((CitedReference cr) -> cr.N_TOP1);
+		case "N_TOP0_1":
+			return Comparator.comparing((CitedReference cr) -> cr.N_TOP0_1);
+		case "N_TOP50_Plus":
+			return Comparator.comparing((CitedReference cr) -> cr.N_TOP50_Plus);
+		case "N_TOP25_Plus":
+			return Comparator.comparing((CitedReference cr) -> cr.N_TOP25_Plus);
+		case "N_TOP10_Plus":
+			return Comparator.comparing((CitedReference cr) -> cr.N_TOP10_Plus);
+		case "N_TOP1_Plus":
+			return Comparator.comparing((CitedReference cr) -> cr.N_TOP1_Plus);
+		case "N_TOP0_1_Plus":
+			return Comparator.comparing((CitedReference cr) -> cr.N_TOP0_1_Plus);
+		case "SEQUENCE":
+			return Comparator.comparing((CitedReference cr) -> cr.SEQUENCE);
+		case "TYPE":
+			return Comparator.comparing((CitedReference cr) -> cr.TYPE);
+		case "CID2":
+			return Comparator.comparing((CitedReference cr) -> cr.CID2);
+		case "CID_S":
+			return Comparator.comparing((CitedReference cr) -> cr.CID_S);
+		default:
+			return null;
+		}
 	}
 	
 }

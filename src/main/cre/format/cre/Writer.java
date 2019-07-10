@@ -21,8 +21,6 @@ public class Writer {
 	 * 
 	 * @param file
 	 * @param includePubsWithoutCRs
-	 * @param filter
-	 * @param comp IS IGNORED
 	 * @throws IOException
 	 */
 	public static void save (File file, boolean includePubsWithoutCRs) throws IOException {

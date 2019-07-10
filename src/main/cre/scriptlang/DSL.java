@@ -1,18 +1,26 @@
 package main.cre.scriptlang;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Predicate;
 
 import javax.naming.OperationNotSupportedException;
 
 import groovy.lang.Script;
 import main.cre.data.CRStatsInfo;
 import main.cre.data.type.abs.CRTable;
+import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.Statistics.IntRange;
+import main.cre.data.type.extern.CitedReference;
+import main.cre.format.cre.Writer;
 import main.cre.format.importer.Crossref;
 import main.cre.format.importer.ImportFormat;
+import main.cre.store.mm.CRType_MM;
 import main.cre.ui.statusbar.StatusBar;
 import main.cre.ui.statusbar.StatusBarText;
 
@@ -99,10 +107,73 @@ public class DSL extends Script {
 	}
 	
 	
-	public static void saveFile(Map<String, String> map) {
+	public static void saveFile(Map<String, Object> map) throws Exception {
+		
+		Map<String, Object> params = DSL_Helper.makeParamsUpperCase(map);
+
+		// set file
+		if (params.get("FILE")==null) {
+			throw new Exception ("saveFile: missing parameter file");
+		}
+		File file = new File ((String) params.get("FILE"));
+
+		Writer.save(file, true);
+		
 	}
 
-	public static void exportFile(Map<String, String> map) throws Exception {
+	public static void exportFile(Map<String, Object> map) throws Exception {
+		
+		Map<String, Object> params = DSL_Helper.makeParamsUpperCase(map);
+		
+		// set file
+		if (params.get("FILE")==null) {
+			throw new Exception ("exportFile: missing parameter file");
+		}
+		File file = new File ((String) params.get("FILE"));
+
+		// set RPY filter
+		IntRange range = DSL_Helper.getYearRange(params.get("RPY"), null); 
+		Predicate<CRType<?>> filter = (range==null) ? cr -> true : cr -> (cr.getRPY() != null) && (cr.getRPY()>=range.getMin()) && (cr.getRPY()<=range.getMax());
+		
+		// overwrite with user-defined filter if defined
+		if ((params.get("FILTER") != null)) {
+			filter = cr -> ((Predicate<CitedReference>) params.get("FILTER")).test(CitedReference.createFromCRType(cr)) ;
+		}
+		
+		// includePubsWithoutCRs
+		boolean includePubsWithoutCRs = (boolean) params.getOrDefault("W/O_CR", true);
+
+		// build comparator based on sort parameter
+		Comparator<CRType<?>> compCRType = null;
+		if (params.keySet().contains("SORT")) {
+
+			// building a CitedReferences comparator
+			Comparator<CitedReference> compCitedReference = null; 
+			String[] values = (params.get("SORT") instanceof String) ? new String[] { (String) params.get("SORT") } : ((ArrayList<String>) params.get("SORT")).stream().toArray (String[]::new);
+			
+			for (String s: values) {		// list of order by properties
+				String[] split = s.trim().split("\\s+");
+				String prop = split[0];
+				boolean reversed = (split.length>1) && (split[1].toUpperCase().equals("DESC"));		
+				
+				Comparator<CitedReference> compProp = CitedReference.getComparatorByProperty(prop);
+				if (compProp == null) throw new Exception ("exportFile: Unknown sort property " + prop);
+				compProp = reversed ? compProp.reversed() : compProp;
+				compCitedReference = (compCitedReference == null) ? compProp : compCitedReference.thenComparing (compProp);
+			}
+			
+			
+			Comparator<CitedReference> compCR = compCitedReference;
+			// build the "real" comparator
+			compCRType = new Comparator<CRType<?>>() {
+				@Override
+				public int compare(CRType<?> o1, CRType<?> o2) {
+					return compCR.compare(CitedReference.createFromCRType(o1), CitedReference.createFromCRType(o2));
+				}
+			};
+		}
+		
+		DSL_Helper.getExportFormat(params).save (file, includePubsWithoutCRs, filter, compCRType);
 	}
 
 	public static void removeCR(Map<String, Object> map) {
@@ -120,7 +191,7 @@ public class DSL extends Script {
 	public static void set(Map<String, Object> map) throws Exception {
 	}
 
-	public Class use(String filename) {
+	public Class<?> use(String filename) {
 		return DSL_UseClass.use(filename);
 	}
 

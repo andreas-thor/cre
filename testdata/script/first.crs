@@ -3,8 +3,16 @@ info()
 //openFile (file: "testdata/CREDAT_Typen.cre")
 
 importFile (
-	file: "E:/Dev/CRE/data/savedrecs_JOI2.txt",
-	type: "WOS",
-	sampling: "SYSTEMATIC",
-	maxCR: 100
+	file: "testdata/savedrecs_JOI2.txt",
+	type: "WOS"
+//	sampling: "SYSTEMATIC",
+//	maxCR: 100
 )
+
+exportFile (
+	file: "testdata/tmp/xxsavedrecs_JOI2.csv_cr.csv",
+	type: "CSV_CR",
+	sort: ["N_CR DESC", "CR ASC"]
+	)
+	
+	

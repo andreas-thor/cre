@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import main.cre.data.type.abs.Statistics.IntRange;
+import main.cre.format.exporter.ExportFormat;
 import main.cre.format.importer.ImportFormat;
 import main.cre.ui.dialog.Sampling;
 
@@ -48,6 +49,15 @@ public class DSL_Helper {
 			throw new Exception ("Missing or unknown import file format (must be WOS, SCOPUS, or CROSSREF)");
 		}
 	}
+	
+	public static ExportFormat getExportFormat (Map<String, Object> params) throws Exception {
+		try {
+			return ExportFormat.valueOf (((String) params.getOrDefault("TYPE", "")).toUpperCase());
+		} catch (IllegalArgumentException | NullPointerException e) {
+			throw new Exception ("Missing or unknown export file format (must be WOS, SCOPUS, CSV_CR, CSV_PUB, CSV_CR_PUB, or CSV_GRAPH)");
+		}
+	}
+	
 	
 	
 	public static IntRange getYearRange (Object range, IntRange defaultRange) {
