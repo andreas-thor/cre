@@ -1,19 +1,22 @@
 package test;
 
+import java.io.IOException;
+
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.junit.Test;
 
-import main.cre.scriptlang.ScriptEngine;
+import main.cre.scriptlang.ScriptExecutionEngine;
 
 public class Script {
 
 	
 	
 	@Test
-	public void checkScript () {
+	public void checkScript () throws CompilationFailedException, IOException {
 		
 		
 		
-		ScriptEngine.main("testdata/script/first.crs");
+		ScriptExecutionEngine.main(new String[] {"testdata/script/first.crs", "-db=scriptdb"});
 		
 	}
 }

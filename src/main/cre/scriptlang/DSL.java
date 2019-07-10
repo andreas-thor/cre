@@ -16,7 +16,6 @@ import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.Clustering.ClusteringType;
 import main.cre.data.type.abs.Statistics.IntRange;
-import main.cre.data.type.extern.CitedReference;
 import main.cre.format.cre.Writer;
 import main.cre.format.importer.ImportFormat;
 import main.cre.ui.statusbar.StatusBar;

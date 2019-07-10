@@ -1,4 +1,4 @@
-package main.cre.data.type.extern;
+package main.cre.scriptlang;
 
 import java.util.Comparator;
 
@@ -6,7 +6,7 @@ import main.cre.data.type.abs.CRType;
 import main.cre.data.type.abs.CRType.PERCENTAGE;
 
 /**
- * Export data structure for Cited References
+ * Export data structure for Cited References to be used in scripts
  * @author Andreas
  *
  */

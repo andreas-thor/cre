@@ -21,11 +21,11 @@ class DB_Store {
 	
 	public static class Queries {
 
-		private final static String SQL_FILE_PREFIX = "main/cre/data/type/db/sql/"; 
+		private final static String SQL_FILE_PREFIX = "main/cre/store/db/sql/"; 
 
 		static public String getQuery(String name) {
 	    	try {
-				return new String(Files.readAllBytes(Paths.get(Queries.class.getClassLoader().getResource(SQL_FILE_PREFIX + name).toURI())));
+	    		return new String(Files.readAllBytes(Paths.get(Queries.class.getClassLoader().getResource(SQL_FILE_PREFIX + name).toURI())));
 			} catch (IOException | URISyntaxException e) {
 				return null;
 			}
