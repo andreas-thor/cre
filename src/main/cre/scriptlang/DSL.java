@@ -1,7 +1,6 @@
 package main.cre.scriptlang;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -15,12 +14,11 @@ import groovy.lang.Script;
 import main.cre.data.CRStatsInfo;
 import main.cre.data.type.abs.CRTable;
 import main.cre.data.type.abs.CRType;
+import main.cre.data.type.abs.Clustering.ClusteringType;
 import main.cre.data.type.abs.Statistics.IntRange;
 import main.cre.data.type.extern.CitedReference;
 import main.cre.format.cre.Writer;
-import main.cre.format.importer.Crossref;
 import main.cre.format.importer.ImportFormat;
-import main.cre.store.mm.CRType_MM;
 import main.cre.ui.statusbar.StatusBar;
 import main.cre.ui.statusbar.StatusBarText;
 
@@ -87,7 +85,7 @@ public class DSL extends Script {
 			"", 
 			DSL_Helper.getDOI (params), 
 			(String) params.getOrDefault("ISSN", ""), 
-			DSL_Helper.getYearRange(params.get("PY"), new IntRange(-1,  -1)));
+			DSL_Helper.getRange(params.get("PY"), new IntRange(-1,  -1)));
 
 		analyzeAndLoadFile(ImportFormat.CROSSREF, DSL_Helper.getFiles (params), params);
 		*/
@@ -98,9 +96,9 @@ public class DSL extends Script {
 		fileFormat.analyze(files);
 		fileFormat.load(
 				files, 
-				DSL_Helper.getYearRange(params.get("RPY"), CRStatsInfo.get().getRangeRPY()), 
+				DSL_Helper.getRange(params.get("RPY"), CRStatsInfo.get().getRangeRPY()), 
 				DSL_Helper.getWithoutYear(params.get("RPY")), 
-				DSL_Helper.getYearRange(params.get("PY"), CRStatsInfo.get().getRangePY()),
+				DSL_Helper.getRange(params.get("PY"), CRStatsInfo.get().getRangePY()),
 				DSL_Helper.getWithoutYear(params.get("PY")), 
 				((Integer) params.getOrDefault("MAXCR", 0)).longValue(),  
 				DSL_Helper.getSampling(params));
@@ -132,7 +130,7 @@ public class DSL extends Script {
 		File file = new File ((String) params.get("FILE"));
 
 		// set RPY filter
-		IntRange range = DSL_Helper.getYearRange(params.get("RPY"), null); 
+		IntRange range = DSL_Helper.getRange(params.get("RPY"), null); 
 		Predicate<CRType<?>> filter = (range==null) ? cr -> true : cr -> (cr.getRPY() != null) && (cr.getRPY()>=range.getMin()) && (cr.getRPY()<=range.getMax());
 		
 		// overwrite with user-defined filter if defined
@@ -176,19 +174,91 @@ public class DSL extends Script {
 		DSL_Helper.getExportFormat(params).save (file, includePubsWithoutCRs, filter, compCRType);
 	}
 
-	public static void removeCR(Map<String, Object> map) {
+	public static void removeCR(Map<String, Object> map) throws Exception {
+		
+		Map<String, Object> params = DSL_Helper.makeParamsUpperCase(map);
+
+		IntRange range = DSL_Helper.getRange(params.get("N_CR"), null); 
+		if (range != null) {
+			CRTable.get().removeCRByN_CR(range);
+			return;
+		}
+
+		range = DSL_Helper.getRange(params.get("RPY"), null); 
+		if (range != null) {
+			CRTable.get().removeCRByYear(range);
+			if (DSL_Helper.getWithoutYear(params.get("RPY"))) {
+				CRTable.get().removeCRWithoutYear();
+			}
+			return;
+		}
+
+		throw new Exception ("removeCR: Missing parameter (must have N_CR or RPY)");
+		
 	}
 
 	public static void retainPub(Map<String, Object> map) throws Exception {
+		
+		Map<String, Object> params = DSL_Helper.makeParamsUpperCase(map);
+
+		IntRange range = DSL_Helper.getRange(params.get("PY"), null); 
+		if (range != null) {
+			CRTable.get().retainPubByCitingYear(range);
+			return;
+		} 
+		
+		throw new Exception ("retainPub: Missing parameter PY");
 	}
 
 	public static void cluster(Map<String, Object> map) {
+	
+		Map<String, Object> params = DSL_Helper.makeParamsUpperCase(map);
+		double threshold = (double) params.getOrDefault ("THRESHOLD", 0.8);
+		boolean useVol = (boolean) params.getOrDefault ("VOLUME", false);
+		boolean usePag = (boolean) params.getOrDefault ("PAGE", false);
+		boolean useDOI = (boolean) params.getOrDefault ("DOI", false);
+
+		CRTable.get().getClustering().generateInitialClustering();
+		CRTable.get().getClustering().updateClustering(ClusteringType.REFRESH, null, threshold, useVol, usePag, useDOI);	
 	}
 
 	public static void merge() {
+		CRTable.get().merge();
 	}
 
 	public static void set(Map<String, Object> map) throws Exception {
+		
+		Map<String, Object> params = DSL_Helper.makeParamsUpperCase(map);
+
+		if (params.get("N_PCT_RANGE") != null) {
+
+			try {
+				CRTable.get().setNpctRange(Integer.valueOf(params.get("N_PCT_RANGE").toString()).intValue());
+				CRTable.get().updateData();
+			} catch (Exception e) {
+				throw new Exception("Wrong value for set parameter N_PCT_RANGE: " + params.get("N_PCT_RANGE"));
+			}
+			params.remove("N_PCT_RANGE");
+
+		}
+
+		if (params.get("MEDIAN_RANGE") != null) {
+
+			try {
+				CRTable.get().getChartData().setMedianRange(Integer.valueOf(params.get("MEDIAN_RANGE").toString()).intValue());
+			} catch (Exception e) {
+				throw new Exception("Wrong value for set parameter MEDIAN_RANGE: " + params.get("MEDIAN_RANGE"));
+			}
+			params.remove("MEDIAN_RANGE");
+		}
+
+
+		/* there should be no remaining parameter */
+		for (String unknownParam: params.keySet()) {
+			throw new Exception("Unknown set parameter: " + unknownParam);
+		}		
+		
+		
 	}
 
 	public Class<?> use(String filename) {

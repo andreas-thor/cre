@@ -60,7 +60,7 @@ public class DSL_Helper {
 	
 	
 	
-	public static IntRange getYearRange (Object range, IntRange defaultRange) {
+	public static IntRange getRange (Object range, IntRange defaultRange) {
 		
 		if (range == null) return defaultRange;
 
