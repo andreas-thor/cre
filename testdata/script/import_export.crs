@@ -1,0 +1,44 @@
+import java.awt.SystemColor
+
+import groovy.ui.SystemOutputInterceptor
+import main.cre.format.exporter.CSV
+import main.cre.format.exporter.Scopus
+import main.cre.format.exporter.WoS
+
+testdata = [
+	"savedrecs_JOI1.txt": "WOS",
+	"savedrecs_JOI2.txt": "WOS",
+	"scopus_export_csv_incl_citations_abstract_references.csv": "SCOPUS"
+];
+
+
+
+exportformats = [
+	"WOS": "txt",
+	"SCOPUS": "csv",
+	"CSV_CR": "csv",
+	"CSV_PUB": "csv",
+	"CSV_CR_PUB": "csv",
+	"CSV_GRAPH": "csv"]
+
+testdata.each { name, format ->
+
+
+	importFile (
+		file: "testdata/" + name,
+		type: format
+	);
+			
+	info();
+			
+
+	exportformats.each { expformat, suffix -> 
+	
+		exportFile (
+			file: "testdata/tmp/" + System.currentTimeMillis() + "_" + expformat + "." + suffix,
+			type: expformat
+		);
+		
+	}
+
+}

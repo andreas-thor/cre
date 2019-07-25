@@ -16,7 +16,9 @@ public class Script {
 		
 		
 		
-		ScriptExecutionEngine.main(new String[] {"testdata/script/first.crs", "-db=scriptdb"});
+		ScriptExecutionEngine.main(new String[] {"testdata/script/import_export.crs", "-db=scriptdb"});
+
+//		ScriptExecutionEngine.main(new String[] {"testdata/script/first.crs", "-db=scriptdb"});
 		
 	}
 }
