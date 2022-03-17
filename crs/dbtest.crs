@@ -3,7 +3,7 @@
 importFile (
 //	file: "data/climate gross/half_data.txt",
 //	file: "data/climate gross/data_climate_1mio.txt",
-	file: "data/climate gross/data_climate_100t.txt",
+	file: "E:/Dev/CRE/data/climate gross/data_climate_100t.txt",
 	type: "WOS"
 	
 )

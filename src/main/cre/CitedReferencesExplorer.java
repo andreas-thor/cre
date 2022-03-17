@@ -54,7 +54,7 @@ public class CitedReferencesExplorer extends Application {
 		CitedReferencesExplorer.stage = stage;
 		CitedReferencesExplorer.app = this;
 		
-		stage.getIcons().add(new Image(getClass().getResourceAsStream("ui/CRE32.png")));
+		stage.getIcons().add(new Image(getClass().getResourceAsStream("./ui/CRE32.png")));
 		stage.setTitle(CitedReferencesExplorer.title);
 
 		Parent root = FXMLLoader.load(getClass().getResource("ui/Main.fxml"));
